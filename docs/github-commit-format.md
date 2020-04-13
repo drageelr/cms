@@ -16,15 +16,6 @@ Any line of the commit message cannot be longer 100 characters.
 
 #### Type
 Must be one of the following:
-'add': Create a capability e.g. feature, test, dependency.
-'drop': Delete a capability e.g. feature, test, dependency.
-'fix': Fix an issue e.g. bug, typo, accident, misstatement.
-'docs': Documentation only changes.
-'style': Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc).
-'refactor': A code change that neither fixes a bug nor adds a feature.
-'perf': A code change that improves performance.
-'test': Adding missing tests.
-'chore': Changes to the build process or auxiliary tools and libraries such as documentation generation.
 
 * **add**: Create capability (feature/test/dependency)
 * **add**: Delete capability
