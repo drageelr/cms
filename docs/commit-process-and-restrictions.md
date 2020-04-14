@@ -65,7 +65,7 @@
     * Click **New Issue** to create an issue. Use relevant labels, any description of the task / bug / enhancement required and add assignees.
 2. Create a **Task** in Trello.
     * Link with the GitHub issue you just created. 
-    * Add same assignees, with the **Issue** label.
+    * Add same assignees, with the **GitHub** label.
 3. Add the `#issue_id` to link the commit with the issue in the footer the of commit message (when in terminal). Optionally, if the issue is to be closed by that commit then write`Closes #issue_id` instead.
 4. Add a comment on the issue in GitHub with the specific client-master, server-master or master branch, in the case of a `bug` or `pull request` with the relevant label.
 
