@@ -31,7 +31,7 @@
 
             gpg --list-secret-keys --keyid-format LONG
 
-      This will result with mutliple lines. Your full name will be between 2 lines. In the line directly above your full name, copy the text starting after "/" and ending till the first white space encountered.
+      This will result with mutliple lines. Your full name / user ID `uid` will be between 2 lines (`sec` and `ssb`). In the line directly above your full name (`sec`), copy the text starting after "/" and ending till the first white space encountered. It will be in the format <hex_string> after some rsa<number>. This is your signing key. 
 
     * Next, run the following commands:
 
@@ -61,11 +61,11 @@
          
 #### Process
 1. Create an **Issue** in GitHub Issues of the repository:
-    a. Go to [CMS GitHub Issues](https://github.com/drageelr/cms/issues/)
-    b. Click **New Issue** to create an issue. Use relevant labels, any description of the task / bug / enhancement required and add assignees.
+    * Go to [CMS GitHub Issues](https://github.com/drageelr/cms/issues/)
+    * Click **New Issue** to create an issue. Use relevant labels, any description of the task / bug / enhancement required and add assignees.
 2. Create a **Task** in Trello.
-    a. Link with the GitHub issue you just created. 
-    b. Add same assignees, with the **Issue** label.
+    * Link with the GitHub issue you just created. 
+    * Add same assignees, with the **GitHub** label.
 3. Add the `#issue_id` to link the commit with the issue in the footer the of commit message (when in terminal). Optionally, if the issue is to be closed by that commit then write`Closes #issue_id` instead.
 4. Add a comment on the issue in GitHub with the specific client-master, server-master or master branch, in the case of a `bug` or `pull request` with the relevant label.
 
@@ -76,7 +76,7 @@
 * No `wip` branch should be created from another *wip* branch OR *master* branch.
 
 #### Branch Naming & Descriptions:
-* `master`  for production. can only be merged by "Hammad".
+* `master`  for production. can only be merged by Hammad.
 * `client-master` for approved  client development commits. can only be merged with by Hammad or Zoraiz.
 * `server-master` for approved server development commits. can only be merged with by Hammad.
 * `client-wip-<name_initials>` for client development by that specific person
