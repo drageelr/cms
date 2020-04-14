@@ -31,7 +31,7 @@
 
             gpg --list-secret-keys --keyid-format LONG
 
-      This will result with mutliple lines. Your full name will be between 2 lines. In the line directly above your full name, copy the text starting after "/" and ending till the first white space encountered.
+      This will result with mutliple lines. Your full name / user ID `uid` will be between 2 lines (`sec` and `ssb`). In the line directly above your full name (`sec`), copy the text starting after "/" and ending till the first white space encountered. It will be in the format <hex_string> after some rsa<number>. This is your signing key. 
 
     * Next, run the following commands:
 
