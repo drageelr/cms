@@ -6,6 +6,9 @@
 // Modules:
 var ValidationError = require('express-validation').ValidationError;
 
+// Services:
+var httpStatus = require('../services/http-status');
+
 // Others:
 var customError = require('../errors/errors');
 
@@ -23,26 +26,27 @@ var customError = require('../errors/errors');
 exports.errorHandler = (err, req, res, next) => {
   if (err instanceof ValidationError) {
     res.json({
-      status: 400,
+      statusCode: 400,
+      statusName: httpStatus.getName(400),
       message: "Request object validation failed!",
       error: {
         name: "ValidationError",
-        error: "Bad Request",
+        subName: "N/A",
         details: err.details
       }
     });
   } else if (err instanceof customError.TokenError || err instanceof customError.AuthenticationError) {
     res.json({
-      status: err.statusCode,
+      statusCode: err.statusCode,
+      statusName: httpStatus.getName(err.statusCode),
       message: err.message,
       error: {
         name: err.name,
-        error: err.error,
-        details: err.errorDetails,
-        type: err.errType
+        subName: err.subName,
+        details: err.details
       }
     })
   } else {
-    res.json({status: 500, message: "Internal Server Error!"});
+    res.json({statusCode: 500, statusName: httpStatus.getName(500), message: "Something went wrong on the server end!"});
   }
 }

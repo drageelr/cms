@@ -9,6 +9,9 @@ var jwt = require('jsonwebtoken');
 // Models:
 var Society = require('../models/society.model');
 
+// Services:
+var httpStatus = require('../services/http-status');
+
 // Others:
 var config = require('../config/config').variables;
 var customError = require('../errors/errors');
@@ -62,7 +65,7 @@ exports.verify = async (req, res, next) => {
     token = token.subString(7);
   } else {
     // Raise "TokenError" here - missing token
-    throw new customError.TokenError(400, "Missing token!", "Bad Request", "no token in bearer token authorization header", "CustomError");
+    throw new customError.TokenError(400, "Missing token!", "no token in bearer token authorization header");
   }
 
   let decodedObj = decodeToken(token);
@@ -74,16 +77,16 @@ exports.verify = async (req, res, next) => {
         next();
       } else {
         // Raise "TokenError" - user not found
-        throw new customError.TokenError(404, "Invalid token!", "Not Found", "user not found", "CustomError");
+        throw new customError.TokenError(404, "Invalid token!", "user not found");
       }
     } else if (decodedObj.type == 'cca') {
       // To do..
     } else {
       // Raise "TokenError" - invalid type
-      throw new customError.TokenError(404, "Invalid token!", "Bad Request", "invalid type", "CustomError");
+      throw new customError.TokenError(400, "Invalid token!", "invalid user type");
     }
   } else {
     // Raise "TokenError" here - based on jwt error
-    throw new customError.TokenError(400, "Invalid token!", "Bad Request", decodedObj.err.message, decodedObj.err.name);
+    throw new customError.TokenError(400, "Invalid token!", decodedObj.err.message, decodedObj.err.name);
   }
 }

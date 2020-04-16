@@ -21,18 +21,17 @@ class TokenError extends Error {
    * Creates a TokenError object.
    * @param {number} status - Status Code.
    * @param {string} msg - Message to send to client as a response.
-   * @param {string} err - Status name of error.
-   * @param {string} details - Details of error.
-   * @param {string} [type= undefined] - JsonWebToken module's error class.
+   * @param {string} errDetails - Details of error.
+   * @param {string} [sName= undefined] - JsonWebToken module's error class.
    */
-  constructor(status, msg, err, details, type = undefined) {
+  constructor(status, msg, errDetails, sName = undefined) {
     this.name = "TokenError";
     this.statusCode = status;
     this.message = msg;
-    this.error = err;
-    this.errorDetails = details;
-    if (!type) {
-      this.errType = type;
+    this.details = errDetails;
+    this.subName = "N/A";
+    if (!sName) {
+      this.subName = sName;
     }
 
     if (Error.captureStackTrace) {
@@ -50,10 +49,9 @@ class AuthenticationError extends Error {
   constructor() {
     this.name = "AuthenticationError";
     this.statusCode = 401;
-    this.message = "Authentication unsuccessful!";
-    this.error = "Unauthroized";
-    this.errorDetails = "invalid username or password";
-    this.errType = "CustomError";
+    this.message = "Invalid credentials!";
+    this.details = "invalid username or password";
+    this.subName = "N/A";
   }
 }
 

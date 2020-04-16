@@ -8,6 +8,7 @@ var Society = require('../models/society.model');
 
 // Services:
 var jwt = require('../services/jwt');
+var httpStatus = require('../services/http-status');
 
 // Others:
 var customError = require('../errors/errors');
@@ -34,7 +35,8 @@ exports.societyLogin = async (req, res, next) => {
     if (reqSociety) {
       let token = jwt.signID(reqSociety._id, "12h");
       res.json({
-        status: 200,
+        statusCode: 200,
+        statusName: httpStatus.getName(200),
         message: "Login successful!",
         token: token,
         user: {
