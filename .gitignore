@@ -26,3 +26,8 @@ client/yarn-error.log*
 # Server:
 
 /server/node_modules
+
+
+# Local:
+
+.vscode

@@ -1,38 +1,66 @@
 #!/usr/bin/env node
+'use strict'
 
-/**
- * Module dependencies.
- */
+/*
+  ------------------ DEPENDENCIES --------------------
+*/
 
-var app = require('../app');
+// Modules:
 var debug = require('debug')('server:server');
 var http = require('http');
 
-/**
- * Get port from environment and store in Express.
- */
+// Others:
+var app = require('../app');
+var config = require('../config/config').variables;
+var setDB = require('../config/config').setDB;
 
-var port = normalizePort(process.env.PORT || '3030');
-app.set('port', port);
+/*
+  ------------------ CODE BODY --------------------
+*/
 
-/**
- * Create HTTP server.
- */
+/*
+  <BLOCK EXPLAINATION>
+  Set the value of DB based on the parameter passed in console.
+*/
 
-var server = http.createServer(app);
+// Change db name if argument was provided:
+if (process.argv.length() > 2) {
+  setDB(process.argv[2])
+}
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+/*
+  <BLOCK EXPLAINATION>
+  Creates server object, based on the port specified in the config file
+  and listens for request and errors on this server.
+*/
 
+// Variables:
+let port, server;
+
+// Get port from config and normalize it
+port = normalizePort(config.port)
+
+// Add port to app
+app.set('port', port)
+
+// Create HTTP server
+server = http.createServer(app)
+
+// Listen on port on all provided network interfaces
 server.listen(port);
+
+// Add event listener to server
 server.on('error', onError);
 server.on('listening', onListening);
 
-/**
- * Normalize a port into a number, string, or false.
- */
+/*
+  <<<<< HELPER FUNCTIONS >>>>>
+*/
 
+/**
+ * Normalizes port value to number, string or false.
+ * @param val - Port value to be normalized.
+ */
 function normalizePort(val) {
   var port = parseInt(val, 10);
 
@@ -51,8 +79,8 @@ function normalizePort(val) {
 
 /**
  * Event listener for HTTP server "error" event.
+ * @param error - Object containing details about the error.
  */
-
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -80,7 +108,6 @@ function onError(error) {
 /**
  * Event listener for HTTP server "listening" event.
  */
-
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
