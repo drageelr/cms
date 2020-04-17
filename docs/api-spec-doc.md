@@ -14,7 +14,7 @@
 ### 1. Authentication
 |#|Name|Description|Route|Request Object|Request Type|Response Object|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|CCA Login|Authentication for CCA Users|`/api/auth/cca-login`|`{email: "String", password: "String"}`|POST|`{}`|CCA|`2.1`|
+|1|CCA Login|Authentication for CCA Users.|`/api/auth/cca-login`|`{email: "String", password: "String"}`|POST|`{}`|CCA|`2.1`|
 |2|Society Login|Authentication for Society Users|`/api/auth/society-login`|`{email: "String", password: "String"}`|POST|`{token: "String", , user: {id: Number, name: "String", nameInitials: "String", name}`|Society|`2.1`|
 
 ### 2. User Management
