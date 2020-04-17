@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { connect } from 'react-redux'
-
-
-function TaskAddButton() {
-    return <div>TaskAddButton</div>
+import React from 'react'
+export default function TaskAddButton() {
+    return(
+        <div>
+            <h1>Add Task Button</h1>
+        </div>
+    )
 }
-

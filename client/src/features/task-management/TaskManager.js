@@ -1,16 +1,16 @@
 import React from 'react'
 import TaskColumn from './task-list/TaskColumn'
 import TaskAddButton from './task-list/TaskAddButton'
-import {connect} from 'react-redux'
-import { DragDropContext } from 'react-beautiful-dnd'
-import styled from 'styled-components'
 import TaskArchive from './task-archive/TaskArchive'
 
 
-function TaskManager() {
+export default function TaskManager() {
     return (
         <div>
-            TaskManager
+            <h1>Task Manager</h1>
+            <TaskColumn/>
+            <TaskAddButton/>
+            <TaskArchive/>
         </div>
     )
 }

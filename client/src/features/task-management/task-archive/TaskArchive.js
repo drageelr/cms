@@ -5,6 +5,7 @@ export default function TaskArchive() {
     return (
         <div>
             <h1>Task Archive</h1>
+            <TaskArchiveCard />
         </div>
     )
 }
