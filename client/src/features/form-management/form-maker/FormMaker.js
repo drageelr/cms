@@ -1,14 +1,20 @@
 import React from 'react'
 import FormMakerBar from './FormMakerBar'
 import Properties from './Properties'
-import AddSection from './AddSection'
+import Section from './Section'
+import {connect} from 'react-redux'
 
-export default function FormMaker() {
-    return (
-        <div>
-            <FormMakerBar />
-            <Properties />
-            <AddSection />
-        </div>
-    )
+function FormMaker({formTemplate}) {
+  return (
+    <div>
+      <Properties isItem={false}/>
+      <FormMakerBar title={formTemplate.title} />
+    </div>
+  )
 }
+
+const mapStateToProps = (state) => ({
+  formTemplate: state.formTemplate,
+})
+
+export default connect(mapStateToProps) (FormMaker)

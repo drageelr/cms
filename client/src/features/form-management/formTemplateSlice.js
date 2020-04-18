@@ -3,14 +3,16 @@ import { createSlice } from "@reduxjs/toolkit"
 // Form Maker template creation state stored here, this could have been done locally inside the Form Maker as well
 // but is done so to set aside the rigorous business logic required
 
-const initalState = {
+const initialState = {
+  formId: 0,
+  title: "Event Approval",
   sections: ["Email Address", "Society"],
-  section_order: [2, 1], //ordered list of section Ids (any Ids are not unique to any other forms)
+  sectionOrder: [2, 1], //ordered list of section Ids (any Ids are not unique to any other forms)
   components_order: {
     2: [2, 0], // sectionId:  list of component Ids in order
     1: [1] 
   },
-  items_order: { 
+  itemsOrder: { 
     0: [0, 1], //componentId: ordered list of itemIds
     1: [4],
     2: [2, 3] 
@@ -62,11 +64,12 @@ const initalState = {
       default_visibility: true
     }
   },
+  checklist: [ "Verify Email" ] //subTask
 }
 
-let sId = 1
-let cId = 1
-let iId = 1
+let sId = 1 //section
+let cId = 1 //component
+let iId = 1 //iId
 
 const formTemplate = createSlice({
   name: 'formTemplate',

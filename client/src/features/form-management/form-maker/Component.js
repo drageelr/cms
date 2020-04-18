@@ -1,11 +1,11 @@
 import React from 'react'
-import AddItem from "./AddItem"
+import Item from "./Item"
 
-export default function AddComponent() {
+export default function Component() {
     return (
         <div>
             <h1>Add Component</h1>
-            <AddItem />
+            <Item />
         </div>
     )
 }
