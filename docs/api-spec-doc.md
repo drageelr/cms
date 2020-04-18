@@ -12,32 +12,39 @@
 ## APIs
 
 ### 1. Authentication
-|#|Name|Description|Route|Request Object|Request Type|Response Object|Access|Possible Errors|
+|#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|CCA Login|Authentication for CCA Users|`/api/auth/cca-login`|`{}`|POST|`{}`|CCA|`2.1`|
+|1|CCA Login|Authentication for CCA Users|`/api/auth/cca-login`|`{email: "String", password: "String"}`|POST|`{token: "String", , user: {id: Number, firstName: "String", lastName: "String", picture: "String", permissions: "String"}}`|CCA|`2.1`|
 |2|Society Login|Authentication for Society Users|`/api/auth/society-login`|`{email: "String", password: "String"}`|POST|`{token: "String", , user: {id: Number, name: "String", nameInitials: "String", name}`|Society|`2.1`|
 
 ### 2. User Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of CCA User (Admin/Member) and Society accounts.*
-|#|Name|Description|Route|Request Object|Request Type|Response Object|Access|Possible Errors|
+|#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Name|Description|`/api/name`|`{}`|GET|`{}`|CCA + Society|
+|1|Create CCA Account|Creates an account for a CCA Member|`/api/account/cca/create-account`|`{firstName: "String", lastName: "String", email: "String", password: "String", picture: "String", permissions: "String"}`|POST|`{}`|CCA|TBD|
+|2|Edit CCA Account|Edits an account of a CCA Member|`/api/account/cca/edit-account`|`{firstName: "String", lastName: "String", email: "String", password: "String", picture: "String", permissions: "String"}`|PUT|`{}`|CCA|TBD|
+|3|Delete CCA Account|Deletes an account of a CCA Member|`/api/account/cca/delete-account`|`{id: Number}`|DELETE|`{}`|CCA|TBD|
+|4|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{nameInitials: "String", nameSociety: "String", emailSociety: "String", password: "String", emailPresident: "String", emailPatron: "String"}`|POST|`{}`|CCA|TBD|
+|5|Edit Society Account|Edits an account of a Society|`/api/account/society/edit-account`|`{nameInitials: "String", nameSociety: "String", emailSociety: "String", password: "String", emailPresident: "String", emailPatron: "String"}`|PUT|`{}`|CCA|TBD|
+|6|Delete Society Account|Deletes an account of a Society|`/api/account/society/delete-account`|`{id: Number}`|DELETE|`{}`|CCA|TBD|
+
+
 
 ### 3. Form Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of forms.*
-|#|Name|Description|Route|Request Object|Request Type|Response Object|Access|Possible Errors|
+|#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
 |1|Name|Description|`/api/name`|`{}`|GET|`{}`|CCA|
 
 ### 4. Request Management
 *Note: Will contain APIs for submitting / editing forms / viewing (CCA + Society), getting request list, updating request status (CCA) etc*
-|#|Name|Description|Route|Request Object|Request Type|Response Object|Access|Possible Errors|
+|#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
 |1|Name|Description|`/api/name`|`{}`|GET|`{}`|CCA + Society + Patron/Pres|
 
 ### 5. Task Management
 *Note: Will contain APIs actions related to creating /editing / delete tasks, archiving / unarchiving task archives and creating / editing / deleting task statuses.*
-|#|Name|Description|Route|Request Object|Request Type|Response Object|Access|Possible Errors|
+|#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
 |1|Name|Description|`/api/name`|`{}`|GET|`{}`|CCA|
 
