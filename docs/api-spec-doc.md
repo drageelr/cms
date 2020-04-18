@@ -33,7 +33,6 @@
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of forms.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-
 |1|Form Template|Fetches Form Template from Database|`/api/form-maker/form-manager`|`{}`|GET|`{id: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrrder: JSON, checklistItemIDs: List<Number>, creatorID: Number}`|CCA|TBD|
 |2|Create Form|Creates an Event Approval Form|`/api/form-maker/create-form`|`{id*: Number, title*: "String", isPublic*: Boolean, sections*: List<"String">, sectionsOrder*: List<Number>, components*: JSON, componentsOrder*: JSON, items*: JSON, itemsOrder*: JSON, checklistItemIDs*: List<Number>, timestampCreated*: DateTime, creatorID*: Number}`|POST|`{}`|CCA|TBD|
 |3|Edit Form|Edits an Event Approval Form|`/api/form-maker/edit-form`|`{id*: Number, title: "String", isPublic: Boolean, sections: List<"String">, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON, checklistItemIDs: List<Number>, timestampModified: DateTime, creatorID*: Number}`|PUT|`{}`|CCA|TBD|
@@ -51,7 +50,7 @@
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
 |1|Name|Description|`/api/name`|`{}`|GET|`{}`|CCA|
 
-**Note: * means the field mentioned is required
+**Note: * means the field mentioned is required**
 
 ## Status Codes
 **Note: These status codes have been altered for use in CMS. For further elaboration visit this [link.](https://restfulapi.net/http-status-codes/)**
