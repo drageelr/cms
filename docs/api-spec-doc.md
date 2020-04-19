@@ -42,7 +42,16 @@
 *Note: Will contain APIs for submitting / editing forms / viewing (CCA + Society), getting request list, updating request status (CCA) etc*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Name|Description|`/api/name`|`{}`|GET|`{}`|CCA + Society + Patron/Pres|
+|1|Open Form|Fetches form template for the form to be filled|`/api/form-viewer/form-template`|`{id*: Number}`|Society|`{title: "String", sections: List<"String">, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON, checklistItemIDs: List<Number>}`|GET|'{}'|Society|TBD|
+|2|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/form-viewer/form-submission-manager`|`{id*: Number, formID*: Number, userID*: Number, title*: "String", isPublic*: Boolean, sections*: List<String>, sectionsOrder*: List<Number>, components*: JSON, componentsOrder*: JSON, items*: JSON, itemsOrder*: JSON}`|POST|`{timestampCreated: DateTime}`|Society|TBD|
+|3|Edit Form|Edits a form submitted by a Society|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number, formID*: Number, userID*: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON}`|PUT|`{timestampModified: DateTime}`|Society|TBD|
+|4|View Submission Society|Views a form already submitted by a society|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number}`|GET|`{formID: Number, userID: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON}`|Society|TBD|
+|5|Add Note Society|Adds a note by a Soceity to a submitted form|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number, formID*: Number, userID*: Number, societyNote: String}`|POST|`{timestampeModified: DateTime}`|Society|TBD|
+|6|Delete Submission|Deletes a form/request submitted by a Society|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number}`|DELETE|`{}`|CCA + Society|TBD|
+|7|Get Request List|Displays list of all requests in process|`/api/request-list-manager/request-list`|`{}`|GET|`{idList: List<Number>, titleList: List<"String">, dateList: List<DateTime>, societyList: List<"String">, statusList: List<"String">}`|CCA|TBD|
+|8|View Submission CCA|Views a request submitted by a society|`/api/request-list-manager/request-list/form-submitted`|`{id*: Number}`|GET|`{formID:Number, userID: Number, formStatus: "String", ccaNotes: List<"String">, societyNotes: List<"String">, itemsData: List<JSON>, timestampCreated: DateTime, timestampeModified: DateTime}`|CCA|TBD|
+|9|Update Request Status|Changes the status of a request in process|`/api/request-list-manager/request-list`|`{id*: Number, status*: "String"}`|PUT|`{timestampModified: DateTime}`|CCA|TBD|
+|10|Send Note CCA|Adds a note by CCA to a submitted request|`/api/request-list-manager/request-list/form-submitted`|`{id*: Number, ccaNote: "String"}`|POST|`{timestampModified: DateTime}`|CCA|TBD|
 
 ### 5. Task Management
 *Note: Will contain APIs actions related to creating /editing / delete tasks, archiving / unarchiving task archives and creating / editing / deleting task statuses.*
