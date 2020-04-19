@@ -31,7 +31,7 @@ router.post('/start', (req, res, next) => {
       
       finalData += data + '\n';
       
-      if (params.branchName != master && params.branchName) {
+      if (params.branchName != 'master' && params.branchName) {
         extraCommand1 += params.branchName + '\n';
         finalData += extraCommand1 + extraCommand2;
       }
