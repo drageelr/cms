@@ -78,7 +78,9 @@ router.get('/status', (req, res, next) => {
   // Variables:
   let branchName = "None", dbName = "None", serverStatus = "None";
 
-  // Get values of these variables here!
+  branchName = config.instance[branchName];
+  dbName = config.instance[dbName];
+
   exec('pm2 list', { cwd: '/root/'}, (err, stdout, stderr) => {
     if (err) throw err;
 
