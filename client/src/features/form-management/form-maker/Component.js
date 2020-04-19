@@ -2,6 +2,7 @@ import React from 'react'
 import Item from "./Item"
 import {makeStyles, List, Divider, Grid, Paper, Typography } from '@material-ui/core'
 import FormMakerAddButton from './FormMakerAddButton'
+import EditDeleteBar from './EditDeleteBar'
 
 export const useStyles = makeStyles((theme) => ({
   componentsPaper: {
@@ -21,17 +22,25 @@ export default function Component({id, title, data}) {
   const {itemsOrder, items} = data
   return (
     <Paper square variant='outlined' className={classes.componentsPaper}>
-    <h6 style={{marginBottom: 0, marginTop: 6}}>
-      {title}
-    </h6>
-    <List>
-    {
-      itemsOrder[id].map(itemId => {
-        return <Item key={itemId} id={itemId} data={items[itemId]}/>
-      }) 
-    }
-    <FormMakerAddButton type="item"/>
-    </List>
+      <EditDeleteBar 
+      renderTitle={()=>
+        <h6 style={{marginBottom: 0, marginTop: 6}}>
+          {title}
+        </h6>
+      }
+      type={'section'}
+      id ={id}/>
+      
+      <List>
+      {
+        (id in itemsOrder) ?
+        itemsOrder[id].map(itemId => {
+          return <Item key={itemId} id={itemId} data={items[itemId]}/>
+        }) 
+        : null
+      }
+      <FormMakerAddButton type="item"/>
+      </List>
     </Paper>
   )
 }

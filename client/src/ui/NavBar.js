@@ -8,7 +8,6 @@ import VpnKeyIcon from '@material-ui/icons/VpnKey'
 import SettingsIcon from '@material-ui/icons/Settings'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import DonutSmallIcon from '@material-ui/icons/DonutSmall';
-import { blue } from '@material-ui/core/colors'
 import { makeStyles } from '@material-ui/core/styles'
 import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Container, Box, Grid} from '@material-ui/core'
 
@@ -21,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     left: '30%',
   },
   drawerPaper: {
-    backgroundColor: blue[500],
+    backgroundColor: theme.palette.primary.main,
   },
   roundButton: {
     padding: 18,

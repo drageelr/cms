@@ -4,6 +4,8 @@ import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles'
 import SaveIcon from '@material-ui/icons/Save'
 import ListIcon from '@material-ui/icons/List'
+import {useDispatch} from 'react-redux'
+import { setPropertyWindow } from '../formMakerSlice'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,22 +18,31 @@ const useStyles = makeStyles((theme) => ({
 
 export default function FormMakerBar({title}) {
   const classes = useStyles()
+  const dispatch = useDispatch()
+
+  function viewChecklist(){
+    dispatch(setPropertyWindow({propertyType: 'checklist'}))
+  }
 
   return (
     <div className={classes.root}>
       <Paper square variant="outlined" className={classes.propertiesPaper}>
-        <Grid container>
-              <Grid item xs>
+        <Grid container
+              direction="row"
+              justify="space-between"
+              alignItems="center">
+              <Grid item>
                 <Typography variant="h5">
                   <Box marginLeft={30} fontWeight={600} m={1}>
                     {title}
                   </Box>
                 </Typography>
               </Grid>
-              <Grid item style={{marginTop: 5}}>
+              <Grid item>
                 <Button
                 variant="contained"
                 startIcon={<ListIcon/>}
+                onClick={viewChecklist}
                 >Checklist</Button>
                 <Button
                 variant="contained"

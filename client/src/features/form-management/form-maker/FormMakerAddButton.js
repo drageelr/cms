@@ -2,20 +2,20 @@ import React from 'react'
 import { Button } from '@material-ui/core'
 import Icon from '@material-ui/core/Icon'
 import {useDispatch} from 'react-redux'
-import { setPropertyType } from '../formMakerSlice'
+import { setPropertyWindow } from '../formMakerSlice'
 
 export default function FormMakerAddButton({type}) {
   const dispatch = useDispatch()
-  function addItem(){
-    dispatch(setPropertyType({propertyType: 'item'}))
+  function viewAddItem(){
+    dispatch(setPropertyWindow({propertyType: 'item'}))
   }
 
-  function addComponent(){
-    dispatch(setPropertyType({propertyType: 'component'}))
+  function viewAddComponent(){
+    dispatch(setPropertyWindow({propertyType: 'component'}))
   }
 
-  function addSection(){
-
+  function viewAddSection(){
+    dispatch(setPropertyWindow({propertyType: 'section'}))
   }
 
   const buttonStyle = {
@@ -25,13 +25,15 @@ export default function FormMakerAddButton({type}) {
     width: 300 
   }
 
-  let clickHandler = addItem
-  if (type === 'component'){
-    clickHandler = addComponent
+  let clickHandler = viewAddItem
+  switch(type){
+    case "component":
+      clickHandler = viewAddComponent
+      break
+    case "section":
+      clickHandler = viewAddSection
+      break
   }
-  else if (type === 'section'){
-    clickHandler = addSection
-  }
-
+  
   return <Button variant='outlined' onClick={clickHandler} style={buttonStyle} startIcon={<Icon >add</Icon>}>add {type}</Button>
 }

@@ -10,13 +10,13 @@ const formMaker = createSlice({
   name: 'formMaker',
   initialState: initialState,
   reducers: {
-    setPropertyType: (state, action) => { 
+    setPropertyWindow: (state, action) => { 
       state.propertyType = action.payload.propertyType
     },
   }
 })
 
-export const { setPropertyType } = formMaker.actions
+export const { setPropertyWindow } = formMaker.actions
 
 
 export default formMaker.reducer
