@@ -46,7 +46,7 @@ router.post('/start', (req, res, next) => {
 
           console.log("File Content:\n" + finalData);
           
-          exec('chmod u+x deploy.sh', { cwd: '/root/deployer/resources' }, (err, stdout1, stderr1) => {
+          exec('chmod u+x deploy.sh', { cwd: '/root' }, (err, stdout1, stderr1) => {
             if (err) throw err;
 
             exec('./deploy.sh', { cwd: '/root'}, (err, stdout2, stderr2) => {
