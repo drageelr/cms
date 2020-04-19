@@ -22,7 +22,7 @@ export default function TaskColumn({columnId, title, tasks}) {
         (provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
             { tasks.map((task, index) => 
-              <TaskCard taskId={task.id} index={index} key={task.id} title={task.title} tasksData={tasks}/>
+              <TaskCard taskId={task.id} index={index} key={task.id} title={task.title} columnId={columnId} tasksData={tasks}/>
             )}
             {provided.placeholder}
             <TaskAddButton columnId={columnId} isColumn={false}/>

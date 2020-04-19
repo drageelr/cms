@@ -5,7 +5,7 @@ import Card from '@material-ui/core/Card'
 import Button from '@material-ui/core/Button'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
 import { connect } from 'react-redux'
-import { addTask } from '../taskdataSlice'
+import { addTask } from '../taskDataSlice'
 
 function TaskAddButton({columnId, dispatch}) {
   const [formOpen, setFormOpen] = useState(false)
