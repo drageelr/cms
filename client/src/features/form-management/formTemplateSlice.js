@@ -7,7 +7,10 @@ const initialState = {
   formId: 0,
   title: "Event Approval",
   sectionsOrder: [0, 1], //ordered list of section Ids (any Ids are not unique to any other forms)
-  sections: ["Email Address", "Society"],
+  sections: {
+    0:"Email Address", 
+    1:"Society"
+  },
   componentsOrder: {
     1: [2, 0], // sectionId:  list of component Ids in order
     0: [1] 
@@ -85,7 +88,7 @@ const formTemplate = createSlice({
   reducers: {
     addSection: (state, action) => { //example reducer
       sId += 1
-      state.sections.push(action.payload.title)
+      state.sections[sId] = action.payload.title
       state.sectionsOrder.push(sId)
       state.checklist[sId] = ""
     },
@@ -93,12 +96,13 @@ const formTemplate = createSlice({
       const {type, id} = action.payload
       switch(type){
         case 'section':
-            const index = state.sectionsOrder.indexOf(id);
-            if (index > -1) { //id found for section
-              state.sectionsOrder.splice(index, 1);
+            const index = state.sectionsOrder.indexOf(id)
+            if (index < 0) { //id not found for section
+              break
             }
             
-            state.sections.splice(id, 1) //section title removed
+            state.sectionsOrder.splice(index, 1)
+            delete state.sections[id] //section title removed
             state.componentsOrder[id].map(componentId => { //for every component for section
               delete state.components[componentId] //delete component title
               state.itemsOrder[componentId].map(itemId => { //for every item for component
@@ -122,6 +126,5 @@ const formTemplate = createSlice({
 })
 
 export const { addSection, deleteFormPart } = formTemplate.actions
-
 
 export default formTemplate.reducer
