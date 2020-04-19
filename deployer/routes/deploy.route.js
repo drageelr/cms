@@ -41,7 +41,7 @@ router.post('/start', (req, res, next) => {
         
         finalData += data;
 
-        fs.writeFile('/root/deployer/resources/deploy.sh', finalData, (err) => {
+        fs.writeFile('/root/deploy.sh', finalData, (err) => {
           if (err) throw err;
 
           console.log("File Content:\n" + finalData);
@@ -49,9 +49,12 @@ router.post('/start', (req, res, next) => {
           exec('chmod u+x deploy.sh', { cwd: '/root/deployer/resources' }, (err, stdout1, stderr1) => {
             if (err) throw err;
 
-            execFile('/root/deployer/resources/deploy.sh', { cwd: '/root'}, (err, stdout2, stderr2) => {
+            exec('./deploy.sh', { cwd: '/root'}, (err, stdout2, stderr2) => {
               if (err) throw err;
-
+              console.log('-------------------------------------');
+              console.log(stdout2);
+              console.log('-------------------------------------');
+              console.log(stderr2);
             });
           })
         });
@@ -62,7 +65,7 @@ router.post('/start', (req, res, next) => {
     res.json({
       statusCode: 202,
       statusName: "ACCEPTED",
-      message: "The request has been accepted, wait for 30 seconds and refresh the status."
+      message: "The request has been accepted, refresh after intervals of 30 seconds."
     });
   } else {
     res.json({
