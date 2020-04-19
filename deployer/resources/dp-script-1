@@ -7,5 +7,7 @@ sudo rm -r GitHub
 mkdir GitHub
 sudo rm -r /var/www/167.71.224.73/html/*
 cd GitHub
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_cms_test
 git clone git@github.com:drageelr/cms.git
 cd cms
