@@ -18,6 +18,8 @@ var pm2 = require('pm2');
 router.post('/start', (req, res, next) => {
   let params = req.body;
   
+  console.log(params);
+
   if (params.branchName && params.dbName) {
     // Variables:
     let finalData = '';
