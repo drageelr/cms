@@ -45,9 +45,9 @@
 </select>
 <br/>
 <br/>
-<button id="startServerButton" onclick="startServer()">Start Server </button>
+<input id="startServerButton" name="startServerBtn" type="submit" onclick="startServer()" value="Start Server"/>
 <br/>
-<button id="stopServerButton" onclick="stopServer()">Stop Server</button>
+<input id="stopServerButton" name="stopServerBtn" type="submit" onclick="stopServer()" value="Stop Server"/>
 
 <script>
     async function startServer() {
@@ -73,6 +73,11 @@
     }
 
     async function stopServer() {
+      document.getElementById("stopServerButton").disabled = true
+      setTimeout(() => {
+        document.getElementById("stopServerButton").disabled = false
+      }, 30000)
+
       const res = await fetch('http://167.71.224.73/dev/api/stop', {
         method: 'GET',
       })
