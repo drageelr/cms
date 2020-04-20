@@ -24,9 +24,9 @@ var setDB = require('../config/config').setDB;
 */
 
 // Change db name if argument was provided:
-if (process.argv.length() > 2) {
-  setDB(process.argv[2])
-}
+// if (process.argv.length() > 2) {
+//   setDB(process.argv[2])
+// }
 
 /*
   <BLOCK EXPLAINATION>
