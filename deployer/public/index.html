@@ -19,6 +19,8 @@
 <div id="db-div">None</div> <br />
 <h3>Status: </h3>
 <div id="status-div">None</div> <br />
+<h3>Server Status: </h3>
+<div id="server-status-div">None</div> <br />
 <hr />
 <h2>Deploy New Server Instance</h2>
 <h3>Branch:</h3>
@@ -54,7 +56,7 @@
           dbName: selectedDB
         }
       })
-      const data = res.json()
+      const data = await res.json()
       const {statusCode, statusName, message} = data
       
       console.log(data)
@@ -62,14 +64,15 @@
     
     async function refreshStatus() {
       const res = await fetch('http://167.71.224.73/dev/api/status', {method: 'GET'})
-      const data = res.json()
+      const data = await res.json()
       console.log(data)
-
+      
       const {statusCode, statusName, message,  branchName, dbName, serverStatus} = data
 
       document.getElementById("branch-div").innerHTML = branchName
       document.getElementById("db-div").innerHTML = dbName
-      document.getElementById("status-div").innerHTML = `Status Code: ${statusCode}, Status Name: ${statusName}, Message: ${message}, Server Status: ${serverStatus}`
+      document.getElementById("status-div").innerHTML = `Status Code: ${statusCode}, Status Name: ${statusName}, Message: ${message}`
+      document.getElementById("server-status-div").innerHTML = serverStatus.replace(/\n/g, "<br />")
     }
 
   </script>
