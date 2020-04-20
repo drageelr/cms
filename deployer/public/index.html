@@ -42,11 +42,20 @@
   <option value="dev-zq">Zoraiz Qureshi DB</option>
   <option value="dev-fr">Farrukh Rasool DB</option>
   <option value="dev-hf">Hamza Farooq DB</option>
-</select><br /> 
-<input onclick="startServer()"type="submit" value="Start Server" />
-  
-  <script>
+</select>
+<br/>
+<br/>
+<button id="startServerButton" onclick="startServer()">Start Server </button>
+<br/>
+<button id="stopServerButton" onclick="stopServer()">Stop Server</button>
+
+<script>
     async function startServer() {
+      document.getElementById("startServerButton").disabled = true
+      setTimeout(() => {
+        document.getElementById("startServerButton").disabled = false
+      }, 30000)
+
       const selectedBranch = document.getElementById("branch-select").value
       const selectedDB = document.getElementById("db-select").value
       const res = await fetch('http://167.71.224.73/dev/api/start', {
@@ -56,9 +65,21 @@
           dbName: selectedDB
         }
       })
+
+
       const data = await res.json()
       const {statusCode, statusName, message} = data
-      
+      console.log(data)
+    }
+
+    async function stopServer() {
+      const res = await fetch('http://167.71.224.73/dev/api/stop', {
+        method: 'GET',
+      })
+
+      const data = await res.json()
+      const {statusCode, statusName, message} = data
+          
       console.log(data)
     }
     
@@ -67,11 +88,11 @@
       const data = await res.json()
       console.log(data)
       
-      const {statusCode, statusName, message,  branchName, dbName, serverStatus} = data
+      const {statusCode, statusName,  branchName, dbName, serverStatus} = data
 
       document.getElementById("branch-div").innerHTML = branchName
       document.getElementById("db-div").innerHTML = dbName
-      document.getElementById("status-div").innerHTML = `Status Code: ${statusCode}, Status Name: ${statusName}, Message: ${message}`
+      document.getElementById("status-div").innerHTML = `Status Code: ${statusCode}<br /> Status Name: ${statusName}`
       document.getElementById("server-status-div").innerHTML = serverStatus.replace(/\n/g, "<br />")
     }
 

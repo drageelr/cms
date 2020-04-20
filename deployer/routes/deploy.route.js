@@ -99,8 +99,8 @@ router.get('/status', (req, res, next) => {
   // Variables:
   let branchName = "None", dbName = "None", serverStatus = "None";
 
-  branchName = config.instance[branchName];
-  dbName = config.instance[dbName];
+  branchName = config.instance.branchName;
+  dbName = config.instance.dbName;
 
   exec('pm2 list', { cwd: '/root/'}, (err, stdout, stderr) => {
     if (err) throw err;
@@ -114,6 +114,26 @@ router.get('/status', (req, res, next) => {
       serverStatus: stdout
     });
   })
+});
+
+// API: Stop Server
+router.get('/stop', (req, res, next) => {
+  pm2.connect(function(err) {
+    if (err) {
+      console.error(err);
+      process.exit(2);
+    }
+  
+    pm2.stop("cms-server", (err) => {
+      if (err) throw err;
+    });
+  });
+
+  res.json({
+    statusCode: 202,
+    statusName: "ACCEPTED",
+    message: "The request has been accepted, refresh please."
+  });
 });
 
 
