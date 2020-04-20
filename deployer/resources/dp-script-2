@@ -6,4 +6,3 @@ cd ../
 cp -r server ../../CMS/server
 cd ../../CMS/server
 npm install
-pm2 start bin/www.js --name "cms-server"

@@ -5,9 +5,10 @@
 
 // Others:
 var router = require('express').Router();
-var { exec, execFile } = require('child_process');
+var { exec } = require('child_process');
 var fs = require('fs');
 var config = require('../config/config');
+var pm2 = require('pm2');
 
 /*
   ------------------ CODE BODY --------------------
@@ -49,12 +50,22 @@ router.post('/start', (req, res, next) => {
           exec('chmod u+x deploy.sh', { cwd: '/root' }, (err, stdout1, stderr1) => {
             if (err) throw err;
 
-            exec('./deploy.sh', { cwd: '/root'}, (err, stdout2, stderr2) => {
-              if (err) throw err;
-              console.log('-------------------------------------');
-              console.log(stdout2);
-              console.log('-------------------------------------');
-              console.log(stderr2);
+            
+            // Start script with pm2:
+            pm2.connect(function(err) {
+              if (err) {
+                console.error(err);
+                process.exit(2);
+              }
+  
+              pm2.start({
+                script    : '/root/CMS/server/bin/www.js',
+                exec_mode : 'fork',
+                name: 'cms-server'
+              }, function(err, apps) {
+                pm2.disconnect();
+                if (err) throw err
+              });
             });
           })
         });
