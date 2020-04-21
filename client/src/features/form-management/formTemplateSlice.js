@@ -98,11 +98,14 @@ const formTemplate = createSlice({
     },
 
     addComponent: (state, action) => {
-
+      cId += 1
+      state.componentsOrder[action.payload.parentId].push(cId)
+      state.components[cId] = action.payload.title
+      state.itemsOrder[cId] = []
     },
 
     editComponent: (state, action) => {
-
+      state.components[action.payload.id] = action.payload.title
     },
 
     addItem: (state, action) => {
@@ -183,6 +186,6 @@ const formTemplate = createSlice({
   }
 })
 
-export const { addSection, editSection, addItem, editItem, editChecklistSubtask, deleteFormPart, toggleIsPublic } = formTemplate.actions
+export const { addSection, editSection, addItem, editItem, addComponent, editComponent, editChecklistSubtask, deleteFormPart, toggleIsPublic } = formTemplate.actions
 
 export default formTemplate.reducer

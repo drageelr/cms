@@ -10,9 +10,9 @@ export const useStyles = makeStyles((theme) => ({
     width: '97%',
     height: '100%',
     marginBottom: 10,
-    '&:hover': {
-      backgroundColor: 'whitesmoke',
-    },
+    // '&:hover': {
+    //   backgroundColor: 'whitesmoke',
+    // },
   },
   formControl: {
     minWidth: '30%'

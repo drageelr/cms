@@ -1,9 +1,12 @@
 import React, {useState} from 'react'
-import { Button, TextField, Icon, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
+import { Button, Icon, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
   FormControl, FormLabel, FormGroup, FormControlLabel, List, Checkbox, MenuItem, Select, InputLabel} from '@material-ui/core'
 import { useDispatch } from 'react-redux'
 import { setPropertyWindow } from '../propertiesDataSlice'
 import { makeStyles } from '@material-ui/core/styles'
+import { Formik, Form, Field } from 'formik'
+import { TextField, CheckboxWithLabel } from 'formik-material-ui'
+import { addComponent, editComponent } from '../formTemplateSlice'
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -12,21 +15,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function ComponentProperties({propertyAddMode, propertyId}){
-  const [componentTitle, setComponentTitle] = useState("")
+export default function ComponentProperties({propertyAddMode, propertyId, parentId, componentTitle}){
   const [dialogOpen, setDialogOpen] = useState(false)
   const classes = useStyles()
   const dispatch = useDispatch()
-
-  function handleChange(e){
-    setComponentTitle(e.target.value)
-  }
-    
-  function saveComponent(e) {
-    //TODO: save component action dispatch
-    closeProperties()    
-  }
-
+  
+  
   function closeProperties() {
     dispatch(setPropertyWindow({propertyType: '', propertyId: ''}))
   }
@@ -56,12 +50,38 @@ export default function ComponentProperties({propertyAddMode, propertyId}){
   return (
     
     <div>
-      <h5 style={{marginTop: -5, marginBottom: -10, color:"darkgray"}}>ID {propertyId}</h5>
-      <TextField required id="component-title" label="Component Title" value={componentTitle} onChange={handleChange}/>
+      <Formik
+        validateOnChange={false} validateOnBlur={true}
+        initialValues={{label: componentTitle}}
+        validate={values => {
+          const errors = {}
+          if (!values.label) {
+            errors.label = 'Required'
+          }
+          return errors
+        }}
+        onSubmit={(values) => {
+          if (propertyAddMode){
+            dispatch(addComponent({parentId, title: values.label}))
+          }
+          else{
+            dispatch(editComponent({id: propertyId, title: values.label}))
+          }
+          closeProperties()
+        }}
+      >
+        {({ submitForm}) => (
+          <Form>
+            <Field component={TextField} name="label" required label="Component Title"/>
+            <br />
+            <Button variant="contained" color="primary" onClick={submitForm} style={{marginTop: 20}}>Save</Button>
+            <Button onClick={closeProperties} variant="contained" style={{marginLeft: 10, marginTop: 20}}>Cancel</Button>
+          </Form>
+        )}
+      </Formik>
+
       <Button onClick={toggleDialogOpen} variant="contained" style={{marginTop: 20, padding: 10}} startIcon={<Icon>add</Icon>}>Add Conditional Item</Button>
-      <Button onClick={saveComponent} variant="contained" style={{marginTop: 20}}>Save</Button>
-      <Button onClick={closeProperties} variant="contained" style={{marginLeft: 10, marginTop: 20}}>Cancel</Button>
-      
+    
       <Dialog onClose={toggleDialogOpen} aria-labelledby="conditional-item-dialog" open={dialogOpen}>
         <DialogTitle id="conditional-item-dialog-title">Conditional Item Options - {"Item 1"}</DialogTitle>
         <DialogContent>

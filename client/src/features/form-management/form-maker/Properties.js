@@ -74,7 +74,7 @@ function Properties({propertiesData, formTemplate, dispatch}) {
       break
     case "component":
       title = "Component"
-      renderProperties = <ComponentProperties propertyAddMode={propertyAddMode} propertyId={propertyId}/>
+      renderProperties = <ComponentProperties propertyAddMode={propertyAddMode} propertyId={propertyId} parentId={parentId} componentTitle={components[propertyId]}/>
       break
     case "section":
       title = "Section"
