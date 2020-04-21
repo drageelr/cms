@@ -8,6 +8,7 @@ var jwt = require('jsonwebtoken');
 
 // Models:
 var Society = require('../models/society.model');
+var CCA = require('../models/cca.model');
 
 // Services:
 var httpStatus = require('../services/http-status');
@@ -80,7 +81,14 @@ exports.verify = async (req, res, next) => {
         throw new customError.TokenError(404, "Invalid token!", "user not found");
       }
     } else if (decodedObj.type == 'cca') {
-      // To do..
+      let reqCCA = await CCA.findById(decodedObj._id, 'id');
+      if (reqCCA) {
+        req.body.userObj = {_id: decodedObj._id, type: decodedObj.type};
+        next();
+      } else {
+        // Raise "TokenError" - user not found
+        throw new customError.TokenError(404, "Invalid token!", "user not found");
+      }
     } else {
       // Raise "TokenError" - invalid type
       throw new customError.TokenError(400, "Invalid token!", "invalid user type");

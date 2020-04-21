@@ -55,6 +55,24 @@ class AuthenticationError extends Error {
   }
 }
 
+// Forbidden Access Error Class:
+class ForbiddenAccessError extends Error {
+
+  /**
+  * Creates an ForbiddenAccessError object.
+  * @param {string} errDetails - Details of the error.
+  */
+  constructor(errDetails) {
+    this.name = "ForbiddenAccessError";
+    this.statusCode = 403;
+    this.message = "You don't have the necessary permission for this resource!";
+    this.details = errDetails;
+    this.subName = "N/A";
+  }
+}
+
+
 // Export Classes:
 module.exports.TokenError = TokenError;
 module.exports.AuthenticationError = AuthenticationError;
+module.exports.ForbiddenAccessError = ForbiddenAccessError;

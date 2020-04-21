@@ -35,7 +35,7 @@ exports.errorHandler = (err, req, res, next) => {
         details: err.details
       }
     });
-  } else if (err instanceof customError.TokenError || err instanceof customError.AuthenticationError) {
+  } else if (err instanceof customError.TokenError || err instanceof customError.AuthenticationError || err instanceof customError.ForbiddenAccessError) {
     res.json({
       statusCode: err.statusCode,
       statusName: httpStatus.getName(err.statusCode),
