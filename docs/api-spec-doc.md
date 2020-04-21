@@ -24,34 +24,34 @@
 |1|Create CCA Account|Creates an account for a CCA Member|`/api/account/cca/create-account`|`{firstName*: "String", lastName*: "String", email*: "String", password*: "String", picture: "String", permissions: "String"}`|POST|`{}`|CCA|TBD|
 |2|Edit CCA Account|Edits an account of a CCA Member|`/api/account/cca/edit-account`|`{firstName: "String", lastName: "String", email: "String", password: "String", picture: "String", permissions: "String"}`|PUT|`{}`|CCA|TBD|
 |3|Delete CCA Account|Deletes an account of a CCA Member|`/api/account/cca/delete-account`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
-|4|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{nameInitials*: "String", nameSociety*: "String", emailSociety*: "String", password*: "String", emailPresident*: "String", emailPatron*: "String"}`|POST|`{}`|CCA|TBD|
+|4|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{nameInitials*: "String", name*: "String", email*: "String", password*: "String", emailPresident*: "String", emailPatron*: "String"}`|POST|`{}`|CCA|TBD|
 |5|Edit Society Account|Edits an account of a Society|`/api/account/society/edit-account`|`{nameInitials: "String", nameSociety: "String", emailSociety: "String", password: "String", emailPresident: "String", emailPatron: "String"}`|PUT|`{}`|CCA|TBD|
 |6|Delete Society Account|Deletes an account of a Society|`/api/account/society/delete-account`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
-|7|Change Society Password|Changes the password of a Society Account|`/api/society-dashboard/change-password`|`{passwordPrevios*: "String", passwordNew*: "String"}`|PUT|`{}`|Society|TBD|
+|7|Change Society Password|Changes the password of a Society Account|`/api/account/society/change-password`|`{passwordPrevious*: "String", passwordNew*: "String"}`|PUT|`{}`|Society|TBD|
 
 ### 3. Form Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of forms.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Form Template|Fetches Form Template from Database|`/api/form-maker/form-manager`|`{}`|GET|`{id: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrrder: JSON, checklistItemIDs: List<Number>, creatorID: Number}`|CCA|TBD|
-|2|Create Form|Creates an Event Approval Form|`/api/form-maker/create-form`|`{id*: Number, title*: "String", isPublic*: Boolean, sections*: List<"String">, sectionsOrder*: List<Number>, components*: JSON, componentsOrder*: JSON, items*: JSON, itemsOrder*: JSON, checklistItemIDs*: List<Number>, timestampCreated*: DateTime, creatorID*: Number}`|POST|`{}`|CCA|TBD|
-|3|Edit Form|Edits an Event Approval Form|`/api/form-maker/edit-form`|`{id*: Number, title: "String", isPublic: Boolean, sections: List<"String">, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON, checklistItemIDs: List<Number>, timestampModified: DateTime, creatorID*: Number}`|PUT|`{}`|CCA|TBD|
-|4|Delete Form|Deletes an Event Approval Form|`/api/form-manager/delete-form`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
+|1|Fetch Form Template|Fetches Form Template from Database|`/api/form/fetch`|`{}`|GET|`{id: Number, formID: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrrder: JSON, checklistItemIDs: List<Number>, creatorID: Number}`|CCA + Society|TBD|
+|2|Create Form|Creates an Event Approval Form|`/api/form/create`|`{id*: Number, title*: "String", isPublic*: Boolean, sections*: List<"String">, sectionsOrder*: List<Number>, components*: JSON, componentsOrder*: JSON, items*: JSON, itemsOrder*: JSON, checklistItemIDs*: List<Number>, timestampCreated*: DateTime, creatorID*: Number}`|POST|`{}`|CCA|TBD|
+|3|Edit Form|Edits an Event Approval Form|`/api/form/edit`|`{id*: Number, title: "String", isPublic: Boolean, sections: List<"String">, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON, checklistItemIDs: List<Number>, timestampModified: DateTime, creatorID*: Number}`|PUT|`{}`|CCA|TBD|
+|4|Delete Form|Deletes an Event Approval Form|`/api/form/delete`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
+|5|Fetch Form List|Fetches list of form templates available|`/api/form/fetch-list`|`{}`|GET|`{formList: [{id: Number, title: "String"}]}`|CCA + Society|TBD|
 
 ### 4. Request Management
 *Note: Will contain APIs for submitting / editing forms / viewing (CCA + Society), getting request list, updating request status (CCA) etc*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Open Form|Fetches form template for the form to be filled|`/api/form-viewer/form-template`|`{id*: Number}`|Society|`{title: "String", sections: List<"String">, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON, checklistItemIDs: List<Number>}`|GET|`{}`|Society|TBD|
-|2|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/form-viewer/form-submission-manager`|`{id*: Number, formID*: Number, userID*: Number, title*: "String", isPublic*: Boolean, sections*: List<String>, sectionsOrder*: List<Number>, components*: JSON, componentsOrder*: JSON, items*: JSON, itemsOrder*: JSON}`|POST|`{timestampCreated: DateTime}`|Society|TBD|
-|3|Edit Form|Edits a form submitted by a Society|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number, formID*: Number, userID*: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON}`|PUT|`{timestampModified: DateTime}`|Society|TBD|
-|4|View Submission Society|Views a form already submitted by a society|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number}`|GET|`{formID: Number, userID: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON}`|Society|TBD|
-|5|Add Note Society|Adds a note by a Soceity to a submitted form|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number, formID*: Number, userID*: Number, societyNote: String}`|POST|`{timestampeModified: DateTime}`|Society|TBD|
-|6|Delete Submission|Deletes a form/request submitted by a Society|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number}`|DELETE|`{}`|CCA + Society|TBD|
-|7|Get Request List|Displays list of all requests in process|`/api/request-list-manager/request-list`|`{}`|GET|`{idList: List<Number>, titleList: List<"String">, dateList: List<DateTime>, societyList: List<"String">, statusList: List<"String">}`|CCA|TBD|
-|8|View Submission CCA|Views a request submitted by a society|`/api/request-list-manager/request-list/form-submitted`|`{id*: Number}`|GET|`{formID:Number, userID: Number, formStatus: "String", ccaNotes: List<"String">, societyNotes: List<"String">, itemsData: List<JSON>, timestampCreated: DateTime, timestampeModified: DateTime}`|CCA|TBD|
-|9|Update Request Status|Changes the status of a request in process|`/api/request-list-manager/request-list`|`{id*: Number, status*: "String"}`|PUT|`{timestampModified: DateTime}`|CCA|TBD|
-|10|Send Note CCA|Adds a note by CCA to a submitted request|`/api/request-list-manager/request-list/form-submitted`|`{id*: Number, ccaNote: "String"}`|POST|`{timestampModified: DateTime}`|CCA|TBD|
+|1|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/form-submission/submit`|`{formID*: Number, itemsData*: List<JSON>}`|POST|`{id: Number}`|Society|TBD|
+|2|Edit Form|Edits a form submitted by a Society|`/api/form-submission/edit`|`{id*: Number, itemsData*: List<JSON>}`|PUT|`{}`|Society|TBD|
+|3|View Form Submission|Views a form already submitted by a society|`/api/form-submission/view`|`{id*: Number}`|GET|`{id: Number, formID: Number, userID: Number, title: "String", isPublic: Boolean, sections: List<"String">, sections_order: List<Number>, components: List<JSON>, componenetsOrder: List<Number>, itemsData: List<JSON>, itemsOrder: List<Number>}, formStatus: "String", ccaNote: "String", societyNotes: List<"String">`|CCA + Society|TBD|
+|4|Add Note Society|Adds a note by a Soceity to a submitted form|`/api/form-submission/add-note-society`|`{id*: Number, societyNote*: "String"}`|POST|`{}`|Society|TBD|
+|5|Get CCA Request List|Displays list of all requests in process|`/api/form-submission/cca-list`|`{filter: "String"}`|GET|`{formDataList: [{id: Number, title: "String", date: DateTime, society: "String", status: "String"}]}`|CCA|TBD|
+|6|Get Society Request List|Displays list of all requests by a society|`/api/form-submission/society-list`|`{}`|GET|`{formDataList: [{id: Number, title: "String", date: DateTime, society: "String", status: "String"}]}`|Society|TBD|
+|7|Update Request Status|Changes the status of a request in process|`/api/form-submission/update-status-cca`|`{id*: Number, status*: "String"}`|PUT|`{}`|CCA|TBD|
+|8|Add Note CCA|Adds a note by CCA to a submitted request|`/api/form-submission/add-note-cca`|`{id*: Number, ccaNote*: "String"}`|POST|`{}`|CCA|TBD|
+|9|Update Request Status (President/Patron)|Changes the status of a request for approval|`/api/form-submission/update-status-pp`|`{id*: Number, status*: "String", issueNote: "String"}`|PUT|`{}`|President + Patron|TBD|
 
 ### 5. Task Management
 *Note: Will contain APIs actions related to creating /editing / delete tasks, archiving / unarchiving task archives and creating / editing / deleting task statuses.*
