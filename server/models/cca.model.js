@@ -53,7 +53,8 @@ const ccaSchema = new Schema({
       createTaskStatus: { type: Boolean },
       archiveTask: { type: Boolean },
       unarchiveTask: { type: Boolean },
-      setFormStatus: { type: Boolean }
+      setFormStatus: { type: Boolean },
+      addCCANote: { type: Boolean }
     }
   }
 })
