@@ -5,9 +5,10 @@
 
 // Others:
 var router = require('express').Router();
-var { exec, execFile } = require('child_process');
+var { exec } = require('child_process');
 var fs = require('fs');
 var config = require('../config/config');
+var pm2 = require('pm2');
 
 /*
   ------------------ CODE BODY --------------------
@@ -17,6 +18,8 @@ var config = require('../config/config');
 router.post('/start', (req, res, next) => {
   let params = req.body;
   
+  console.log(params);
+
   if (params.branchName && params.dbName) {
     // Variables:
     let finalData = '';
@@ -31,7 +34,7 @@ router.post('/start', (req, res, next) => {
       
       finalData += data + '\n';
       
-      if (params.branchName != master && params.branchName) {
+      if (params.branchName != 'master' && params.branchName) {
         extraCommand1 += params.branchName + '\n';
         finalData += extraCommand1 + extraCommand2;
       }
@@ -41,17 +44,37 @@ router.post('/start', (req, res, next) => {
         
         finalData += data;
 
-        fs.writeFile('/root/deployer/resources/deploy.sh', finalData, (err) => {
+        fs.writeFile('/root/deploy.sh', finalData, (err) => {
           if (err) throw err;
 
           console.log("File Content:\n" + finalData);
           
-          exec('chmod u+x deploy.sh', { cwd: '/root/deployer/resources' }, (err, stdout1, stderr1) => {
+          exec('chmod u+x deploy.sh', { cwd: '/root' }, (err, stdout1, stderr1) => {
             if (err) throw err;
 
-            execFile('/root/deployer/resources/deploy.sh', { cwd: '/root'}, (err, stdout2, stderr2) => {
+            
+            exec('./deploy.sh', { cwd: '/root' }, (err, stdout2, stderr2) => {
               if (err) throw err;
+              
+              console.log(stdout2);
+              console.log(stderr2);
 
+              // Start script with pm2:
+              pm2.connect(function(err) {
+                if (err) {
+                  console.error(err);
+                  process.exit(2);
+                }
+  
+                pm2.start({
+                  script    : '/root/CMS/server/bin/www.js',
+                  exec_mode : 'fork',
+                  name: 'cms-server'
+                }, function(err, apps) {
+                  pm2.disconnect();
+                  if (err) throw err
+                });
+              });
             });
           })
         });
@@ -62,7 +85,7 @@ router.post('/start', (req, res, next) => {
     res.json({
       statusCode: 202,
       statusName: "ACCEPTED",
-      message: "The request has been accepted, wait for 30 seconds and refresh the status."
+      message: "The request has been accepted, refresh after intervals of 30 seconds."
     });
   } else {
     res.json({
@@ -78,7 +101,9 @@ router.get('/status', (req, res, next) => {
   // Variables:
   let branchName = "None", dbName = "None", serverStatus = "None";
 
-  // Get values of these variables here!
+  branchName = config.instance.branchName;
+  dbName = config.instance.dbName;
+
   exec('pm2 list', { cwd: '/root/'}, (err, stdout, stderr) => {
     if (err) throw err;
 
@@ -91,6 +116,26 @@ router.get('/status', (req, res, next) => {
       serverStatus: stdout
     });
   })
+});
+
+// API: Stop Server
+router.get('/stop', (req, res, next) => {
+  pm2.connect(function(err) {
+    if (err) {
+      console.error(err);
+      process.exit(2);
+    }
+  
+    pm2.stop("cms-server", (err) => {
+      if (err) throw err;
+    });
+  });
+
+  res.json({
+    statusCode: 202,
+    statusName: "ACCEPTED",
+    message: "The request has been accepted, refresh please."
+  });
 });
 
 

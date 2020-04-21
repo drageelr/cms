@@ -41,7 +41,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRouter);
 
 // Add Error Handler
-app.use(errorHandler());
+app.use(errorHandler);
 
 // Connect With Mongoose
 mongoose.connect();
