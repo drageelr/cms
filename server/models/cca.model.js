@@ -5,6 +5,7 @@
 
 // Modules:
 var mongoose = require('mongoose');
+var { autoIncrement } = require('mongoose-plugin-autoinc');
 
 // Others:
 const Schema = mongoose.Schema
@@ -15,9 +16,9 @@ const Schema = mongoose.Schema
 
 // CCA Schema:
 const ccaSchema = new Schema({
-  id: {
+  ccaId: {
     type: Number,
-    unique: true
+    // unique: true
   },
   email: {
     type: String,
@@ -44,6 +45,10 @@ const ccaSchema = new Schema({
     required: true
   }
 })
+
+// Attach autoIncrement Plugin
+ccaSchema.plugin(autoIncrement, {model: 'CCA', field: 'ccaId', startAt: 1, incrementBy: 1});
+
 
 // Export CCA Schema
 module.exports = mongoose.model('CCA', ccaSchema)
