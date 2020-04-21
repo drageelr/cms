@@ -18,15 +18,14 @@ export const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function FormMaker({formTemplate, formMaker}) {
+function FormMaker({formTemplate}) {
   const { sections, sectionsOrder, checklist, componentsOrder, components, itemsOrder, items } = formTemplate
-  const { propertyType } = formMaker
   const classes = useStyles()
   
   return (
     <div>
-      <Properties propertyType={propertyType} checklist={checklist} sections={sections} sectionsOrder={sectionsOrder} />
-      <FormMakerBar title={formTemplate.title} />
+      <Properties checklist={checklist} sections={sections} sectionsOrder={sectionsOrder} />
+      <FormMakerBar title={formTemplate.title} isPublic={formTemplate.isPublic}/>
       <Paper square variant="outlined"className={classes.viewPaper}>
         <List>
           {
@@ -43,7 +42,6 @@ function FormMaker({formTemplate, formMaker}) {
 
 const mapStateToProps = (state) => ({
   formTemplate: state.formTemplate,
-  formMaker: state.formMaker,
 })
 
 export default connect(mapStateToProps) (FormMaker)

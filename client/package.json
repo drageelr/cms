@@ -9,6 +9,8 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "formik": "^2.1.4",
+    "formik-material-ui": "^2.0.0-beta.1",
     "react": "^16.13.1",
     "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^16.13.1",
@@ -18,7 +20,8 @@
     "react-textarea-autosize": "^7.1.2",
     "react-window": "^1.8.5",
     "styled-components": "^5.1.0",
-    "typeface-montserrat": "0.0.75"
+    "typeface-montserrat": "0.0.75",
+    "yup": "^0.28.4"
   },
   "scripts": {
     "start": "react-scripts start",

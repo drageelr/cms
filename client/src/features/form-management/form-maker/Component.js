@@ -3,6 +3,7 @@ import Item from "./Item"
 import {makeStyles, List, Divider, Grid, Paper, Typography } from '@material-ui/core'
 import FormMakerAddButton from './FormMakerAddButton'
 import EditDeleteBar from './EditDeleteBar'
+import { blue } from '@material-ui/core/colors'
 
 export const useStyles = makeStyles((theme) => ({
   componentsPaper: {
@@ -10,7 +11,7 @@ export const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     paddingTop: 0.3,
     paddingLeft: 10,
-    width: '97%',
+    width: '98%',
     height: '98%',
     marginBottom: 10,
   }
@@ -21,14 +22,14 @@ export default function Component({id, title, data}) {
   const classes = useStyles()
   const {itemsOrder, items} = data
   return (
-    <Paper square variant='outlined' className={classes.componentsPaper}>
+    <Paper square elevation={0} className={classes.componentsPaper}>
       <EditDeleteBar 
       renderTitle={()=>
-        <h6 style={{marginBottom: 0, marginTop: 6}}>
+        <h6 style={{marginBottom: 0, marginTop: 6, color: 'darkgray'}}>
           {title}
         </h6>
       }
-      type={'section'}
+      type={'component'}
       id ={id}/>
       
       <List>

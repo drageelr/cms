@@ -1,15 +1,11 @@
 import React from 'react'
-import { makeStyles, List, Divider, Grid, Paper, Typography, Button, TextField } from '@material-ui/core'
-import ArrowDropDownCircleIcon from '@material-ui/icons/ArrowDropDownCircle'
-import AttachFileIcon from '@material-ui/icons/AttachFile'
-import TextFieldsIcon from '@material-ui/icons/TextFields'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
-import TextFormatIcon from '@material-ui/icons/TextFormat'
-import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked'
+import { makeStyles, List, Divider, Grid, Paper, Button } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
 import SectionProperties from './SectionProperties'
 import ComponentProperties from './ComponentProperties'
 import { connect } from 'react-redux'
+import {AddItemProperties, textboxProperties, textlabelProperties, 
+  dropdownProperties, radioProperties, checkboxProperties, fileProperties} from './ItemProperties'
 
 const useStyles = makeStyles((theme) => ({
   propertiesPaper: {
@@ -46,27 +42,53 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function Properties({propertyType, checklist, sections, sectionsOrder}) {
+function Properties({propertiesData, checklist, sections, sectionsOrder}) {
   const classes = useStyles()
+  const {propertyType, propertyAddMode, propertyId} = propertiesData
 
   let title = ""
   let renderProperties = null
+  
   switch (propertyType) {
-    case "item":
+    case "add-item":
       title = "Add Item"
       renderProperties = <AddItemProperties/>
       break
     case "component":
       title = "Component"
-      renderProperties = <ComponentProperties/>
+      renderProperties = <ComponentProperties propertyAddMode={propertyAddMode} propertyId={propertyId}/>
       break
     case "section":
       title = "Section"
-      renderProperties = <SectionProperties/>
+      renderProperties = <SectionProperties propertyAddMode={propertyAddMode} propertyId={propertyId} sections={sections}/>
       break    
     case "checklist":
       title = "Checklist"
       renderProperties = <ChecklistProperties/>
+      break
+    case "item-textbox":
+      title = "Text Box"
+      renderProperties = <textboxProperties/>
+      break
+    case "item-textlabel":
+      title = "Text Label"
+      renderProperties = <textlabelProperties/>
+      break
+    case "item-dropdown":
+      title = "Dropdown"
+      renderProperties = <dropdownProperties/>
+      break
+    case "item-radio":
+      title = "Radio Button"
+      renderProperties = <radioProperties/>
+      break
+    case "item-checkbox":
+      title = "Checkbox"
+      renderProperties = <checkboxProperties/>
+      break 
+    case "item-file":
+      title = "File Upload"
+      renderProperties = <fileProperties/>
       break
   }
 
@@ -79,19 +101,6 @@ export default function Properties({propertyType, checklist, sections, sectionsO
       </p>
     </Paper>  
   )
-  
-  function AddItemProperties(){
-    return (
-      <Grid container direction='column' >
-        <Button color="primary" variant="contained" style={{marginBottom: 15}} startIcon={<TextFieldsIcon/>}>Text Box</Button>
-        <Button color="primary" variant="contained" style={{marginBottom: 15}} startIcon={<TextFormatIcon/>}>Text Label</Button>
-        <Button color="primary" variant="contained" style={{marginBottom: 15}} startIcon={<ArrowDropDownCircleIcon/>}>Dropdown</Button>
-        <Button color="primary" variant="contained" style={{marginBottom: 15}} startIcon={<RadioButtonCheckedIcon/>}>Radio Button</Button>
-        <Button color="primary" variant="contained" style={{marginBottom: 15}} startIcon={<CheckBoxIcon/>}>Checkbox</Button>
-        <Button color="primary" variant="contained" style={{marginBottom: 15}} startIcon={<AttachFileIcon/>}>File Upload</Button>
-      </Grid>
-    )
-  }
 
   function ChecklistProperties(){
     return (
@@ -116,7 +125,7 @@ export default function Properties({propertyType, checklist, sections, sectionsO
     <Paper square variant="outlined"className={classes.propertiesPaper}>
       <Grid container  direction="column" justify="flex-start" alignItems="center">
         <Grid item xs>
-        <h3 style={{marginTop: 10}}>{title}</h3>
+        <h3 style={{marginTop: 10}}>{(propertyAddMode ? 'Add ' : 'Edit ') + title}</h3>
           <Divider variant="middle"/>
         </Grid>
         <List className={classes.innerDiv}>
@@ -126,3 +135,9 @@ export default function Properties({propertyType, checklist, sections, sectionsO
     </Paper>
   )
 }
+
+const mapStateToProps = (state) => ({
+  propertiesData: state.propertiesData,
+})
+
+export default connect(mapStateToProps) (Properties)

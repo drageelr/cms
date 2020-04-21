@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import taskDataReducer from '../features/task-management/taskdataSlice'
 import formDataReducer from '../features/form-management/formDataSlice'
 import formTemplateReducer from '../features/form-management/formTemplateSlice'
-import formMakerReducer from '../features/form-management/formMakerSlice'
+import propertiesDataReducer from '../features/form-management/propertiesDataSlice'
 
 
 export default configureStore({
@@ -10,6 +10,6 @@ export default configureStore({
     taskData: taskDataReducer,
     formTemplate: formTemplateReducer,
     formData: formDataReducer,
-    formMaker: formMakerReducer
+    propertiesData: propertiesDataReducer
   },
 })

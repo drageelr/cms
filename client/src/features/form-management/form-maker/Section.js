@@ -3,7 +3,6 @@ import Component from './Component'
 import {makeStyles, List, Divider, Paper, IconButton, Container } from '@material-ui/core'
 import FormMakerAddButton from './FormMakerAddButton'
 import EditDeleteBar from './EditDeleteBar'
-import { connect } from 'react-redux'
 
 const useStyles = makeStyles((theme) => ({
   sectionPaper: {
@@ -20,11 +19,11 @@ const useStyles = makeStyles((theme) => ({
 export default function Section({id, title, data}) {
   const classes = useStyles()
   const { componentsOrder, components, itemsOrder, items } = data
-
+  
   return (
-    <Paper className={classes.sectionPaper}>
+    <Paper elevation={4} className={classes.sectionPaper}>
       <EditDeleteBar 
-        renderTitle={()=><h4>{title}</h4>}
+        renderTitle={()=><h3 style={{marginLeft: 10}}>{title}</h3>}
         type={'section'}
         id ={id}/>
       <Divider/>
