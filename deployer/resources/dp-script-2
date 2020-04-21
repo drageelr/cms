@@ -1,0 +1,10 @@
+npm install
+npm run build
+cp -a build/. /var/www/167.71.224.73/html/
+cd ../
+cp -r server ../CMS/server
+cd ../
+cd rm -r cms
+cd ../CMS/server
+npm install
+pm2 start bin/www.js --name "cms-server"

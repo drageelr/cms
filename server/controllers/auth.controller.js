@@ -5,7 +5,7 @@
 
 // Models:
 var Society = require('../models/society.model');
-var CCA = require('../models/')
+var CCA = require('../models/cca.model')
 
 // Services:
 var jwt = require('../services/jwt');

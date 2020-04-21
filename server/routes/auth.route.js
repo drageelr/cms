@@ -7,7 +7,7 @@
 var router = require('express').Router();
 var validate = require('express-validation').validate;
 var authValidation = require('../validations/auth.validation');
-var authController = require('../controlles/auth.controller');
+var authController = require('../controllers/auth.controller');
 
 /*
   ------------------ CODE BODY --------------------

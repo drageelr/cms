@@ -42,7 +42,7 @@
 *Note: Will contain APIs for submitting / editing forms / viewing (CCA + Society), getting request list, updating request status (CCA) etc*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Open Form|Fetches form template for the form to be filled|`/api/form-viewer/form-template`|`{id*: Number}`|Society|`{title: "String", sections: List<"String">, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON, checklistItemIDs: List<Number>}`|GET|'{}'|Society|TBD|
+|1|Open Form|Fetches form template for the form to be filled|`/api/form-viewer/form-template`|`{id*: Number}`|Society|`{title: "String", sections: List<"String">, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON, checklistItemIDs: List<Number>}`|GET|`{}`|Society|TBD|
 |2|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/form-viewer/form-submission-manager`|`{id*: Number, formID*: Number, userID*: Number, title*: "String", isPublic*: Boolean, sections*: List<String>, sectionsOrder*: List<Number>, components*: JSON, componentsOrder*: JSON, items*: JSON, itemsOrder*: JSON}`|POST|`{timestampCreated: DateTime}`|Society|TBD|
 |3|Edit Form|Edits a form submitted by a Society|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number, formID*: Number, userID*: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON}`|PUT|`{timestampModified: DateTime}`|Society|TBD|
 |4|View Submission Society|Views a form already submitted by a society|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number}`|GET|`{formID: Number, userID: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON}`|Society|TBD|
@@ -57,7 +57,18 @@
 *Note: Will contain APIs actions related to creating /editing / delete tasks, archiving / unarchiving task archives and creating / editing / deleting task statuses.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Name|Description|`/api/name`|`{}`|GET|`{}`|CCA|
+|1|Fetch Task|Gets details of a created task from database|`/api/task-manager-window/task-editor/task-details`|`{id*: Number}`|GET|`{formDataID: Number, title: "String", description: "String", ownerID: Number, statusID: Number, logIDs: List<Number>, assigneeList: List<Number>, subtaskList: List<JSON>}`|
+|2|Create Task|Creates a Custom/Request task| `/api/task-manager-window/task-editor`|`{id*: Number, formDataID*: Number, title*: "String", description*: "String", ownerID*: Number, statusID*: Number, logIDs: List<Number>, assigneeList: List<Number>}`|POST|`{}`|CCA|TBD|
+|3|Create Subtask|Creates a subtask for an existing task|`/api/task-manager-window/task-editor`|`{id*: Number, taskID*: Number, statusID*: Number, assigneeID*: Number, title*: "String", description: "String", sectionIndex: "String"}`|POST|`{}`|CCA|TBD|
+|4|Edit Task|Edits a Custom/Request task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number, formDataID*: Number, title: "String", description: "String", ownerID*: Number, statusID: Number, logIDs: List<Number>, assigneeList: List<Number>}`|PUT|`{}`|CCA|TBD|
+|5|Edit Subtask|Edits a subtask of an existing task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number, taskID*: Number, statusID: Number, assigneeID: Number, title: "String", description: "String", sectionIndex: "String"}`|PUT|`{}`|CCA|TBD|
+|6|Delete Task|Deletes a Custom/Request task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
+|7|Delete Subtask|Deletes a subtask of an existing task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
+|8|Create Task Status|Creates a task status for assigning|`/api/task-status-manager`|`{name*: "String", colorHex*: "String"}`|POST|`{id: Number}`|CCA|TBD|
+|9|Edit Task Status|Edits a task status being assigned|`/api/task-status-manager/task-status-details`|`{id*: Number, name: "String", colorHex: "String"}`|PUT|`{}`|CCA|TBD|
+|10|Delete Task Status|Deletes a task status being assigned|`/api/task-status-manager/task-status-details`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
+|11|Archive Task|Archives a task and its related components|`/api/task-manager-window/task-editor/task-archiver`|`{formDataID*: Number, title: "String", description: "String", ownerID*: Number, statusID*: Number, logIDs*: List<Number>, assigneeList*: List<Number>}`|POST|`{id: Number}`|CCA|TBD|
+|12|Unarchive Task|Unarchives a task and its related components|`/api/task-manager-window/task-editor/task-archiver`|`{id*: Number}`|POST|`{formDataID: Number, title: "String", description: "String", ownerID: Number, statusID: Number, logIDs: List<Number>, assigneeList: List<Number>}`|CCA|TBD|
 
 **Note: * means the field mentioned is required**
 
