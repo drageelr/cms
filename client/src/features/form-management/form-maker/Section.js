@@ -25,17 +25,18 @@ export default function Section({id, title, data}) {
       <EditDeleteBar 
         renderTitle={()=><h3 style={{marginLeft: 10}}>{title}</h3>}
         type={'section'}
-        id ={id}/>
+        id ={id}
+        />
       <Divider/>
       <List>
       {
         (id in componentsOrder) ?
         componentsOrder[id].map(componentId => {
-          return <Component key={componentId} id={componentId} title={components[componentId]} data={{itemsOrder, items}}/>
+          return <Component key={componentId} id={componentId} parentId={id} title={components[componentId]} data={{itemsOrder, items}}/>
         })
         : null 
       }
-      <FormMakerAddButton type="component"/>
+      <FormMakerAddButton type="component" parentId={id}/>
       </List>
     </Paper>
   )

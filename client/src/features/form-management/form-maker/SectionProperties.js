@@ -1,21 +1,22 @@
 import React, {useState} from 'react'
 import SaveIcon from '@material-ui/icons/Save'
 import { Button, LinearProgress } from '@material-ui/core'
-import { addSection } from '../formTemplateSlice'
 import { setPropertyWindow } from '../propertiesDataSlice'
 import { useDispatch } from 'react-redux'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
+import { addSection, editSection } from '../formTemplateSlice'
 
-export default function SectionProperties({propertyId, propertyAddMode, sections}){
+export default function SectionProperties({propertyId, propertyAddMode, sectionTitle}){
   const dispatch = useDispatch()
-
-  const initialValues = {
-    sectionTitle: propertyAddMode ? '' : sections[propertyId]
-  }
   
-  function saveSection(sectionTitle) {
-    dispatch(addSection({title: sectionTitle}))
+  function saveSection(newSectionTitle) {
+    if (propertyAddMode) {
+      dispatch(addSection({title: newSectionTitle}))
+    }
+    else {
+      dispatch(editSection({id: propertyId, title: newSectionTitle}))
+    }
     closeProperties()
   }
   
@@ -25,9 +26,7 @@ export default function SectionProperties({propertyId, propertyAddMode, sections
 
   return (      
     <Formik
-      validateOnChange={false}
-      validateOnBlur={true}
-      initialValues={initialValues}
+      validateOnChange={false} validateOnBlur={true} initialValues={{sectionTitle: sectionTitle}}
       validate={values => {
         const errors = {}
         if (!values.sectionTitle) {
@@ -35,17 +34,15 @@ export default function SectionProperties({propertyId, propertyAddMode, sections
         }
         return errors
       }}
-      onSubmit={(values, { setSubmitting }) => {
-        setSubmitting(false)
+      onSubmit={(values) => {
         saveSection(values.sectionTitle)
       }}
     >
-      {({ submitForm, isSubmitting }) => (
+      {({ submitForm}) => (
         <Form>
-          <Field component={TextField} required name="sectionTitle" type="email" label="Section Title"/>
-          {isSubmitting && <LinearProgress />}
+          <Field component={TextField} required name="sectionTitle" label="Section Title"/>
           <br />
-          <Button variant="contained" color="primary" disabled={isSubmitting} onClick={submitForm} style={{marginTop: 20}}
+          <Button variant="contained" color="primary" onClick={submitForm} style={{marginTop: 20}}
           >Save</Button>
           <Button onClick={closeProperties} variant="contained" style={{marginLeft: 10, marginTop: 20}}>Cancel</Button>
         </Form>

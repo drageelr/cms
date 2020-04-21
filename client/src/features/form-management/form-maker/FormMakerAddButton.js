@@ -4,18 +4,18 @@ import Icon from '@material-ui/core/Icon'
 import {useDispatch} from 'react-redux'
 import { setPropertyWindow } from '../propertiesDataSlice'
 
-export default function FormMakerAddButton({type}) {
+export default function FormMakerAddButton({type, parentId}) {
   const dispatch = useDispatch()
   function viewAddItem(){
-    dispatch(setPropertyWindow({propertyType: 'add-item', propertyAddMode: true})) //different property window from edit one
+    dispatch(setPropertyWindow({propertyType: 'add-item', propertyAddMode: true, parentId})) //different property window from edit one
   }
 
   function viewAddComponent(){
-    dispatch(setPropertyWindow({propertyType: 'component', propertyAddMode: true}))
+    dispatch(setPropertyWindow({propertyType: 'component', propertyAddMode: true, parentId}))
   }
 
   function viewAddSection(){
-    dispatch(setPropertyWindow({propertyType: 'section', propertyAddMode: true}))
+    dispatch(setPropertyWindow({propertyType: 'section', propertyAddMode: true, parentId}))
   }
 
   const buttonStyle = {

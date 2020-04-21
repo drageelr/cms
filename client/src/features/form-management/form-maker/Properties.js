@@ -3,9 +3,24 @@ import { makeStyles, List, Divider, Grid, Paper, Button } from '@material-ui/cor
 import SaveIcon from '@material-ui/icons/Save'
 import SectionProperties from './SectionProperties'
 import ComponentProperties from './ComponentProperties'
+import ArrowDropDownCircleIcon from '@material-ui/icons/ArrowDropDownCircle'
+import AttachFileIcon from '@material-ui/icons/AttachFile'
+import TextFieldsIcon from '@material-ui/icons/TextFields'
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import TextFormatIcon from '@material-ui/icons/TextFormat'
+import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked'
 import { connect } from 'react-redux'
-import {AddItemProperties, textboxProperties, textlabelProperties, 
-  dropdownProperties, radioProperties, checkboxProperties, fileProperties} from './ItemProperties'
+import CheckboxProperties from './item-properties/CheckboxProperties'
+import DropdownProperties from './item-properties/DropdownProperties'
+import FileProperties from './item-properties/FileProperties'
+import RadioProperties from './item-properties/RadioProperties'
+import TextboxProperties from './item-properties/TextboxProperties'
+import TextlabelProperties from './item-properties/TextlabelProperties'
+
+import { Formik, Form, Field } from 'formik'
+import { TextField } from 'formik-material-ui'
+import { editChecklistSubtask } from '../formTemplateSlice'
+import { setPropertyWindow } from '../propertiesDataSlice'
 
 const useStyles = makeStyles((theme) => ({
   propertiesPaper: {
@@ -42,13 +57,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function Properties({propertiesData, checklist, sections, sectionsOrder}) {
+function Properties({propertiesData, formTemplate, dispatch}) {
   const classes = useStyles()
-  const {propertyType, propertyAddMode, propertyId} = propertiesData
+  const {propertyType, propertyAddMode, propertyId, parentId} = propertiesData
+  const { sections, sectionsOrder, checklist, componentsOrder, components, itemsOrder, items } = formTemplate
 
   let title = ""
   let renderProperties = null
-  
+
+  const itemProperties = { propertyAddMode, propertyId, parentId, itemData: propertyAddMode ?  null : items[propertyId] }
+
   switch (propertyType) {
     case "add-item":
       title = "Add Item"
@@ -60,35 +78,35 @@ function Properties({propertiesData, checklist, sections, sectionsOrder}) {
       break
     case "section":
       title = "Section"
-      renderProperties = <SectionProperties propertyAddMode={propertyAddMode} propertyId={propertyId} sections={sections}/>
+      renderProperties = <SectionProperties propertyAddMode={propertyAddMode} propertyId={propertyId} sectionTitle={propertyAddMode ? '' : sections[propertyId]}/>
       break    
     case "checklist":
       title = "Checklist"
-      renderProperties = <ChecklistProperties/>
+      renderProperties = <FormChecklistProperties {...itemProperties}/>
       break
     case "item-textbox":
       title = "Text Box"
-      renderProperties = <textboxProperties/>
+      renderProperties = <TextboxProperties {...itemProperties}/>
       break
     case "item-textlabel":
       title = "Text Label"
-      renderProperties = <textlabelProperties/>
+      renderProperties = <TextlabelProperties {...itemProperties}/>
       break
     case "item-dropdown":
       title = "Dropdown"
-      renderProperties = <dropdownProperties/>
+      renderProperties = <DropdownProperties {...itemProperties}/>
       break
     case "item-radio":
       title = "Radio Button"
-      renderProperties = <radioProperties/>
+      renderProperties = <RadioProperties {...itemProperties}/>
       break
     case "item-checkbox":
       title = "Checkbox"
-      renderProperties = <checkboxProperties/>
+      renderProperties = <CheckboxProperties {...itemProperties}/>
       break 
     case "item-file":
       title = "File Upload"
-      renderProperties = <fileProperties/>
+      renderProperties = <FileProperties {...itemProperties}/>
       break
   }
 
@@ -102,20 +120,59 @@ function Properties({propertiesData, checklist, sections, sectionsOrder}) {
     </Paper>  
   )
 
-  function ChecklistProperties(){
+
+  function AddItemProperties(){  
+    const commonProps = {color: "primary", variant: "contained", style: {marginBottom: 15}}
+    return (
+      <Grid container direction='column' >
+        <Button onClick={()=> dispatch(setPropertyWindow({propertyId, parentId, propertyType: 'item-textbox', propertyAddMode: true})) } {...commonProps}
+          startIcon={<TextFieldsIcon/>}>Text Box</Button>
+
+        <Button onClick={()=> dispatch(setPropertyWindow({propertyId, parentId, propertyType: 'item-textlabel', propertyAddMode: true})) } {...commonProps}
+          startIcon={<TextFormatIcon/>}>Text Label</Button>
+
+        <Button onClick={()=> dispatch(setPropertyWindow({propertyId, parentId, propertyType: 'item-dropdown', propertyAddMode: true})) } {...commonProps}
+          startIcon={<ArrowDropDownCircleIcon/>}>Dropdown</Button>
+
+        <Button onClick={()=> dispatch(setPropertyWindow({propertyId, parentId, propertyType: 'item-radio', propertyAddMode: true})) } {...commonProps}
+          startIcon={<RadioButtonCheckedIcon/>}>Radio Button</Button>
+
+        <Button onClick={()=> dispatch(setPropertyWindow({propertyId, parentId, propertyType: 'item-checkbox', propertyAddMode: true})) } {...commonProps}
+          startIcon={<CheckBoxIcon/>}>Checkbox</Button>
+
+        <Button onClick={()=> dispatch(setPropertyWindow({propertyId, parentId, propertyType: 'item-file', propertyAddMode: true})) } {...commonProps}
+          startIcon={<AttachFileIcon/>}>File Upload</Button>
+      </Grid>
+    )
+  }
+
+  function FormChecklistProperties(){
     return (
       <List className={classes.checklist}>
         {
           sectionsOrder.map(sectionId => {
             const sectionTitle = sections[sectionId]
             const subtask = checklist[sectionId]
-            return <Paper className={classes.subtaskPaper}>
-              <h5 style={{marginBottom: 0, marginTop: 4}} >{sectionTitle}</h5>
-              <h6 style={{marginBottom: 2, marginTop: 5}}>{subtask}</h6>
-            </Paper>
+            return (
+              <Paper key={sectionId} className={classes.subtaskPaper}>
+                <h5 style={{marginBottom: 0, marginTop: 4}} >{sectionTitle}</h5>
+                <Formik
+                  validateOnChange={false} validateOnBlur={true} initialValues={{subtask: subtask}}
+                  onSubmit={(values) => {
+                    dispatch(editChecklistSubtask({sectionId: sectionId, subtask: values.subtask}))
+                  }}
+                >
+                  {({ submitForm }) => (
+                    <Form>
+                      <Field  component={TextField} name="subtask"/>
+                      <Button variant="contained" style={{marginTop: 10}} onClick={submitForm}>Save</Button>
+                    </Form>
+                  )}
+                </Formik>
+              </Paper>
+            )
           })
         }
-        <Button variant="contained" style={{marginTop: 4}} startIcon={<SaveIcon/>}>Save Checklist</Button>
       </List>
     )
   }

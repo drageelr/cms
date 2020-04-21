@@ -19,13 +19,13 @@ export const useStyles = makeStyles((theme) => ({
 }))
 
 function FormMaker({formTemplate}) {
-  const { sections, sectionsOrder, checklist, componentsOrder, components, itemsOrder, items } = formTemplate
+  const { title, isPublic, sections, sectionsOrder, componentsOrder, components, itemsOrder, items } = formTemplate
   const classes = useStyles()
   
   return (
     <div>
-      <Properties checklist={checklist} sections={sections} sectionsOrder={sectionsOrder} />
-      <FormMakerBar title={formTemplate.title} isPublic={formTemplate.isPublic}/>
+      <Properties formTemplate = {formTemplate} />
+      <FormMakerBar title={title} isPublic={isPublic}/>
       <Paper square variant="outlined"className={classes.viewPaper}>
         <List>
           {

@@ -93,87 +93,89 @@ const formTemplate = createSlice({
       state.checklist[sId] = "Empty"
     },
 
+    editSection: (state, action) => { //example reducer
+      state.sections[action.payload.id] = action.payload.title
+    },
+
     addComponent: (state, action) => {
 
     },
 
-    addItem: (state, action) => {
+    editComponent: (state, action) => {
 
+    },
+
+    addItem: (state, action) => {
+      iId += 1
+      state.itemsOrder[action.payload.parentId].push(iId)
+      state.items[iId] = action.payload.newItemData
     },
 
     editItem: (state, action) => {
-      const {type, id} = action.payload
-      switch(type){
-        case 'section':{
+      state.items[action.payload.id] = action.payload.newItemData
+    },
 
-          break
-        }
-        case 'component':{
-          break
-        }
-        case 'item':{
-          break
-        }
-      }
+    editChecklistSubtask: (state, action) => {
+      const {sectionId, subtask} = action.payload
+      state.checklist[sectionId] = subtask
     },
 
     deleteFormPart: (state, action) => { //example reducer
-      const {type, id} = action.payload
+      const {type, id, parentId} = action.payload
+      console.log(action.payload)
+      
       switch(type){
         case 'section':{
-            const index = state.sectionsOrder.indexOf(id)
-            if (index < 0) { //id not found for section
-              break
-            }
+          const index = state.sectionsOrder.indexOf(id)
+          if (index < 0) { //id not found for section
+            break
+          }
+          
+          state.sectionsOrder.splice(index, 1)
+          delete state.sections[id] //section title removed
+
+          if (id in state.componentsOrder){ //has existing components
+
+            state.componentsOrder[id].map(componentId => { //for every component for section
+              delete state.components[componentId] //delete component title
+
+              if (componentId in state.itemsOrder){ //has existing items
+                state.itemsOrder[componentId].map(itemId => { //for every item for component
+                  delete state.items[itemId] //delete item
+                })
+                delete state.itemsOrder[componentId] //delete items order for component
+              }
+            })
             
-            state.sectionsOrder.splice(index, 1)
-            delete state.sections[id] //section title removed
-
-            if (id in state.componentsOrder){ //has existing components
-
-              state.componentsOrder[id].map(componentId => { //for every component for section
-                delete state.components[componentId] //delete component title
-
-                if (componentId in state.itemsOrder){ //has existing items
-                  state.itemsOrder[componentId].map(itemId => { //for every item for component
-                    delete state.items[itemId] //delete item
-                  })
-                  delete state.itemsOrder[componentId] //delete items order for component
-                }
-              })
-              
-              delete state.componentsOrder[id] //delete components order for section
-            }
-            sId -= 1
+            delete state.componentsOrder[id] //delete components order for section
+          }
+          sId -= 1
           break
         }
         case 'component':{
-          for (var sectionId in state.componentsOrder) {
-            const index = state.componentsOrder[sectionId].indexOf(id)
-            if (index > -1) { //index found
-              state.componentsOrder[sectionId].splice(index, 1) //remove from array
-            }
-          }
-          
-          delete state.components[id] //item data removed
-          break
-        } 
-        case 'item': {
-          for (var componentId in state.itemsOrder) {
-            const index = state.itemsOrder[componentId].indexOf(id)
-            if (index > -1) { //index found
-              state.itemsOrder[componentId].splice(index, 1) //remove from array
-            }
+          const index = state.componentsOrder[parentId].indexOf(id)
+          if (index > -1) { //index found
+            state.componentsOrder[parentId].splice(index, 1) //remove from array
           }
 
-          delete state.items[id] //item data removed
-
-          if (id in state.itemsOrder){
-            state.itemsOrder[id].map(itemId => { //for every item for component
+          if (id in state.itemsOrder){ //check if component had items
+            state.itemsOrder[id].map(itemId => { //for every item for this component
               delete state.items[itemId] //delete item
             })
             delete state.itemsOrder[id] //delete items order for component
           }
+
+          delete state.components[id] //item data removed
+          break
+        } 
+        case 'item': {
+          const index = state.itemsOrder[parentId].indexOf(id)
+          if (index > -1) { //index found
+            state.itemsOrder[parentId].splice(index, 1) //remove from array
+          }
+
+          delete state.items[id] //item data removed
+
           break
         }
       }
@@ -181,6 +183,6 @@ const formTemplate = createSlice({
   }
 })
 
-export const { addSection, deleteFormPart, toggleIsPublic } = formTemplate.actions
+export const { addSection, editSection, addItem, editItem, editChecklistSubtask, deleteFormPart, toggleIsPublic } = formTemplate.actions
 
 export default formTemplate.reducer

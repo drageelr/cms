@@ -6,16 +6,21 @@ import {useDispatch} from 'react-redux'
 import { deleteFormPart } from '../formTemplateSlice'
 import { setPropertyWindow } from '../propertiesDataSlice'
 
-export default function EditDeleteBar({renderTitle, type, id}) {
+export default function EditDeleteBar({renderTitle, type, id, parentId}) {
   const [hovered, setHovered] = useState(false)
   const dispatch = useDispatch()
-
+  
   function handleDeleteFormPart() {
-    dispatch(deleteFormPart({type, id}))
+    if (type.substring(0, 4) === 'item'){
+      dispatch(deleteFormPart({type:'item', id, parentId}))
+    }
+    else {
+      dispatch(deleteFormPart({type, id, parentId}))
+    }
   }
 
   function handleEditFormPart() {
-    dispatch(setPropertyWindow({propertyType: type, propertyAddMode: false, propertyId: id}))
+    dispatch(setPropertyWindow({propertyType: type, propertyAddMode: false, propertyId: id, parentId}))
   }
 
 

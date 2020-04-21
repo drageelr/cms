@@ -10,13 +10,16 @@ export const useStyles = makeStyles((theme) => ({
     width: '97%',
     height: '100%',
     marginBottom: 10,
+    '&:hover': {
+      backgroundColor: 'whitesmoke',
+    },
   },
   formControl: {
     minWidth: '30%'
   }
 }))
 
-export default function Item({id, data}) {
+export default function Item({id, parentId, data}) {
   const classes = useStyles()
   const {type, label, required, placeHolder, maxLength, fileTypes, default_visibility, options} = data
 
@@ -114,7 +117,9 @@ export default function Item({id, data}) {
       <EditDeleteBar 
       renderTitle={()=><h5></h5>}
       type={'item-'+type}
-      id ={id}/>
+      id ={id}
+      parentId={parentId}
+      />
       {renderItem()}
     </Paper>
   )

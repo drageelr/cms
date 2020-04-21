@@ -18,7 +18,7 @@ export const useStyles = makeStyles((theme) => ({
 }))
 
 
-export default function Component({id, title, data}) {
+export default function Component({id, title, data, parentId}) {
   const classes = useStyles()
   const {itemsOrder, items} = data
   return (
@@ -30,17 +30,19 @@ export default function Component({id, title, data}) {
         </h6>
       }
       type={'component'}
-      id ={id}/>
+      id ={id}
+      parentId={parentId}
+      />
       
       <List>
       {
         (id in itemsOrder) ?
         itemsOrder[id].map(itemId => {
-          return <Item key={itemId} id={itemId} data={items[itemId]}/>
+          return <Item key={itemId} parentId={id} id={itemId} data={items[itemId]} />
         }) 
         : null
       }
-      <FormMakerAddButton type="item"/>
+      <FormMakerAddButton type="item" parentId={id}/>
       </List>
     </Paper>
   )

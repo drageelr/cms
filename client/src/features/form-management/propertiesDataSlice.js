@@ -6,6 +6,7 @@ const initialState = {
   propertyType: '',
   propertyId: 1,
   propertyAddMode: false,
+  parentId: 0,
 }
 
 const propertiesData = createSlice({
