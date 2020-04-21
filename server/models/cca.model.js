@@ -47,7 +47,7 @@ const ccaSchema = new Schema({
     type: {
       societyCRUD: { type: Boolean },
       ccaCRUD: { type: Boolean },
-      createForm: { type: Boolean },
+      accessFormMaker: { type: Boolean },
       createReqTask: { type: Boolean },
       createCustomTask: { type: Boolean },
       createTaskStatus: { type: Boolean },
