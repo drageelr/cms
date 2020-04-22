@@ -1,5 +1,6 @@
-import React, {useState} from 'react'
-import {makeStyles, Paper, TextField, Checkbox, FormControlLabel, MenuItem, FormControl, Radio, RadioGroup, FormLabel, Button, InputLabel, Select } from '@material-ui/core'
+import React from 'react'
+import {makeStyles, Paper, TextField, Checkbox, FormControlLabel, MenuItem, FormControl, 
+  Radio, RadioGroup, FormLabel, Button, InputLabel, Select } from '@material-ui/core'
 import EditDeleteBar from './EditDeleteBar'
 
 export const useStyles = makeStyles((theme) => ({
@@ -21,9 +22,10 @@ export const useStyles = makeStyles((theme) => ({
 
 export default function Item({id, parentId, data}) {
   const classes = useStyles()
-  const {type, label, required, placeHolder, maxLength, fileTypes, default_visibility, options} = data
+  const {type, label, required, placeHolder, maxLength, fileTypes, options} = data
 
   function renderItem() {
+
     switch (type){
       case 'textbox':
         return (
@@ -39,12 +41,14 @@ export default function Item({id, parentId, data}) {
             maxLength={maxLength}
           />
         )
+
       case 'textlabel':
         return (
           <h5 id={id} style={{fontWeight:600}}>
             {label}
           </h5>
         )
+
       case 'checkbox':
         return (
           <FormControlLabel
@@ -59,56 +63,59 @@ export default function Item({id, parentId, data}) {
             label={label}
           />
         )
+      
       case 'file':
-      return (
-        <div>
-          <input
-            accept={fileTypes}
-            style={{display: 'none'}}
-            id={`file-${id}`}
-            multiple
-            type="file"
-            required={required}
-          />
-          <label htmlFor={`file-${id}`}>
-            <Button variant="contained" color="primary" component="span">
-              {label}
-            </Button>
-          </label>
-        </div>
-      )
+        return (
+          <div>
+            <input
+              accept={fileTypes}
+              style={{display: 'none'}}
+              id={`file-${id}`}
+              type="file"
+              required={required}
+            />
+            <label htmlFor={`file-${id}`}>
+              <Button variant="contained" color="primary" component="span">
+                {label}
+              </Button>
+            </label>
+          </div>
+        )
       
       case 'radio':
-      return (
-        <FormControl component="fieldset">
-          <FormLabel component="legend">{label}</FormLabel>
-          <RadioGroup id={id} required={required}>
-            {
-              options.map((option, index) => {
-                return (
-                  <FormControlLabel value={index} control={<Radio />} label={option} />
-                )
-              })
-            }
-          </RadioGroup>
-        </FormControl>
-      )
+        return (
+          <FormControl component="fieldset">
+            <FormLabel component="legend">{label}</FormLabel>
+            <RadioGroup id={id} required={required}>
+              {
+                options.map((option, index) => {
+                  return (
+                    <FormControlLabel value={index} control={<Radio color="primary"/>} label={option} />
+                  )
+                })
+              }
+            </RadioGroup>
+          </FormControl>
+        )
       
       case 'dropdown':
-      return (
-        <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel>{label}</InputLabel>
-          <Select id={id} label={label} >
-            {
-              options.map((option, index) => {
-                return (
-                  <MenuItem value={index}>{option}</MenuItem>
-                )
-              })
-            }
-          </Select>
-        </FormControl>
-      )
+        return (
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel>{label}</InputLabel>
+            <Select id={id} label={label} >
+              {
+                options.map((option, index) => {
+                  return (
+                    <MenuItem value={index}>{option}</MenuItem>
+                  )
+                })
+              }
+            </Select>
+          </FormControl>
+        )
+
+      default: 
+        return null
     }
   }
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {Drawer, Button, Paper, List, Typography} from '@material-ui/core'
 import { Formik, Form, Field } from 'formik'
-import { TextField, CheckboxWithLabel } from 'formik-material-ui'
+import { TextField } from 'formik-material-ui'
 import { useDispatch } from 'react-redux'
 import { updateCcaNote } from '../formDataSlice'
 
@@ -19,11 +19,11 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function NotesSideBar({drawerOpen, toggleDrawer, notesData}) {
-  console.log(notesData)
   const {ccaNote, ccaNoteTimestampModified, societyNotes } = notesData
   const classes = useStyles()
   const dispatch = useDispatch()
-  //CCA Form
+
+  //CCA
   return (
     <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer} classes={{paper: classes.drawerPaper}}>
       <Formik

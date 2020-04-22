@@ -8,13 +8,14 @@ const initialState = {
   ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!',
   ccaNoteTimestampModified: '03/13/2009 21:31:30',
   societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
-  itemsData: [ //only item data with ids
-    {id: 0, data: "Hello Data"},
-    {id: 1, data: "Data 2"},
-    {id: 2, option: 1},
-    {id: 3, option: undefined},
-    {id: 4, option: undefined}
-  ],
+  itemsData: { //itemId : itemData
+    4: true, //checkbox
+    2: 'Small', //dropdown
+    3: 'Vice President', //radio
+    5: "../../../public/logo192.png", //file
+    0: "lumun@lums.edu.pk", //textbox
+    1: "" //textlabel
+  },
   timestampCreated: '02/13/2009 21:31:30',
   timestampModified: '02/13/2009 21:31:31'
 }
@@ -26,12 +27,16 @@ const formData = createSlice({
     updateCcaNote: (state, action) => {
       state.ccaNote = action.payload.ccaNote
       // change time modified
+    },
+
+    setItemData: (state, action) => {
+      state.itemsData[action.payload.id] = action.payload.data
     }
 
   }
 })
 
-export const { updateCcaNote } = formData.actions
+export const { updateCcaNote, setItemData } = formData.actions
 
 
 export default formData.reducer

@@ -1,11 +1,10 @@
 import React from 'react'
 import Item from "./Item"
-import {makeStyles, List, Divider, Grid, Paper, Typography } from '@material-ui/core'
+import {makeStyles, List, Paper } from '@material-ui/core'
 import FormMakerAddButton from './FormMakerAddButton'
 import EditDeleteBar from './EditDeleteBar'
-import { blue } from '@material-ui/core/colors'
 
-export const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   componentsPaper: {
     backgroundColor: 'lightgray',
     padding: theme.spacing(1),

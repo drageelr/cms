@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
 function Properties({propertiesData, formTemplate, dispatch}) {
   const classes = useStyles()
   const {propertyType, propertyAddMode, propertyId, parentId} = propertiesData
-  const { sections, sectionsOrder, checklist, componentsOrder, components, itemsOrder, items } = formTemplate
+  const { sections, sectionsOrder, checklist, components, items } = formTemplate
 
   let title = ""
   let renderProperties = null
@@ -106,6 +106,9 @@ function Properties({propertiesData, formTemplate, dispatch}) {
     case "item-file":
       title = "File Upload"
       renderProperties = <FileProperties {...itemProperties}/>
+      break
+    default:
+      renderProperties = null
       break
   }
 

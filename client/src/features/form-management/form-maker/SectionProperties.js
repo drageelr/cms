@@ -1,6 +1,5 @@
-import React, {useState} from 'react'
-import SaveIcon from '@material-ui/icons/Save'
-import { Button, LinearProgress } from '@material-ui/core'
+import React from 'react'
+import { Button } from '@material-ui/core'
 import { setPropertyWindow } from '../propertiesDataSlice'
 import { useDispatch } from 'react-redux'
 import { Formik, Form, Field } from 'formik'

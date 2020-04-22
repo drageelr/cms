@@ -1,5 +1,8 @@
-import React from 'react'
-import {makeStyles, Paper, TextField, Checkbox, FormControlLabel, MenuItem, FormControl, Radio, RadioGroup, FormLabel, Button, InputLabel, Select } from '@material-ui/core'
+import React, {useState} from 'react'
+import {makeStyles, Paper, TextField, Checkbox, FormControlLabel, MenuItem, FormControl, Radio,
+  RadioGroup, FormLabel, Button, InputLabel, Select } from '@material-ui/core'
+import { connect } from 'react-redux'
+import { setItemData } from '../formDataSlice'
 
 export const useStyles = makeStyles((theme) => ({
   itemPaper: {
@@ -15,9 +18,11 @@ export const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function ItemView({id, parentId, data}) {
+function ItemView({id, templateData, itemsData, dispatch}) {
   const classes = useStyles()
-  const {type, label, required, placeHolder, maxLength, fileTypes, default_visibility, options} = data
+  const {type, label, required, placeHolder, maxLength, fileTypes, options} = templateData
+  const [localData, setLocalData] = useState(itemsData[id])
+  const data = itemsData[id]
 
   function renderItem() {
     switch (type){
@@ -33,85 +38,102 @@ export default function ItemView({id, parentId, data}) {
             variant="outlined"
             fullWidth
             maxLength={maxLength}
+            value={localData} //store data locally for text field and update locally onChange
+            onChange={(e)=>{setLocalData(e.target.value)}} 
+            inputProps={{onBlur:()=>{dispatch(setItemData({id, data: localData}))}}} // only update redux state on blur for performance purposes
           />
         )
+
       case 'textlabel':
         return (
           <h5 id={id} style={{fontWeight:600}}>
             {label}
           </h5>
         )
+
       case 'checkbox':
         return (
           <FormControlLabel
             control={
               <Checkbox
                 id={id}
-                checked={false}
-                color="primary"
+                checked={data}
+                color="primary" // override, default color is secondary
                 required={required}
+                onChange={(e) => {dispatch(setItemData({id, data: e.target.checked}))}}
               />
             }
             label={label}
           />
         )
+
       case 'file':
-      return (
-        <div>
-          <input
-            accept={fileTypes}
-            style={{display: 'none'}}
-            id={`file-${id}`}
-            multiple
-            type="file"
-            required={required}
-          />
-          <label htmlFor={`file-${id}`}>
-            <Button variant="contained"  component="span">
-              {label}
-            </Button>
-          </label>
-        </div>
-      )
+        return (
+          <div>
+            <input
+              accept={fileTypes}
+              id={`file-${id}`}
+              hidden // hide input html since MuiButton html will be used
+              type="file"
+              required={required}
+              onChange={(e) => {dispatch(setItemData({id, data: e.target.files[0].name}))}} //single files only, at the first index in FileList
+            />
+            <label htmlFor={`file-${id}`}>
+              <Button variant="contained"  component="span">
+                {label}
+              </Button>
+              <p>{data}</p>
+            </label>
+          </div>
+        )
       
       case 'radio':
-      return (
-        <FormControl component="fieldset">
-          <FormLabel component="legend">{label}</FormLabel>
-          <RadioGroup id={id} required={required}>
-            {
-              options.map((option, index) => {
-                return (
-                  <FormControlLabel value={index} control={<Radio />} label={option} />
-                )
-              })
-            }
-          </RadioGroup>
-        </FormControl>
-      )
+        return (
+          <FormControl component="fieldset">
+            <FormLabel component="legend">{label}</FormLabel>
+            <RadioGroup id={id} required={required} value={data} onChange={(e) => {dispatch(setItemData({id, data: e.target.value}))}}>
+              {
+                options.map((option, index) => {
+                  return (
+                    <FormControlLabel value={option} control={<Radio color="primary"/>}  label={option} />
+                  )
+                })
+              }
+            </RadioGroup>
+          </FormControl>
+        )
       
       case 'dropdown':
-      return (
-        <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel>{label}</InputLabel>
-          <Select id={id} label={label} >
-            {
-              options.map((option, index) => {
-                return (
-                  <MenuItem value={index}>{option}</MenuItem>
-                )
-              })
-            }
-          </Select>
-        </FormControl>
-      )
+        return (
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel>{label}</InputLabel>
+            <Select id={id} label={label} value={data} onChange={(e) => {dispatch(setItemData({id, data: e.target.value}))}}>
+              {
+                options.map((option, index) => {
+                  return (
+                    <MenuItem value={option}>{option}</MenuItem>
+                  )
+                })
+              }
+            </Select>
+          </FormControl>
+        )
+
+      default:
+        return null
     }
   }
 
   return (
     <Paper elevation={2} className={classes.itemPaper} >
-      {renderItem()}
+      { renderItem() }
     </Paper>
   )
 }
 
+const mapStateToProps = (state) => ({ //needs both the template to render the form and data to populate it in edit submission mode
+  itemsData: state.formData.itemsData,
+})
+
+
+export default connect(mapStateToProps) (ItemView)

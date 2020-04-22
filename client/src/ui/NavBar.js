@@ -9,7 +9,7 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import DonutSmallIcon from '@material-ui/icons/DonutSmall';
 import { makeStyles } from '@material-ui/core/styles'
-import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Container, Box, Grid} from '@material-ui/core'
+import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Box, Grid} from '@material-ui/core'
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
@@ -108,7 +108,7 @@ export default function NavBar() {
         <br/>
         <RoundLinkButton link={'/'} icon={<VpnKeyIcon fontSize='large'/> } title={'Login'}/>
         <RoundLinkButton link={'/task-manager'} icon={<PlaylistAddCheckIcon fontSize='large'/>} title={'Task Manager'}/>
-        <RoundLinkButton link={'/form-maker'} icon={<EditIcon fontSize='large'/>} title={'Form Maker'}/>
+        <RoundLinkButton link={'/forms'} icon={<EditIcon fontSize='large'/>} title={'Form Maker'}/>
         <RoundLinkButton link={'/request-list'} icon={<ListAltIcon fontSize='large'/>} title={'Request List'}/>
       </Drawer>
     </div>

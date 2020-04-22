@@ -1,8 +1,8 @@
-import React, {useState} from 'react'
+import React from 'react'
 import FormMakerBar from './FormMakerBar'
 import Properties from './Properties'
 import Section from './Section'
-import {makeStyles, List, Divider, Grid, Paper, Typography, Button } from '@material-ui/core'
+import {makeStyles, List, Paper } from '@material-ui/core'
 import {connect} from 'react-redux'
 import FormMakerAddButton from './FormMakerAddButton'
 

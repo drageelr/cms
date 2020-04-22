@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux'
 import { setPropertyWindow } from '../propertiesDataSlice'
 import { makeStyles } from '@material-ui/core/styles'
 import { Formik, Form, Field } from 'formik'
-import { TextField, CheckboxWithLabel } from 'formik-material-ui'
+import { TextField } from 'formik-material-ui'
 import { addComponent, editComponent } from '../formTemplateSlice'
 
 const useStyles = makeStyles((theme) => ({

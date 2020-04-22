@@ -1,12 +1,11 @@
 import React from 'react'
 import FormViewerBar from './FormViewerBar'
-import {makeStyles, List, Divider, Grid, Paper, Typography, Button, colors, Container } from '@material-ui/core'
+import {makeStyles, List, Paper, Container } from '@material-ui/core'
 import { connect } from 'react-redux'
 import ItemView from './ItemView'
 
 const useStyles = makeStyles((theme) => ({
   sectionPaper: {
-    backgroundColor: theme.palette.secondary.main,
     padding: theme.spacing(2),
     height: '100%',
     marginBottom: 20,
@@ -16,27 +15,27 @@ const useStyles = makeStyles((theme) => ({
 
 
 function FormViewer({formTemplate, formData}) {
-  const { title, isPublic, sections, sectionsOrder, componentsOrder, components, itemsOrder, items } = formTemplate
+  const { title, sections, sectionsOrder, componentsOrder, itemsOrder, items } = formTemplate
   const { ccaNote, ccaNoteTimestampModified, societyNotes } = formData
   const classes = useStyles()
 
   return (
     <div>
-      <FormViewerBar title={formTemplate.title} notesData={{ccaNote, ccaNoteTimestampModified, societyNotes}}/>
+      <FormViewerBar title={title} notesData={{ccaNote, ccaNoteTimestampModified, societyNotes}}/>
       <br/>
       <Container>
-      {
+      { //Container to center align the View, also sections and items rendered only (components are only logical)
         sectionsOrder.map(sectionId => (
           <Paper elevation={4} className={classes.sectionPaper}>
             <h3 style={{color: 'white', marginLeft: 10}}>{sections[sectionId]}</h3>
             <List>
-              { (sectionId in componentsOrder) ?
+              { (sectionId in componentsOrder) ? // does the section has components?
                 componentsOrder[sectionId].map(componentId => {
-                  return (componentId in itemsOrder) ?
+                  return (componentId in itemsOrder) ? // does the component have items?
                   itemsOrder[componentId].map(itemId => {
-                    return <ItemView key={itemId} parentId={componentId} id={itemId} data={items[itemId]} />
+                    return <ItemView key={itemId} id={itemId} templateData={items[itemId]} />
                   }) : null
-                }) : null 
+                }) : null //null for empty sections and columns
               }
             </List>
           </Paper>

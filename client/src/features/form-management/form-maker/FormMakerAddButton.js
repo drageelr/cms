@@ -34,6 +34,9 @@ export default function FormMakerAddButton({type, parentId}) {
     case "section":
       clickHandler = viewAddSection
       break
+    default:
+      clickHandler = viewAddItem
+      break
   }
   
   return <Button variant='outlined' onClick={clickHandler} style={buttonStyle} startIcon={<Icon >add</Icon>}>add {type}</Button>
