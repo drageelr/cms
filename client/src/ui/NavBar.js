@@ -59,7 +59,7 @@ export default function NavBar() {
 
   return (
     <div>
-      <AppBar position="static" style={{boxShadow: "none", background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 82%,rgba(237,237,237,1) 100%)'}} >
+      <AppBar position="static" style={{height: '7vh', boxShadow: "none", background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 82%,rgba(237,237,237,1) 100%)'}} >
         <Toolbar style={{minHeight: 30}} >
           <IconButton edge="start" onClick={toggleDrawer} >
             <MenuIcon />
@@ -79,7 +79,7 @@ export default function NavBar() {
               justifyContent: 'center',
           }}>
             <Avatar
-              style={{margin: 8}} 
+              style={{margin: 5, width: 35, height: 35}} 
               alt="User" 
               src="https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg"
             />

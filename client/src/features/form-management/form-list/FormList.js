@@ -44,7 +44,7 @@ function FormList({formList, dispatch}) {
     <MUIDataTable
     title={"Form List"}
     data={formList.map((form, index) => 
-      [form.title, form.creatorId, form.timestamp_modified, form.isPublic ? 'Public' : 'Private', <MoreButton index={index}/>])}
+      [form.title, form.creatorId, form.timestampModified, form.isPublic ? 'Public' : 'Private', <MoreButton index={index}/>])}
     columns={['Name','Created by','Last edited','Status',{name: 'More', options: {filter: false, sort: false}}]}
     options={{
       print: false,

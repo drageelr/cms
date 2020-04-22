@@ -10,6 +10,7 @@ import RequestList from './features/request-management/request-list/RequestList'
 import LoginPage from './features/account-settings/LoginPage'
 import CCASettingsHome from './features/account-settings/CCASettingsHome'
 import FormList from './features/form-management/form-list/FormList'
+import FormViewer from './features/form-management/form-viewer/FormViewer'
 
 const appTheme = createMuiTheme({
   palette: {
@@ -40,7 +41,7 @@ export default function App() {
       <ThemeProvider theme={appTheme}>
         <NavBar/>
           <Switch> 
-            <Route path="/" exact component={FormList}/>
+            <Route path="/" exact component={FormViewer}/>
             <Route path="/form-maker" component={FormMaker}/>
             <Route path="/request-list" component={RequestList}/>
             <Route path="/task-manager" component={TaskManager}/>
