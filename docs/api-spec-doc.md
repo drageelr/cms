@@ -24,10 +24,14 @@
 |1|Create CCA Account|Creates an account for a CCA Member|`/api/account/cca/create-account`|`{firstName*: "String", lastName*: "String", email*: "String", password*: "String", picture: "String", permissions: "String"}`|POST|`{}`|CCA|TBD|
 |2|Edit CCA Account|Edits an account of a CCA Member|`/api/account/cca/edit-account`|`{firstName: "String", lastName: "String", email: "String", password: "String", picture: "String", permissions: "String"}`|PUT|`{}`|CCA|TBD|
 |3|Delete CCA Account|Deletes an account of a CCA Member|`/api/account/cca/delete-account`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
-|4|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{nameInitials*: "String", name*: "String", email*: "String", password*: "String", emailPresident*: "String", emailPatron*: "String"}`|POST|`{}`|CCA|TBD|
-|5|Edit Society Account|Edits an account of a Society|`/api/account/society/edit-account`|`{nameInitials: "String", nameSociety: "String", emailSociety: "String", password: "String", emailPresident: "String", emailPatron: "String"}`|PUT|`{}`|CCA|TBD|
-|6|Delete Society Account|Deletes an account of a Society|`/api/account/society/delete-account`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
-|7|Change Society Password|Changes the password of a Society Account|`/api/account/society/change-password`|`{passwordPrevious*: "String", passwordNew*: "String"}`|PUT|`{}`|Society|TBD|
+|4|Get CCA Account List|Fetches the list of all existing CCA Member Accounts|`/api/account/cca/cca-list`|`{}`|GET|`{ccaAccountList: [{firstName: "String", lastName: "String", email: "String", picture: "String", permissions: "String"}]}`|CCA|TBD|
+|5|Change CCA Password|Changes the password of a CCA Member|`/api/account/cca/change-password`|`{passwordPrevious*: "String", passwordNew*: "String"}`|PUT|`{}`|CCA|TBD|
+|6|Change CCA Picture|Changes the picture of a CCA Member|`/api/account/cca/change-password`|`{picture*: "String"}`|PUT|`{}`|CCA|TBD|
+|7|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{nameInitials*: "String", name*: "String", email*: "String", password*: "String", emailPresident*: "String", emailPatron*: "String"}`|POST|`{}`|CCA|TBD|
+|8|Edit Society Account|Edits an account of a Society|`/api/account/society/edit-account`|`{nameInitials: "String", nameSociety: "String", emailSociety: "String", password: "String", emailPresident: "String", emailPatron: "String"}`|PUT|`{}`|CCA|TBD|
+|9|Delete Society Account|Deletes an account of a Society|`/api/account/society/delete-account`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
+|10|Get Society Account List|Fetches the list of all existing Society Member Accounts|`/api/account/society/society-list`|`{}`|GET|`{societyAccountList: [{nameInitials: "String", nameSociety: "String", emailSociety: "String"}]}`|CCA|TBD|
+|11|Change Society Password|Changes the password of a Society Account|`/api/account/society/change-password`|`{passwordPrevious*: "String", passwordNew*: "String"}`|PUT|`{}`|Society|TBD|
 
 ### 3. Form Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of forms.*
