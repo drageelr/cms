@@ -12,13 +12,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Container, Box, Grid} from '@material-ui/core'
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(2),
-    left: '30%',
-  },
   drawerPaper: {
     backgroundColor: theme.palette.primary.main,
   },
@@ -59,47 +52,54 @@ export default function NavBar() {
 
   return (
     <div>
-      <AppBar position="static" style={{height: '7vh', boxShadow: "none", background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 82%,rgba(237,237,237,1) 100%)'}} >
+      <AppBar position="static" style={{height: 45, boxShadow: "none", background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 82%,rgba(237,237,237,1) 100%)'}} >
         <Toolbar style={{minHeight: 30}} >
-          <IconButton edge="start" onClick={toggleDrawer} >
-            <MenuIcon />
-          </IconButton>
-          <Box display='flex' flexDirection='row' style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
-            <DonutSmallIcon color="primary" fontSize='large' style={{marginTop: 4, paddingRight: 5}}/>
-            <Typography>
-              <Box color="black" fontSize={26} fontWeight={600}>
-                {"CMS"}
-              </Box>
-            </Typography>
-          </Box>
-          <Container style={{
-              marginLeft: '75%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-          }}>
-            <Avatar
-              style={{margin: 5, width: 35, height: 35}} 
-              alt="User" 
-              src="https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg"
-            />
-            <Typography>
-              <Box color="black" fontWeight={600} m={1}>
-                {"Farrukh Rasool"}
-              </Box>
-            </Typography>
-            <Link to='settings'>
-              <IconButton edge="end" style={{padding: 10}}>
-                <SettingsIcon/>
+          <Grid container direction='row' justify="space-between" alignItems="center">
+            <Grid item>
+              <IconButton edge="start" onClick={toggleDrawer} >
+                <MenuIcon />
               </IconButton>
-            </Link>
-            <Link to='/'>
-              <IconButton  edge="end" style={{padding: 10}}>
-                <ExitToAppIcon />
-              </IconButton>
-            </Link>
-          </Container>
-        
+            </Grid>
+
+          
+            <Grid item display='flex' flexDirection='row' style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
+              <Grid container>
+                <Grid item>
+                  <DonutSmallIcon color="primary" fontSize='large' style={{marginTop: 4, paddingRight: 5}}/>
+                </Grid>
+                <Grid item>
+                  <Typography>
+                    <Box color="black" fontSize={26} fontWeight={600}>
+                      {"CMS"}
+                    </Box>
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item style={{ display: 'flex', alignItems: 'center'}}>
+              <Avatar
+                style={{margin: 5, width: 35, height: 35}} 
+                alt="User" 
+                src="https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg"
+              />
+              <Typography>
+                <Box color="black" fontWeight={600} m={1}>
+                  {"Farrukh Rasool"}
+                </Box>
+              </Typography>
+              <Link to='settings'>
+                <IconButton edge="end" style={{padding: 10}}>
+                  <SettingsIcon/>
+                </IconButton>
+              </Link>
+              <Link to='/'>
+                <IconButton  edge="end" style={{padding: 10}}>
+                  <ExitToAppIcon />
+                </IconButton>
+              </Link>
+            </Grid>
+          </Grid>
         </Toolbar>
       </AppBar>
       <Drawer open={drawerOpen} onClose={toggleDrawer} classes={{paper: classes.drawerPaper}}>
