@@ -91,6 +91,14 @@ router.post(
   accountController.changeSocietyPassword
 );
 
+// API 2.9: Change Picture (CCA)
+router.post(
+  '/cca/change-picture',
+  jwt.verify,
+  validateUserAccess,
+  validate(accountValidation.changeCCAPicture, { keyByField: true }),
+  accountController.changeCCAPicture
+);
 
 // Export router
 module.exports = router;

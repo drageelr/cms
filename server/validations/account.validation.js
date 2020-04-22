@@ -89,3 +89,10 @@ exports.changePassword = {
     passwordNew: Joi.string().regex(/[a-zA-Z0-9]{8,30}/),
   })
 };
+
+// Export API 2.9 Validation Object:
+exports.changeCCAPicture = {
+  body: Joi.object({
+    picture: Joi.string().required()
+  })
+};

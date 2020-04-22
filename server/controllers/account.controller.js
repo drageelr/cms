@@ -279,3 +279,24 @@ exports.changeSocietyPassword = async (req, res, next) => {
   }
 }
 
+/**
+* Changes the picture of a CCA
+* account.
+*/
+exports.changeCCAPicture = async (req, res, next) => {
+  // Variables:
+  let params = req.body;
+
+  try {
+      await CCA.findByIdAndUpdate(params.userObj._id, {picture: params.picture});
+
+      // success response
+      res.json({
+        statusCode: 203,
+        statusName: httpStatus.getName(203),
+        message: "Picture changed successfully"
+      });
+  } catch (err) {
+    next(err);
+  }
+}
