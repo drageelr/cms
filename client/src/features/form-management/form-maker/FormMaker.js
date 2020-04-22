@@ -21,7 +21,7 @@ export const useStyles = makeStyles((theme) => ({
 function FormMaker({formTemplate}) {
   const { title, isPublic, sections, sectionsOrder, componentsOrder, components, itemsOrder, items } = formTemplate
   const classes = useStyles()
-  
+
   return (
     <div>
       <Properties formTemplate = {formTemplate} />

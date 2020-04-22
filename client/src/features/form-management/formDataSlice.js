@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
-  formId: 0, //form id
+  id: 0, //form data id
   formDataId: 0,
   userId: 0, //user id of the user that submitted
   itemsData: [ //only item data with ids

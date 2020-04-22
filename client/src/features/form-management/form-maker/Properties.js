@@ -1,6 +1,5 @@
 import React from 'react'
 import { makeStyles, List, Divider, Grid, Paper, Button } from '@material-ui/core'
-import SaveIcon from '@material-ui/icons/Save'
 import SectionProperties from './SectionProperties'
 import ComponentProperties from './ComponentProperties'
 import ArrowDropDownCircleIcon from '@material-ui/icons/ArrowDropDownCircle'

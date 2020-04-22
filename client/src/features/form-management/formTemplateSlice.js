@@ -4,9 +4,10 @@ import { createSlice } from "@reduxjs/toolkit"
 // but is done so to set aside the rigorous business logic required
 
 const initialState = {
-  formId: 0,
+  id: 0,
   isPublic: false,
   title: "Event Approval",
+  creatorId: 1,
   sectionsOrder: [0, 1], //ordered list of section Ids (any Ids are not unique to any other forms)
   sections: {
     0:"Email Address", 
