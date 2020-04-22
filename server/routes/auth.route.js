@@ -15,15 +15,15 @@ var authController = require('../controllers/auth.controller');
 
 // API 1.1: CCA Login:
 router.post(
-  '/cca-login',
-  validate(authValidation.ccaLoginValidation, {keyByField: true}),
+  '/cca/login',
+  validate(authValidation.loginValidation, {keyByField: true}),
   authController.ccaLogin
 );
 
 // API 1.2: Society Login:
 router.post(
-  '/society-login', 
-  validate(authValidation.societyLoginValidation, {keyByField: true}),
+  '/society/login', 
+  validate(authValidation.loginValidation, {keyByField: true}),
   authController.societyLogin
 );
 

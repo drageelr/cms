@@ -13,6 +13,7 @@ var httpStatus = require('../services/http-status');
 
 // Others:
 var customError = require('../errors/errors');
+var helperFuncs = require('../services/helper-funcs');
 
 /*
   ------------------ CODE BODY --------------------
@@ -36,8 +37,9 @@ exports.createCCAAccount = async (req, res, next) => {
 
     if (existingCCA) {
       // throw duplicate user error
+      throw new customError.DuplicateUserError("cca user already exists");
     } else {
-      let reqCCA = new CCA({firstName: params.firstName, lastName: params.lastName, email: params.email, password: params.password, picture: params.picture, permissions: params.permissions});
+      let reqCCA = new CCA({firstName: params.firstName, lastName: params.lastName, email: params.email, password: params.password, picture: params.picture, permissions: params.permissions, active: true});
       await reqCCA.save();
 
       res.json({
@@ -66,11 +68,17 @@ exports.createSocietyAccount = async (req, res, next) => {
 
     if (existingSociety){
       // throw duplicate error
+      throw new customError.DuplicateUserError("society user already exists");
     } else {
-      let reqSociety = new Society({nameInitials: params.nameInitials, name: params.name, email: params.email, password: params.password, emailPresident: params.emailPresident, emailPatron: params.emailPatron});
+      let reqSociety = new Society({nameInitials: params.nameInitials, name: params.name, email: params.email, password: params.password, emailPresident: params.emailPresident, emailPatron: params.emailPatron, active: true});
       await reqSociety.save();
 
-      res.json({status: 201, statusName: httpStatus.getName(201), message: "Account Creation Successful!", id: reqSociety.id});
+      res.json({
+        status: 201,
+        statusName: httpStatus.getName(201),
+        message: "Account Creation Successful",
+        societyId: reqSociety.societyId
+      });
     }
   } catch (err) {
     next(err);
@@ -87,7 +95,13 @@ exports.editCCAAccount = async (req, res, next) => {
   let params = req.body;
 
   try {
-    let reqCCA = await CCA.findOneAndUpdate({ccaId: params.ccaId}, {firstName: params.firstName, lastName: params.lastName, email: params.email, password: params.password, picture: params.picture, permissions: params.permissions});
+    let ccaObject = helperFuncs.duplicateObject(params, ["email", "password", "role", "firstName", "lastName", "picture", "active"], true);
+    if (params.permissions) {
+      let reqPermissions = helperFuncs.duplicateObject(params.permissions, [], true, "permissions.");
+      ccaObject.$set = reqPermissions;
+    }
+
+    let reqCCA = await CCA.findOneAndUpdate({ccaId: params.ccaId}, ccaObject);
 
     if (reqCCA) {
       // success response
@@ -98,6 +112,7 @@ exports.editCCAAccount = async (req, res, next) => {
       });
     } else {
       // throw user not found error
+      throw new customError.UserNotFoundError("cca user not found");
     }
   } catch (err) {
     next(err);
@@ -114,7 +129,9 @@ exports.editSocietyAccount = async (req, res, next) => {
   let params = req.body;
 
   try {
-    let reqSociety = await Society.findOneAndUpdate({societyId: params.socId}, {nameInitials: params.nameInitials, name: params.name, email: params.email, password: params.password, emailPresident: params.emailPresident, emailPatron: params.emailPatron});
+    let societyObject = helperFuncs.duplicateObject(params, ["email", "password", "name", "nameInitials", "presidentEmail", "patronEmail", "active"], true);
+
+    let reqSociety = await Society.findOneAndUpdate({societyId: params.socId}, societyObject);
   
     if (reqSociety){
       // success response
@@ -123,56 +140,9 @@ exports.editSocietyAccount = async (req, res, next) => {
         statusName: httpStatus.getName(203),
         message: "Account Successfully Edited"
       });
-    }
-  } catch (err) {
-    next(err);
-  }
-}
-
-/**
- * Deletes the existing account of a CCA member,
- * and throws an error if the user is not found.
- */
-exports.deleteCCAAccount = async (req, res, next) => {
-  // Variables:
-  let params = req.body;
-
-  try {
-    let reqCCA = await CCA.findOneAndDelete({ccaId: params.ccaId});
-
-    if (reqCCA){
-      // success response
-      res.json({
-        statusCode: 203,
-        statusName: httpStatus.getName(203),
-        message: "Account Successfully Deleted"
-      });
     } else {
-      // throw user not found error 
-    }
-  } catch (err) {
-    next(err);
-  } 
-}
-
-/**
-* Deletes the existing account of a Society, 
-* and throws an error if the user is not found. 
-*/
-exports.deleteSocietyAccount = async (req, res, next) => {
-  // Variables:
-  let params = req.body;
-
-  try{
-    let reqSociety = await Society.findOneAndDelete({societyId: params.societyId});
-
-    if (reqSociety) {
-      // success response
-      res.json({
-        statusCode: 203,
-        statusName: httpStatus.getName(203),
-        message: "Account Successfully Deleted"
-      });
+      // throw user not found error
+      throw new customError.UserNotFoundError("society user not found");
     }
   } catch (err) {
     next(err);
@@ -189,19 +159,14 @@ exports.getCCAList = async (req, res, next) => {
   let params = req.body;
 
   try{
-    let reqCCAList = await CCA.find({}, 'ccaId firstName lastName email picture permissions');
+    let reqCCAList = await CCA.find({}, '-_id -password');
     
     if (reqCCAList.length) {
       let userList = [];
 
       for (let i = 0; i < reqCCAList.length; i++) {
-        userList[i] = {};
-        userList[i].ccaId = reqCCAList[i].ccaId;
-        userList[i].firstName = reqCCAList[i].firstName;
-        userList[i].lastName = reqCCAList[i].lastName;
-        userList[i].email = reqCCAList[i].email;
-        userList[i].picture = reqCCAList[i].picture;
-        userList[i].permissions = reqCCAList[i].permissions; 
+        userList[i] = helperFuncs.duplicateObject(reqCCAList[i], ["ccaId", "email", "role", "firstName", "lastName", "picture", "active"]);
+        userList[i].permissions = helperFuncs.duplicateObject(reqCCAList[i].permissions);
       }
 
       // success response
@@ -213,6 +178,7 @@ exports.getCCAList = async (req, res, next) => {
       });
     } else {
       // throw users not found error
+      throw new customError.UserNotFoundError("no cca users exist");
     }
   } catch (err) {
     next(err);
@@ -229,17 +195,13 @@ exports.getSocietyList = async (req, res, next) => {
   let params = req.body;
 
   try{
-    let reqSocietyList = await Society.find({}, 'socId nameInitials nameSociety emailSociety');
-    if (reqSocietyList.length)
-    {
+    let reqSocietyList = await Society.find({}, '-_id -password');
+    
+    if (reqSocietyList.length) {
       let userList = [];
 
-      for (let i = 0; i<reqSocietyList.length; i++){
-        userList[i] = {};
-        userList[i].socId = reqSociety[i].socId;
-        userList[i].nameInitials = reqSociety[i].nameInitials;
-        userList[i].nameSociety = reqSociety[i].nameSociety;
-        userList[i].emailSociety = reqSociety[i].emailSociety;
+      for (let i = 0; i < reqCCAList.length; i++) {
+        userList[i] = helperFuncs.duplicateObject(reqCCAList[i], ["societyId", "email", "name", "nameInitials", "presidentEmail", "patronEmail", "active"]);
       }
 
       // success response
@@ -251,6 +213,7 @@ exports.getSocietyList = async (req, res, next) => {
       });
     } else {
       // throw user not found error
+      throw new customError.UserNotFoundError("no society users exist");
     }
   } catch (err){
     next(err);
@@ -279,6 +242,7 @@ exports.changeCCAPassword = async (req, res, next) => {
       });
     } else {
       // throw bad request error - invalid password
+      throw new customError.AuthenticationError("invalid password");
     }
 
   } catch (err) {
@@ -307,7 +271,8 @@ exports.changeSocietyPassword = async (req, res, next) => {
         message: "Password Successfully Changed"
       });
     } else {
-      // throw bad request error - invalid passwod
+      // throw bad request error - invalid password
+      throw new customError.AuthenticationError("invalid password");
     }
   } catch (err) {
     next(err);

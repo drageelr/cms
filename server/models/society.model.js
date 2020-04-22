@@ -43,6 +43,10 @@ const societySchema = new Schema({
   patronEmail: {
     type: String,
     required: true
+  },
+  active: {
+    type: Boolean,
+    required: true
   }
 })
 

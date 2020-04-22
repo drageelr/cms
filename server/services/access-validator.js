@@ -22,11 +22,12 @@ var customError = require('../errors/errors');
 const userAccess = {
   // 2. User Management API "account.route.js":
   "/api/account/cca/create-account": ["cca"],
-  "/api/account/cca/edit-account": ["cca"],
-  "/api/account/cca/delete-account": ["cca"],
   "/api/account/society/create-account": ["cca"],
+  "/api/account/cca/edit-account": ["cca"],
   "/api/account/society/edit-account": ["cca"],
-  "/api/account/society/delete-account": ["cca"],
+  "/api/account/cca/account-list": ["cca"],
+  "/api/account/society/account-list": ["cca"],
+  "/api/account/cca/change-password": ["cca"],
   "/api/account/society/change-password": ["soc"],
 
   // 3. Form Management API "form.route.js":
@@ -51,12 +52,12 @@ const userAccess = {
 const ccaAccess = {
   // 2. User Management API "account.route.js":
   "/api/account/cca/create-account": "ccaCRUD",
-  "/api/account/cca/edit-account": "ccaCRUD",
-  "/api/account/cca/delete-account": "ccaCRUD",
   "/api/account/society/create-account": "societyCRUD",
+  "/api/account/cca/edit-account": "ccaCRUD",
   "/api/account/society/edit-account": "societyCRUD",
-  "/api/account/society/delete-account": "societyCRUD",
-
+  "/api/account/cca/account-list": "ccaCRUD",
+  "/api/account/society/account-list": "societyCRUD",
+  
   // 3. Form Management API "form.route.js":
   "/api/form/create": "accessFormMaker",
   "/api/form/edit": "accessFormMaker",
@@ -90,7 +91,7 @@ exports.validateUserAccess = (req, res, next) => {
     if (accessGranted) {
       next();
     } else {
-      throw new customError.ForbiddenAccessError("forbidden access to resource");
+      throw new customError.ForbiddenAccessError("forbidden access to resource", "RouteError");
     }
   }
 }
@@ -104,7 +105,7 @@ exports.validateCCAAccess = async (req, res, next) => {
     if(reqCCA.permissions[access]) {
       next();
     } else {
-      throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource");
+      throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
     }
   } else {
     next();

@@ -35,7 +35,11 @@ exports.errorHandler = (err, req, res, next) => {
         details: err.details
       }
     });
-  } else if (err instanceof customError.TokenError || err instanceof customError.AuthenticationError || err instanceof customError.ForbiddenAccessError) {
+  } else if (err instanceof customError.TokenError ||
+    err instanceof customError.AuthenticationError ||
+    err instanceof customError.ForbiddenAccessError ||
+    err instanceof customError.DuplicateUserError ||
+    err instanceof customError.UserNotFoundError) {
     res.json({
       statusCode: err.statusCode,
       statusName: httpStatus.getName(err.statusCode),

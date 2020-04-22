@@ -15,6 +15,49 @@ const Schema = mongoose.Schema
 */
 
 // CCA Schema:
+const permissionsSchema = new Schema({
+  societyCRUD: {
+    type: Boolean,
+    required: true
+  },
+  ccaCRUD: {
+    type: Boolean,
+    required: true
+  },
+  accessFormMaker: {
+    type: Boolean,
+    required: true
+  },
+  createReqTask: {
+    type: Boolean,
+    required: true
+  },
+  createCustomTask: {
+    type: Boolean,
+    required: true
+  },
+  createTaskStatus: {
+    type: Boolean,
+    required: true
+  },
+  archiveTask: {
+    type: Boolean,
+    required: true
+  },
+  unarchiveTask: {
+    type: Boolean,
+    required: true
+  },
+  setFormStatus: {
+    type: Boolean,
+    required: true
+  },
+  addCCANote: {
+    type: Boolean,
+    required: true
+  }
+})
+
 const ccaSchema = new Schema({
   ccaId: {
     type: Number,
@@ -43,19 +86,10 @@ const ccaSchema = new Schema({
   picture: {
     type: String
   },
-  permissions: {
-    type: {
-      societyCRUD: { type: Boolean },
-      ccaCRUD: { type: Boolean },
-      accessFormMaker: { type: Boolean },
-      createReqTask: { type: Boolean },
-      createCustomTask: { type: Boolean },
-      createTaskStatus: { type: Boolean },
-      archiveTask: { type: Boolean },
-      unarchiveTask: { type: Boolean },
-      setFormStatus: { type: Boolean },
-      addCCANote: { type: Boolean }
-    }
+  permissions: permissionsSchema,
+  active: {
+    type: Boolean,
+    required: true
   }
 })
 

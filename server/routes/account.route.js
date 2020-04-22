@@ -1,0 +1,96 @@
+'use strict'
+/*
+  ------------------ DEPENDENCIES --------------------
+*/
+
+// Others:
+var router = require('express').Router();
+var validate = require('express-validation').validate;
+var jwt = require('../services/jwt');
+var accountValidation = require('../validations/account.validation');
+var accountController = require('../controllers/account.controller');
+var { validateUserAccess, validateCCAAccess } = require('../services/access-validator');
+
+/*
+  ------------------ CODE BODY --------------------
+*/
+
+// API 2.1: Create CCA Account
+router.post(
+  '/cca/create-account',
+  // jwt.verify,
+  // validateUserAccess,
+  // validateCCAAccess,
+  validate(accountValidation.ccaCreateAccount, { keyByField: true }),
+  accountController.createCCAAccount
+);
+
+// API 2.2: Create Society Account
+router.post(
+  '/society/create-account',
+  jwt.verify,
+  validateUserAccess,
+  validateCCAAccess,
+  validate(accountValidation.societyCreateAccount, { keyByField: true }),
+  accountController.createSocietyAccount
+);
+
+// API 2.3: Edit CCA Account
+router.post(
+  '/cca/edit-account',
+  jwt.verify,
+  validateUserAccess,
+  validateCCAAccess,
+  validate(accountValidation.ccaEditAccount, { keyByField: true }),
+  accountController.editCCAAccount
+);
+
+// API 2.4: Edit Society Account
+router.post(
+  '/society/edit-account',
+  jwt.verify,
+  validateUserAccess,
+  validateCCAAccess,
+  validate(accountValidation.societyEditAccount, { keyByField: true }),
+  accountController.editSocietyAccount
+);
+
+// API 2.5: Get CCA Account List
+router.post(
+  '/cca/account-list',
+  jwt.verify,
+  validateUserAccess,
+  validateCCAAccess,
+  accountController.getCCAList
+);
+
+// API 2.6: Get Society Account List
+router.post(
+  '/society/account-list',
+  jwt.verify,
+  validateUserAccess,
+  validateCCAAccess,
+  accountController.getSocietyList
+);
+
+// API 2.7: Change Password (CCA)
+router.post(
+  '/cca/change-password',
+  jwt.verify,
+  validateUserAccess,
+  validate(accountValidation.changePassword, { keyByField: true }),
+  accountController.changeCCAPassword
+);
+
+// API 2.8: Change Password (Society)
+router.post(
+  '/society/change-pasword',
+  jwt.verify,
+  validateUserAccess,
+  validate(accountValidation.changePassword, { keyByField: true }),
+  accountController.changeSocietyPassword
+);
+
+
+// Export router
+module.exports = router;

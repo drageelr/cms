@@ -72,19 +72,29 @@ exports.verify = async (req, res, next) => {
   let decodedObj = decodeToken(token);
   if (decodedObj.err == undefined) {
     if (decodedObj.type == 'soc' || decodedObj.type == 'pat', decodedObj.type == 'pres') {
-      let reqSociety = await Society.findById(decodedObj._id, 'id');
+      let reqSociety = await Society.findById(decodedObj._id, 'active');
       if (reqSociety) {
-        req.body.userObj = {_id: decodedObj._id, type: decodedObj.type};
-        next();
+        if (reqSociety.active) {
+          req.body.userObj = {_id: decodedObj._id, type: decodedObj.type};
+          next();
+        } else {
+          // Raise user not active error
+          throw new customError.ForbiddenAccessError("user is not active", "UserNotActiveError");
+        }
       } else {
         // Raise "TokenError" - user not found
         throw new customError.TokenError(404, "Invalid token!", "user not found");
       }
     } else if (decodedObj.type == 'cca') {
-      let reqCCA = await CCA.findById(decodedObj._id, 'id');
+      let reqCCA = await CCA.findById(decodedObj._id, 'active');
       if (reqCCA) {
-        req.body.userObj = {_id: decodedObj._id, type: decodedObj.type};
-        next();
+        if (reqCCA.active) {
+          req.body.userObj = {_id: decodedObj._id, type: decodedObj.type};
+          next();
+        } else {
+          // Raise user not active error
+          throw new customError.ForbiddenAccessError("user is not active", "UserNotActiveError");
+        }
       } else {
         // Raise "TokenError" - user not found
         throw new customError.TokenError(404, "Invalid token!", "user not found");

@@ -45,12 +45,13 @@ class AuthenticationError extends Error {
 
   /**
   * Creates an AuthenticationError object.
+  * @param {string} errDetails - Details of the error.
   */
-  constructor() {
+  constructor(errDetails) {
     this.name = "AuthenticationError";
     this.statusCode = 401;
     this.message = "Invalid credentials!";
-    this.details = "invalid username or password";
+    this.details = errDetails;
     this.subName = "N/A";
   }
 }
@@ -61,8 +62,9 @@ class ForbiddenAccessError extends Error {
   /**
   * Creates an ForbiddenAccessError object.
   * @param {string} errDetails - Details of the error.
+  * @param {string} errSubName - Sub name of the error. "RouteError", "PermissionError", "UserNotActiveError"
   */
-  constructor(errDetails) {
+  constructor(errDetails, errSubName) {
     this.name = "ForbiddenAccessError";
     this.statusCode = 403;
     this.message = "You don't have the necessary permission for this resource!";
@@ -71,8 +73,39 @@ class ForbiddenAccessError extends Error {
   }
 }
 
+// Duplicate User Error Class:
+class DuplicateUserError extends Error {
+
+  /**
+  * Creates a DuplicateUserError object.
+  */
+  constructor(errDetails) {
+    this.name = "DuplicateUserError";
+    this.statusCode = 400;
+    this.message = "User already exists!";
+    this.details = errDetails;
+    this.subName = "N/A";
+  }
+}
+
+// User Not Found Error Class:
+class UserNotFoundError extends Error {
+
+  /**
+  * Creates a UserNotFoundError object.
+  */
+  constructor(errDetails) {
+    this.name = "UserNotFoundError";
+    this.statusCode = 404;
+    this.message = "User not found!";
+    this.details = errDetails;
+    this.subName = "N/A";
+  }
+}
 
 // Export Classes:
 module.exports.TokenError = TokenError;
 module.exports.AuthenticationError = AuthenticationError;
 module.exports.ForbiddenAccessError = ForbiddenAccessError;
+module.exports.DuplicateUserError = DuplicateUserError;
+module.exports.UserNotFoundError = UserNotFoundError;
