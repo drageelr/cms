@@ -10,6 +10,12 @@ import RequestList from './features/request-management/request-list/RequestList'
 import LoginPage from './features/account-settings/LoginPage'
 import CCASettingsHome from './features/account-settings/CCASettingsHome'
 
+
+import CCAAccountsPanel from './features/account-settings/cca-panel/CCAAccountsPanel'
+import SocietyAccountsPanel from './features/account-settings/SocietyAccountsPanel'
+import TaskStatusPanel from './features/account-settings/task-status-panel/TaskStatusPanel'
+import ChangePassword from './features/account-settings/ChangePassword'
+
 const appTheme = createMuiTheme({
   palette: {
     primary: blue,
@@ -39,6 +45,10 @@ export default function App() {
             <Route path="/request-list" component={RequestList}/>
             <Route path="/task-manager" component={TaskManager}/>
             <Route path="/settings" component={CCASettingsHome}/>
+            <Route path="/ccapanel" exact component={CCAAccountsPanel}/>
+            <Route path="/changepassword" exact component={ChangePassword}/>
+            <Route path="/societypanel" exact component={SocietyAccountsPanel}/>
+            <Route path="/taskstatuspanel" exact component={TaskStatusPanel}/>          
           </Switch>
         </div>
       </ThemeProvider>
