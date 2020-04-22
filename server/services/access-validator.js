@@ -19,7 +19,7 @@ var customError = require('../errors/errors');
 */
 
 // Constants:
-const access = {
+const userAccess = {
   // 2. User Management API "account.route.js":
   "/api/account/cca/create-account": ["cca"],
   "/api/account/cca/edit-account": ["cca"],
@@ -48,12 +48,31 @@ const access = {
   "/api/form-submission/update-status-pp": ["pres", "pat"],  
 };
 
+const ccaAccess = {
+  // 2. User Management API "account.route.js":
+  "/api/account/cca/create-account": "ccaCRUD",
+  "/api/account/cca/edit-account": "ccaCRUD",
+  "/api/account/cca/delete-account": "ccaCRUD",
+  "/api/account/society/create-account": "societyCRUD",
+  "/api/account/society/edit-account": "societyCRUD",
+  "/api/account/society/delete-account": "societyCRUD",
+
+  // 3. Form Management API "form.route.js":
+  "/api/form/create": "accessFormMaker",
+  "/api/form/edit": "accessFormMaker",
+  "/api/form/delete": "accessFormMaker",
+
+  // 4. Request Management API "submission.route.js":
+  "/api/form-submission/update-status-cca": "setFormStatus",
+  "/api/form-submission/add-note-cca": "addCCANote", 
+};
+
 /*
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
-exports.validateAccess = (req, res, next) => {
-  let accessList = access[req.originalUrl];
+exports.validateUserAccess = (req, res, next) => {
+  let accessList = userAccess[req.originalUrl];
   if (accessList) {
     let accessGranted = false;
     
@@ -73,5 +92,21 @@ exports.validateAccess = (req, res, next) => {
     } else {
       throw new customError.ForbiddenAccessError("forbidden access to resource");
     }
+  }
+}
+
+exports.validateCCAAccess = async (req, res, next) => {
+  let reqCCA = await CCA.findById(req.body.userObj._id, 'role permissions');
+
+  if (reqCCA.role != "admin") {
+    let access = ccaAccess[req.originalUrl];
+    
+    if(reqCCA.permissions[access]) {
+      next();
+    } else {
+      throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource");
+    }
+  } else {
+    next();
   }
 }

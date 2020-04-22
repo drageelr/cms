@@ -5,6 +5,7 @@
 
 // Modules:
 var mongoose = require('mongoose');
+var { autoIncrement } = require('mongoose-plugin-autoinc');
 
 // Others:
 const Schema = mongoose.Schema
@@ -15,9 +16,9 @@ const Schema = mongoose.Schema
 
 // Society Schema:
 const societySchema = new Schema({
-  id: {
+  societyId: {
     type: Number,
-    unique: true
+    // unique: true
   },
   email: {
     type: String,
@@ -44,6 +45,9 @@ const societySchema = new Schema({
     required: true
   }
 })
+
+// Attach autoIncrement Plugin
+societySchema.plugin(autoIncrement, {model: 'Society', field: 'societyId', startAt: 1, incrementBy: 1});
 
 // Export Society Schema
 module.exports = mongoose.model('Society', societySchema)
