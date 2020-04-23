@@ -1,9 +1,11 @@
 import React, {useState} from 'react'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteIcon from '@material-ui/icons/Delete'
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import {Grid, IconButton} from '@material-ui/core'
 import {useDispatch} from 'react-redux'
-import { deleteFormPart } from '../formTemplateSlice'
+import { deleteFormPart, moveFormPart } from '../formTemplateSlice'
 import { setPropertyWindow } from '../propertiesDataSlice'
 
 /**
@@ -19,20 +21,19 @@ import { setPropertyWindow } from '../propertiesDataSlice'
 export default function EditDeleteBar({renderTitle, type, id, parentId}) {
   const [hovered, setHovered] = useState(false)
   const dispatch = useDispatch()
-  
+  const isItem = type.substring(0, 4) === 'item'
+
   function handleDeleteFormPart() {
-    if (type.substring(0, 4) === 'item'){
-      dispatch(deleteFormPart({type:'item', id, parentId}))
-    }
-    else {
-      dispatch(deleteFormPart({type, id, parentId}))
-    }
+    dispatch(deleteFormPart(isItem ? {type:'item', id, parentId} : {type, id, parentId}))
   }
 
   function handleEditFormPart() {
     dispatch(setPropertyWindow({propertyType: type, propertyAddMode: false, propertyId: id, parentId}))
   }
 
+  function handleMoveFormPart(offset) {
+    dispatch(moveFormPart(isItem ? {type:'item', id, parentId, offset} : {type, id, parentId, offset}))
+  }
 
   return (
     <Grid container direction="row" justify="space-between" alignItems="center">
@@ -41,6 +42,12 @@ export default function EditDeleteBar({renderTitle, type, id, parentId}) {
       </Grid>
       <Grid item onMouseEnter={()=>setHovered(true)} onMouseLeave={()=>setHovered(false)} style={{padding: 7}}>
         <div style={{visibility: hovered ? 'visible' : 'hidden'}}>
+          <IconButton onClick={()=>handleMoveFormPart(-1)} size='small'>
+            <ArrowUpwardIcon fontSize='small'/>
+          </IconButton>
+          <IconButton onClick={()=>handleMoveFormPart(1)} size='small'>
+            <ArrowDownwardIcon fontSize='small'/>
+          </IconButton>
           <IconButton onClick={handleEditFormPart} size='small'>
             <EditIcon fontSize='small'/>
           </IconButton>

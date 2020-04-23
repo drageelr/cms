@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import { Button, Icon, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
   FormControl, FormLabel, FormGroup, FormControlLabel, List, Checkbox, MenuItem, Select, InputLabel} from '@material-ui/core'
 import { useDispatch } from 'react-redux'
-import { setPropertyWindow } from '../propertiesDataSlice'
+import { closePropertiesWindow } from '../propertiesDataSlice'
 import { makeStyles } from '@material-ui/core/styles'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
@@ -32,7 +32,7 @@ export default function ComponentProperties({propertyAddMode, propertyId, parent
   const dispatch = useDispatch()
   
   function closeProperties() {
-    dispatch(setPropertyWindow({propertyType: '', propertyId: ''}))
+    dispatch(closePropertiesWindow())
   }
 
   function toggleDialogOpen() {
