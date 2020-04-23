@@ -78,7 +78,7 @@ function TaskAddButton({columnId, dispatch}) {
             <Button size="small" onMouseDown={handleEditTaskTitle} variant="contained" style={{ color: "white", backgroundColor: "green"}}>
               {reqButtonText}
             </Button>
-            <div style={{marginLeft: 4, display: "flex", aligntItems: "center"}}>
+            <div style={{marginLeft: 4, display: "flex", alignItems: "center"}}>
               <Button size="small" onMouseDown={handleEditTaskTitle} variant="contained" style={{ color: "white", backgroundColor: "green"}}>
                 {cusButtonText}
               </Button>
