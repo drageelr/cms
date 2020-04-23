@@ -7,13 +7,20 @@
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
-exports.duplicateObject = (orgObj, propList = [], ignoreUndefined = false, prefix = "") => {
+exports.duplicateObject = (orgObj, propList = [], ignoreUndefined = false, prefix = "", ignoreList = []) => {
   let copyObj = {};
 
   let keysToCopy = Object.keys(orgObj);
 
   if (propList.length) {
     keysToCopy = propList;
+  }
+
+  if (ignoreList.length) {
+    for (let k of ignoreList) {
+      let index = keysToCopy.indexOf(k);
+      keysToCopy.splice(index, 1);
+    }
   }
 
   if (!ignoreUndefined) {

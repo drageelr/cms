@@ -25,6 +25,7 @@ class TokenError extends Error {
    * @param {string} [sName= undefined] - JsonWebToken module's error class.
    */
   constructor(status, msg, errDetails, sName = undefined) {
+    super();
     this.name = "TokenError";
     this.statusCode = status;
     this.message = msg;
@@ -48,6 +49,7 @@ class AuthenticationError extends Error {
   * @param {string} errDetails - Details of the error.
   */
   constructor(errDetails) {
+    super();
     this.name = "AuthenticationError";
     this.statusCode = 401;
     this.message = "Invalid credentials!";
@@ -65,6 +67,7 @@ class ForbiddenAccessError extends Error {
   * @param {string} errSubName - Sub name of the error. "RouteError", "PermissionError", "UserNotActiveError"
   */
   constructor(errDetails, errSubName) {
+    super();
     this.name = "ForbiddenAccessError";
     this.statusCode = 403;
     this.message = "You don't have the necessary permission for this resource!";
@@ -80,6 +83,7 @@ class DuplicateUserError extends Error {
   * Creates a DuplicateUserError object.
   */
   constructor(errDetails) {
+    super();
     this.name = "DuplicateUserError";
     this.statusCode = 400;
     this.message = "User already exists!";
@@ -95,6 +99,7 @@ class UserNotFoundError extends Error {
   * Creates a UserNotFoundError object.
   */
   constructor(errDetails) {
+    super();
     this.name = "UserNotFoundError";
     this.statusCode = 404;
     this.message = "User not found!";

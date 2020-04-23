@@ -51,6 +51,7 @@ exports.errorHandler = (err, req, res, next) => {
       }
     })
   } else {
+    console.log(err);
     res.json({statusCode: 500, statusName: httpStatus.getName(500), message: "Something went wrong on the server end!"});
   }
 }

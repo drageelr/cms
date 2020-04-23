@@ -39,7 +39,7 @@ exports.createCCAAccount = async (req, res, next) => {
       // throw duplicate user error
       throw new customError.DuplicateUserError("cca user already exists");
     } else {
-      let reqCCA = new CCA({firstName: params.firstName, lastName: params.lastName, email: params.email, password: params.password, picture: params.picture, permissions: params.permissions, active: true});
+      let reqCCA = new CCA({firstName: params.firstName, lastName: params.lastName, email: params.email, password: params.password, picture: params.picture, permissions: params.permissions, active: true, role: params.role});
       await reqCCA.save();
 
       res.json({
@@ -70,7 +70,7 @@ exports.createSocietyAccount = async (req, res, next) => {
       // throw duplicate error
       throw new customError.DuplicateUserError("society user already exists");
     } else {
-      let reqSociety = new Society({nameInitials: params.nameInitials, name: params.name, email: params.email, password: params.password, emailPresident: params.emailPresident, emailPatron: params.emailPatron, active: true});
+      let reqSociety = new Society({nameInitials: params.nameInitials, name: params.name, email: params.email, password: params.password, presidentEmail: params.presidentEmail, patronEmail: params.patronEmail, active: true});
       await reqSociety.save();
 
       res.json({
@@ -131,7 +131,7 @@ exports.editSocietyAccount = async (req, res, next) => {
   try {
     let societyObject = helperFuncs.duplicateObject(params, ["email", "password", "name", "nameInitials", "presidentEmail", "patronEmail", "active"], true);
 
-    let reqSociety = await Society.findOneAndUpdate({societyId: params.socId}, societyObject);
+    let reqSociety = await Society.findOneAndUpdate({societyId: params.societyId}, societyObject);
   
     if (reqSociety){
       // success response
@@ -166,14 +166,14 @@ exports.getCCAList = async (req, res, next) => {
 
       for (let i = 0; i < reqCCAList.length; i++) {
         userList[i] = helperFuncs.duplicateObject(reqCCAList[i], ["ccaId", "email", "role", "firstName", "lastName", "picture", "active"]);
-        userList[i].permissions = helperFuncs.duplicateObject(reqCCAList[i].permissions);
+        userList[i].permissions = helperFuncs.duplicateObject(reqCCAList[i].permissions, ["soceityCRUD", "ccaCRUD", "accessFormMaker", "createReqTask", "createCustomTask", "createTaskStatus", "archiveTask", "unarchiveTask", "setFormStatus", "addCCANote"]);
       }
 
       // success response
       res.json({
         statusCode: 200,
         statusName: httpStatus.getName(200),
-        message: " CCA Account List Retrieved",
+        message: "CCA Account List Retrieved",
         userList: userList
       });
     } else {
@@ -200,8 +200,8 @@ exports.getSocietyList = async (req, res, next) => {
     if (reqSocietyList.length) {
       let userList = [];
 
-      for (let i = 0; i < reqCCAList.length; i++) {
-        userList[i] = helperFuncs.duplicateObject(reqCCAList[i], ["societyId", "email", "name", "nameInitials", "presidentEmail", "patronEmail", "active"]);
+      for (let i = 0; i < reqSocietyList.length; i++) {
+        userList[i] = helperFuncs.duplicateObject(reqSocietyList[i], ["societyId", "email", "name", "nameInitials", "presidentEmail", "patronEmail", "active"]);
       }
 
       // success response
@@ -232,7 +232,7 @@ exports.changeCCAPassword = async (req, res, next) => {
     let reqCCA = await CCA.findById(params.userObj._id, 'password');
 
     if(reqCCA.password == params.passwordCurrent) {
-      await CCA.findByIdAndUpdate(params.userObj._id, {password: params.passwordNew}, 'ccaId');
+      await CCA.findByIdAndUpdate(params.userObj._id, {password: params.passwordNew});
 
       // success response
       res.json({
@@ -262,7 +262,7 @@ exports.changeSocietyPassword = async (req, res, next) => {
     let reqSociety = await Society.findById(params.userObj._id, 'password');
 
     if(reqSociety.password == params.passwordCurrent) {
-      await Society.findByIdAndUpdate(params.userObj._id, {password: params.passwordNew}, 'socId');
+      await Society.findByIdAndUpdate(params.userObj._id, {password: params.passwordNew});
 
       // success response
       res.json({

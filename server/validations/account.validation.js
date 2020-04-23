@@ -13,7 +13,7 @@ var Joi = require('express-validation').Joi;
 // Export API 2.1 Validation Object:
 exports.ccaCreateAccount = {
   body: Joi.object({
-    email: Joi.string().email({tlds: {allow: ['lums.edu.pk']}}).required(),
+    email: Joi.string().email().required(),
     password: Joi.string().regex(/[a-zA-Z0-9]{8,30}/).required(),
     role: Joi.string().regex(/^(admin|member)/).required(),
     firstName: Joi.string().min(1).max(30).required(),
@@ -37,19 +37,20 @@ exports.ccaCreateAccount = {
 // Export API 2.2 Validation Object:
 exports.societyCreateAccount = {
   body: Joi.object({
-    email: Joi.string().email({tlds: {allow: ['lums.edu.pk']}}).required(),
+    email: Joi.string().email().required(),
     password: Joi.string().regex(/[a-zA-Z0-9]{8,30}/).required(),
     name: Joi.string().min(1).max(100).required(),
     nameInitials: Joi.string().min(1).max(10).required(),
-    presidentEmail: Joi.string().email({tlds: {allow: ['lums.edu.pk']}}).required(),
-    patronEmail: Joi.string().email({tlds: {allow: ['lums.edu.pk']}}).required(),
+    presidentEmail: Joi.string().email().required(),
+    patronEmail: Joi.string().email().required(),
   })
 };
 
 // Export API 2.3 Validation Object:
 exports.ccaEditAccount = {
   body: Joi.object({
-    email: Joi.string().email({tlds: {allow: ['lums.edu.pk']}}),
+    ccaId: Joi.number().required(),
+    email: Joi.string().email(),
     password: Joi.string().regex(/[a-zA-Z0-9]{8,30}/),
     role: Joi.string().regex(/^(admin|member)/),
     firstName: Joi.string().min(1).max(30),
@@ -73,12 +74,13 @@ exports.ccaEditAccount = {
 // Export API 2.4 Validation Object:
 exports.societyEditAccount = {
   body: Joi.object({
-    email: Joi.string().email({tlds: {allow: ['lums.edu.pk']}}),
+    societyId: Joi.number(),
+    email: Joi.string().email(),
     password: Joi.string().regex(/[a-zA-Z0-9]{8,30}/),
     name: Joi.string().min(1).max(100),
     nameInitials: Joi.string().min(1).max(10),
-    presidentEmail: Joi.string().email({tlds: {allow: ['lums.edu.pk']}}),
-    patronEmail: Joi.string().email({tlds: {allow: ['lums.edu.pk']}}),
+    presidentEmail: Joi.string().email(),
+    patronEmail: Joi.string().email(),
   })
 };
 
