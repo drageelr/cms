@@ -3,11 +3,10 @@ import TextareaAutosize from 'react-textarea-autosize'
 import Icon from '@material-ui/core/Icon'
 import Card from '@material-ui/core/Card'
 import Button from '@material-ui/core/Button'
-import ButtonGroup from '@material-ui/core/ButtonGroup'
 import { connect } from 'react-redux'
 import { addTask } from '../taskDataSlice'
 
-function TaskAddButton({columnId, dispatch}) {
+function TaskAddButton({ownerId, dispatch}) {
   const [formOpen, setFormOpen] = useState(false)
   const [text, setText] = useState("")
   const reqButtonText = "Add Request Task"
@@ -22,9 +21,9 @@ function TaskAddButton({columnId, dispatch}) {
     setText("")
   }
 
-  function handleEditTaskTitle() {
+  function handleEditTaskTitle(taskType) {
     if (text) {
-      dispatch(addTask({columnId, text}))
+      dispatch(addTask({ownerId, text, taskType}))
     }
   }
 
@@ -75,11 +74,21 @@ function TaskAddButton({columnId, dispatch}) {
           />
         </Card>
         <div style={{marginTop: 8, marginLeft: 12, display: "flex", alignItems: "center"}}>
-            <Button size="small" onMouseDown={handleEditTaskTitle} variant="contained" style={{ color: "white", backgroundColor: "green"}}>
+            <Button 
+              size="small" 
+              onMouseDown={() => {handleEditTaskTitle("request")}} 
+              variant="contained" 
+              style={{ color: "white", backgroundColor: "green"}}
+            >
               {reqButtonText}
             </Button>
             <div style={{marginLeft: 4, display: "flex", aligntItems: "center"}}>
-              <Button size="small" onMouseDown={handleEditTaskTitle} variant="contained" style={{ color: "white", backgroundColor: "green"}}>
+              <Button 
+                size="small" 
+                onMouseDown={() => {handleEditTaskTitle("custom")}} 
+                variant="contained" 
+                style={{ color: "white", backgroundColor: "green"}}
+              >
                 {cusButtonText}
               </Button>
           </div>

@@ -60,7 +60,7 @@ function TaskArchive({taskData, dispatch}) {
                   <div>
                     {title}
                   </div>
-                 </TableCell>
+                </TableCell>
               ))}
               <TableCell />
             </TableRow>

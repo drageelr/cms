@@ -3,6 +3,7 @@ import TaskCard from './TaskCard'
 import TaskAddButton from './TaskAddButton'
 import { Droppable } from 'react-beautiful-dnd'
 import styled from 'styled-components'
+import { connect } from 'react-redux'
 
 const ColumnContainer = styled.div`
   background-color: #dfe3e6;
@@ -13,19 +14,19 @@ const ColumnContainer = styled.div`
   margin-right: 8px;
   margin-left: 3px
 `
-export default function TaskColumn({columnId, title, tasks}) {
+export function TaskColumn({ownerId, taskData}) {
   return (
     <ColumnContainer>
-      <h4 style={{textAlign: 'left'}}> {title} </h4>
-      <Droppable droppableId={columnId}>
+      <h4 style={{textAlign: 'left'}}> {taskData.columns[ownerId].title} </h4>
+      <Droppable droppableId={ownerId}>
       {
         (provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
-            { tasks.map((task, index) => 
-              <TaskCard taskId={task.id} index={index} key={task.id} title={task.title} columnId={columnId} tasksData={tasks}/>
+            { taskData.columns[ownerId].taskIds.map((taskId, index) => 
+              <TaskCard taskId={taskData.tasks[taskId].id} index={index} key={taskData.tasks[taskId]}/>
             )}
             {provided.placeholder}
-            <TaskAddButton columnId={columnId} isColumn={false}/>
+            <TaskAddButton ownerId={ownerId} isColumn={false}/>
           </div>
         )
       }
@@ -34,3 +35,8 @@ export default function TaskColumn({columnId, title, tasks}) {
   )
 }
 
+const mapStateToProps = (state) => ({
+  taskData: state.taskData,
+})
+
+export default connect(mapStateToProps) (TaskColumn)

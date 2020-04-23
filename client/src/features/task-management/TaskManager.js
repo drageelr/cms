@@ -20,6 +20,7 @@ const TaskManagerContainer = styled.div`
   display: flex;
   flex-direction: row;
 `
+
 const useStyles = makeStyles((theme) => ({
   appBar: {
     position: 'relative',
@@ -72,16 +73,10 @@ function TaskManager({ taskData, dispatch }) {
     <DragDropContext onDragEnd={onDragEnd}>
       <TaskManagerContainer>
         { 
-          taskData.columnOrder.map(columnId => {
-          const column = taskData.columns[columnId]
-
+          taskData.columnOrder.map(ownerId => {
           return <TaskColumn 
-                key={ column.id }
-                columnId={ columnId }
-                title={ column.title }
-                tasks={ column.taskIds.map(taskId => 
-                  taskData.tasks[taskId]
-                )}
+                key={ ownerId }
+                ownerId={ ownerId }                
               />
           })
         }

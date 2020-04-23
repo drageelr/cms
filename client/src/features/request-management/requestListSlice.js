@@ -1,59 +1,99 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-
 const initialState = {
-    forms: {
-        'form-1': {
-            id: 1, 
-            formId:'temp-1', 
-            userId:'soc-1', 
-            formStatus:'Pending', // CAN BE CHANGED
-            ccaNotes: [ 'CCANote1', 'CCANote2' ], // CANBE UPDATED
-            ccaNoteTimestamp: '25/01/2020',
-            ccaNotes: [ 'SocietyNote1', 'SocietyNote2' ],
-            societyNoteTimestamp: '',
-            itemsData: [
-                {itemId: 0, gender:'Male'},
-                {itemId: 1, alcoholic:'No'}
-            ]
-        },
-        'form-2': {
-            id: 2, 
-            formId:'temp-2', 
-            userId:'soc-2', 
-            formStatus:'Approved', // CAN BE CHANGED
-            ccaNotes: [ 'CCANote1'], // CANBE UPDATED
-            ccaNoteTimestamp: '01/02/2019',
-            ccaNotes: [ 'SocietyNote1' ],
-            societyNoteTimestamp: '',
-            itemsData: [
-                {itemId: 0, gender:'Female'},
-                {itemId: 1, alcoholic:'Yes'}
-            ]
-        },
+  formTitles: [
+    {id: "form-1", title: "Design Approval"},
+    {id: "form-2", title: "Auditorium Booking"},
+    {id: "form-3", title: "Petition"},
+    {id: "form-4", title: "Event Approval"},
+    {id: "form-5", title: "Service Request"},    
+  ],
+
+  isViewingForm: "",
+
+  formData : [
+    {
+      id: 0, //form data id
+      formId: "form-1", //form Id
+      userId: "lumun", //user id of the user that submitted
+      formStatus: 'Pending',
+      ccaNote: "1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!",
+      ccaNoteTimestampModified: '03/13/2009 21:31:30',
+      societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
+      itemsData: { //itemId : itemData
+        4: true, //checkbox
+        2: 'Small', //dropdown
+        3: 'Vice President', //radio
+        5: "../../../public/logo192.png", //file
+        0: "lumun@lums.edu.pk", //textbox
+        1: "" //textlabel
+      },
+      timestampCreated: '02/13/2009 21:31:30',
+      timestampModified: '02/13/2009 21:31:31'
     },
-    formsOrder: ['form-1', 'form-2' ]
+    {
+      id: 1, //form data id
+      formId: "form-1", //form Id
+      userId: "lumun", //user id of the user that submitted
+      formStatus: 'Pending',
+      ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!',
+      ccaNoteTimestampModified: '03/13/2009 21:31:30',
+      societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
+      itemsData: { //itemId : itemData
+        4: true, //checkbox
+        2: 'Small', //dropdown
+        3: 'Vice President', //radio
+        5: "../../../public/logo192.png", //file
+        0: "lumun@lums.edu.pk", //textbox
+        1: "" //textlabel
+      },
+      timestampCreated: '02/13/2009 21:31:30',
+      timestampModified: '02/13/2009 21:31:31'
+    },
+    {
+      id: 2, //form data id
+      formId: "form-1", //form Id
+      userId: "lumun", //user id of the user that submitted
+      formStatus: 'Pending',
+      ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!',
+      ccaNoteTimestampModified: '03/13/2009 21:31:30',
+      societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
+      itemsData: { //itemId : itemData
+        4: true, //checkbox
+        2: 'Small', //dropdown
+        3: 'Vice President', //radio
+        5: "../../../public/logo192.png", //file
+        0: "lumun@lums.edu.pk", //textbox
+        1: "" //textlabel
+      },
+      timestampCreated: '02/13/2009 21:31:30',
+      timestampModified: '02/13/2009 21:31:31'
+    },
+  ]
 }
 
 const requestListData = createSlice ({
-    name:'requestListData',
-    initialState: initialState,
-    reducers: {
-        changeFormStatus: (state, action) => { //i will recieve the formId and then corresponding to that I will update the form status 
-            let {formTempId, formStatus} =action.payload
-            formTempId = `form-${formTempId}`
-            // console.log(state.forms[formTempId].formStatus)
-            state.forms[formTempId].formStatus = formStatus
-            // console.log(state.forms[formTempId].formStatus)
-        },
+  name:'requestListData',
+  initialState: initialState,
+  reducers: {
+    changeFormStatus: (state, action) => {
+      const {status, index} = action.payload
+      state.formData[index].formStatus = status
+    },
 
-        updateCCANotes: (state, action) => {
-            const { formId, newNote } = action.payload
-            state.forms[formId].ccaNotes.push(newNote)
-        }
+    updateCcaNote: (state, action) => {
+      console.log(action.payload)
+      // state.formData.ccaNote = state.formData.ccaNote
+    },
+
+    formBeingViewed : (state, action) => {
+      // console.log(a)
+      state.isViewingForm = action.payload.id
+      // console.log(obj)
     }
+  }
 })
 
-export const { changeFormStatus, updateCCANotes } = requestListData.actions
+export const { changeFormStatus, updateCcaNote, formBeingViewed } = requestListData.actions
 
 export default requestListData.reducer

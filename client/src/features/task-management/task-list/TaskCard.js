@@ -1,35 +1,71 @@
-import React from 'react'
-import AddEditTaskDialog from './AddEditTaskDialog'
+import React, {useState} from 'react'
+import EditTaskDialog from './EditTaskDialog'
 import { Draggable } from "react-beautiful-dnd"
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import Typography from '@material-ui/core/Typography'
+import { Card, CardContent, Typography, Grid, MenuItem } from '@material-ui/core'
+import StopIcon from '@material-ui/icons/Stop'
+import { connect } from 'react-redux'
+import EditIcon from '@material-ui/icons/Edit'
 
-export default function TaskCard({taskId, index, title, columnId, tasksData }) {
+export function TaskCard(props) {
 
-  let taskStatus="" 
-  tasksData.map(item => {
-    if (item.id === taskId) {
-      taskStatus=item.status
+  const { taskId, index, taskData } = props
+  const [open, setOpen] = useState(false)
+
+  const statusId = taskData.tasks[taskId].status
+  let taskStatusName = ""
+  let taskStatusColor = ""
+  taskData.taskStatuses.map(statObj => {
+    if(statObj.id === statusId) {
+      taskStatusName = statObj.name
+      taskStatusColor = statObj.colorHex
     }
   })
+
   return (
     <Draggable draggableId={taskId} index={index}>
       {
         (provided) => (
           <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-            <Card style={styles.cardContainer}>
+            <Card 
+              style={{
+                maxHeight: 85,
+                minWidth: 0,
+                marginBottom: 10,
+              }}
+              cursor="pointer"
+              variant="outlined"
+            >
               <CardContent>
-                <Typography gutterBottom>                
-                  {title}
-                  <AddEditTaskDialog taskId={taskId} title={title} columnId={columnId} tasksData={tasksData} />
-                </Typography>
-                <Typography variant='body2' alignItems="right">
-                  {taskStatus}
-                  <Typography variant='body2' align='right' color="inherit">
-                    {taskId}
-                  </Typography>
-                </Typography>
+                <Grid item xs container direction="row" spacing={0}>
+                  <Grid item xs>
+                    <Typography gutterBottom variant="h6">
+                      {taskData.tasks[taskId].title} 
+                    </Typography>
+                  </Grid>               
+                  <Grid item> 
+                    <EditIcon 
+                      onClick={() => setOpen(true)} 
+                      fontSize="small" 
+                      color="action" 
+                      cursor="pointer"
+                    />
+                    <EditTaskDialog open={open} setOpen = {setOpen} taskId={taskId}/>
+                  </Grid>
+                </Grid>
+
+                <Grid container direction="row" justify='space-between' alignItems="flex-end">
+                  <Grid item>
+                    <MenuItem>
+                      <StopIcon fontSize="small" style={{fill: taskStatusColor, marginLeft:"-22%"}} />
+                      {taskStatusName} 
+                    </MenuItem>
+                  </Grid>
+                  <Grid>
+                    <Typography variant='body2'>
+                      {taskId}
+                    </Typography>
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </div>
@@ -39,8 +75,8 @@ export default function TaskCard({taskId, index, title, columnId, tasksData }) {
   )
 }
 
-const styles =  {
-  cardContainer: {
-    marginBottom: 10
-  }
-}
+const mapStateToProps = (state) => ({
+  taskData: state.taskData,
+})
+
+export default connect(mapStateToProps) (TaskCard)
