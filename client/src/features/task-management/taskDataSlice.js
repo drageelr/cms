@@ -170,7 +170,7 @@ const taskdata = createSlice({
         title: text, 
         formDataId: "", // stores the ID of the request that is linked to it
         desc: "", 
-        ownerId: "", 
+        ownerId: ownerId, 
         status: '',
         assList: [],
         subTasksList: [],
@@ -197,6 +197,7 @@ const taskdata = createSlice({
 
     archiveTask: (state, action) => { // send the task id to the server and create an archive of it
       const {taskId, ownerId} = action.payload
+      console.log(ownerId)
       state.columns[ownerId].taskIds.map(id => {
         if (taskId === id) {
           var filteredAry = state.columns[ownerId].taskIds.filter(function(e) { return e !== id })

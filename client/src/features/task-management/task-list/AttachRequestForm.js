@@ -43,11 +43,11 @@ export function AttachRequestForm(props) {
     }
   }
 
-  var data = new Array(requestListData.forms.length)
+  var data = new Array(requestListData.formData.length)
   for (var i = 0; i<data.length; i++) {
     data[i] = new Array(columns.length)
   }
-  requestListData.forms.map((requestObj, index) => {
+  requestListData.formData.map((requestObj, index) => {
     requestListData.formTitles.map(titleObj =>{
       if (requestObj.formId === titleObj.id) {
         data[index][0] = requestObj.id

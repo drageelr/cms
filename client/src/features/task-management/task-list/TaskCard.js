@@ -41,7 +41,8 @@ export function TaskCard(props) {
                     <Typography gutterBottom variant="h6">
                       {taskData.tasks[taskId].title} 
                     </Typography>
-                  </Grid>               
+                  </Grid>  
+                  {taskId[0] === 's' ? null : 
                   <Grid item> 
                     <EditIcon 
                       onClick={() => setOpen(true)} 
@@ -50,7 +51,7 @@ export function TaskCard(props) {
                       cursor="pointer"
                     />
                     <EditTaskDialog open={open} setOpen = {setOpen} taskId={taskId}/>
-                  </Grid>
+                  </Grid>}
                 </Grid>
 
                 <Grid container direction="row" justify='space-between' alignItems="flex-end">
