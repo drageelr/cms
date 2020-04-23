@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux'
 import { setPropertyWindow } from '../../propertiesDataSlice'
 import { addItem, editItem } from '../../formTemplateSlice'
 
+// TextboxProperties variant for Item Properties, item template includes {label, placeHolder, maxLength, required, defaultVisibility}
+
 export default function TextboxProperties({propertyAddMode, propertyId, itemData, parentId}){
   const dispatch = useDispatch()
   const initialValues = itemData === null ? {

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-// Form Maker's property window state stored here and other stuff used by its components
+// Form Maker's property window state stored here used by its components
 
 const initialState = {
   propertyType: '',

@@ -17,6 +17,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+/**
+  The FormMakerBar constitutes of the Form Title, the Checklist, Save Edits, Cancel buttons and the 
+  toggle Public/Private status switch on top of the Form Maker.
+
+  @param {string} title for the form
+  @param {bool} isPublic status for the form
+*/
+
 export default function FormMakerBar({title, isPublic}) {
   const classes = useStyles()
   const dispatch = useDispatch()

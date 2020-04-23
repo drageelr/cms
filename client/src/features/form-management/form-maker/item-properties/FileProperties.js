@@ -6,6 +6,9 @@ import { useDispatch } from 'react-redux'
 import { setPropertyWindow } from '../../propertiesDataSlice'
 import { addItem, editItem } from '../../formTemplateSlice'
 
+
+// FileProperties variant for Item Properties, item template includes {label, fileTypes, required, defaultVisibility}
+
 export default function FileProperties({propertyAddMode, propertyId, itemData, parentId}){
   const dispatch = useDispatch()
   const initialValues = itemData === null ? {
@@ -15,8 +18,6 @@ export default function FileProperties({propertyAddMode, propertyId, itemData, p
     defaultVisibility: true
   } : itemData
   
-  console.log(parentId)
-
   function closeProperties() {
     dispatch(setPropertyWindow({propertyType: ''}))
   }

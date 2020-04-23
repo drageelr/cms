@@ -16,6 +16,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
+/**
+  Returns a Component - a logical composition of Items, only visible on the Form Maker, with an option to Edit and Delete
+  itself as well as functionality to add an Item inside.
+
+  @param {number} id component id
+  @param {string} title component title
+  @param {object} data  component data required (itemsOrder and items)
+  @param {number} parentId parent section id
+*/
 
 export default function Component({id, title, data, parentId}) {
   const classes = useStyles()

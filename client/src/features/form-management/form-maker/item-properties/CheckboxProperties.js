@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux'
 import { setPropertyWindow } from '../../propertiesDataSlice'
 import { addItem, editItem } from '../../formTemplateSlice'
 
+// Checkbox variant for Item Properties, item template includes {label, required, defaultVisibility}
+
 export default function CheckboxProperties({propertyAddMode, propertyId, itemData, parentId}){
   const dispatch = useDispatch()
   const initialValues = itemData === null ? {

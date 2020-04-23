@@ -6,6 +6,16 @@ import {useDispatch} from 'react-redux'
 import { deleteFormPart } from '../formTemplateSlice'
 import { setPropertyWindow } from '../propertiesDataSlice'
 
+/**
+  The EditDeleteBar is present at the top of every Component, Item or Section, used to display their titles
+  and an on hover visible Edit/Delete button group to edit them
+
+  @param {object} renderTitle JSX object passed to render the title
+  @param {string} type same as propertyType ('section', 'component', ...)
+  @param {number} id  id of the section, item or component to which this bar is attached
+  @param {number} parentId id of the parent of the attached component
+*/
+
 export default function EditDeleteBar({renderTitle, type, id, parentId}) {
   const [hovered, setHovered] = useState(false)
   const dispatch = useDispatch()

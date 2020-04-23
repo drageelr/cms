@@ -56,17 +56,26 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
+/**
+  Returns the core conditional Properties Container which renders the correct property window based on the type,
+  with two small property windows (AddItemProperties and ChecklistProperties) INSIDE this function as nested components,
+  since they do not have any dependencies.
+
+  @param {object} propertiesData from the corresponding redux slice, all property window data is used here
+  @param {object} formTemplate from the corresponding redux slice, to retrieve all form template data required to pass them on
+  and populate the sub-property windows (Section, Item, Component, Checklist)
+*/
+
 function Properties({propertiesData, formTemplate, dispatch}) {
   const classes = useStyles()
-  const {propertyType, propertyAddMode, propertyId, parentId} = propertiesData
+  const { propertyType, propertyAddMode, propertyId, parentId } = propertiesData
   const { sections, sectionsOrder, checklist, components, items } = formTemplate
+  const itemProperties = { propertyAddMode, propertyId, parentId, itemData: propertyAddMode ?  null : items[propertyId] }
 
   let title = ""
   let renderProperties = null
 
-  const itemProperties = { propertyAddMode, propertyId, parentId, itemData: propertyAddMode ?  null : items[propertyId] }
-
-  switch (propertyType) {
+  switch (propertyType) { //selecting property title and component to render inside based on property type
     case "add-item":
       title = "Add Item"
       renderProperties = <AddItemProperties/>
@@ -112,17 +121,17 @@ function Properties({propertiesData, formTemplate, dispatch}) {
       break
   }
 
-  if (propertyType === "") return ( // shown on default entry
+  if (propertyType === "") return ( // shown on default entry into the form maker (default properties window)
     <Paper square variant="outlined" className={classes.propertiesPaper}>
       <h3 style={{marginTop: 10}}>Welcome to the CMS Form Maker!</h3>
       <p>
         You can add as many sections as required, logical components in them and items of the defined types within those.
-        Contact us if you have any queries regarding usage.
+        Contact us if you have any queries regarding usage. Note: Form item fields have been kept non-interactive for ease of focus. 
       </p>
     </Paper>  
   )
 
-
+  // AddItemProperties displays buttons for every item type, opening the complete item properties for that item type on click (by setPropertyWindow)
   function AddItemProperties(){  
     const commonProps = {color: "primary", variant: "contained", style: {marginBottom: 15}}
     return (
@@ -148,6 +157,7 @@ function Properties({propertiesData, formTemplate, dispatch}) {
     )
   }
 
+  // Properties window for the Form Checklist editor, renders editable text fields for subtasks corresponding to every section
   function FormChecklistProperties(){
     return (
       <List className={classes.checklist}>
@@ -179,7 +189,7 @@ function Properties({propertiesData, formTemplate, dispatch}) {
     )
   }
   
-  
+  // Properties container using Paper and Grid with Property Title and List for rendering custom sub-property content
   return (
     <Paper square variant="outlined"className={classes.propertiesPaper}>
       <Grid container  direction="column" justify="flex-start" alignItems="center">

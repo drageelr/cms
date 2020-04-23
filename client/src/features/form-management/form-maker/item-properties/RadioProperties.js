@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux'
 import { setPropertyWindow } from '../../propertiesDataSlice'
 import { addItem, editItem } from '../../formTemplateSlice'
 
+// RadioProperties variant for Item Properties, item template includes {label, options, required, defaultVisibility}
+
 export default function RadioProperties({propertyAddMode, propertyId, itemData, parentId}){
   const dispatch = useDispatch()
   const initialValues = itemData === null ? {

@@ -15,11 +15,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+/**
+  Displays the Component Properties Window in order to add / edit components, so conditionally renders
+  in add and edit modes with input fields for the component title and component conditional items list here.
+
+  @param {bool} propertyAddMode determines whether to open the ComponentProperties in Add (true) or Edit (false) mode
+  @param {number} propertyId component ID
+  @param {number} parentId sectionId for the parent section of this component
+  @param {string} componentTitle component title
+  @state dialogOpen (local)
+*/
+
 export default function ComponentProperties({propertyAddMode, propertyId, parentId, componentTitle}){
   const [dialogOpen, setDialogOpen] = useState(false)
   const classes = useStyles()
   const dispatch = useDispatch()
-  
   
   function closeProperties() {
     dispatch(setPropertyWindow({propertyType: '', propertyId: ''}))
@@ -47,8 +57,41 @@ export default function ComponentProperties({propertyAddMode, propertyId, parent
     )
   }
 
+  function ConditionalItemDialog() {
+    return (
+      <Dialog onClose={toggleDialogOpen} aria-labelledby="conditional-item-dialog" open={dialogOpen}>
+        <DialogTitle id="conditional-item-dialog-title">Conditional Item Options - {"Item 1"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            First select the conditional item from the list of component's items you have created. Note: Only a Dropdown or Radio Button group can be selected as a conditional item.
+          </DialogContentText>
+          <FormControl className={classes.formControl} >
+            <InputLabel id="input-conditional-item-label">Select Conditional Item</InputLabel>
+            <Select
+              labelId="select-conditional-item-label"
+              id="select-conditional-item"
+              value={""}
+              onChange={toggleDialogOpen}
+            >
+              <MenuItem value={"item-1"}>{"Item 1"}</MenuItem>
+              <MenuItem value={"item-2"}>{"Item 2"}</MenuItem>
+              <MenuItem value={"item-3"}>{"Item 3"}</MenuItem>
+            </Select>
+          </FormControl>
+          <List>
+            {optionEffect()}
+          </List>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={toggleDialogOpen} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }
+
   return (
-    
     <div>
       <Formik
         validateOnChange={false} validateOnBlur={true}
@@ -81,36 +124,7 @@ export default function ComponentProperties({propertyAddMode, propertyId, parent
       </Formik>
 
       <Button onClick={toggleDialogOpen} variant="contained" style={{marginTop: 20, padding: 10}} startIcon={<Icon>add</Icon>}>Add Conditional Item</Button>
-    
-      <Dialog onClose={toggleDialogOpen} aria-labelledby="conditional-item-dialog" open={dialogOpen}>
-        <DialogTitle id="conditional-item-dialog-title">Conditional Item Options - {"Item 1"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            First select the conditional item from the list of component's items you have created. Note: Only a Dropdown or Radio Button group can be selected as a conditional item.
-          </DialogContentText>
-          <FormControl className={classes.formControl} >
-            <InputLabel id="input-conditional-item-label">Select Conditional Item</InputLabel>
-            <Select
-              labelId="select-conditional-item-label"
-              id="select-conditional-item"
-              value={""}
-              onChange={toggleDialogOpen}
-            >
-              <MenuItem value={"item-1"}>{"Item 1"}</MenuItem>
-              <MenuItem value={"item-2"}>{"Item 2"}</MenuItem>
-              <MenuItem value={"item-3"}>{"Item 3"}</MenuItem>
-            </Select>
-          </FormControl>
-          <List>
-            {optionEffect()}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={toggleDialogOpen} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConditionalItemDialog/>
     </div>
   )
 }

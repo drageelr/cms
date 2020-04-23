@@ -11,22 +11,27 @@ export const useStyles = makeStyles((theme) => ({
     width: '97%',
     height: '100%',
     marginBottom: 10,
-    // '&:hover': {
-    //   backgroundColor: 'whitesmoke',
-    // },
   },
   formControl: {
     minWidth: '30%'
   }
 }))
 
+/**
+  Returns an Item that renders conditionally based on type in item data,
+  along with an edit/delete functionality through the EditDeleteBar.
+
+  @param {number} id for the item
+  @param {number} parentId for the parent component
+  @param {object} data is the data required to render the item (with all possible item options due to multiple types)
+*/
+
 export default function Item({id, parentId, data}) {
   const classes = useStyles()
   const {type, label, required, placeHolder, maxLength, fileTypes, options} = data
 
-  function renderItem() {
-
-    switch (type){
+  function renderItem() { //conditional rendering function based on item type
+    switch (type){ 
       case 'textbox':
         return (
           <TextField
@@ -131,4 +136,3 @@ export default function Item({id, parentId, data}) {
     </Paper>
   )
 }
-

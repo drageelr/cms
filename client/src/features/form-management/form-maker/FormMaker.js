@@ -18,6 +18,15 @@ export const useStyles = makeStyles((theme) => ({
   },
 }))
 
+/**
+  The FormMaker Container fetches and passes down the form template rendering the Properties, FormMakerBar and
+  the entire Form View facilitating the creation of an entire form. This acts the wrapper component that fetches 
+  the entire form state via API.
+
+  @param {object} formTemplate from the formTemplate redux slice, passed on in all child components for rendering of the
+  form maker and properties view based on the current form loaded
+*/
+
 function FormMaker({formTemplate}) {
   const { title, isPublic, sections, sectionsOrder, componentsOrder, components, itemsOrder, items } = formTemplate
   const classes = useStyles()

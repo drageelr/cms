@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux'
 import { setPropertyWindow } from '../../propertiesDataSlice'
 import { addItem, editItem } from '../../formTemplateSlice'
 
+// Dropdown variant for Item Properties, item template includes {label, options, required, defaultVisibility}
 export default function DropdownProperties({propertyAddMode, propertyId, itemData, parentId}){
   const dispatch = useDispatch()
   const initialValues = itemData === null ? {
@@ -53,7 +54,7 @@ export default function DropdownProperties({propertyAddMode, propertyId, itemDat
         closeProperties()
       }}
     >
-      {({ submitForm}) => (
+      { ({ submitForm}) => (
         <Form>
           <Field component={TextField} name="label" required label="Label"/>
           <br/>

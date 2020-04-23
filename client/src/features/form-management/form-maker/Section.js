@@ -15,6 +15,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
+/**
+  Returns a Section - a list of Components with an option to Edit and Delete
+  itself as well as functionality to add a Component inside.
+
+  @param {number} id for the section
+  @param {string} title for the section
+  @param {object} data section data required to use and pass (componentsOrder, components, itemsOrder, items)
+*/
 
 export default function Section({id, title, data}) {
   const classes = useStyles()

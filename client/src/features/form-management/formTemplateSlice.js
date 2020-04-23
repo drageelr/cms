@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit"
 // Form Maker template creation state stored here, this could have been done locally inside the Form Maker as well
 // but is done so to set aside the rigorous business logic required
 
-const initialState = {
+const initialState = { // Sample form currently
   id: 0,
   isPublic: false,
   title: "Event Approval",

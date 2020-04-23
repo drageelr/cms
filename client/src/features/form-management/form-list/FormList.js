@@ -1,59 +1,37 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
-import {Menu, MenuItem, IconButton, Button, Typography, Box} from '@material-ui/core'
+import { Button, Typography, Box} from '@material-ui/core'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
 import { useHistory } from 'react-router-dom'
 import { toggleStatus, duplicateForm } from '../formListSlice'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
 import ToggleOnIcon from '@material-ui/icons/ToggleOn'
 import EditIcon from '@material-ui/icons/Edit'
+import MoreButton from '../../../ui/MoreButton'
 
 function FormList({formList, dispatch}) {
   const history = useHistory()
 
-  function MoreButton({index, editAllowed}) {
-    const [anchorEl, setAnchorEl] = React.useState(null)
-    
-    function handleClick(e) {
-      setAnchorEl(e.currentTarget)
-    }
-    
-    function handleClose() {
-      setAnchorEl(null)
-    }
-
-    return (
-      <div>
-        <IconButton size="small" onClick={handleClick}>
-          <MoreVertIcon/>
-        </IconButton>
-        <Menu
-          id="form-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          { editAllowed ? 
-          <MenuItem onClick={()=>history.push(`/form-maker/${index}`)}>
-            <EditIcon fontSize='small' style={{marginRight: 5}}/>
-            Edit Form
-          </MenuItem> : null }
-
-          <MenuItem onClick={()=>dispatch(duplicateForm({index}))}>
-            <FileCopyIcon fontSize='small' style={{marginRight: 5}}/>
-            Duplicate
-          </MenuItem>
-          
-          <MenuItem onClick={()=>dispatch(toggleStatus({index}))}>
-            <ToggleOnIcon fontSize='small' style={{marginRight: 5}}/>
-            Toggle Status
-          </MenuItem>
-        </Menu>
-      </div>
-    )
+  function MoreFormOptionsButton({index}) {
+    const menusList=[
+      {
+        text: 'Edit Form',
+        icon: <EditIcon/>,
+        onClick: ()=>history.push(`/form-maker/${index}`),
+      },
+      {
+        text: 'Duplicate',
+        icon: <FileCopyIcon/>,
+        onClick: ()=>dispatch(duplicateForm({index})),
+      },
+      {
+        text: 'Toggle Status',
+        icon: <ToggleOnIcon/>,
+        onClick: ()=>dispatch(toggleStatus({index})),
+      }
+    ]
+    return <MoreButton menusList={menusList}/>
   }
 
   function CreateNewFormButton() {
@@ -79,7 +57,7 @@ function FormList({formList, dispatch}) {
       form.creatorId, 
       form.timestampModified,
       form.isPublic ? 'Public' : 'Private', 
-      <MoreButton index={index} editAllowed={form.isPublic}/>
+      <MoreFormOptionsButton index={index}/>
     ])}
     columns={['Name','Created by','Last edited','Status',{name: 'More', options: {filter: false, sort: false}}]}
     options={{

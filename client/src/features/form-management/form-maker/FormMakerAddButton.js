@@ -4,6 +4,13 @@ import Icon from '@material-ui/core/Icon'
 import {useDispatch} from 'react-redux'
 import { setPropertyWindow } from '../propertiesDataSlice'
 
+/**
+  A conditional Add button for adding Items, Sections or Components based on the type passed in.
+
+  @param {string} type can be 'add-item', 'component' or 'section'
+  @param {number} parentId id of the parent of the attached component
+*/
+
 export default function FormMakerAddButton({type, parentId}) {
   const dispatch = useDispatch()
   function viewAddItem(){

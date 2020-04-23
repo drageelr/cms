@@ -6,6 +6,15 @@ import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
 import { addSection, editSection } from '../formTemplateSlice'
 
+/**
+  SectionProperties is the sub-property window for Sections, allowing only
+  the editing of the section title.
+
+  @param {number} propertyId for the section
+  @param {bool}  propertyAddMode to check whether in add or edit mode
+  @param {string} sectionTitle retrieved from state to modify
+*/
+
 export default function SectionProperties({propertyId, propertyAddMode, sectionTitle}){
   const dispatch = useDispatch()
   
