@@ -1,68 +1,35 @@
 import React, {useState} from 'react'
-import { connect } from 'react-redux'
-import SubTask from "./SubTaskCheckList"
-import LogEditor from "../logs/LogEditor"
-import { editTaskDesc, archiveTask, taskOwner } from "../taskDataSlice"
-import AssigneeDialog from "./AddAssignee"
-import TextareaAutosize from 'react-textarea-autosize'
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DeleteIcon from '@material-ui/icons/Delete'
-import { makeStyles } from '@material-ui/core/styles'
-import Grid from "@material-ui/core/Grid"
-import { Typography, Paper, Box, Card, Slide, FormControl, Select, TextField, Chip, FormControlLabel, Checkbox, InputLabel } from '@material-ui/core'
-import SubjectIcon from '@material-ui/icons/Subject'
-import MenuItem from '@material-ui/core/MenuItem'
-import TaskStatus from './TaskStatus'
-import { Link } from 'react-router-dom'
+import { connect, useStore } from 'react-redux'
 import AttachRequestForm from './AttachRequestForm'
+import TaskStatus from './TaskStatus'
+import SubTask from "./SubTaskCheckList"
+import AddAssignee from "./AddAssignee"
+import LogEditor from "../logs/LogEditor"
+import { archiveTask, taskOwner, updateTitle, updateDescription } from "../taskDataSlice"
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: "2px",
-    margin: 'auto',
-    overflow: 'auto',
-    backgroundColor:'#00000000',
-    maxWidth : "xl",
-    height: "auto"
-  },
-  colorBox: {
-    fill:'black',
-  }
-}))
+import { Typography, Box, Card, Slide, 
+  FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, TextareaAutosize, Button } from '@material-ui/core'
+import DeleteIcon from '@material-ui/icons/Delete'
+import SubjectIcon from '@material-ui/icons/Subject'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-const owners = [ "Farrukh", "Zoraiz", "Hamza F", "Hammad", "Hamza A" ]
+export function EditTaskDialog({ taskId, taskData, dispatch, open, setOpen }) {  
+  const [selectOpen, setSelectOpen] = useState(false)
+  const [text, setText] = useState(taskData.tasks[taskId].desc)
+  const [taskTitle, setTaskTitle] = useState(taskData.tasks[taskId].title)
+  const [owner, setOwner] = useState("")
 
-const assignees = [
-  { id: "ass-1", name: "Farrukh" },
-  { id: "ass-2", name: "Zoraiz" },
-  { id: "ass-3", name: "Hamza F" },
-  { id: "ass-4", name: "Hammad" },
-  { id: "ass-5", name: "Hamza A" }
-]
-
-export function EditTaskDialog(props) {  
-  const { taskId, taskData, dispatch, open, setOpen } = props
-
-  const classes=useStyles()
-  const [text, setText] = useState("") // description state
-  const [selectOpen, setSelectOpen] = useState(false) // owner select-box box state
-  const [owner, setOwner] = useState("") // owner name state
-
-  function handleSelectOpen(selectType){
+  function handleSelectOpen(){
     setSelectOpen(true)
   }
 
-  function handleSelectClose(selectType) {
+  function handleSelectClose() {
     setSelectOpen(false)
   }
 
-  //task owner to be set when task moves between columns do this
   function handleOwnerSet(event) {
     const owner = event.target.value
     dispatch(taskOwner({taskId, owner}))
@@ -71,16 +38,22 @@ export function EditTaskDialog(props) {
 
   function handleClickClose() {
     setOpen(false)
-    setText("")
+    // setText(""s)
+  }
+
+  function handleTitleChange (event) {
+    let newTitle = event.target.value
+    dispatch(updateTitle({taskId, newTitle}))
+    setTaskTitle(event.target.value)
   }
 
   function handleDescChange(event) {
     const description = event.target.value
-    dispatch(editTaskDesc({taskId, description}))
+    dispatch(updateDescription({taskId, description}))
     setText(event.target.value)
   }
 
-  function handleTaskDetailsSubmit(event){
+  function handleCloseDialog(){
     setOpen(false)
   }
 
@@ -99,10 +72,30 @@ export function EditTaskDialog(props) {
         TransitionComponent={Transition}
       >
         {/*TaskName----TaskID----TaskArchiveButton*/}
-        <Grid style={{padding: 15}} item container direction="row" justify="space-between" alignItems="flex-start">
+        <Grid style={{padding: "15px"}} item container direction="row" justify="space-between" alignItems="flex-start">
           <Grid>
               <Typography gutterBottom variant="h5" color="inherit">
-                Task Name: {taskData.tasks[taskId].title}
+                <Grid direction="row"> 
+                  <Grid item>
+                    Task Name:
+                    <TextField 
+                      autoFocus
+                      variant="outlined"
+                      value={taskTitle}
+                      defaultValue={"hell"}
+                      onChange={handleTitleChange}
+                      style={{
+                        resize: "none",
+                        marginTop: -8,
+                        marginLeft: 4,  
+                        size:"small",
+                        value:{taskTitle},
+                        overflow: "hidden",
+                        outline: "none"
+                      }}
+                    />
+                  </Grid>
+                </Grid>
                   <Typography gutterBottom variant="subtitle1" color="textPrimary">
                     task id: {taskId}
                   </Typography>
@@ -131,55 +124,59 @@ export function EditTaskDialog(props) {
             minWidth: 0,
             background: "#ebecf0",
           }}>
-
-            <TextareaAutosize 
-            placeholder={"Add description here..."}
-            autoFocus
-            value={text}
-            defaultValue={taskData.tasks[taskId].desc}
-            onChange={handleDescChange}
-            style={{
-              resize: "none",
-              width: "100%",
-              value:{text},
-              overflow: "hidden",
-              outline: "none",
-              border: "none",
-              background: "#ebecf0"
-            }}
+            <TextField 
+              placeholder={"Add description here..."}
+              autoFocus
+              multiline
+              rows="6"
+              value={text}
+              defaultValue={taskData.tasks[taskId].desc}
+              onChange={handleDescChange}
+              style={{
+                resize: "none",
+                width: "100%",
+                value:{text},
+                overflow: "hidden",
+                outline: "none",
+                border: "none",
+                background: "#ebecf0"
+              }}
             />
           </Card>
         </Box>
             
-        <Grid container style={{marginTop: 0, padding: 15}} direction="row" justify='space-between' alignItems="baseline">
-          {/* CHECKLIST-SUBTASK */}
-          <Grid display="column" justify = "flex-start" alignItems="flex-start">
-            <Grid item>
-              { taskId[0] === 'r' &&  
-                <Typography gutterBottom variant="h6" color="inherit">
-                  Checklist:
-                </Typography> 
-              }
-            </Grid>
-            <Grid item>
-              { taskId[0] === 'r' && <SubTask taskId={taskId}/> }
+
+        <Grid style={{padding: "17px"}} container direction="row" justify="space-between" alignItems="flex-start">
+          {/*CHECKLIST-SUBTASK*/}
+          <Grid item>
+            <Grid direction="column" justify="flex-start" alignItem="flex-start">
+              <Grid item>
+                { taskId[0] === 'r' &&  
+                  <Typography gutterBottom variant="h6" color="inherit">
+                    Checklist:
+                  </Typography> 
+                }
+              </Grid>
+              <Grid item> 
+                { taskId[0] === 'r' && <SubTask taskId={taskId}/> }
+              </Grid>
             </Grid>
           </Grid>
           
-          {/* REQUEST-FORM */}
+          {/*REQUEST-FORM*/}
           <Grid item>
-            <Grid container direction="column" justify="space-between" alignItems="flex-end">
-              <Grid item>
+            <Grid direction="column" justify="flex-end" alignItems="flex-end">
+              <Grid item style={{marginLeft: "82%", padding: "0px 0px 30px 0px"}}>
                 {taskId[0] === 'r' && taskData.tasks[taskId].formDataId === "" ? <AttachRequestForm taskId={taskId}/> :
                   taskData.tasks[taskId].formDataId} 
               </Grid>
-          {/* TASK-STATUS */}
-              <Grid item style={{padding:"20px"}}>
+              {/*task-status*/}
+              <Grid item>
                 <TaskStatus taskId={taskId}/>
               </Grid>
             </Grid>
           </Grid>
-        </Grid> 
+        </Grid>
 
         {/* Assign Task Owner */}
         <Grid style={{marginTop: 5, padding: 15}} container direction="row" justify='flex-start' alignItems="flex-start">
@@ -194,9 +191,10 @@ export function EditTaskDialog(props) {
                 labelId = "select-label"
                 id="label"
                 open={selectOpen}
-                onClose={() => {handleSelectClose("assignTask")}}
-                onOpen={() => {handleSelectOpen("assignTask")}}
+                onClose={handleSelectClose}
+                onOpen={handleSelectOpen}
                 value={owner}
+                // defaultValue={taskData.tasks[taskId].ownerId}
                 onChange={handleOwnerSet}
                 variant = "outlined"
                 style={{height: 30, padding: "0px 0px 0px 0px", marginTop: 3}}
@@ -204,7 +202,7 @@ export function EditTaskDialog(props) {
                 <MenuItem value={""} disabled>
                   <em>None</em>
                 </MenuItem>
-                {owners.map(person => {
+                {taskData.users.map(person => {
                   return <MenuItem value={person}>{person}</MenuItem>  
                 })}
               </Select>
@@ -213,7 +211,10 @@ export function EditTaskDialog(props) {
         </Grid>
         
         {/* Task Assignees */}
-        <AssigneeDialog taskId={taskId}/>
+        <AddAssignee taskId={taskId}/>
+
+        {/* Logs */}
+        <LogEditor taskId={taskId}/>
 
         {/*Complete Task Button*/}
         <DialogActions>
@@ -221,7 +222,7 @@ export function EditTaskDialog(props) {
             <Button 
               variant="contained" 
               color="inherit"
-              onClick={handleTaskDetailsSubmit}
+              onClick={handleCloseDialog}
             >
               Complete Task
             </Button>

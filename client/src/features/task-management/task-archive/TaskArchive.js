@@ -14,6 +14,13 @@ import {connect} from "react-redux"
 import { Button } from '@material-ui/core'
 import { unArchiveTask } from "../taskDataSlice"
 
+/**
+  It displays a table with the archived tasks. It also allows the user to unarchive a task by
+  providing an unarchive button next to each row.
+
+  @param {object} taskData from corresponding redux slice, gives access to the archive list 
+  @param {function} dispatch from redux, dispatches an unArchiveTask action to the reducer
+*/
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -33,8 +40,7 @@ function TaskArchive({taskData, dispatch}) {
   const classes = useStyles()
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [unDoArchive, setUnDoArchive] = useState("")
- 
+
   function handleChangeRowsPerPage(event) {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)

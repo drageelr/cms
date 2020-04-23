@@ -1,9 +1,9 @@
 import React from 'react'
 
-export default function RequestList() {
+export default function RequestList() {    
   return (
     <div>
-      Request List
+      <h1>Request List</h1>
     </div>
   )
 }

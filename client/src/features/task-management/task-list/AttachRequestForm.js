@@ -1,12 +1,19 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import Slide from '@material-ui/core/Slide'
-import MUIDataTable from "mui-datatables"
-import { Grid, AppBar, Toolbar, IconButton, Typography } from '@material-ui/core'
 import { linkFormToTask } from '../taskDataSlice'
+import MUIDataTable from "mui-datatables"
+import { Grid, AppBar, Toolbar, IconButton, Typography, Button, Dialog, Slide } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
+
+/**
+  When in a Request Task Edit Dialog, user can link a form to the task, if not already linked.
+  Opens a full page dialog with all the latest Requests submitted for the CCA.  
+
+  @param {string} taskId used to add link a selected form to a unique task
+  @param {object} requestListData slice of the requestList, used to populate the request list 
+  table for the Task Manager 
+  @param {function} dispatch dispatch the an acton that links the form to the task 
+*/
 
 const columns = ["Req ID", "Form Title", "Date", "Society"]
 
@@ -14,9 +21,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-export function AttachRequestForm(props) {
-
-  const {taskId, requestListData, dispatch} = props
+export function AttachRequestForm({taskId, requestListData, dispatch}) {
 
   const [open, setOpen] = useState(false)
 
@@ -39,6 +44,7 @@ export function AttachRequestForm(props) {
     selectableRows:false,
     onRowClick : (rowData, rowMeta, dataIndex) => {
       var requestId = rowData[0]
+      console.log(rowData)
       dispatch(linkFormToTask({taskId, requestId}))
     }
   }

@@ -1,11 +1,21 @@
 import React, { useState } from 'react'
-import { Button, Dialog, TextField, DialogActions, Paper, Grid, Checkbox, FormControlLabel, Typography, FormControl, Select, Menu, MenuItem } from '@material-ui/core'
 import { connect } from 'react-redux'
-import { changeCheckStatus, addSubTaskToDashBoard } from '../taskDataSlice'
+import { changeCheckStatus } from '../taskDataSlice'
+import { Grid, Checkbox, FormControlLabel } from '@material-ui/core'
 import SelectAssigneeButton from "./SelectAssigneeButton"
 
-export function SubTask(props) {
-  const {taskId, taskData, dispatch} = props
+/**
+  Displays a checklist of items that it receives in case a Form has been linked with this Task. 
+  The checklist displays a checkbox, a short description and a "Select Assignee" button. The user
+  can check and un-check the item as well as add a single assignee to the item.
+
+  @param {string} taskId used for fetching formId for the task and render that form checklist
+  @param {object} taskData from the corresponding redux slice, retrieve data related to the 
+  task and the checklist 
+  @param {function} dispatch to dispatch the action of changing the checklist checked
+*/
+
+export function SubTask({taskId, taskData, dispatch}) {
 
   const [check, setCheck] = useState(false)
 
@@ -21,23 +31,23 @@ export function SubTask(props) {
       taskData.checkListItems.map(checkListObj => {
         if ((taskData.tasks[taskId].formDataId !== "") && taskData.tasks[taskId].formDataId === checkListObj.formId) { 
           return <Grid direction="row" justify="flex-start" alignItems="center">
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Checkbox 
-                      color='primary' 
-                      checked={checkListObj.isChecked} 
-                      value = {check}
-                      onChange={(event) => {handleCheckedBox({event, checkListObj})}}
-                    />
-                  }
-                  label={checkListObj.title}
-                />
-              </Grid>
-              <Grid item >
-                <SelectAssigneeButton taskId={taskId} checkListObj={checkListObj} />
-              </Grid>
-            </Grid>        
+            <Grid item>
+              <FormControlLabel
+                control={
+                  <Checkbox 
+                    color='primary' 
+                    checked={checkListObj.isChecked} 
+                    value = {check}
+                    onChange={(event) => {handleCheckedBox({event, checkListObj})}}
+                  />
+                }
+                label={checkListObj.title}
+              />
+            </Grid>
+            <Grid item style={{padding: "5px"}}>
+              <SelectAssigneeButton taskId={taskId} checkListObj={checkListObj} />
+            </Grid>
+          </Grid>        
         }
       })
     }

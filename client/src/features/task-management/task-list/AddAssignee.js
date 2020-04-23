@@ -1,23 +1,27 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import Dialog from '@material-ui/core/Dialog'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import Grid from "@material-ui/core/Grid"
-import { Typography, Paper, Box, Card, DialogContentText, AppBar, Toolbar, IconButton, Slide, List, ListItem, Divider, ListItemText, FormControl, Select, InputLabel, makeStyles, Button } from '@material-ui/core'
+import { addTaskAssignees, deleteTaskAssignee } from '../taskDataSlice'
+import { Typography, List, ListItem, ListItemText, Grid, Dialog, DialogTitle} from '@material-ui/core'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'   
 import ClearIcon from '@material-ui/icons/Clear'
-import { addTaskAssignees, deleteTaskAssignee } from '../taskDataSlice'
 
-function SimpleDialog(props) {
+/**
+  Allows the user to add multiple assignees to the task. Also the user can delete an assignee 
+  from the task .
 
-  const { onClose, open, taskData, taskId, dispatch } = props
+  @param {object} taskData used to access multiple objects from the state.
+  @param {string} taskId used to add assignees to this task with this id only
+  @param {function} dispatch dispatch the actions of adding and deleting an assignee from the task
+*/
+
+
+function SimpleDialog({ onClose, open, taskData, taskId, dispatch }) {
 
   function handleClose() {
     onClose()
   }
 
   function handleListItemClick(value){
-    console.log(value)
     dispatch(addTaskAssignees({value, taskId}))
     onClose(value)
   }
@@ -67,39 +71,35 @@ export function AddAssignee({taskData, taskId, dispatch}) {
 
   return (
     <div>
-      <Grid container style={{marginTop: 0, padding: 15}}>
-        <Grid style={{marginTop: 10}} container direction="row" justify='flex-start' alignItems="flex-start">
-          <Grid item>
-            <Typography style={{padding:"0px 10px 0px 0px"}} gutterBottom variant="h6" color="inherit">
-              Assignees:  
-            </Typography>
-          </Grid>
-          <Grid>
-            <Typography>
-              <AddCircleOutlineIcon fontSize="large" onClick={handleClickOpen} cursor="pointer"/>
-            </Typography>
-          </Grid>
+      <Grid style={{marginTop: 10, padding:15}} container direction="row" justify='flex-start' alignItems="flex-start">
+        <Grid item>
+          <Typography style={{padding:"0px 10px 0px 0px"}} gutterBottom variant="h6" color="inherit">
+            Assignees:  
+          </Typography>
         </Grid>
-        <SimpleDialog open={open} onClose={handleClose} taskData={taskData} taskId={taskId} dispatch={dispatch} />
+        <Grid>
+          <Typography>
+            <AddCircleOutlineIcon fontSize="large" onClick={handleClickOpen} cursor="pointer"/>
+          </Typography>
+        </Grid>
       </Grid>
-      
+      <SimpleDialog open={open} onClose={handleClose} taskData={taskData} taskId={taskId} dispatch={dispatch} />
       {
         taskData.tasks[taskId].assList.length === 0 ? null : 
-      taskData.tasks[taskId].assList.map(person => (
-        <Grid  style={{padding: "5px 15px 15px 15px"}} container direction="column" justify='space-evenly' alignItems="flex-start">
-          <Grid container direction="row">
-            <Grid item style={{marginTop: 3, fontSize: 16}}>
-              {person} 
-            </Grid>                                                             
-            <Grid item >
-              <ClearIcon style={{marginLeft: 3}} onClick={() => {handleAssigneeDelete({person, taskId})}} fontSize="large" cursor="pointer"/>
+        taskData.tasks[taskId].assList.map(person => (
+          <Grid  style={{padding: "5px 15px 15px 15px"}} container direction="column" justify='space-evenly' alignItems="flex-start">
+            <Grid container direction="row">
+              <Grid item style={{marginTop: 3, fontSize: 16}}>
+                {person} 
+              </Grid>                                                             
+              <Grid item >
+                <ClearIcon style={{marginLeft: 3}} onClick={() => {handleAssigneeDelete({person, taskId})}} fontSize="large" cursor="pointer"/>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      ))}
+        ))}
     </div>
   )
-
 }
 
 const mapStateToProps = (state) => ({

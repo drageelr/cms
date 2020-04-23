@@ -25,17 +25,6 @@ const initialState = {
       permissions: "",
       timeStampCreated: ""
     },
-    {
-      id: "column-3",
-      email: "",
-      password: "",
-      firstName: "Farrukh",
-      lastName: "Rasool",
-      picture: "",
-      role: "",
-      permissions: "",
-      timeStampCreated: ""
-    },
   ],
   users: ["Farrukh", "column-1", "Zoraiz", "Hamza F", "Hammad", "Hamza A", "column-2"],  
   columnOrder: ['column-1','column-2'],
@@ -72,7 +61,24 @@ const initialState = {
       status: 'ts-1',
       assList: [],
       subTasksList: [], // list that contains the subtasks linked with this task
-      logsList: []
+      logsList: [
+        {
+          id: "log1",
+          taskId: "r1",
+          creatorId: "column-1",
+          description: "Hello WOrld",
+          timeStampCreated: "",
+          timeStampModified: ""
+        },
+        {
+          id: "log2",
+          taskId: "r1",
+          creatorId: "column-2",
+          description: "sasajsaisjaisjaisjasijaisj",
+          timeStampCreated: "",
+          timeStampModified: ""
+        }
+    ] 
     },
     'c2': { // c stands for request task
       id: 'c2', 
@@ -122,7 +128,7 @@ const initialState = {
     {
       id:"checkItem-1",
       formId: "R-ID-1",
-      title: "Please make the Checklist part asap.",
+      title: "Make the Checklist by tonight asap.",
       description: "I am trying my best.",
       sectionIndex: "1.1",
       isAssigned: false,
@@ -146,12 +152,24 @@ const initialState = {
       isAssigned: false,
       isChecked: false,
     },
+  ],
+
+  logs: [
+    {
+      id: "log1",
+      taskId: "r1",
+      creatorId: "column-1",
+      description: "Hello WOrld",
+      timeStampCreated: "",
+      timeStampModified: ""
+    }
   ]
 }
 
 let cId = 1
 let tId = 2
-let sId = 1
+let sId = 0
+let lId = 1
 
 const taskdata = createSlice({
   name: 'taskData',
@@ -190,9 +208,14 @@ const taskdata = createSlice({
       dstColumn.taskIds.splice(dstIndex, 0, taskId) //insert it at dst index in the dst column
     },
 
-    editTaskDesc: (state, action) => {
+    updateDescription: (state, action) => {
       const {taskId, description} = action.payload
       state.tasks[taskId].desc = description
+    },
+
+    updateTitle: (state, action) => {
+      const {taskId, newTitle} = action.payload
+      state.tasks[taskId].title = newTitle
     },
 
     archiveTask: (state, action) => { // send the task id to the server and create an archive of it
@@ -266,13 +289,8 @@ const taskdata = createSlice({
 
     createSubTask : (state, action) => {
       const {taskId, userObj, checkListObj} = action.payload
-      let subId = 1
 
-      if(state.tasks[taskId].subTasksList.length===0 || state.tasks[taskId].subTasksList === null) {
-        subId = 1
-      } else {
-        subId = state.tasks[taskId].subTasksList.length + 1
-      }
+      sId +=1
 
       let subObj = {
         id: `s${sId}`,
@@ -283,7 +301,9 @@ const taskdata = createSlice({
         description: checkListObj.description,
         sectionIndex: checkListObj.sectionIndex
       }
-      state.tasks[taskId].subTasksList.push(subObj)
+      state.tasks[taskId].subTasksList.push(subObj.id)
+      state.columns[subObj.assigneeId].taskIds.push(subObj.id)
+      state.tasks[subObj.id] = subObj
 
       state.checkListItems.map((tempObj, index) => { // the isAssigned property is set to true if a checklistItem has been assigned to an assignee
         if (tempObj.id === checkListObj.id) {
@@ -292,12 +312,29 @@ const taskdata = createSlice({
         }
       })
     },
+
+    createNewLog: (state, action) => {
+      const {taskId, logText} = action.payload
+      console.log(taskId, logText)  
+      lId+=1
+      let newLog = {
+        id: `log${lId}`,
+        taskId: taskId,
+        creatorId: state.tasks[taskId].ownerId, /// can come from login data --- putting random value for now
+        description: logText,
+        timeStampCreated: "",
+        timeStampModified: ""
+      }
+
+      state.tasks[taskId].logsList.push(newLog)
+    }
   }
 })
     
 export const { 
   addTask, 
-  editTaskDesc, 
+  updateTitle,
+  updateDescription, 
   moveTask, 
   archiveTask, 
   unArchiveTask, 
@@ -308,6 +345,7 @@ export const {
   changeCheckStatus, 
   linkFormToTask, 
   createSubTask,
+  createNewLog,
 } = taskdata.actions
 
 export default taskdata.reducer

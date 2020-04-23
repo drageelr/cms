@@ -12,6 +12,7 @@
     "@testing-library/user-event": "^7.2.1",
     "formik": "^2.1.4",
     "lodash": "^4.17.15",
+    "material-ui-chat": "^0.1.0",
     "mui-datatables": "^2.14.0",
     "react": "^16.13.1",
     "react-beautiful-dnd": "^13.0.0",

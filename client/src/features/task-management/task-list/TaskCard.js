@@ -1,19 +1,30 @@
 import React, {useState} from 'react'
+import { connect } from 'react-redux'
 import EditTaskDialog from './EditTaskDialog'
 import { Draggable } from "react-beautiful-dnd"
 import { Card, CardContent, Typography, Grid, MenuItem } from '@material-ui/core'
 import StopIcon from '@material-ui/icons/Stop'
-import { connect } from 'react-redux'
 import EditIcon from '@material-ui/icons/Edit'
 
-export function TaskCard(props) {
+/**
+  This component renders the cards in each column. Each Card displays some details about a task. 
+  Essentially the Task Title, Task Id, Task Status and an edit icon which when clicked, opens the 
+  edit dialog box.
 
-  const { taskId, index, taskData } = props
+  @param {string} taskId a unique taskId to access the tasks' details
+  @param {number} index used to distinguish draggable cards 
+  @param {object} taskData from the corresponding redux slice, to retrieve all the data related
+  the a particular task and use it to populate the card 
+*/
+
+export function TaskCard({taskId, index, taskData}) {
+
   const [open, setOpen] = useState(false)
 
   const statusId = taskData.tasks[taskId].status
   let taskStatusName = ""
   let taskStatusColor = ""
+
   taskData.taskStatuses.map(statObj => {
     if(statObj.id === statusId) {
       taskStatusName = statObj.name
@@ -28,7 +39,7 @@ export function TaskCard(props) {
           <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
             <Card 
               style={{
-                maxHeight: 85,
+                minHeight: 85,
                 minWidth: 0,
                 marginBottom: 10,
               }}

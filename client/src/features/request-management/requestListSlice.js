@@ -9,11 +9,9 @@ const initialState = {
     {id: "form-5", title: "Service Request"},    
   ],
 
-  isViewingForm: "",
-
   formData : [
     {
-      id: 0, //form data id
+      id: "R-ID-1", //form data id
       formId: "form-1", //form Id
       userId: "lumun", //user id of the user that submitted
       formStatus: 'Pending',
@@ -32,9 +30,9 @@ const initialState = {
       timestampModified: '02/13/2009 21:31:31'
     },
     {
-      id: 1, //form data id
+      id: "R-ID-2", //form data id
       formId: "form-1", //form Id
-      userId: "lumun", //user id of the user that submitted
+      userId: "spades", //user id of the user that submitted
       formStatus: 'Pending',
       ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!',
       ccaNoteTimestampModified: '03/13/2009 21:31:30',
@@ -51,9 +49,9 @@ const initialState = {
       timestampModified: '02/13/2009 21:31:31'
     },
     {
-      id: 2, //form data id
+      id: "R-ID-3", //form data id
       formId: "form-1", //form Id
-      userId: "lumun", //user id of the user that submitted
+      userId: "lrs", //user id of the user that submitted
       formStatus: 'Pending',
       ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!',
       ccaNoteTimestampModified: '03/13/2009 21:31:30',
@@ -85,15 +83,9 @@ const requestListData = createSlice ({
       console.log(action.payload)
       // state.formData.ccaNote = state.formData.ccaNote
     },
-
-    formBeingViewed : (state, action) => {
-      // console.log(a)
-      state.isViewingForm = action.payload.id
-      // console.log(obj)
-    }
   }
 })
 
-export const { changeFormStatus, updateCcaNote, formBeingViewed } = requestListData.actions
+export const { changeFormStatus, updateCcaNote } = requestListData.actions
 
 export default requestListData.reducer
