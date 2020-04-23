@@ -11,7 +11,7 @@ export default configureStore({
   reducer: {
     taskData: taskDataReducer,
     taskStatusDetails: taskStatusDetailsReducer,
-    societyData: societyDataReducer
+    societyData: societyDataReducer,
     formTemplate: formTemplateReducer,
     formData: formDataReducer,
     propertiesData: propertiesDataReducer,

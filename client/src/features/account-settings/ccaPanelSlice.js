@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit'
 
 //basically a list of all CCA members details-> list of objects
 //need to add state for password verification
-const initalState = [{   
+const initialState = [{   
     ccaMemberDetails:{
         123:{
             memberName: "Ashar Javed",
@@ -22,7 +22,7 @@ const initalState = [{
 let id = 2
 const ccaPanelData = createSlice({
     name: 'ccaPanelData',
-    initalState: initalState,
+    initialState: initialState,
     reducers: {
         addCCAAccount: (state,action) =>{
             id+= 1
