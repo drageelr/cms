@@ -3,7 +3,7 @@ import { Button} from '@material-ui/core'
 import { Formik, Form, Field } from 'formik'
 import { TextField, CheckboxWithLabel } from 'formik-material-ui'
 import { useDispatch } from 'react-redux'
-import { setPropertyWindow } from '../../propertiesDataSlice'
+import { closePropertiesWindow } from '../../propertiesDataSlice'
 import { addItem, editItem } from '../../formTemplateSlice'
 
 // TextboxProperties variant for Item Properties, item template includes {label, placeHolder, maxLength, required, defaultVisibility}
@@ -21,7 +21,7 @@ export default function TextboxProperties({propertyAddMode, propertyId, itemData
   console.log(parentId)
 
   function closeProperties() {
-    dispatch(setPropertyWindow({propertyType: ''}))
+    dispatch(closePropertiesWindow)
   }
 
   return (

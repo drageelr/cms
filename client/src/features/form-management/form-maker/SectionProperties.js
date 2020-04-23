@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button } from '@material-ui/core'
-import { setPropertyWindow } from '../propertiesDataSlice'
+import { closePropertiesWindow } from '../propertiesDataSlice'
 import { useDispatch } from 'react-redux'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
@@ -29,7 +29,7 @@ export default function SectionProperties({propertyId, propertyAddMode, sectionT
   }
   
   function closeProperties() {
-    dispatch(setPropertyWindow({propertyType: ''}))
+    dispatch(closePropertiesWindow())
   }
 
   return (      

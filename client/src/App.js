@@ -44,7 +44,7 @@ export default function App() {
           <Switch> 
             <Route path="/" exact component={LoginPage}/>
             <Route path="/form-viewer" component={FormViewer}/>
-            <Route path="/forms" component={SocietyFormList}/>
+            <Route path="/forms" component={FormList}/>
             <Route path="/form-maker" component={FormMaker}/>
             <Route path="/request-list" component={RequestList}/>
             <Route path="/task-manager" component={TaskManager}/>

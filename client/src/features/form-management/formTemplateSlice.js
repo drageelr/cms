@@ -77,7 +77,7 @@ const initialState = { // Sample form currently
 
 let sId = 1 //section
 let cId = 2//component
-let iId = 1 //iId
+let iId = 5 //iId
 
 const formTemplate = createSlice({
   name: 'formTemplate',
@@ -91,6 +91,7 @@ const formTemplate = createSlice({
       sId += 1
       state.sections[sId] = action.payload.title
       state.sectionsOrder.push(sId)
+      state.componentsOrder[sId] = []
       state.checklist[sId] = "Empty"
     },
 
@@ -100,6 +101,7 @@ const formTemplate = createSlice({
 
     addComponent: (state, action) => {
       cId += 1
+
       state.componentsOrder[action.payload.parentId].push(cId)
       state.components[cId] = action.payload.title
       state.itemsOrder[cId] = []
@@ -117,6 +119,34 @@ const formTemplate = createSlice({
 
     editItem: (state, action) => {
       state.items[action.payload.id] = action.payload.newItemData
+    },
+
+    moveFormPart: (state, action) => {
+      const {type, id, offset, parentId} = action.payload
+      
+      function move(arr) {
+        const index = arr.indexOf(id)
+        const newIndex = index + offset
+      
+        if (newIndex > -1 && newIndex < arr.length){
+          arr.splice(index, 1) // remove from array, return value not used
+          arr.splice(newIndex, 0, id) //remove 0 items, just insert item id at newIndex
+        }
+      }
+
+      switch(type){
+        case 'item':
+          move(state.itemsOrder[parentId])
+        break
+        case 'component':
+          move(state.componentsOrder[parentId])
+        break
+        case 'section':
+          move(state.sectionsOrder)
+        break
+        default:
+          break
+      }
     },
 
     editChecklistSubtask: (state, action) => {
@@ -151,9 +181,13 @@ const formTemplate = createSlice({
               }
             })
             
-            delete state.componentsOrder[id] //delete components order for section
+            if (state.componentsOrder[id].length != 1){
+              delete state.componentsOrder[id] //delete components order for section
+            }
+            else {
+              state.componentsOrder[id] = []
+            }
           }
-          sId -= 1
           break
         }
         case 'component':{
@@ -169,16 +203,21 @@ const formTemplate = createSlice({
             delete state.itemsOrder[id] //delete items order for component
           }
 
-          delete state.components[id] //item data removed
+
+          if (state.components[id].length != 1){
+            delete state.components[id] //item data removed
+          }
+          else {
+            state.components[id] = ""
+          }
           break
         } 
         case 'item': {
           const index = state.itemsOrder[parentId].indexOf(id)
           if (index > -1) { //index found
             state.itemsOrder[parentId].splice(index, 1) //remove from array
+            delete state.items[id] //item data removed
           }
-
-          delete state.items[id] //item data removed
 
           break
         }
@@ -187,6 +226,8 @@ const formTemplate = createSlice({
   }
 })
 
-export const { addSection, editSection, addItem, editItem, addComponent, editComponent, editChecklistSubtask, deleteFormPart, toggleIsPublic } = formTemplate.actions
+
+export const { addSection, editSection, addItem, editItem, addComponent, editComponent,
+  editChecklistSubtask, deleteFormPart, toggleIsPublic, moveFormPart} = formTemplate.actions
 
 export default formTemplate.reducer

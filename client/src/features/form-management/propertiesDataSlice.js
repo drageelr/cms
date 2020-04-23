@@ -16,10 +16,14 @@ const propertiesData = createSlice({
     setPropertyWindow: (state, action) => {
       return action.payload
     },
+    closePropertiesWindow: (state, action) => {
+      state.propertyAddMode = false
+      state.propertyType = ''
+    },
   }
 })
 
-export const { setPropertyWindow } = propertiesData.actions
+export const { setPropertyWindow, closePropertiesWindow } = propertiesData.actions
 
 
 export default propertiesData.reducer
