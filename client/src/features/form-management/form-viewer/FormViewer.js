@@ -13,15 +13,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-
 function FormViewer({formTemplate, formData}) {
   const { title, sections, sectionsOrder, componentsOrder, itemsOrder, items } = formTemplate
   const { ccaNote, ccaNoteTimestampModified, societyNotes } = formData
   const classes = useStyles()
+  const isCCA = true
 
   return (
     <div>
-      <FormViewerBar title={title} notesData={{ccaNote, ccaNoteTimestampModified, societyNotes}}/>
+      <FormViewerBar title={title} notesData={{ccaNote, ccaNoteTimestampModified, societyNotes}} isCCA={isCCA} />
       <br/>
       <Container>
       { //Container to center align the View, also sections and items rendered only (components are only logical)
