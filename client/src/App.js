@@ -13,6 +13,12 @@ import FormList from './features/form-management/form-list/FormList'
 import FormViewer from './features/form-management/form-viewer/FormViewer'
 import SocietyFormList from './features/form-management/form-list/SocietyFormList'
 
+
+import CCAAccountsPanel from './features/account-settings/cca-panel/CCAAccountsPanel'
+import SocietyAccountsPanel from './features/account-settings/SocietyAccountsPanel'
+import TaskStatusPanel from './features/account-settings/TaskStatusPanel'
+import ChangePassword from './features/account-settings/ChangePassword'
+
 const appTheme = createMuiTheme({
   palette: {
     primary: blue,
@@ -49,6 +55,10 @@ export default function App() {
             <Route path="/request-list" component={RequestList}/>
             <Route path="/task-manager" component={TaskManager}/>
             <Route path="/settings" component={CCASettingsHome}/>
+            <Route path="/ccapanel" exact component={CCAAccountsPanel}/>
+            <Route path="/changepassword" exact component={ChangePassword}/>
+            <Route path="/societypanel" exact component={SocietyAccountsPanel}/>
+            <Route path="/taskstatuspanel" exact component={TaskStatusPanel}/>          
           </Switch>
       </ThemeProvider>
     </Router>
