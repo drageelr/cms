@@ -67,7 +67,8 @@ exports.ccaEditAccount = {
       unarchiveTask: Joi.bool(),
       setFormStatus: Joi.bool(),
       addCCANote: Joi.bool()
-    }
+    },
+    active: Joi.bool()
   })
 };
 
@@ -81,6 +82,7 @@ exports.societyEditAccount = {
     nameInitials: Joi.string().min(1).max(10),
     presidentEmail: Joi.string().email(),
     patronEmail: Joi.string().email(),
+    active: Joi.bool()
   })
 };
 
