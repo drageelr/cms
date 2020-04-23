@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 // import SocietyAccountCard from './SocietyAccountCard'
 ////////////////////////////////////////////////////////////////
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,14 +12,14 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import { Button } from '@material-ui/core';
 
-import {addSocietyAccount} from './societyPanelSlice'
+import {addSocietyAccount} from './societyDataSlice'
 import {Link} from 'react-router-dom'
 
 import Container from '@material-ui/core/Container';
-/////////////////////////////////////////////////////////////////
-//now need to fetch data
 
 import {connect} from 'react-redux'
+
+import AddEditSocietyDialog from './AddEditSocietyDialog'
 
 ///////////////////////////////////////////////////////////////////
 const useStyles = makeStyles({
@@ -31,55 +31,108 @@ const useStyles = makeStyles({
   },
 });
 
-const columns = [
-  { id: 'init', label: 'Initials', minWidth: 170 }, //inits ka object
-  { id: 'name', label: 'Society Name', minWidth: 100 }, //name ka object
-  {
-    id: 'email',
-    label: 'Email Address',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toLocaleString(),
-  }//email ka object
-];
-
-const rows = [
-  createData('LUMUN', 'LUMS Model United Nations', "lumun@lums.edu.pk"),
-  createData('LARTS', 'LUMS Arts Society', "larts@lums.edu.pk"),
-  createData('LES', 'LUMS ES', "LES@lums.edu.pk"),
-];
-
-//action->returning the object of data it recei
-function createData(init, name, email) {
-  return { init, name, email};
-}
-
 function SocietyAccountsPanel({societyData,dispatch}) {
 
-  function handleClick(event){
-    dispatch(addSocietyAccount(event.target.value))
-  }
+  // const classes = useStyles();
+  // const [isOpen,setIsOpen] = useState(false)
+
+
+
+  // const [isOpen,setIsOpen] = useState(false)
+  // function handleClick(event){  
+  //   setIsOpen (true)
+  //   // return <AddEditSocietyDialog isOpen = {isOpen}/>
+  //     // dispatch(addSocietyAccount(event.target.value))
+  // }
   
+  // function handleOpen(){  
+  //   setIsOpen (true)
+  // }
+
+
+  // function TaskStatusDialog(){
+  //   function handleClose(){
+  //     setIsOpen(false)
+  //   };
+  
+  //   return (
+  //     <Dialog
+  //       open={isOpen}
+  //       onClose={handleClose}
+  //       // PaperComponent={PaperComponent}
+  //       aria-labelledby="draggable-dialog-title"
+  //       >
+  //       <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+  //         Add Task Status
+  //       </DialogTitle>
+
+  //       <Formik
+  //         validateOnChange={false} validateOnBlur={true}
+  //         initialValues={{
+  //           nameInitials: "LUMUN",
+  //           name: "LUMS model united nations",
+  //           email: "lumun@lums.edu.pk",
+  //           presidentEmail: "zozo@gmail.com",
+  //           patronEmail: "hamza@gmail.com",
+  //         }}
+  //         validate={values => {
+  //           const errors = {}
+  //           return errors
+  //         }}
+  //         onSubmit={(values) => {
+  //             dispatch(addTaskStatus({name: values.name, colorHex: values.colorHex}))
+  //             handleClose()
+  //         }}
+  //       >
+  //         {({submitForm}) => (
+  //           <Form>
+  //             <DialogContent>
+  //               <Grid container direction = "column" justify = "center" alignItems = "center" style = {{width: 400}}>
+  //                 <Grid item style = {{width: 350}}>
+  //                   <Field component={TextField} name="name" required label="Name"/>
+  //                 </Grid>
+                  
+  //                 <Grid item style = {{width: 350}}>
+  //                   <Field component={TextField} name="colorHex" required label="Color" helperText = "Enter Hex Value for Color (#000000)"/>    
+  //                 </Grid>
+  //               </Grid>
+  //             </DialogContent>
+  //             <DialogActions>
+  //               <Button onClick={submitForm} color="primary">
+  //                 Save
+  //               </Button>
+                
+  //               <Button autoFocus onClick={handleClose}>
+  //                 Cancel
+  //               </Button>
+  //             </DialogActions>
+  //           </Form>
+  //         )}
+  //       </Formik>        
+  //     </Dialog>
+  //   )
+  // }
+
+
   const classes = useStyles();
   
   return (
     <div>
       <h2>SocietyAccountsPanel</h2>
       <Button
-      // component = {AddEditSocietyDialog} 
       variant="contained" 
       color="primary" 
       spacing= '10' 
       style = {{float: "right", marginBottom:10}}
-      onClick = {handleClick}
+      // onClick = {handleClick}
       value = {10}
       >Add society
       {/* *need to add a link so if person clicks it route to add/edit dialog box" */}
       </Button>
-      
+      {/* {isOpen? <AddEditSocietyDialog/> : null}       */}
       {/* <SocietyAccountCard /> */}
       <Container>
-
+      {/* <AddEditSocietyDialog isOpen = {isOpen}/> */}
       <Paper className={classes.root} style={{maxHeight: 450, overflow: 'auto'}}>
       <TableContainer className={classes.container}>
       <Table>
@@ -92,13 +145,13 @@ function SocietyAccountsPanel({societyData,dispatch}) {
         </TableHead>
           
         <TableBody>
-        {rows.map((row) => (
-          <TableRow key={row.init}>
+        {societyData.map((societyData,index) => (
+          <TableRow key={index}>
             <TableCell component="th" scope="row">
-              {row.name}
+              {societyData.name}
             </TableCell>
-            <TableCell align="right">{row.name}</TableCell>
-            <TableCell align="right">{row.email}</TableCell>
+            <TableCell align="right">{societyData.name}</TableCell>
+            <TableCell align="right">{societyData.email}</TableCell>
           </TableRow>
         ))}
         </TableBody>
@@ -113,7 +166,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
 
 
 const mapStateToProps = (state) => ({
-  societyData: state.societyPanelData,
+  societyData: state.societyData,
 })
 
 export default connect(mapStateToProps) (SocietyAccountsPanel)

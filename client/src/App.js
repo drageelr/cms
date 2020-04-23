@@ -13,7 +13,7 @@ import CCASettingsHome from './features/account-settings/CCASettingsHome'
 
 import CCAAccountsPanel from './features/account-settings/cca-panel/CCAAccountsPanel'
 import SocietyAccountsPanel from './features/account-settings/SocietyAccountsPanel'
-import TaskStatusPanel from './features/account-settings/task-status-panel/TaskStatusPanel'
+import TaskStatusPanel from './features/account-settings/TaskStatusPanel'
 import ChangePassword from './features/account-settings/ChangePassword'
 
 const appTheme = createMuiTheme({

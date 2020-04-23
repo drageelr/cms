@@ -40,22 +40,6 @@ const CustomTextInput = ({label, ...props}) =>{
   )
 }
 
-//NEED TO CHECK THIS AGAIN
-// const CustomCheckbox = ({children, ...props}) =>{
-//   const [field, meta] = useField(props,'checkbox')
-//   return (
-//     <>
-//       <label>
-//       <input className = "text-input" {...field}{...props}/>
-//         {children}
-//       </label>
-//       {meta.touched && meta.error ? (
-//         <div>{meta.error}</div>
-//       ): null}
-//     </>
-//   )
-// }
-
 const CustomSelect = ({label, ...props}) =>{
   const [field, meta] = useField(props)
   return (
@@ -152,25 +136,18 @@ export default function LoginPage() {
             </CustomSelect>
             <br/>    
             <br/>
-            
-            {/* <checkbox type="checkbox">
-              I accept
-            </checkbox> */}
-            {/* <CustomCheckbox>
-              I accept the terms and conditions
-            </CustomCheckbox> */}
-            <br/>
+
             <Button variant="contained" color="primary" spacing= '10'>
               {props.isSubmitting ?'loading...': 'submit'}
             </Button>
             
+            <br/>
             <br/>
             <Grid item xs>
               <Link href="#" variant="body2">
                 Forgot password?
               </Link>
             </Grid>
-
           </Form>
         )}
       </Formik>

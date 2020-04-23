@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 import taskDataReducer from '../features/task-management/taskdataSlice'
-// import requestListReducer from '../features/request-management/requestListSlice'
+import taskStatusDetailsReducer from '../features/account-settings/taskStatusDetailsSlice'
+import societyDataReducer from '../features/account-settings/societyDataSlice'
 
 export default configureStore({
   reducer: {
     taskData: taskDataReducer,
-    // requestListData: requestListReducer
+    taskStatusDetails: taskStatusDetailsReducer,
+    societyData: societyDataReducer
   },
 })
