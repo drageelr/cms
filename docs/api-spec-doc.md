@@ -14,24 +14,21 @@
 ### 1. Authentication
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|CCA Login|Authentication for CCA Users|`/api/auth/cca-login`|`{email: "String", password: "String"}`|POST|`{token: "String", , user: {id: Number, firstName: "String", lastName: "String", picture: "String", permissions: "String"}}`|CCA|`2.1`|
-|2|Society Login|Authentication for Society Users|`/api/auth/society-login`|`{email: "String", password: "String"}`|POST|`{token: "String", , user: {id: Number, name: "String", nameInitials: "String", name}`|Society|`2.1`|
+|1|CCA Login|Authentication for CCA Users|`/api/auth/cca/login`|`{email: "String allow: ['lums.edu.pk']", password: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{token: "String", user: {id: Number, firstName: "String", lastName: "String", picture: "String", permissions: "String"}}`|CCA|`401`|
+|2|Society Login|Authentication for Society Users|`/api/auth/society/login`|`{email: "String allow: ['lums.edu.pk']", password: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{token: "String", user: {id: Number, name: "String", nameInitials: "String", patronEmail: "String", presidentEmail: "String"}`|Society|`401`|
 
 ### 2. User Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of CCA User (Admin/Member) and Society accounts.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Create CCA Account|Creates an account for a CCA Member|`/api/account/cca/create-account`|`{firstName*: "String", lastName*: "String", email*: "String", password*: "String", picture: "String", permissions: "String"}`|POST|`{}`|CCA|TBD|
-|2|Edit CCA Account|Edits an account of a CCA Member|`/api/account/cca/edit-account`|`{firstName: "String", lastName: "String", email: "String", password: "String", picture: "String", permissions: "String"}`|PUT|`{}`|CCA|TBD|
-|3|Delete CCA Account|Deletes an account of a CCA Member|`/api/account/cca/delete-account`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
-|4|Get CCA Account List|Fetches the list of all existing CCA Member Accounts|`/api/account/cca/cca-list`|`{}`|GET|`{ccaAccountList: [{firstName: "String", lastName: "String", email: "String", picture: "String", permissions: "String"}]}`|CCA|TBD|
-|5|Change CCA Password|Changes the password of a CCA Member|`/api/account/cca/change-password`|`{passwordPrevious*: "String", passwordNew*: "String"}`|PUT|`{}`|CCA|TBD|
-|6|Change CCA Picture|Changes the picture of a CCA Member|`/api/account/cca/change-password`|`{picture*: "String"}`|PUT|`{}`|CCA|TBD|
-|7|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{nameInitials*: "String", name*: "String", email*: "String", password*: "String", emailPresident*: "String", emailPatron*: "String"}`|POST|`{}`|CCA|TBD|
-|8|Edit Society Account|Edits an account of a Society|`/api/account/society/edit-account`|`{nameInitials: "String", nameSociety: "String", emailSociety: "String", password: "String", emailPresident: "String", emailPatron: "String"}`|PUT|`{}`|CCA|TBD|
-|9|Delete Society Account|Deletes an account of a Society|`/api/account/society/delete-account`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
-|10|Get Society Account List|Fetches the list of all existing Society Member Accounts|`/api/account/society/society-list`|`{}`|GET|`{societyAccountList: [{nameInitials: "String", nameSociety: "String", emailSociety: "String"}]}`|CCA|TBD|
-|11|Change Society Password|Changes the password of a Society Account|`/api/account/society/change-password`|`{passwordPrevious*: "String", passwordNew*: "String"}`|PUT|`{}`|Society|TBD|
+|1|Create CCA Account|Creates an account for a CCA Member|`/api/account/cca/create-account`|`{email*: "String allow: ['lums.edu.pk'], password*: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName*: "String-min(1)-max(30)", lastName*: "String-min(1)-max(30)", picture*: "String", permissions: {societyCRUD*: Boolean, ccaCRUD*: Boolean, accessFormMaker*: Boolean, createReqTask*: Boolean, createCustomTask*: Boolean, createTaskStatus*: Boolean, archiveTask*: Boolean, unarchiveTask*: Boolean, setFormStatus*: Boolean, addCCANote*: Boolean}}`|POST|`{ccaId: Number}`|CCA|400|
+|2|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{email*: "String allow: ['lums.edu.pk']", password*: "String-min(8)-max(30)-[a-zA-Z0-9]", name*: "String-min(1)-max(100)", nameInitials*: "String-min(1)-max(10)", presidentEmail*: "String allow: ['lums.edu.pk']", patronEmail*: "String allow: ['lums.edu.pk']"}`|POST|`{societyId: Number}`|CCA|400|
+|3|Edit CCA Account|Edits an account of a CCA Member|`/api/account/cca/edit-account`|`{email: "String allow: ['lums.edu.pk'], password: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName: "String-min(1)-max(30)", lastName: "String-min(1)-max(30)", picture: "String", permissions: {societyCRUD: Boolean, ccaCRUD: Boolean, accessFormMaker: Boolean, createReqTask: Boolean, createCustomTask: Boolean, createTaskStatus: Boolean, archiveTask: Boolean, unarchive: Boolean, setFormStatus: Boolean, addCCANote: Boolean}} "At least one field is required"`|POST|`{}`|CCA|404|
+|4|Edit Society Account|Edits an account of a Society|`/api/account/cca/edit-account`|`{email: "String allow: ['lums.edu.pk]", password: "String-min(8)-max(30)-[a-zA-Z0-9]", name: "String-min(1)-max(30)", nameInitials*: "String-min(1)-max(10)", presidentEmail: "String allow: ['lums.edu.pk]", patronEmail: "String allow: ['lums.edu.pk']" "At least one field is required"}`|POST|`{}`|CCA|404|
+|5|Get CCA Account List|Fetches the list of all existing CCA Member Accounts|`/api/account/cca/account-list`|`{}`|POST|`{userList: [{ccaId: Number, email: "String", role: "String", firstName: "String", lastName: "String", picture: "String", active: Boolean}]}`|CCA|404|
+|6|Get Society Account List|Fetches the list of all existing Society Accounts|`/api/account/society/account-list`|`{}`|POST|`{userList: [{societyId: Number, email: "String", name: "String", nameInitials: "String", presidentEmail: "String", patronEmail: "String", active: Boolean}]}`|CCA|404|
+|7|Change Password CCA|Changes the password of a CCA Member|`/api/account/cca/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|CCA|401|
+|8|Change Password Society|Changes the password of a Society Account|`/api/account/society/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|Society|401|
 
 ### 3. Form Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of forms.*
