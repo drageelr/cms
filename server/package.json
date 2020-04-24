@@ -13,6 +13,7 @@
     "express-validation": "^3.0.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.9",
+    "mongoose-plugin-autoinc": "^1.1.9",
     "morgan": "~1.9.1"
   },
   "description": "CMS Server",

@@ -13,6 +13,7 @@ var httpStatus = require('../services/http-status');
 
 // Others:
 var customError = require('../errors/errors');
+var helperFuncs = require('../services/helper-funcs');
 
 /*
   ------------------ CODE BODY --------------------
@@ -32,24 +33,27 @@ exports.ccaLogin = async (req, res, next) => {
   let params = req.body;
 
   try {
-    let reqCCA = await CCA.findOne({email: params.email, passowrd: params.password}, '_id id firstName lastName picture permissions');
+    let reqCCA = await CCA.findOne({email: params.email, password: params.password}, '_id ccaId firstName lastName picture permissions');
     if (reqCCA) {
       let token = jwt.signID(reqCCA._id, "cca", "12h");
+
+      let permissions = helperFuncs.duplicateObject(reqCCA.permissions, ["soceityCRUD", "ccaCRUD", "accessFormMaker", "createReqTask", "createCustomTask", "createTaskStatus", "archiveTask", "unarchiveTask", "setFormStatus", "addCCANote"]);
+      
       res.json({
         statusCode: 200,
         statusName: httpStatus.getName(200),
         message: "Login successful!",
         token: token,
         user: {
-          id: reqCCA.id,
+          id: reqCCA.ccaId,
           firstName: reqCCA.firstName,
           lastName: reqCCA.lastName,
           picture: reqCCA.picture,
-          permissions: reqCCA.permissions
+          permissions: permissions
         }
       });
     } else {
-      throw new customError.AuthenticationError;
+      throw new customError.AuthenticationError("invalid email or password");
     }
   } catch(err) {
     next(err);
@@ -66,7 +70,7 @@ exports.societyLogin = async (req, res, next) => {
   let params = req.body;
 
   try {
-    let reqSociety = await Society.findOne({email: params.email, password: params.password}, '_id id name nameInitials presidentEmail patronEmail');
+    let reqSociety = await Society.findOne({email: params.email, password: params.password}, '_id societyId name nameInitials presidentEmail patronEmail');
     if (reqSociety) {
       let token = jwt.signID(reqSociety._id, "soc", "12h");
       res.json({
@@ -75,7 +79,7 @@ exports.societyLogin = async (req, res, next) => {
         message: "Login successful!",
         token: token,
         user: {
-          id: reqSociety.id,
+          id: reqSociety.societyId,
           name: reqSociety.name,
           nameInitials: reqSociety.nameInitials,
           patronEmail: reqSociety.patronEmail,
@@ -83,7 +87,7 @@ exports.societyLogin = async (req, res, next) => {
         }
       });
     } else {
-      throw new customError.AuthenticationError;
+      throw new customError.AuthenticationError("invalid email or password");
     }
   } catch(err) {
     next(err);

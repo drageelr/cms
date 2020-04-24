@@ -10,18 +10,10 @@ var Joi = require('express-validation').Joi;
   ------------------ CODE BODY --------------------
 */
 
-// Export Society Validation Object:
-exports.societyLoginValidation = {
+// Export API 1.1 + 1.2 Validation Object:
+exports.loginValidation = {
   body: Joi.object({
-    email: Joi.string().email({tlds: {allow: ['lums.edu.pk']}}).required(),
-    password: Joi.string().regex(/[a-zA-Z0-9]{8,30}/).required()
-  })
-};
-
-// Export CCA Validation Object:
-exports.ccaLoginValidation = {
-  body: Joi.object({
-    email: Joi.string().email({tlds: {allow: ['lums.edu.pk']}}).required(),
+    email: Joi.string().email().required(),
     password: Joi.string().regex(/[a-zA-Z0-9]{8,30}/).required()
   })
 };
