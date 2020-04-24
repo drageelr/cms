@@ -1,23 +1,32 @@
-import React, { useState } from 'react'
-// import SocietyAccountCard from './SocietyAccountCard'
-////////////////////////////////////////////////////////////////
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
+import React, {useState} from 'react'
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { Button } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
-import {addSocietyAccount} from './societyDataSlice'
-import {Link} from 'react-router-dom'
-
-import Container from '@material-ui/core/Container';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { Grid } from '@material-ui/core';
+import {addSocietyAccount,editSocietyAccount,deleteSocietyAccount} from './societyDataSlice'
 
 import {connect} from 'react-redux'
+import { Formik, Form, Field } from 'formik'
+import { TextField } from 'formik-material-ui'
+
+import MoreButton from '../../ui/MoreButton'
+
+import DeleteIcon from '@material-ui/icons/Delete'
+
+import EditIcon from '@material-ui/icons/Edit'
 
 // import AddEditSocietyDialog from './AddEditSocietyDialog'
 
@@ -33,106 +42,121 @@ const useStyles = makeStyles({
 
 function SocietyAccountsPanel({societyData,dispatch}) {
 
-  // const classes = useStyles();
-  // const [isOpen,setIsOpen] = useState(false)
-
-
-
-  // const [isOpen,setIsOpen] = useState(false)
-  // function handleClick(event){  
-  //   setIsOpen (true)
-  //   // return <AddEditSocietyDialog isOpen = {isOpen}/>
-  //     // dispatch(addSocietyAccount(event.target.value))
-  // }
-  
-  // function handleOpen(){  
-  //   setIsOpen (true)
-  // }
-
-
-  // function TaskStatusDialog(){
-  //   function handleClose(){
-  //     setIsOpen(false)
-  //   };
-  
-  //   return (
-  //     <Dialog
-  //       open={isOpen}
-  //       onClose={handleClose}
-  //       // PaperComponent={PaperComponent}
-  //       aria-labelledby="draggable-dialog-title"
-  //       >
-  //       <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-  //         Add Task Status
-  //       </DialogTitle>
-
-  //       <Formik
-  //         validateOnChange={false} validateOnBlur={true}
-  //         initialValues={{
-  //           nameInitials: "LUMUN",
-  //           name: "LUMS model united nations",
-  //           email: "lumun@lums.edu.pk",
-  //           presidentEmail: "zozo@gmail.com",
-  //           patronEmail: "hamza@gmail.com",
-  //         }}
-  //         validate={values => {
-  //           const errors = {}
-  //           return errors
-  //         }}
-  //         onSubmit={(values) => {
-  //             dispatch(addTaskStatus({name: values.name, colorHex: values.colorHex}))
-  //             handleClose()
-  //         }}
-  //       >
-  //         {({submitForm}) => (
-  //           <Form>
-  //             <DialogContent>
-  //               <Grid container direction = "column" justify = "center" alignItems = "center" style = {{width: 400}}>
-  //                 <Grid item style = {{width: 350}}>
-  //                   <Field component={TextField} name="name" required label="Name"/>
-  //                 </Grid>
-                  
-  //                 <Grid item style = {{width: 350}}>
-  //                   <Field component={TextField} name="colorHex" required label="Color" helperText = "Enter Hex Value for Color (#000000)"/>    
-  //                 </Grid>
-  //               </Grid>
-  //             </DialogContent>
-  //             <DialogActions>
-  //               <Button onClick={submitForm} color="primary">
-  //                 Save
-  //               </Button>
-                
-  //               <Button autoFocus onClick={handleClose}>
-  //                 Cancel
-  //               </Button>
-  //             </DialogActions>
-  //           </Form>
-  //         )}
-  //       </Formik>        
-  //     </Dialog>
-  //   )
-  // }
-
-
   const classes = useStyles();
-  
+  const [isOpen,setIsOpen] = useState(false)
+
+  const [editMode,setEditMode] = useState(false)
+  const [editId, setEditId] = useState(-1)
+
+  function handleAdd(){
+    setEditMode(false)  
+    setIsOpen (true)
+  }
+
+  function handleEdit(id){
+    setEditId(id)
+    setEditMode(true)  
+    setIsOpen (true)
+  }
+
+  function SocietyDialog(){
+    let initialValues = {
+      name: '',
+      colorHex: ''
+    }
+
+    function handleClose(){
+      setIsOpen(false)
+    }
+
+    return (
+      <Dialog
+        open={isOpen}
+        onClose={handleClose}
+        // PaperComponent={PaperComponent}
+        aria-labelled by="draggable-dialog-title"
+        >
+        <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+          {editMode ? "Edit Task Status" : "Add Task Status"}
+        </DialogTitle>
+
+        <Formik
+          validateOnChange={false} validateOnBlur={true}
+          initialValues={initialValues}
+          validate={values => {
+            const errors = {}
+            return errors
+          }}
+          onSubmit={(values) => {
+            dispatch(addSocietyAccount({
+              nameInitials: values.nameInitials,
+              name: values.name,
+              email: values.email,
+              presidentEmail: values.presidentEmail,
+              patronEmail: values.patronEmail,
+              password: values.password
+            }))
+            handleClose()
+          }}
+        >
+          {({submitForm}) => (
+            <Form>
+              <DialogContent>
+                <Grid container direction = "column" justify = "center" alignItems = "center" style = {{width: 400}}>
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="name" required label="Name"/>
+                  </Grid>
+                  
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="nameInitials" required label="Name Initials"/>    
+                  </Grid>
+
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="email" required label="Email"/>    
+                  </Grid>
+                  
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="presidentEmail" required label="President Email"/>    
+                  </Grid>
+
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="patronEmail" required label="Patron Email"/>    
+                  </Grid>
+
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="password" required label="Password"/>    
+                  </Grid>
+                </Grid>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={submitForm} color="primary">
+                  Save
+                </Button>
+                
+                <Button autoFocus onClick={handleClose}>
+                  Cancel
+                </Button>
+              </DialogActions>
+            </Form>
+          )}
+        </Formik>        
+      </Dialog>
+    )
+  }
   return (
     <div>
       <h2>SocietyAccountsPanel</h2>
-      <Button
-      variant="contained" 
-      color="primary" 
-      spacing= '10' 
-      style = {{float: "right", marginBottom:10}}
-      // onClick = {handleClick}
-      value = {10}
-      >Add society
-      {/* *need to add a link so if person clicks it route to add/edit dialog box" */}
-      </Button>
-      {/* {isOpen? <AddEditSocietyDialog/> : null}       */}
-      {/* <SocietyAccountCard /> */}
-      <Container>
-      {/* <AddEditSocietyDialog isOpen = {isOpen}/> */}
+      <div>
+        <Button
+          variant="contained" 
+          color="primary" 
+          spacing= '10' 
+          style = {{float: "right", marginBottom:10}}
+          onClick = {handleAdd}
+          >Add society
+        </Button>
+        <SocietyDialog/>
+      </div>
       <Paper className={classes.root} style={{maxHeight: 450, overflow: 'auto'}}>
       <TableContainer className={classes.container}>
       <Table>
@@ -159,7 +183,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
       </Table>
       </TableContainer>
       </Paper>
-      </Container>
+      
     </div>
     )
 }
