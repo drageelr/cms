@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import FormMakerBar from './FormMakerBar'
 import Properties from './Properties'
 import Section from './Section'
-import {makeStyles, List, Paper } from '@material-ui/core'
+import {makeStyles, List, Paper, CircularProgress, Snackbar} from '@material-ui/core'
 import {connect} from 'react-redux'
 import FormMakerAddButton from './FormMakerAddButton'
+import { unwrapResult } from '@reduxjs/toolkit'
+import { fetchFormById } from '../formTemplateSlice'
 
 export const useStyles = makeStyles((theme) => ({
   viewPaper: {
@@ -27,14 +29,21 @@ export const useStyles = makeStyles((theme) => ({
   form maker and properties view based on the current form loaded
 */
 
-function FormMaker({formTemplate}) {
-  const { title, isPublic, sections, sectionsOrder, componentsOrder, components, itemsOrder, items } = formTemplate
+function FormMaker({ formTemplate, dispatch }) {
+  const { title, isPublic, sections, sectionsOrder, componentsOrder, components, itemsOrder, items, isPending, error } = formTemplate
   const classes = useStyles()
+
+  useEffect(async () => {
+    const actionResult = await dispatch(fetchFormById({formId: 0}))
+    // const formTemplate = unwrapResult(actionResult)
+  }, [])
 
   return (
     <div>
       <Properties formTemplate = {formTemplate} />
       <FormMakerBar title={title} isPublic={isPublic}/>
+      {
+      isPending ? <CircularProgress style={{marginLeft: '55vw', marginTop: '30vh'}}/> :  
       <Paper square variant="outlined"className={classes.viewPaper}>
         <List>
           {
@@ -45,6 +54,7 @@ function FormMaker({formTemplate}) {
           <FormMakerAddButton type="section"/>
         </List>
       </Paper>
+      }
     </div>
   )
 }

@@ -1,5 +1,6 @@
-import React from 'react'
-import { Grid, Typography, Box, Button, FormControlLabel, Switch } from '@material-ui/core'
+import React, {useState} from 'react'
+import { Grid, Typography, Box, Button, FormControlLabel, Switch, Dialog, 
+  DialogContent, DialogTitle, DialogContentText, DialogActions } from '@material-ui/core'
 import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles'
 import SaveIcon from '@material-ui/icons/Save'
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 /**
-  The FormMakerBar constitutes of the Form Title, the Checklist, Save Edits, Cancel buttons and the 
+  The FormMakerBar constitutes of the Form Title, the Checklist, Save Edits, Exit buttons and the 
   toggle Public/Private status switch on top of the Form Maker.
 
   @param {string} title for the form
@@ -28,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
 export default function FormMakerBar({title, isPublic}) {
   const classes = useStyles()
   const dispatch = useDispatch()
+  const [exitDialogOpen, setExitDialogOpen] = useState(false)
 
   function viewChecklist(){
     dispatch(setPropertyWindow({propertyType: 'checklist', propertyId: ''}))
@@ -66,7 +68,8 @@ export default function FormMakerBar({title, isPublic}) {
             <Button
             variant="contained"
             style={{marginLeft:10, marginRight: 15}}
-            >Cancel</Button>
+            onClick={()=>setExitDialogOpen(true)}
+            >Exit</Button>
             
             <FormControlLabel
               control={
@@ -82,6 +85,23 @@ export default function FormMakerBar({title, isPublic}) {
           </Grid>
         </Grid>
       </Paper>
+
+      <Dialog aria-labelledby="conditional-item-dialog" open={exitDialogOpen}>
+        <DialogTitle id="exit-dialog-title">Exit</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to exit? (All unsaved changes will be lost.)
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>{}} color="primary">
+            Yes
+          </Button>
+          <Button onClick={()=>setExitDialogOpen(false)}>
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   )
 }
