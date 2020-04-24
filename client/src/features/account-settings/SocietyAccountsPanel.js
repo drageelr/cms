@@ -19,7 +19,7 @@ import Container from '@material-ui/core/Container';
 
 import {connect} from 'react-redux'
 
-import AddEditSocietyDialog from './AddEditSocietyDialog'
+// import AddEditSocietyDialog from './AddEditSocietyDialog'
 
 ///////////////////////////////////////////////////////////////////
 const useStyles = makeStyles({

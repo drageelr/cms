@@ -14,7 +14,7 @@ import FormViewer from './features/form-management/form-viewer/FormViewer'
 import SocietyFormList from './features/form-management/form-list/SocietyFormList'
 
 
-import CCAAccountsPanel from './features/account-settings/cca-panel/CCAAccountsPanel'
+import CCAAccountsPanel from './features/account-settings/CCAAccountsPanel'
 import SocietyAccountsPanel from './features/account-settings/SocietyAccountsPanel'
 import TaskStatusPanel from './features/account-settings/TaskStatusPanel'
 import ChangePassword from './features/account-settings/ChangePassword'
