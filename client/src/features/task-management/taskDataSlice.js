@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit"
 
+/**
+  A temporary initial state has been created to test with the components and render meaningful
+  on the screen. The action creators in the reducer are responsible for implementing the changes 
+  that the user makes when editing the task.
+*/
+
 const initialState = {
   
   userData:[
@@ -26,6 +32,7 @@ const initialState = {
       timeStampCreated: ""
     },
   ],
+  
   users: ["Asher", "Farkhanda"],  
 
   columnOrder: ['column-1','column-2'],
@@ -153,6 +160,7 @@ const taskdata = createSlice({
   reducers: {
     addTask: (state, action) => {
       const {ownerId, text, taskType} = action.payload
+      
       tId += 1
       let typeInit = ""
 
@@ -186,17 +194,19 @@ const taskdata = createSlice({
 
     updateDescription: (state, action) => {
       const {taskId, description} = action.payload
+      
       state.tasks[taskId].description = description
     },
 
     updateTitle: (state, action) => {
       const {taskId, newTitle} = action.payload
+      
       state.tasks[taskId].title = newTitle
     },
 
     archiveTask: (state, action) => { // send the task id to the server and create an archive of it
       const {taskId, ownerId} = action.payload
-      // console.log(ownerId)
+
       state.columns[ownerId].taskIds.map(id => {
         if (taskId === id) {
           var filteredAry = state.columns[ownerId].taskIds.filter(function(e) { return e !== id })
@@ -209,6 +219,7 @@ const taskdata = createSlice({
 
     unArchiveTask: (state, action) => { // when i get the archive tasks from server, i will also get the taskowner id with it so then adding task back to column is simple, for now hardcoding the column
       const {taskId,ownerId} = action.payload 
+      
       state.columns[ownerId].taskIds.push(taskId) // put the task back in owners list
       state.archiveList.map(id => {
         var filteredAry = state.archiveList.filter(function(e) { return e.id !== taskId })
@@ -218,44 +229,47 @@ const taskdata = createSlice({
 
     taskOwner: (state, action) => {
       const {taskId, owner} = action.payload
+      
       state.tasks[taskId].ownerId = owner
     },
 
     addTaskAssignees: (state, action) => {
       const {taskId, value} = action.payload
+      
       state.tasks[taskId].assigneeList.push(value)
-      //console.log(state.tasks[taskId].assigneeList)
     },
 
     changeTaskStatus: (state, action) => {
       const { taskId, status} = action.payload
+      
       console.log(taskId, status)
       state.taskStatuses.map(statObj => {
         if(statObj.name === status) {
           state.tasks[taskId].status = statObj.id
         }
       })
-      // console.log(state.tasks[taskId].status)
     },
     
     deleteTaskAssignee: (state, action) => {
       const {taskId, person} = action.payload
+      
       state.tasks[taskId].assigneeList.map(name =>{
         if(name === person) {
           var filteredAry = state.tasks[taskId].assigneeList.filter(function(e) { return e !== name })
           state.tasks[taskId].assigneeList = filteredAry
         }
       })
-      // console.log(state.tasks[taskId].assigneeList)
     },
 
     linkFormToTask : (state, action) => {
       const {taskId, requestId} = action.payload
+      
       state.tasks[taskId].formDataId = requestId
     },
 
     changeCheckStatus: (state, action) => {
       const { taskId, checkListObj, status} = action.payload
+      
       state.checkListItems.map(objCheck => {
         if (checkListObj.id === objCheck.id) {
           objCheck.isChecked = status
@@ -291,12 +305,13 @@ const taskdata = createSlice({
 
     createNewLog: (state, action) => {
       const {taskId, logText} = action.payload
+      
       console.log(taskId, logText)  
       lId+=1
       let newLog = {
         id: `log${lId}`,
         taskId: taskId,
-        creatorId: state.tasks[taskId].ownerId, /// can come from login data --- putting random value for now
+        creatorId: state.tasks[taskId].ownerId,
         description: logText,
         timeStampCreated: "",
         timeStampModified: ""

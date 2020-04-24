@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit"
 
+/**
+  A temporary initial state has been created to test with the components and render meaningful
+  on the screen
+*/
+
 const initialState = {
+
   formTitles: [
     {id: "form-1", title: "Design Approval"},
     {id: "form-2", title: "Auditorium Booking"},
@@ -11,10 +17,10 @@ const initialState = {
 
   formData : [
     {
-      id: "R-ID-1", //form data id
-      formId: "form-1", //form Id
-      userId: "lumun", //user id of the user that submitted
-      formStatus: 'Pending',
+      id: "R-ID-1",
+      formId: "form-1",
+      userId: "lumun",
+      formStatus: 'Approved',
       ccaNote: "1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!",
       ccaNoteTimestampModified: '03/13/2009 21:31:30',
       societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
@@ -31,9 +37,9 @@ const initialState = {
     },
     {
       id: "R-ID-2", //form data id
-      formId: "form-1", //form Id
-      userId: "spades", //user id of the user that submitted
-      formStatus: 'Pending',
+      formId: "form-4", //form Id
+      userId: "lumun", //user id of the user that submitted
+      formStatus: 'Unassigned',
       ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!',
       ccaNoteTimestampModified: '03/13/2009 21:31:30',
       societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
@@ -50,9 +56,9 @@ const initialState = {
     },
     {
       id: "R-ID-3", //form data id
-      formId: "form-1", //form Id
-      userId: "lrs", //user id of the user that submitted
-      formStatus: 'Pending',
+      formId: "form-3", //form Id
+      userId: "lumun", //user id of the user that submitted
+      formStatus: 'Issue',
       ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!',
       ccaNoteTimestampModified: '03/13/2009 21:31:30',
       societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
@@ -66,7 +72,7 @@ const initialState = {
       },
       timestampCreated: '02/13/2009 21:31:30',
       timestampModified: '02/13/2009 21:31:31'
-    },
+    }
   ]
 }
 
@@ -79,13 +85,13 @@ const requestListData = createSlice ({
       state.formData[index].formStatus = status
     },
 
-    updateCcaNote: (state, action) => {
-      console.log(action.payload)
-      // state.formData.ccaNote = state.formData.ccaNote
-    },
+     // this is reducer is called if they society delete their submission
+    deleteFormSubmission: (state,action) => {
+      state.formData.splice(action.payload, 1)
+    }
   }
 })
 
-export const { changeFormStatus, updateCcaNote } = requestListData.actions
+export const { changeFormStatus, deleteFormSubmission } = requestListData.actions
 
 export default requestListData.reducer
