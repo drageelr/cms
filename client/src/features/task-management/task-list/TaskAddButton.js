@@ -73,7 +73,7 @@ export default function TaskAddButton({ownerId}) {
             autoFocus
             multiline
             rows="3"
-            variant="filled"
+            // variant="filled"
             label="Required"
             onBlur={closeForm}
             value={text}

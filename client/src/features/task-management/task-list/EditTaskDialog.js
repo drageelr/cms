@@ -6,19 +6,29 @@ import SubTask from "./SubTaskCheckList"
 import AddAssignee from "./AddAssignee"
 import LogEditor from "../logs/LogEditor"
 import { archiveTask, taskOwner, updateTitle, updateDescription } from "../taskDataSlice"
-
-import { Typography, Box, Card, Slide, 
-  FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, TextareaAutosize, Button } from '@material-ui/core'
+import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, TextareaAutosize, Button } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import SubjectIcon from '@material-ui/icons/Subject'
+
+/**
+  The task edit dialog is handled by this component. It navigates between sub components of the task
+  editor dialog. The data to the child components e.g AddAssignee, SubTaskChecklist components is 
+  passed via this component.    
+
+  @param {string} taskId this id is used to navigate between sub components of the task editor dialog  
+  @param {object} taskData slice from redux corresponding to the current component
+  @param {function} dispatch redux associated function to pass action creators to the reducer
+  @param {bool} open a bool state passed from the TaskCard component to open the task editor Dialog Box
+  @param {function} setOpen sets the state of open to true or false depending on the user input
+*/
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-export function EditTaskDialog({ taskId, taskData, dispatch, open, setOpen }) {  
+export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {  
   const [selectOpen, setSelectOpen] = useState(false)
-  const [text, setText] = useState(taskData.tasks[taskId].desc)
+  const [text, setText] = useState(taskData.tasks[taskId].description)
   const [taskTitle, setTaskTitle] = useState(taskData.tasks[taskId].title)
   const [owner, setOwner] = useState("")
 
@@ -130,7 +140,7 @@ export function EditTaskDialog({ taskId, taskData, dispatch, open, setOpen }) {
               multiline
               rows="6"
               value={text}
-              defaultValue={taskData.tasks[taskId].desc}
+              defaultValue={taskData.tasks[taskId].description}
               onChange={handleDescChange}
               style={{
                 resize: "none",
@@ -145,45 +155,47 @@ export function EditTaskDialog({ taskId, taskData, dispatch, open, setOpen }) {
           </Card>
         </Box>
             
-
-        <Grid style={{padding: "17px"}} container direction="row" justify="space-between" alignItems="flex-start">
-          {/*CHECKLIST-SUBTASK*/}
-          <Grid item>
-            <Grid direction="column" justify="flex-start" alignItem="flex-start">
-              <Grid item>
-                { taskId[0] === 'r' &&  
-                  <Typography gutterBottom variant="h6" color="inherit">
-                    Checklist:
-                  </Typography> 
-                }
-              </Grid>
-              <Grid item> 
-                { taskId[0] === 'r' && <SubTask taskId={taskId}/> }
-              </Grid>
-            </Grid>
+        <Grid 
+          container 
+          direction="row" 
+          justify="space-between" 
+          alignItems="flex-start"
+          style={{padding: "0px 17px 0px 17px"}}
+        >
+          <Grid item> {/*Checklist text*/}
+            { taskId[0] === 'r' &&  
+              <Typography gutterBottom variant="h6" color="inherit">
+                Checklist:
+              </Typography> 
+            }
           </Grid>
-          
-          {/*REQUEST-FORM*/}
-          <Grid item>
-            <Grid direction="column" justify="flex-end" alignItems="flex-end">
-              <Grid item style={{marginLeft: "82%", padding: "0px 0px 30px 0px"}}>
-                {taskId[0] === 'r' && taskData.tasks[taskId].formDataId === "" ? <AttachRequestForm taskId={taskId}/> :
-                  taskData.tasks[taskId].formDataId} 
-              </Grid>
-              {/*task-status*/}
-              <Grid item>
-                <TaskStatus taskId={taskId}/>
-              </Grid>
-            </Grid>
+          <Grid item> {/*REQUEST-FORM*/}
+            {taskId[0] === 'r' && taskData.tasks[taskId].formDataId === "" ? <AttachRequestForm taskId={taskId}/> :
+              taskData.tasks[taskId].formDataId} 
+          </Grid>
+        </Grid>
+
+        <Grid 
+          container 
+          direction="row" 
+          justify="space-between" 
+          alignItems="flex-start"
+          style={{padding: "0px 17px 0px 17px"}}
+        >
+          <Grid item> {/*CHECKLIST-SUBTASK*/}
+            { taskId[0] === 'r' && <SubTask taskId={taskId}/> }
+          </Grid>
+          <Grid item style={{marginTop: 5}}> {/*Task Status Colors*/}
+            <TaskStatus taskId={taskId}/>
           </Grid>
         </Grid>
 
         {/* Assign Task Owner */}
-        <Grid style={{marginTop: 5, padding: 15}} container direction="row" justify='flex-start' alignItems="flex-start">
+        <Grid container direction="row" justify='flex-start' alignItems="flex-start">
           <Grid item>
-            <Typography style={{padding:"3px 8px 0 0"}} gutterBottom variant="h6" color="inherit">
-              Task Owner:    
-            </Typography>
+              <Typography style={{marginLeft: 17, marginRight: 5}} gutterBottom variant="h6" color="inherit">
+                Task Owner:    
+              </Typography>
           </Grid>
           <Grid item>
             <FormControl>
@@ -194,7 +206,7 @@ export function EditTaskDialog({ taskId, taskData, dispatch, open, setOpen }) {
                 onClose={handleSelectClose}
                 onOpen={handleSelectOpen}
                 value={owner}
-                // defaultValue={taskData.tasks[taskId].ownerId}
+                defaultValue={taskData.tasks[taskId].ownerId}
                 onChange={handleOwnerSet}
                 variant = "outlined"
                 style={{height: 30, padding: "0px 0px 0px 0px", marginTop: 3}}
@@ -209,7 +221,7 @@ export function EditTaskDialog({ taskId, taskData, dispatch, open, setOpen }) {
             </FormControl>
           </Grid>
         </Grid>
-        
+      
         {/* Task Assignees */}
         <AddAssignee taskId={taskId}/>
 

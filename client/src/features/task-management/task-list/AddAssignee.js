@@ -85,8 +85,8 @@ export function AddAssignee({taskData, taskId, dispatch}) {
       </Grid>
       <SimpleDialog open={open} onClose={handleClose} taskData={taskData} taskId={taskId} dispatch={dispatch} />
       {
-        taskData.tasks[taskId].assList.length === 0 ? null : 
-        taskData.tasks[taskId].assList.map(person => (
+        taskData.tasks[taskId].assigneeList.length === 0 ? null : 
+        taskData.tasks[taskId].assigneeList.map(person => (
           <Grid  style={{padding: "5px 15px 15px 15px"}} container direction="column" justify='space-evenly' alignItems="flex-start">
             <Grid container direction="row">
               <Grid item style={{marginTop: 3, fontSize: 16}}>

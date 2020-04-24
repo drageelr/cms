@@ -30,8 +30,8 @@ export function SubTask({taskId, taskData, dispatch}) {
     {
       taskData.checkListItems.map(checkListObj => {
         if ((taskData.tasks[taskId].formDataId !== "") && taskData.tasks[taskId].formDataId === checkListObj.formId) { 
-          return <Grid direction="row" justify="flex-start" alignItems="center">
-            <Grid item>
+          return (
+          <div>
               <FormControlLabel
                 control={
                   <Checkbox 
@@ -43,11 +43,9 @@ export function SubTask({taskId, taskData, dispatch}) {
                 }
                 label={checkListObj.title}
               />
-            </Grid>
-            <Grid item style={{padding: "5px"}}>
               <SelectAssigneeButton taskId={taskId} checkListObj={checkListObj} />
-            </Grid>
-          </Grid>        
+              </div>
+          )
         }
       })
     }

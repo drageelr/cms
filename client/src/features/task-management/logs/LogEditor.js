@@ -1,5 +1,5 @@
 import React , {useState} from 'react'
-import { Grid, TextField, Button, Typography } from '@material-ui/core'
+import { Grid, TextField, Button, Typography, Card } from '@material-ui/core'
 import { connect } from 'react-redux'
 import PersonIcon from '@material-ui/icons/Person'
 import { createNewLog } from '../taskDataSlice'
@@ -48,11 +48,13 @@ export function LogEditor({taskId, taskData, dispatch}) {
           return (
             <Grid direction="row" justify="flex-start" alignItems="flex-start">
               <Grid item style={{marginLeft: 10, marginTop: 10}}>
-                <PersonIcon size="large"/>
-                {ownerName}: 
-                <Typography style={{marginLeft: 20, fontSize: 16}}>
-                  {logData.description}
-                </Typography>
+                <Card style={{width: "61%"}} raised="true">
+                  <PersonIcon size="large"/>
+                  {ownerName}: 
+                  <Typography style={{marginLeft: 20, fontSize: 16}}>
+                    {logData.description}
+                  </Typography>
+                </Card>
               </Grid>
             </Grid>
         )})

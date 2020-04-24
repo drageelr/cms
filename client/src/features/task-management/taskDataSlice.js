@@ -26,9 +26,12 @@ const initialState = {
       timeStampCreated: ""
     },
   ],
-  users: ["Farrukh", "column-1", "Zoraiz", "Hamza F", "Hammad", "Hamza A", "column-2"],  
+  users: ["Asher", "Farkhanda"],  
+
   columnOrder: ['column-1','column-2'],
+
   archiveList: [],
+  
   taskStatuses : [
     {
       id : 'ts-1',
@@ -51,15 +54,16 @@ const initialState = {
       colorHex: '#FF0000',
     },
   ],
+
   tasks: {
     'r1': { // r stands for request task
       id: 'r1', 
       title: 'Group Logs', 
-      formDataId: "R-ID-1", // stores the ID of the request that is linked to it
-      desc: "hello world", 
+      formDataId: "", // stores the ID of the request that is linked to it
+      description: "hello world", 
       ownerId:'column-1', 
       status: 'ts-1',
-      assList: [],
+      assigneeList: [],
       subTasksList: [], // list that contains the subtasks linked with this task
       logsList: [
         {
@@ -70,48 +74,30 @@ const initialState = {
           timeStampCreated: "",
           timeStampModified: ""
         },
-        {
-          id: "log2",
-          taskId: "r1",
-          creatorId: "column-2",
-          description: "sasajsaisjaisjaisjasijaisj",
-          timeStampCreated: "",
-          timeStampModified: ""
-        }
-    ] 
+      ] 
     },
     'c2': { // c stands for request task
       id: 'c2', 
       title: 'Documents', 
-      desc: "world! good bye", 
+      description: "world! good bye", 
       ownerId:'column-2', 
       status: 'ts-4',
-      assList: [], // assignees list
+      assigneeList: [], // assignees list
       logsList: []
     },
     'r2': { // r stands for request task
       id: 'r2',  // request task ID
       title: 'Something Something', // title of the task
       formDataId: "", // stores the ID of the request that is linked to it
-      desc: "bye world",  // description of the task
+      description: "bye world",  // description of the task
       ownerId:'column-2', // the owner(column) in which this task will go
       status: 'ts-1', // the color status id applied to this task
-      assList: [], // the list of assignees assigned to this task
+      assigneeList: [], // the list of assignees assigned to this task
       subTasksList: [], // list that contains the subtasks linked with this task
       logsList: []
     },
-
-    // 'rtask-101': {
-    //   taskId: "rqt1", 
-    //   formDataId:"form1", 
-    //   title: "Title1", 
-    //   desc: "Nothing Much",
-    //   ownerId: "owner1",
-    //   statusId: "ts1", //ts1 = task status 1
-    //   assList: [],
-    //   logIds: []
-    // }
   },
+
   columns: {
     'column-1': {
       id: 'column-1',
@@ -124,6 +110,7 @@ const initialState = {
       taskIds: ['c2', 'r2']
     }
   },
+  
   checkListItems : [
     {
       id:"checkItem-1",
@@ -153,17 +140,6 @@ const initialState = {
       isChecked: false,
     },
   ],
-
-  logs: [
-    {
-      id: "log1",
-      taskId: "r1",
-      creatorId: "column-1",
-      description: "Hello WOrld",
-      timeStampCreated: "",
-      timeStampModified: ""
-    }
-  ]
 }
 
 let cId = 1
@@ -187,10 +163,10 @@ const taskdata = createSlice({
         id: taskId, 
         title: text, 
         formDataId: "", // stores the ID of the request that is linked to it
-        desc: "", 
+        description: "", 
         ownerId: ownerId, 
         status: '',
-        assList: [],
+        assigneeList: [],
         subTasksList: [],
       }
   
@@ -210,7 +186,7 @@ const taskdata = createSlice({
 
     updateDescription: (state, action) => {
       const {taskId, description} = action.payload
-      state.tasks[taskId].desc = description
+      state.tasks[taskId].description = description
     },
 
     updateTitle: (state, action) => {
@@ -220,7 +196,7 @@ const taskdata = createSlice({
 
     archiveTask: (state, action) => { // send the task id to the server and create an archive of it
       const {taskId, ownerId} = action.payload
-      console.log(ownerId)
+      // console.log(ownerId)
       state.columns[ownerId].taskIds.map(id => {
         if (taskId === id) {
           var filteredAry = state.columns[ownerId].taskIds.filter(function(e) { return e !== id })
@@ -247,8 +223,8 @@ const taskdata = createSlice({
 
     addTaskAssignees: (state, action) => {
       const {taskId, value} = action.payload
-      state.tasks[taskId].assList.push(value)
-      //console.log(state.tasks[taskId].assList)
+      state.tasks[taskId].assigneeList.push(value)
+      //console.log(state.tasks[taskId].assigneeList)
     },
 
     changeTaskStatus: (state, action) => {
@@ -264,13 +240,13 @@ const taskdata = createSlice({
     
     deleteTaskAssignee: (state, action) => {
       const {taskId, person} = action.payload
-      state.tasks[taskId].assList.map(name =>{
+      state.tasks[taskId].assigneeList.map(name =>{
         if(name === person) {
-          var filteredAry = state.tasks[taskId].assList.filter(function(e) { return e !== name })
-          state.tasks[taskId].assList = filteredAry
+          var filteredAry = state.tasks[taskId].assigneeList.filter(function(e) { return e !== name })
+          state.tasks[taskId].assigneeList = filteredAry
         }
       })
-      console.log(state.tasks[taskId].assList)
+      // console.log(state.tasks[taskId].assigneeList)
     },
 
     linkFormToTask : (state, action) => {
