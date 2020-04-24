@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit'
 
 const initialState = [
   {
-    id: 123,
+    id: 's-1',
     nameInitials: "LUMUN",
     name: "LUMS model united nations",
     email: "lumun@lums.edu.pk",
@@ -11,7 +11,7 @@ const initialState = [
     password: ''
   },
   {
-    id: 124,
+    id: 's-2',
     nameInitials: "LUMUN",
     name: "LUMS model united nations",
     email: "lumun@lums.edu.pk",
@@ -21,18 +21,41 @@ const initialState = [
   }
 ]
 
+let sId = 2
 const societyData = createSlice({
   name: 'societyData',
   initialState: initialState,
   reducers: {
     addSocietyAccount: (state,action) =>{
-      return null
+      sId += 1
+      state.push({
+        id: `s-${sId}`,
+        name: action.payload.name,
+        nameInitials: action.payload.nameInitials,
+        email: action.payload.email,
+        presidentEmail: action.payload.presidentEmail,
+        patronEmail: action.payload.patronEmail,
+        password: action.payload.password,
+      })
     },
     deleteSocietyAccount: (state,action)=>{
-      return null
+      let i = 0
+      console.log(action.payload.id)
+      state.map((obj,index) => {
+        if (obj.id === action.payload.id){
+          i = index
+        }  
+      })  
+      state.splice(i,1)
     },
     editSocietyAccount: (state,action)=>{
-      return null
+      let i = 0
+      state.map((obj,index) => {
+        if (obj.id === action.payload.id){
+          i = index
+        }
+      })
+      state[i] = action.payload
     }
   }
 })

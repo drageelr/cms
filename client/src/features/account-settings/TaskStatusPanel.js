@@ -159,10 +159,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
   }
 
 
-
-
-
-
+  
   return (
   <div>
     <div style={{float : 'right', marginRight : 10, marginTop: 3, marginBottom: 10}}>
