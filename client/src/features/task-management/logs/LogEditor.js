@@ -43,21 +43,28 @@ export function LogEditor({taskId, taskData, dispatch}) {
       </Grid>
     </Grid>
       {
-        taskData.tasks[taskId].logsList.map(logData => {
-          ownerName=taskData.columns[logData.creatorId].title
-          return (
-            <Grid direction="row" justify="flex-start" alignItems="flex-start">
-              <Grid item style={{marginLeft: 10, marginTop: 10}}>
-                <Card style={{width: "61%"}} raised="true">
-                  <PersonIcon size="large"/>
-                  {ownerName}: 
-                  <Typography style={{marginLeft: 20, fontSize: 16}}>
-                    {logData.description}
-                  </Typography>
-                </Card>
-              </Grid>
-            </Grid>
-        )})
+        (() => {
+          console.log(taskData.tasks[taskId].logsList.length)
+          if (taskData.tasks[taskId].logsList.length === 0) {
+            return null
+          } else {
+            return taskData.tasks[taskId].logsList.map(logData => {
+              ownerName=taskData.columns[logData.creatorId].title
+              return (
+                <Grid direction="row" justify="flex-start" alignItems="flex-start">
+                  <Grid item style={{marginLeft: 10, marginTop: 10}}>
+                    <Card style={{width: "61%"}} raised="true">
+                      <PersonIcon size="large"/>
+                      {ownerName}: 
+                      <Typography style={{marginLeft: 20, fontSize: 16}}>
+                        {logData.description}
+                      </Typography>
+                    </Card>
+                  </Grid>
+                </Grid>
+            )})
+          }
+        })()
       }
     </div>
   )
