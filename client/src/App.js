@@ -1,58 +1,66 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React from 'react'
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
+import 'typeface-montserrat'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core'
+import blue from '@material-ui/core/colors/blue'
+import NavBar from './ui/NavBar'
+import TaskManager from './features/task-management/TaskManager'
+import FormMaker from './features/form-management/form-maker/FormMaker'
+import RequestList from './features/request-management/request-list/RequestList'
+import LoginPage from './features/account-settings/LoginPage'
+import CCASettingsHome from './features/account-settings/CCASettingsHome'
+import FormList from './features/form-management/form-list/FormList'
+import FormViewer from './features/form-management/form-viewer/FormViewer'
+import SocietyFormList from './features/form-management/form-list/SocietyFormList'
 
-function App() {
+
+import CCAAccountsPanel from './features/account-settings/CCAAccountsPanel'
+import SocietyAccountsPanel from './features/account-settings/SocietyAccountsPanel'
+import TaskStatusPanel from './features/account-settings/TaskStatusPanel'
+import ChangePassword from './features/account-settings/ChangePassword'
+
+const appTheme = createMuiTheme({
+  palette: {
+    primary: blue,
+    secondary: {
+      main: '#ffffff',
+    },
+  },
+  typography: {
+    fontFamily: [
+      '-apple-system',
+      'Montserrat',
+    ].join(','),
+    fontSize: 12,
+  },
+  overrides: {
+    MUIDataTableBodyCell: {
+      root: {
+        fontSize: 13
+      }
+    }
+  }
+})
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  );
+    <Router>
+      <ThemeProvider theme={appTheme}>
+        <NavBar/>
+          <Switch> 
+            <Route path="/" exact component={LoginPage}/>
+            <Route path="/form-viewer" component={FormViewer}/>
+            <Route path="/forms" component={FormList}/>
+            <Route path="/form-maker" component={FormMaker}/>
+            <Route path="/request-list" component={RequestList}/>
+            <Route path="/task-manager" component={TaskManager}/>
+            <Route path="/settings" component={CCASettingsHome}/>
+            <Route path="/ccapanel" exact component={CCAAccountsPanel}/>
+            <Route path="/changepassword" exact component={ChangePassword}/>
+            <Route path="/societypanel" exact component={SocietyAccountsPanel}/>
+            <Route path="/taskstatuspanel" exact component={TaskStatusPanel}/>          
+          </Switch>
+      </ThemeProvider>
+    </Router>
+  )
 }
-
-export default App;
