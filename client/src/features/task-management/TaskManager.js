@@ -1,18 +1,54 @@
 import React from 'react'
-import TaskColumn from './task-list/TaskColumn'
-import TaskAddButton from './task-list/TaskAddButton'
 import {connect} from 'react-redux'
+import TaskColumn from './task-list/TaskColumn'
+import { moveTask } from './taskDataSlice'
+import TaskArchive from './task-archive/TaskArchiveList'
 import { DragDropContext } from 'react-beautiful-dnd'
 import styled from 'styled-components'
-import { moveTask } from './taskdataSlice'
-import TaskArchive from './task-archive/TaskArchive'
+import { Fab, Dialog, AppBar, Toolbar, Typography, Slide, IconButton, makeStyles } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close'
+import ArchiveIcon from '@material-ui/icons/Archive'
+
+/**
+  The parent component that initiates the Task Manager. 
+
+  @param {object} columnData from the corresponding redux slice, to retrieve all the data for 
+  each column and pass it on to the sub components
+  @param {function} dispatch from redux, used to dispatch the moveTask action to the reducer 
+*/
 
 const TaskManagerContainer = styled.div`
   display: flex;
   flex-direction: row;
 `
 
-function TaskManager({ taskData, dispatch }) {
+const useStyles = makeStyles((theme) => ({
+  appBar: {
+    position: 'relative',
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1,
+  },
+}))
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />
+})
+
+function TaskManager({ columnData, dispatch }) {
+  
+  const classes = useStyles()
+  const [open, setOpen] = React.useState(false);
+
+  function handleClickOpen() {
+    setOpen(true)
+  }
+
+  function handleClose() {
+    setOpen(false)
+  }
+  
   function onDragEnd(result){
     const { destination, source, draggableId } = result
 
@@ -38,26 +74,41 @@ function TaskManager({ taskData, dispatch }) {
     <DragDropContext onDragEnd={onDragEnd}>
       <TaskManagerContainer>
         { 
-          taskData.columnOrder.map(columnId => {
-          const column = taskData.columns[columnId]
-
+          columnData.map(ownerId => {
           return <TaskColumn 
-                key={ column.id }
-                columnId={ columnId }
-                title={ column.title }
-                tasks={ column.taskIds.map(taskId => 
-                  taskData.tasks[taskId]
-                )}
+                key={ ownerId }
+                ownerId={ ownerId }                
               />
           })
         }
       </TaskManagerContainer>
+
+      <div>
+        <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+          <Fab color="primary" aria-label="archive">
+            <ArchiveIcon onClick={handleClickOpen}/>
+          </Fab>
+        </div>
+        <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
+          <AppBar className={classes.appBar}>
+            <Toolbar>
+              <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+                <CloseIcon />
+              </IconButton>
+              <Typography variant="h6" className={classes.title}>
+                Archive List
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <TaskArchive />
+        </Dialog>
+      </div>
     </DragDropContext>
   )
 }
 
 const mapStateToProps = (state) => ({
-  taskData: state.taskData,
+  columnData: state.taskData.columnOrder,
 })
 
 export default connect(mapStateToProps) (TaskManager)
