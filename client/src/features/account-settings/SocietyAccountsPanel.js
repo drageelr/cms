@@ -58,7 +58,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
       {
         text: 'Delete',
         icon: <DeleteIcon/>,
-        // onClick: ()=>dispatch(deleteTaskStatus({id})),
+        onClick: ()=>dispatch(deleteSocietyAccount({id})),
       },
     ]
     return <MoreButton menusList={menusList}/>

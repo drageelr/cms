@@ -39,7 +39,14 @@ const societyData = createSlice({
       })
     },
     deleteSocietyAccount: (state,action)=>{
-      return null
+      let i = 0
+      console.log(action.payload.id)
+      state.map((obj,index) => {
+        if (obj.id === action.payload.id){
+          i = index
+        }  
+      })  
+      state.splice(i,1)
     },
     editSocietyAccount: (state,action)=>{
       let i = 0
