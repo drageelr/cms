@@ -12,34 +12,65 @@
 ## APIs
 
 ### 1. Authentication
-|#|Name|Description|Route|Request Object|Request Type|Response Object|Access|Possible Errors|
+|#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|CCA Login|Authentication for CCA Users.|`/api/auth/cca-login`|`{}`|POST|`{}`|CCA|`2.1`|
+|1|CCA Login|Authentication for CCA Users|`/api/auth/cca-login`|`{email: "String", password: "String"}`|POST|`{token: "String", , user: {id: Number, firstName: "String", lastName: "String", picture: "String", permissions: "String"}}`|CCA|`2.1`|
 |2|Society Login|Authentication for Society Users|`/api/auth/society-login`|`{email: "String", password: "String"}`|POST|`{token: "String", , user: {id: Number, name: "String", nameInitials: "String", name}`|Society|`2.1`|
 
 ### 2. User Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of CCA User (Admin/Member) and Society accounts.*
-|#|Name|Description|Route|Request Object|Request Type|Response Object|Access|Possible Errors|
+|#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Name|Description|`/api/name`|`{}`|GET|`{}`|CCA + Society|
+|1|Create CCA Account|Creates an account for a CCA Member|`/api/account/cca/create-account`|`{firstName*: "String", lastName*: "String", email*: "String", password*: "String", picture: "String", permissions: "String"}`|POST|`{}`|CCA|TBD|
+|2|Edit CCA Account|Edits an account of a CCA Member|`/api/account/cca/edit-account`|`{firstName: "String", lastName: "String", email: "String", password: "String", picture: "String", permissions: "String"}`|PUT|`{}`|CCA|TBD|
+|3|Delete CCA Account|Deletes an account of a CCA Member|`/api/account/cca/delete-account`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
+|4|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{nameInitials*: "String", nameSociety*: "String", emailSociety*: "String", password*: "String", emailPresident*: "String", emailPatron*: "String"}`|POST|`{}`|CCA|TBD|
+|5|Edit Society Account|Edits an account of a Society|`/api/account/society/edit-account`|`{nameInitials: "String", nameSociety: "String", emailSociety: "String", password: "String", emailPresident: "String", emailPatron: "String"}`|PUT|`{}`|CCA|TBD|
+|6|Delete Society Account|Deletes an account of a Society|`/api/account/society/delete-account`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
+|7|Change Society Password|Changes the password of a Society Account|`/api/society-dashboard/change-password`|`{passwordPrevios*: "String", passwordNew*: "String"}`|PUT|`{}`|Society|TBD|
 
 ### 3. Form Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of forms.*
-|#|Name|Description|Route|Request Object|Request Type|Response Object|Access|Possible Errors|
+|#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Name|Description|`/api/name`|`{}`|GET|`{}`|CCA|
+|1|Form Template|Fetches Form Template from Database|`/api/form-maker/form-manager`|`{}`|GET|`{id: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrrder: JSON, checklistItemIDs: List<Number>, creatorID: Number}`|CCA|TBD|
+|2|Create Form|Creates an Event Approval Form|`/api/form-maker/create-form`|`{id*: Number, title*: "String", isPublic*: Boolean, sections*: List<"String">, sectionsOrder*: List<Number>, components*: JSON, componentsOrder*: JSON, items*: JSON, itemsOrder*: JSON, checklistItemIDs*: List<Number>, timestampCreated*: DateTime, creatorID*: Number}`|POST|`{}`|CCA|TBD|
+|3|Edit Form|Edits an Event Approval Form|`/api/form-maker/edit-form`|`{id*: Number, title: "String", isPublic: Boolean, sections: List<"String">, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON, checklistItemIDs: List<Number>, timestampModified: DateTime, creatorID*: Number}`|PUT|`{}`|CCA|TBD|
+|4|Delete Form|Deletes an Event Approval Form|`/api/form-manager/delete-form`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
 
 ### 4. Request Management
 *Note: Will contain APIs for submitting / editing forms / viewing (CCA + Society), getting request list, updating request status (CCA) etc*
-|#|Name|Description|Route|Request Object|Request Type|Response Object|Access|Possible Errors|
+|#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Name|Description|`/api/name`|`{}`|GET|`{}`|CCA + Society + Patron/Pres|
+|1|Open Form|Fetches form template for the form to be filled|`/api/form-viewer/form-template`|`{id*: Number}`|Society|`{title: "String", sections: List<"String">, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON, checklistItemIDs: List<Number>}`|GET|`{}`|Society|TBD|
+|2|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/form-viewer/form-submission-manager`|`{id*: Number, formID*: Number, userID*: Number, title*: "String", isPublic*: Boolean, sections*: List<String>, sectionsOrder*: List<Number>, components*: JSON, componentsOrder*: JSON, items*: JSON, itemsOrder*: JSON}`|POST|`{timestampCreated: DateTime}`|Society|TBD|
+|3|Edit Form|Edits a form submitted by a Society|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number, formID*: Number, userID*: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON}`|PUT|`{timestampModified: DateTime}`|Society|TBD|
+|4|View Submission Society|Views a form already submitted by a society|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number}`|GET|`{formID: Number, userID: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON}`|Society|TBD|
+|5|Add Note Society|Adds a note by a Soceity to a submitted form|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number, formID*: Number, userID*: Number, societyNote: String}`|POST|`{timestampeModified: DateTime}`|Society|TBD|
+|6|Delete Submission|Deletes a form/request submitted by a Society|`/api/form-viewer/form-submission-manager/form-submitted`|`{id*: Number}`|DELETE|`{}`|CCA + Society|TBD|
+|7|Get Request List|Displays list of all requests in process|`/api/request-list-manager/request-list`|`{}`|GET|`{idList: List<Number>, titleList: List<"String">, dateList: List<DateTime>, societyList: List<"String">, statusList: List<"String">}`|CCA|TBD|
+|8|View Submission CCA|Views a request submitted by a society|`/api/request-list-manager/request-list/form-submitted`|`{id*: Number}`|GET|`{formID:Number, userID: Number, formStatus: "String", ccaNotes: List<"String">, societyNotes: List<"String">, itemsData: List<JSON>, timestampCreated: DateTime, timestampeModified: DateTime}`|CCA|TBD|
+|9|Update Request Status|Changes the status of a request in process|`/api/request-list-manager/request-list`|`{id*: Number, status*: "String"}`|PUT|`{timestampModified: DateTime}`|CCA|TBD|
+|10|Send Note CCA|Adds a note by CCA to a submitted request|`/api/request-list-manager/request-list/form-submitted`|`{id*: Number, ccaNote: "String"}`|POST|`{timestampModified: DateTime}`|CCA|TBD|
 
 ### 5. Task Management
 *Note: Will contain APIs actions related to creating /editing / delete tasks, archiving / unarchiving task archives and creating / editing / deleting task statuses.*
-|#|Name|Description|Route|Request Object|Request Type|Response Object|Access|Possible Errors|
+|#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Name|Description|`/api/name`|`{}`|GET|`{}`|CCA|
+|1|Fetch Task|Gets details of a created task from database|`/api/task-manager-window/task-editor/task-details`|`{id*: Number}`|GET|`{formDataID: Number, title: "String", description: "String", ownerID: Number, statusID: Number, logIDs: List<Number>, assigneeList: List<Number>, subtaskList: List<JSON>}`|
+|2|Create Task|Creates a Custom/Request task| `/api/task-manager-window/task-editor`|`{id*: Number, formDataID*: Number, title*: "String", description*: "String", ownerID*: Number, statusID*: Number, logIDs: List<Number>, assigneeList: List<Number>}`|POST|`{}`|CCA|TBD|
+|3|Create Subtask|Creates a subtask for an existing task|`/api/task-manager-window/task-editor`|`{id*: Number, taskID*: Number, statusID*: Number, assigneeID*: Number, title*: "String", description: "String", sectionIndex: "String"}`|POST|`{}`|CCA|TBD|
+|4|Edit Task|Edits a Custom/Request task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number, formDataID*: Number, title: "String", description: "String", ownerID*: Number, statusID: Number, logIDs: List<Number>, assigneeList: List<Number>}`|PUT|`{}`|CCA|TBD|
+|5|Edit Subtask|Edits a subtask of an existing task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number, taskID*: Number, statusID: Number, assigneeID: Number, title: "String", description: "String", sectionIndex: "String"}`|PUT|`{}`|CCA|TBD|
+|6|Delete Task|Deletes a Custom/Request task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
+|7|Delete Subtask|Deletes a subtask of an existing task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
+|8|Create Task Status|Creates a task status for assigning|`/api/task-status-manager`|`{name*: "String", colorHex*: "String"}`|POST|`{id: Number}`|CCA|TBD|
+|9|Edit Task Status|Edits a task status being assigned|`/api/task-status-manager/task-status-details`|`{id*: Number, name: "String", colorHex: "String"}`|PUT|`{}`|CCA|TBD|
+|10|Delete Task Status|Deletes a task status being assigned|`/api/task-status-manager/task-status-details`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
+|11|Archive Task|Archives a task and its related components|`/api/task-manager-window/task-editor/task-archiver`|`{formDataID*: Number, title: "String", description: "String", ownerID*: Number, statusID*: Number, logIDs*: List<Number>, assigneeList*: List<Number>}`|POST|`{id: Number}`|CCA|TBD|
+|12|Unarchive Task|Unarchives a task and its related components|`/api/task-manager-window/task-editor/task-archiver`|`{id*: Number}`|POST|`{formDataID: Number, title: "String", description: "String", ownerID: Number, statusID: Number, logIDs: List<Number>, assigneeList: List<Number>}`|CCA|TBD|
+
+**Note: * means the field mentioned is required**
 
 ## Status Codes
 **Note: These status codes have been altered for use in CMS. For further elaboration visit this [link.](https://restfulapi.net/http-status-codes/)**

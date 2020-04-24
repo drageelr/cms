@@ -11,22 +11,10 @@ var http = require('http');
 
 // Others:
 var app = require('../app');
-var config = require('../config/config').variables;
-var setDB = require('../config/config').setDB;
 
 /*
   ------------------ CODE BODY --------------------
 */
-
-/*
-  <BLOCK EXPLAINATION>
-  Set the value of DB based on the parameter passed in console.
-*/
-
-// Change db name if argument was provided:
-// if (process.argv.length() > 2) {
-//   setDB(process.argv[2])
-// }
 
 /*
   <BLOCK EXPLAINATION>
@@ -38,7 +26,7 @@ var setDB = require('../config/config').setDB;
 let port, server;
 
 // Get port from config and normalize it
-port = normalizePort(config.port)
+port = normalizePort(3231);
 
 // Add port to app
 app.set('port', port)
@@ -58,9 +46,9 @@ server.on('listening', onListening);
 */
 
 /**
- * Normalizes port value to number, string or false.
- * @param val - Port value to be normalized.
- */
+* Normalizes port value to number, string or false.
+* @param val - Port value to be normalized.
+*/
 function normalizePort(val) {
   var port = parseInt(val, 10);
 
@@ -78,9 +66,9 @@ function normalizePort(val) {
 }
 
 /**
- * Event listener for HTTP server "error" event.
- * @param error - Object containing details about the error.
- */
+* Event listener for HTTP server "error" event.
+* @param error - Object containing details about the error.
+*/
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -106,8 +94,8 @@ function onError(error) {
 }
 
 /**
- * Event listener for HTTP server "listening" event.
- */
+* Event listener for HTTP server "listening" event.
+*/
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'

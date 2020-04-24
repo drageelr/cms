@@ -9,14 +9,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-// Services:
-var mongoose = require('./services/mongoose');
-
 // Routes:
-var authRouter = require('./routes/auth.route')
-
-// Others:
-var { errorHandler } = require('./errors/errorhandler');
+var deployRouter = require('./routes/deploy.route');
 
 /*
   ------------------ CODE BODY --------------------
@@ -24,8 +18,7 @@ var { errorHandler } = require('./errors/errorhandler');
 
 /*
   <BLOCK EXPLAINATION>
-  Creates app object and adds routes and dependancies to it.
-  Then connects with database and exports app.
+  Creates app object and adds routes and dependancies to it and exports app.
 */
 
 // Variables:
@@ -37,14 +30,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// Allow access to files
+app.use('/dev/site', express.static('./public'));
+
 // Add Routes To App:
-app.use('/api/auth', authRouter);
-
-// Add Error Handler
-app.use(errorHandler);
-
-// Connect With Mongoose
-mongoose.connect();
+app.use('/dev/api', deployRouter);
 
 // Export App
 module.exports = app;
