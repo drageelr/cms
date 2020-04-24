@@ -98,6 +98,7 @@ export default function TaskAddButton({ownerId}) {
             >
               {reqButtonText}
             </Button>
+
             <div style={{marginLeft: 4, display: "flex", aligntItems: "center"}}>
               <Button 
                 size="small" 
