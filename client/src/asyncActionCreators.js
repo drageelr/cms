@@ -32,7 +32,7 @@ const PUBLIC_URL = 'http//:167.71.224.73/'
 
 //2.1 Action Creator for Creating CCA Account
 
-export const login = createAsyncThunk(
+export const ccaCreate = createAsyncThunk(
   'account/cca/create'
   async(email, password, firstName, lastName, picture, permissions, {getState}) => {
     const {isPending} = getState.formTemplate
@@ -41,7 +41,7 @@ export const login = createAsyncThunk(
     }
   }
 
-  let api = '/api/account/cca/create'
+  let api = '/api/account/cca/create-account'
 
   const res = await fetch(PUBLIC_URL + api, {
     method: 'POST',
@@ -61,3 +61,30 @@ export const login = createAsyncThunk(
 )
 
 //2.2 Action Creator for Creating Society Account
+
+export const societyCreate = createAsyncThunk(
+  'account/society/create'
+  async(email, password, name, nameInitials, presidentEmail, patronEmail, {getState}) => {
+    const {isPending} = getState.formTemplateif (isPending != true){
+      return
+    }
+  }
+
+  let api = '/api/account/society/create-account'
+
+  const res = await fetch(PUBLIC_URL + api, {
+    method: 'POST',
+    body: {
+      email: email,
+      password: password,
+      name: name,
+      nameInitials: nameInitials,
+      presidentEmail: presidentEmail,
+      patronEmail: patronEmail
+    }
+  })
+
+  const data = res.json()
+  console.log(data)
+  return {societyID: data.societyID}
+)
