@@ -1,11 +1,12 @@
 import React from 'react'
-import { Formik } from 'formik'
+import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import Avatar from '@material-ui/core/Avatar'
 import { makeStyles } from '@material-ui/core/styles'
 import {Link} from 'react-router-dom'
 import Button from '@material-ui/core/Button'
-import {Container, TextField, Typography} from '@material-ui/core'
+import {Container, Typography} from '@material-ui/core'
+import { TextField } from 'formik-material-ui'
 
 const useStyles = makeStyles({
   root: {
@@ -35,13 +36,13 @@ export default function ChangePassword() {
           .required('Required'),
         newPassword: Yup.string()
           .required('Required')
-          .min(5,'Must be atleast 5 characters')
-          .max(12,'Must be atmost 15 characters'),
+          .min(8,'Must be at least 8 characters')
+          .max(25,'Must be atmost 25 characters'),
         confirmPassword: Yup.string()
           .when("newPassword",{
             is: val => (val && val.length > 0 ? true : false),
             then: Yup.string().oneOf(
-              [Yup.ref("newPassword")],"Both password need to be same"
+              [Yup.ref("newPassword")],"Both passwords need to be the same."
             )
           })
       })}
@@ -49,26 +50,23 @@ export default function ChangePassword() {
     >
       {({values, errors, handleSubmit, handleChange, handleBlur})=>{
         return(
-          <form onSubmit={handleSubmit}>
-            {/* <Typography>Current Password</Typography> */}
-            <TextField
+          <Form>
+            <Field
+              component={TextField}
               variant="outlined"
               margin="normal"
               required
-              label="Current Password"
-              autoComplete="name"
+              label="Password"
+              name="password"
+              type="password"
               fullWidth = "false"
               autoFocus
-              type="password"
-              name="currentPassword"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value = {values.currentPassword}
-            ></TextField>
+            ></Field>
             <br/>
             <br/>
-            {/* <Typography>New Password</Typography> */}
-            <TextField
+
+            <Field
+              component={TextField}
               variant="outlined"
               margin="normal"
               required
@@ -81,13 +79,13 @@ export default function ChangePassword() {
               onBlur={handleBlur}
               onChange={handleChange}
               value = {values.newPassword}
-            ></TextField>
+            ></Field>
 
             <br/>
             <br/>
 
-            {/* <Typography>Confirm Password</Typography> */}
-            <TextField
+            <Field
+              component={TextField}
               variant="outlined"
               margin="normal"
               required
@@ -100,7 +98,7 @@ export default function ChangePassword() {
               onBlur={handleBlur}
               onChange={handleChange}
               value={values.confirmPassword}
-            ></TextField>
+            ></Field>
             <br/>
             <span class="error" style={{ color: "red" }}>
               {errors.confirmPassword}
@@ -110,7 +108,7 @@ export default function ChangePassword() {
             <Button type="submit" variant="contained" color="primary" spacing= '10'>Change Password</Button>
             <Button type="submit" variant="contained" color="primary" spacing= '10' style = {{marginLeft: 30}}>Cancel</Button>
           
-          </form>
+          </Form>
         )
       }}
     </Formik>

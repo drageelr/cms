@@ -21,17 +21,30 @@ const initialState = {
       formId: "form-1",
       userId: "lumun",
       formStatus: 'Approved',
-      ccaNote: "1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!",
-      ccaNoteTimestampModified: '03/13/2009 21:31:30',
-      societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
-      itemsData: { //itemId : itemData
-        4: true, //checkbox
-        2: 'Small', //dropdown
-        3: 'Vice President', //radio
-        5: "../../../public/logo192.png", //file
-        0: "lumun@lums.edu.pk", //textbox
-        1: "" //textlabel
-      },
+      timestampCreated: '02/13/2009 21:31:30',
+      timestampModified: '02/13/2009 21:31:31'
+    },
+    {
+      id: "R-ID-2", //form data id
+      formId: "form-4", //form Id
+      userId: "lumun", //user id of the user that submitted
+      formStatus: 'Unassigned',
+      timestampCreated: '02/13/2009 21:31:30',
+      timestampModified: '02/13/2009 21:31:31'
+    },
+    {
+      id: "R-ID-3", //form data id
+      formId: "form-3", //form Id
+      userId: "lumun", //user id of the user that submitted
+      formStatus: 'Issue',
+      timestampCreated: '02/13/2009 21:31:30',
+      timestampModified: '02/13/2009 21:31:31'
+    },
+    {
+      id: "R-ID-2", //form data id
+      formId: "form-4", //form Id
+      userId: "lumun", //user id of the user that submitted
+      formStatus: 'Unassigned',
       timestampCreated: '02/13/2009 21:31:30',
       timestampModified: '02/13/2009 21:31:31'
     },
@@ -55,11 +68,11 @@ const initialState = {
       timestampModified: '02/13/2009 21:31:31'
     },
     {
-      id: "R-ID-3", //form data id
-      formId: "form-3", //form Id
-      userId: "lumun", //user id of the user that submitted
-      formStatus: 'Issue',
-      ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!',
+      id: "R-ID-1",
+      formId: "form-1",
+      userId: "lumun",
+      formStatus: 'Approved',
+      ccaNote: "1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!",
       ccaNoteTimestampModified: '03/13/2009 21:31:30',
       societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
       itemsData: { //itemId : itemData
@@ -72,7 +85,7 @@ const initialState = {
       },
       timestampCreated: '02/13/2009 21:31:30',
       timestampModified: '02/13/2009 21:31:31'
-    }
+    },
   ]
 }
 

@@ -16,6 +16,7 @@ import SocietyAccountsPanel from './features/account-settings/SocietyAccountsPan
 import TaskStatusPanel from './features/account-settings/TaskStatusPanel'
 import ChangePassword from './features/account-settings/ChangePassword'
 import SocietyDashboard from './ui/SocietyDashboard'
+import { connect } from 'react-redux'
 
 const appTheme = createMuiTheme({
   palette: {
@@ -40,13 +41,17 @@ const appTheme = createMuiTheme({
   }
 })
 
-export default function App() {
+function App({ user }) {
+  const { isLoggedIn, role, nameInitials, name, picture } = user
+
   return (
     <Router>
       <ThemeProvider theme={appTheme}>
-        <NavBar/>
+        { isLoggedIn ?
+        <div>
+          <NavBar nameInitials={nameInitials} name={name} role={role} picture={picture}/>
           <Switch> 
-            <Route path="/" exact component={LoginPage}/>
+            <Route path="/" exact component={role === "CCA" ? TaskManager : SocietyDashboard}/>
             <Route path="/form-viewer" component={FormViewer}/>
             <Route path="/forms" component={FormList}/>
             <Route path="/form-maker" component={FormMaker}/>
@@ -59,7 +64,16 @@ export default function App() {
             <Route path="/society-panel" exact component={SocietyAccountsPanel}/>
             <Route path="/task-status-panel" exact component={TaskStatusPanel}/>          
           </Switch>
+        </div>
+        : <LoginPage/>
+        }
       </ThemeProvider>
     </Router>
   )
 }
+
+const mapStateToProps = (state) => ({
+  user: state.user,
+})
+
+export default connect(mapStateToProps) (App)

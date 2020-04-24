@@ -10,6 +10,8 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import DonutSmallIcon from '@material-ui/icons/DonutSmall'
 import { makeStyles } from '@material-ui/core/styles'
 import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Box, Grid} from '@material-ui/core'
+import { useDispatch } from 'react-redux'
+import { logout } from '../features/account-settings/userSlice'
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
@@ -21,10 +23,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function NavBar() {
+export default function NavBar({nameInitials, name, role, picture}) {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  
+  const dispatch = useDispatch()
+
   function toggleDrawer() {
     setDrawerOpen(!drawerOpen)
   }
@@ -80,21 +83,25 @@ export default function NavBar() {
             <Grid item style={{ display: 'flex', alignItems: 'center'}}>
               <Avatar
                 style={{margin: 5, width: 35, height: 35}} 
-                alt="User" 
-                src="https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg"
+                alt={nameInitials} 
+                src={picture}
               />
               <Typography>
                 <Box color="black" fontWeight={600} m={1}>
-                  {"Farrukh Rasool"}
+                  {name}
                 </Box>
               </Typography>
+              {
+              role=="CCA" && 
               <Link to='settings'>
-                <IconButton edge="end" style={{padding: 10}}>
+                <IconButton edge="end" style={{padding: 10, marginRight: 5}}>
                   <SettingsIcon/>
                 </IconButton>
               </Link>
+              }
+              <br/>
               <Link to='/'>
-                <IconButton  edge="end" style={{padding: 10}}>
+                <IconButton  edge="end" style={{padding: 10}} onClick={()=>dispatch(logout())}>
                   <ExitToAppIcon />
                 </IconButton>
               </Link>

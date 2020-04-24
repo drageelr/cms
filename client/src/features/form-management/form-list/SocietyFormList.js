@@ -16,7 +16,7 @@ function SocietyFormList({formList}) {
   const classes = useStyles()
 
   return (
-    <Paper className={classes.formListPaper}>
+    <Paper className={classes.formListPaper} style={{position: 'absolute'}}>
         <h4 style={{marginLeft: '30%', marginBottom: 7, color: 'white'}}>Forms List</h4>
         <List>
           {

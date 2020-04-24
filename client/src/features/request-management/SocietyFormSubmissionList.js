@@ -1,11 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import {Button} from '@material-ui/core'
+import { Button, Paper} from '@material-ui/core'
 import MUIDataTable from "mui-datatables"
 import LinearProgress from '@material-ui/core/LinearProgress'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { deleteFormSubmission } from './requestListSlice'
-
+import { makeStyles } from '@material-ui/core/styles'
 /**
   The component displays a table of all the forms submitted by the society. The society can view
   the submission, as well as delete ir from their screen.
@@ -15,9 +15,17 @@ import { deleteFormSubmission } from './requestListSlice'
   @param {function} dispatch redux function which dispatches the delete form action to the reducer  
 */
 
+
+const useStyles = makeStyles((theme) => ({
+  submissionListPaper: {
+    height: '90vh',
+    width: '80vw',
+  }
+}))
+
 export function SocietyFormSubmissionView({userId, requestListData, dispatch}) {
-  
   const columns = ["Submitted Forms", "Last edited", "Progress Bar", "Form Status", " ", " "]
+  const classes = useStyles()
 
   function handleDelete({index}) {
     dispatch(deleteFormSubmission(index))
@@ -84,12 +92,14 @@ export function SocietyFormSubmissionView({userId, requestListData, dispatch}) {
   })
 
   return (
+    <div className={classes.submissionListPaper} style={{position: 'absolute', marginLeft: '20%'}}>
       <MUIDataTable
         title={"Event Form Requests"} 
         data={data} 
         columns={columns} 
         options={options}
       />
+    </div>
   )
 }
 
