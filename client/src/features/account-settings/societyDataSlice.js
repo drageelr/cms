@@ -42,7 +42,13 @@ const societyData = createSlice({
       return null
     },
     editSocietyAccount: (state,action)=>{
-      return null
+      let i = 0
+      state.map((obj,index) => {
+        if (obj.id === action.payload.id){
+          i = index
+        }
+      })
+      state[i] = action.payload
     }
   }
 })

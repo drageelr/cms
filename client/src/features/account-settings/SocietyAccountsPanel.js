@@ -48,6 +48,22 @@ function SocietyAccountsPanel({societyData,dispatch}) {
   const [editMode,setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
 
+  function EditDeleteMoreButton({id}) {
+    const menusList=[
+      {
+        text: 'Edit',
+        icon: <EditIcon/>,
+        onClick: ()=>handleEdit(id)
+      },
+      {
+        text: 'Delete',
+        icon: <DeleteIcon/>,
+        // onClick: ()=>dispatch(deleteTaskStatus({id})),
+      },
+    ]
+    return <MoreButton menusList={menusList}/>
+  }
+
   function handleAdd(){
     setEditMode(false)  
     setIsOpen (true)
@@ -63,6 +79,22 @@ function SocietyAccountsPanel({societyData,dispatch}) {
     let initialValues = {
       name: '',
       colorHex: ''
+    }
+
+    if (editMode){
+      const societyDetail = societyData.find((society,index) =>{
+        return society.id === editId
+      })
+      if (societyDetail != undefined){
+          initialValues = {
+          nameInitials: societyDetail.nameInitials,
+          name: societyDetail.name,
+          email: societyDetail.email,
+          presidentEmail: societyDetail.presidentEmail,
+          patronEmail: societyDetail.patronEmail,
+          password: societyDetail.password  
+        }
+      }  
     }
 
     function handleClose(){
@@ -88,14 +120,25 @@ function SocietyAccountsPanel({societyData,dispatch}) {
             return errors
           }}
           onSubmit={(values) => {
-            dispatch(addSocietyAccount({
+            dispatch(editMode? 
+              editSocietyAccount({
+                id: editId, 
+                nameInitials: values.nameInitials,
+                name: values.name,
+                email: values.email,
+                presidentEmail: values.presidentEmail,
+                patronEmail: values.patronEmail,
+                password: values.password
+              })
+              :addSocietyAccount({
               nameInitials: values.nameInitials,
               name: values.name,
               email: values.email,
               presidentEmail: values.presidentEmail,
               patronEmail: values.patronEmail,
               password: values.password
-            }))
+            })
+            )
             handleClose()
           }}
         >
@@ -172,10 +215,13 @@ function SocietyAccountsPanel({societyData,dispatch}) {
         {societyData.map((societyData,index) => (
           <TableRow key={index}>
             <TableCell component="th" scope="row">
-              {societyData.name}
+              {societyData.nameInitials}
             </TableCell>
             <TableCell align="right">{societyData.name}</TableCell>
             <TableCell align="right">{societyData.email}</TableCell>
+            <TableCell align="right">
+              <EditDeleteMoreButton id={societyData.id}/>
+            </TableCell>
           </TableRow>
         ))}
         </TableBody>
