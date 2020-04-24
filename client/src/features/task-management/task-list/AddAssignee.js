@@ -55,7 +55,7 @@ export function AddAssignee({taskData, taskId, dispatch}) {
   function handleDeleteAssignee(person) {
     assigneeList.map(currName => {
       if (currName === person) {
-        var filteredAry = assigneeList.filter(function(e) { return e !== currName })
+        var filteredAry = assigneeList.filter(function(e) { return e != currName })
         setAssigneeList(filteredAry)
       }
     })

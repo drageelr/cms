@@ -1,29 +1,24 @@
 import React, {useState }from 'react'
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { Grid, TextField } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import { Grid, TextField } from '@material-ui/core'
+import Paper from '@material-ui/core/Paper'
 
 export default function AddEditSocietyDialog(isOpen) {
   console.log("dialog")
-  const [open, setOpen] = useState(isOpen);
-  
-  // const handleClickOpen = () => {
-  //   setOpen(true);
-  // };
+  const [open, setOpen] = useState(isOpen)
 
   const handleClose = () => {
-    setOpen(false);
+    setOpen(false)
   };
 
   const handleSubmit = () => {
-    // setOpen(false);
     alert("Society credentials changed or edited")
-  };
+  }
 
 
   console.log("hello")
@@ -31,7 +26,6 @@ export default function AddEditSocietyDialog(isOpen) {
     <Dialog
       open={open}
       onClose={handleClose}
-      // PaperComponent={PaperComponent}
       aria-labelledby="draggable-dialog-title"
       >
       <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">

@@ -17,11 +17,10 @@ export default function CCASettingsHome() {
             <LockIcon/>
           </Grid>
           <Grid item>
-            <Link to={"/changepassword"}>
+            <Link to={"/change-password"}>
             <Button size = "large" variant = "contained" style = {{marginLeft: 10}}> Change Password </Button>
             </Link>  
           </Grid>
-
         </Grid>
 
         <Grid item style = {{marginTop: 30, marginBottom: 30}}>
@@ -30,7 +29,7 @@ export default function CCASettingsHome() {
             <PersonIcon/>
           </Grid>
           <Grid item>
-            <Link to={"/ccapanel"}>
+            <Link to={"/cca-panel"}>
               <Button size = "large" variant = "contained" style = {{marginLeft: 10}}> CCA Panel </Button>
             </Link>
           </Grid>
@@ -44,7 +43,7 @@ export default function CCASettingsHome() {
             <PeopleAltIcon/>
           </Grid>
           <Grid item>
-            <Link to={"/societypanel"}>
+            <Link to={"/society-panel"}>
               <Button size = "large" variant = "contained" style = {{marginLeft: 10}}> Society Panel </Button>
             </Link>
           </Grid>
@@ -58,7 +57,7 @@ export default function CCASettingsHome() {
             <FormatListBulletedIcon/>
           </Grid>
           <Grid item>
-            <Link to={"/taskstatuspanel"}>
+            <Link to={"/task-status-panel"}>
               <Button size = "large" variant = "contained" style = {{marginLeft: 10}}> Task Status Panel </Button>
             </Link>
           </Grid>

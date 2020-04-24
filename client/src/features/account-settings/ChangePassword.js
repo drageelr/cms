@@ -1,15 +1,11 @@
 import React from 'react'
-import { Formik, Form, Field } from 'formik';
-// import { Button, LinearProgress } from '@material-ui/core';
-// import { TextField } from 'formik-material-ui';
+import { Formik } from 'formik'
 import * as Yup from 'yup'
-import TextField from '@material-ui/core/TextField';
-import Container from '@material-ui/core/Container';
-import Avatar from '@material-ui/core/Avatar';
-import { makeStyles } from '@material-ui/core/styles';
+import Avatar from '@material-ui/core/Avatar'
+import { makeStyles } from '@material-ui/core/styles'
 import {Link} from 'react-router-dom'
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button'
+import {Container, TextField, Typography} from '@material-ui/core'
 
 const useStyles = makeStyles({
   root: {
@@ -24,7 +20,7 @@ const useStyles = makeStyles({
 
 
 export default function ChangePassword() {
-  const classes = useStyles();
+  const classes = useStyles()
   return (
     <Container component="main" maxWidth="xs"> 
     <h1>Change Password</h1>

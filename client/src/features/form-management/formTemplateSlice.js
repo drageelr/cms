@@ -100,7 +100,7 @@ export const fetchFormById = createAsyncThunk(
   async (formId, { getState }) => {
     const { isPending } = getState().formTemplate
     
-    if (isPending !== true) {
+    if (isPending != true) {
       return
     }
 

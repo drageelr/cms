@@ -1,21 +1,21 @@
 import React, {useState} from 'react'
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
+import { withStyles, makeStyles } from '@material-ui/core/styles'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableContainer from '@material-ui/core/TableContainer'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
+import Paper from '@material-ui/core/Paper'
+import Button from '@material-ui/core/Button'
+import Fab from '@material-ui/core/Fab'
+import AddIcon from '@material-ui/icons/Add'
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { Grid } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import { Grid } from '@material-ui/core'
 import {addTaskStatus,editTaskStatus,deleteTaskStatus} from './taskStatusDetailsSlice'
 
 import {connect} from 'react-redux'
@@ -36,7 +36,7 @@ const StyledTableCell = withStyles((theme) => ({
   body: {
     fontSize: 14,
   },
-}))(TableCell);
+}))(TableCell)
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -44,17 +44,17 @@ const StyledTableRow = withStyles((theme) => ({
       backgroundColor: theme.palette.background.default,
     },
   },
-}))(TableRow);
+}))(TableRow)
 
 const useStyles = makeStyles({
   table: {
     minWidth: 600,
   },
-});
+})
 
 function TaskStatusPanel({taskStatusDetails,dispatch}){
 
-  const classes = useStyles();
+  const classes = useStyles()
   const [isOpen,setIsOpen] = useState(false)
 
   const [editMode,setEditMode] = useState(false)

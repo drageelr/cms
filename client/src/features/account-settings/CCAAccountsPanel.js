@@ -1,42 +1,14 @@
 import React, { useState }from 'react'
-// import ImageUploader from "react-images-upload";
-////////////////////////////////////////////
-import {addCCAAccount,deleteCCAAccount,editCCAAccount} from './ccaDetailsSlice'
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import { Button, CardActions } from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-//material UI
-import { makeStyles } from '@material-ui/core/styles';
-import Fab from '@material-ui/core/Fab';
-import Container from '@material-ui/core/Container';
+import { addCCAAccount, deleteCCAAccount, editCCAAccount } from './ccaDetailsSlice'
+import { makeStyles } from '@material-ui/core/styles'
+import { Button, Card, CardHeader, CardMedia, CardContent, Grid, Typography, 
+  Avatar, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core'
 import {connect} from 'react-redux'
 import MoreButton from '../../ui/MoreButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
-
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography'
-import Avatar from '@material-ui/core/Avatar';
-
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
-
 
 const useStyles = makeStyles({
   root: {
@@ -45,18 +17,15 @@ const useStyles = makeStyles({
   container: {
     maxHeight: '60%',
   },
-});
-
+})
 
 function CCAAccountPanel({ccaDetails,dispatch}) {
+  const classes = useStyles()
 
-  const classes = useStyles();
-  const [isOpen,setIsOpen] = useState(false)
-
-  const [editMode,setEditMode] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [editMode, setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
-
-  const [picture,setPicture] = useState(null)
+  const [picture, setPicture] = useState(null)
 
   function EditDeleteMoreButton({id}){
     const menusList=[
@@ -101,7 +70,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       const ccaMemberDetail = ccaDetails.find((detail,index) => {
         return detail.id === editId
       })
-      if (ccaMemberDetail != undefined){
+      if (ccaMemberDetail !== undefined){
         console.log(ccaMemberDetail.firstName)
         initialValues = {
           firstName: ccaMemberDetail.firstName,
@@ -193,17 +162,6 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
                   <Field component={TextField} name="role" required label="Role"/>
                 </Grid>
 
-                <Grid item style = {{width: 350}}>
-                {/* <ImageUploader
-                  withPreview={true}
-                  withIcon={true}
-                  buttonText="Choose images"
-                  imgExtension={[".jpg", ".gif", ".png", ".gif"]}
-                  maxFileSize={5242880}
-                  name = "picture"
-                  onChange={onDrop}
-                />   */}
-                </Grid>
               </Grid>
             </DialogContent>
             <DialogActions>
@@ -233,7 +191,6 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
           style = {{float: "right", marginBottom:10}}
           onClick = {handleAdd}
         > Add CCA member
-          {/* <CCADialog/> */}
         </Button>
         <CCADialog/>
       </div>

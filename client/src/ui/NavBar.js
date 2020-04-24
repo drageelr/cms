@@ -7,7 +7,7 @@ import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck'
 import VpnKeyIcon from '@material-ui/icons/VpnKey'
 import SettingsIcon from '@material-ui/icons/Settings'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import DonutSmallIcon from '@material-ui/icons/DonutSmall';
+import DonutSmallIcon from '@material-ui/icons/DonutSmall'
 import { makeStyles } from '@material-ui/core/styles'
 import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Box, Grid} from '@material-ui/core'
 

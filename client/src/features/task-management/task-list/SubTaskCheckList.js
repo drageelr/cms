@@ -29,7 +29,7 @@ export function SubTask({taskId, taskData, dispatch}) {
     <div>
     {
       taskData.checkListItems.map(checkListObj => {
-        if ((taskData.tasks[taskId].formDataId !== "") && taskData.tasks[taskId].formDataId === checkListObj.formId) { 
+        if ((taskData.tasks[taskId].formDataId != "") && taskData.tasks[taskId].formDataId === checkListObj.formId) { 
           return (
           <div>
               <FormControlLabel

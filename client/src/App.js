@@ -11,13 +11,11 @@ import LoginPage from './features/account-settings/LoginPage'
 import CCASettingsHome from './features/account-settings/CCASettingsHome'
 import FormList from './features/form-management/form-list/FormList'
 import FormViewer from './features/form-management/form-viewer/FormViewer'
-import SocietyFormList from './features/form-management/form-list/SocietyFormList'
-
-
 import CCAAccountsPanel from './features/account-settings/CCAAccountsPanel'
 import SocietyAccountsPanel from './features/account-settings/SocietyAccountsPanel'
 import TaskStatusPanel from './features/account-settings/TaskStatusPanel'
 import ChangePassword from './features/account-settings/ChangePassword'
+import SocietyDashboard from './ui/SocietyDashboard'
 
 const appTheme = createMuiTheme({
   palette: {
@@ -53,12 +51,13 @@ export default function App() {
             <Route path="/forms" component={FormList}/>
             <Route path="/form-maker" component={FormMaker}/>
             <Route path="/request-list" component={RequestList}/>
+            <Route path="/society-dashboard" component={SocietyDashboard}/>
             <Route path="/task-manager" component={TaskManager}/>
             <Route path="/settings" component={CCASettingsHome}/>
-            <Route path="/ccapanel" exact component={CCAAccountsPanel}/>
-            <Route path="/changepassword" exact component={ChangePassword}/>
-            <Route path="/societypanel" exact component={SocietyAccountsPanel}/>
-            <Route path="/taskstatuspanel" exact component={TaskStatusPanel}/>          
+            <Route path="/cca-panel" exact component={CCAAccountsPanel}/>
+            <Route path="/change-password" exact component={ChangePassword}/>
+            <Route path="/society-panel" exact component={SocietyAccountsPanel}/>
+            <Route path="/task-status-panel" exact component={TaskStatusPanel}/>          
           </Switch>
       </ThemeProvider>
     </Router>

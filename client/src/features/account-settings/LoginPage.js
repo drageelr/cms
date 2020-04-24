@@ -1,16 +1,10 @@
 import React from 'react'
-import SocietyFormSubmissionList from '../request-management/SocietyFormSubmissionList'
 import {Formik, useField, Form} from 'formik'
 import * as Yup from 'yup'
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card'
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Container from '@material-ui/core/Container';
-import Avatar from '@material-ui/core/Avatar';
+import { makeStyles } from '@material-ui/core/styles'
+import { Button, Grid, TextField, Container } from '@material-ui/core'
 import {Link} from 'react-router-dom'
+import SocietyFormSubmissionList from '../request-management/SocietyFormSubmissionList'
 
 // card styling
 const useStyles = makeStyles({
@@ -22,7 +16,7 @@ const useStyles = makeStyles({
     margin: '10',
     backgroundColor: 'red',
   },
-});
+})
 
 const CustomTextInput = ({label, ...props}) =>{
   const [field, meta] = useField(props)
@@ -53,7 +47,7 @@ const CustomSelect = ({label, ...props}) =>{
 
 
 export default function LoginPage() {
-  const classes = useStyles();
+  const classes = useStyles()
   //<SocietyFormSubmissionList userId={"lumun"}/>
   
   return (
