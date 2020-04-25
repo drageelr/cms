@@ -5,8 +5,10 @@ import Avatar from '@material-ui/core/Avatar'
 import { makeStyles } from '@material-ui/core/styles'
 import {Link} from 'react-router-dom'
 import Button from '@material-ui/core/Button'
-import {Container, Typography} from '@material-ui/core'
+import {Container, Typography, LinearProgress} from '@material-ui/core'
 import { TextField } from 'formik-material-ui'
+import { changePassword } from './userSlice'
+import { useDispatch } from 'react-redux'
 
 const useStyles = makeStyles({
   root: {
@@ -22,10 +24,13 @@ const useStyles = makeStyles({
 
 export default function ChangePassword() {
   const classes = useStyles()
+  const dispatch = useDispatch()
+
   return (
     <Container component="main" maxWidth="xs"> 
     <h1>Change Password</h1>
     <Formik
+      validateOnChange={false} validateOnBlur={true}
       initialValues = {{
         currentPassword: '',
         newPassword: '',
@@ -46,9 +51,14 @@ export default function ChangePassword() {
             )
           })
       })}
-      onSubmit = {() => {}}
+      onSubmit={(values, { setSubmitting }) => {
+        dispatch(changePassword({ currentPassword: values.currentPassword, newPassword: values.newPassword}))
+        .then(() => {
+          setSubmitting(false)
+        })  
+      }}
     >
-      {({values, errors, handleSubmit, handleChange, handleBlur})=>{
+      {({onSubmit, isSubmitting})=>{
         return(
           <Form>
             <Field
@@ -57,7 +67,7 @@ export default function ChangePassword() {
               margin="normal"
               required
               label="Password"
-              name="password"
+              name="currentPassword"
               type="password"
               fullWidth = "false"
               autoFocus
@@ -71,14 +81,10 @@ export default function ChangePassword() {
               margin="normal"
               required
               label="New Password"
-              autoComplete="name"
+              name="newPassword"
               fullWidth = "false"
               autoFocus
               type="password"
-              name="newPassword"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value = {values.newPassword}
             ></Field>
 
             <br/>
@@ -90,22 +96,15 @@ export default function ChangePassword() {
               margin="normal"
               required
               label="Confirm Password"
-              autoComplete="name"
+              name="confirmPassword"
               fullWidth = "false"
               autoFocus
               type="password"
-              name="confirmPassword"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.confirmPassword}
             ></Field>
             <br/>
-            <span class="error" style={{ color: "red" }}>
-              {errors.confirmPassword}
-            </span>
             <br/>
-            <br/>
-            <Button type="submit" variant="contained" color="primary" spacing= '10'>Change Password</Button>
+            {isSubmitting && <LinearProgress />}
+            <Button type="submit" variant="contained" color="primary" spacing= '10' onClick={onSubmit} >Change Password</Button>
             <Button type="submit" variant="contained" color="primary" spacing= '10' style = {{marginLeft: 30}}>Cancel</Button>
           
           </Form>

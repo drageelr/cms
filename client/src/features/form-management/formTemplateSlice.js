@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 // Form Maker template creation state stored here, this could have been done locally inside the Form Maker as well
 // but is done so to set aside the rigorous business logic required
 
-const sampleForm = { // Sample form currently
+const sampleState = { // Sample form currently
   id: 0,
   isPublic: false,
   title: "Event Approval",
@@ -87,16 +87,17 @@ const initialState = {
   itemsOrder: {},
   items: {},
   checklist: {},
-  isPending: false,
-  error: ''
+  createMode: true,
+  isPending: true,
+  error: null,
 }
 
-let sId = 1 //section
-let cId = 2//component
-let iId = 5 //iId
+let sId = 0 //section Id max
+let cId = 0 //component Id max
+let iId = 0 //item Id max
 
-export const fetchFormById = createAsyncThunk(
-  'formTemplate/fetchFormById',
+export const fetchForm = createAsyncThunk(
+  'formTemplate/fetchForm',
   async (formId, { getState }) => {
     const { isPending } = getState().formTemplate
     
@@ -104,21 +105,33 @@ export const fetchFormById = createAsyncThunk(
       return
     }
 
-    const fetchCall = () => {
-      var promise = new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(sampleForm)
-        }, 1000)
-      })
-      return promise
+    return sampleState
+  }
+)
+
+export const createForm = createAsyncThunk(
+  'formTemplate/createForm',
+  async (_, { getState, rejectWithValue }) => {
+    const { isPending, title, creatorId, sectionsOrder, sections, 
+      componentsOrder, components, itemsOrder, items, checklist } = getState().formTemplate
+    if (isPending != true) {
+      return
     }
 
-    cId = 0
-    sId = 0
-    iId = 0 
+    return ''
+  }
+)
 
-    const result = await fetchCall()
-    return result
+export const editForm = createAsyncThunk(
+  'formTemplate/editForm',
+  async (_, { getState, rejectWithValue }) => {
+    const { isPending, title, creatorId, sectionsOrder, sections, 
+      componentsOrder, components, itemsOrder, items, checklist } = getState().formTemplate
+    if (isPending != true) {
+      return
+    }
+
+    return ''
   }
 )
 
@@ -126,11 +139,23 @@ const formTemplate = createSlice({
   name: 'formTemplate',
   initialState: initialState,
   reducers: {
-    toggleIsPublic: (state, action) => { //example reducer
+    setCreateMode: (state, action) => { //example reducer
+      state.createMode = action.payload.createMode
+    },
+
+    setTitle: (state, action) => { 
+      state.title = action.payload.title
+    },
+
+    toggleIsPublic: (state, action) => {
       state.isPublic = !state.isPublic
     },
 
-    addSection: (state, action) => { //example reducer
+    clearError: (state, action) => {
+      state.error = null
+    },
+
+    addSection: (state, action) => { 
       sId += 1
       state.sections[sId] = action.payload.title
       state.sectionsOrder.push(sId)
@@ -138,7 +163,7 @@ const formTemplate = createSlice({
       state.checklist[sId] = "Empty"
     },
 
-    editSection: (state, action) => { //example reducer
+    editSection: (state, action) => { 
       state.sections[action.payload.id] = action.payload.title
     },
 
@@ -267,32 +292,90 @@ const formTemplate = createSlice({
     },
   },
   extraReducers: {
-    [fetchFormById.pending]: (state, action) => {
+    [fetchForm.pending]: (state, action) => {
       if (state.isPending === false) {
         state.isPending = true
       }
     },
-    [fetchFormById.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
+    [fetchForm.fulfilled]: (state, action) => {
+      if (state.isPending === true) {        
+        let max = -Infinity
+        for(const x in action.payload.componentsOrder) {
+          if(x > max){
+            max = x
+          }
+        }
+        sId = max
+        max = -Infinity
+        for(const x in action.payload.itemsOrder) {
+          if(x > max){
+            max = x
+          }
+        }
+        cId = max
+
+        max = -Infinity
+        for(const x in action.payload.items) {
+          if(x > max){
+            max = x
+          }
+        }
+        iId = max
+        
         return {
           ...action.payload,
+          createMode: false,
           isPending: false,
-          error: ''
+          error: null
         }
       }
     },
-    [fetchFormById.rejected]: (state, action) => {
-      console.log(action)
+    [fetchForm.rejected]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
-        state.error = action.error
+        state.error = action.payload
       }
-    }
+    },
+    [createForm.pending]: (state, action) => {
+      if (state.isPending === false) {
+        state.isPending = true
+      }
+    },
+    [createForm.fulfilled]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = 'Form Created'
+        state.createMode = false
+      }
+    },
+    [createForm.rejected]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = action.payload
+      }
+    },
+    [editForm.pending]: (state, action) => {
+      if (state.isPending === false) {
+        state.isPending = true
+      }
+    },
+    [editForm.fulfilled]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = 'Form Edited'
+      }
+    },
+    [editForm.rejected]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = action.payload
+      }
+    },
   }
 })
 
 
 export const { addSection, editSection, addItem, editItem, addComponent, editComponent,
-  editChecklistSubtask, deleteFormPart, toggleIsPublic, moveFormPart} = formTemplate.actions
+  editChecklistSubtask, deleteFormPart, toggleIsPublic, moveFormPart, clearError, setCreateMode, setTitle} = formTemplate.actions
 
 export default formTemplate.reducer
