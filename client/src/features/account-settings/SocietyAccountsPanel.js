@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState,useEffect} from 'react'
 import { withStyles, makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -8,15 +8,13 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
-import Fab from '@material-ui/core/Fab'
-import AddIcon from '@material-ui/icons/Add'
 
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import { Grid } from '@material-ui/core'
-import {addSocietyAccount,editSocietyAccount,deleteSocietyAccount} from './societyDataSlice'
+import { Grid, CircularProgress } from '@material-ui/core'
+import {addSocietyAccount,editSocietyAccount,deleteSocietyAccount,fetchSocietyAccounts} from './societyDataSlice'
 
 import {connect} from 'react-redux'
 import { Formik, Form, Field } from 'formik'
@@ -28,9 +26,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 
 import EditIcon from '@material-ui/icons/Edit'
 
-// import AddEditSocietyDialog from './AddEditSocietyDialog'
 
-///////////////////////////////////////////////////////////////////
 const useStyles = makeStyles({
   root: {
     width: '100%',
@@ -41,6 +37,11 @@ const useStyles = makeStyles({
 })
 
 function SocietyAccountsPanel({societyData,dispatch}) {
+  useEffect(async () => {
+    await dispatch(fetchSocietyAccounts())
+  },[])
+  console.log(societyData)
+
 
   const classes = useStyles()
   const [isOpen,setIsOpen] = useState(false)
@@ -58,7 +59,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
       {
         text: 'Delete',
         icon: <DeleteIcon/>,
-        onClick: ()=>dispatch(deleteSocietyAccount({id})),
+        onClick: ()=> dispatch(deleteSocietyAccount({id}))
       },
     ]
     return <MoreButton menusList={menusList}/>
@@ -76,13 +77,18 @@ function SocietyAccountsPanel({societyData,dispatch}) {
   }
 
   function SocietyDialog(){
+
     let initialValues = {
-      name: '',
-      colorHex: ''
+      nameInitials: '',
+      name:'',
+      email: '',
+      presidentEmail: '',
+      patronEmail: '',
+      password: ''
     }
 
     if (editMode){
-      const societyDetail = societyData.find((society,index) =>{
+      const societyDetail = societyData.societyList.find((society,index) =>{
         return society.id === editId
       })
       if (societyDetail !== undefined){
@@ -119,7 +125,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
             const errors = {}
             return errors
           }}
-          onSubmit={(values) => {
+          onSubmit={(values,{setSubmitting}) => {
             dispatch(editMode? 
               editSocietyAccount({
                 id: editId, 
@@ -137,12 +143,13 @@ function SocietyAccountsPanel({societyData,dispatch}) {
               presidentEmail: values.presidentEmail,
               patronEmail: values.patronEmail,
               password: values.password
+            })).then(()=>{
+              setSubmitting(false)
             })
-            )
             handleClose()
           }}
         >
-          {({submitForm}) => (
+          {({submitForm, isSubmitting}) => (
             <Form>
               <DialogContent>
                 <Grid container direction = "column" justify = "center" alignItems = "center" style = {{width: 400}}>
@@ -171,8 +178,13 @@ function SocietyAccountsPanel({societyData,dispatch}) {
                   </Grid>
                 </Grid>
               </DialogContent>
+              {isSubmitting && <CircularProgress />}
               <DialogActions>
-                <Button onClick={submitForm} color="primary">
+                <Button 
+                  onClick={submitForm} 
+                  color="primary"
+                  disabled={isSubmitting}
+                  >
                   Save
                 </Button>
                 
@@ -212,15 +224,15 @@ function SocietyAccountsPanel({societyData,dispatch}) {
         </TableHead>
           
         <TableBody>
-        {societyData.map((societyData,index) => (
+        {societyData.societyList.map((society,index) => (
           <TableRow key={index}>
             <TableCell component="th" scope="row">
-              {societyData.nameInitials}
+              {society.nameInitials}
             </TableCell>
-            <TableCell align="right">{societyData.name}</TableCell>
-            <TableCell align="right">{societyData.email}</TableCell>
+            <TableCell align="right">{society.name}</TableCell>
+            <TableCell align="right">{society.email}</TableCell>
             <TableCell align="right">
-              <EditDeleteMoreButton id={societyData.id}/>
+              <EditDeleteMoreButton id={society.id}/>
             </TableCell>
           </TableRow>
         ))}
