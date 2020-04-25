@@ -2,7 +2,8 @@ import React from 'react'
 import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Container } from '@material-ui/core'
+import { Button, Container, LinearProgress, Snackbar, IconButton } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close'
 import ToggleButton from '@material-ui/lab/ToggleButton'
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
 import { TextField } from 'formik-material-ui'
@@ -21,11 +22,10 @@ const useStyles = makeStyles({
 function LoginPage({user, dispatch}) {
   const classes = useStyles()
   const [role, setRole] = React.useState("CCA")
-  
+  const [snackOpen, setSnackOpen] = React.useState(true)
+
   return (
     <Container component="main" className={classes.root}>
-      {/* <img style={{position:"absolute", marginLeft: 0, marginTop: 0, width: '80%', height: '40%'}}
-          src=""/> */}
       <Formik
       validateOnChange={false} validateOnBlur={true}
       initialValues = {{
@@ -38,15 +38,19 @@ function LoginPage({user, dispatch}) {
               .required('Required'),
           password: Yup.string()
       })}
-      onSubmit={(values) => {
-        dispatch(login({email: values.email, password: values.password, role: role}))
-      }}
+      onSubmit={ (values, { setSubmitting }) => {
+          dispatch(login({email: values.email, password: values.password, role: role}))
+          .then(() => {
+            setSubmitting(false)
+          })  
+        }
+      }
       >
-        {({submitForm})=>(
+        {({submitForm, isSubmitting})=>(
           <Form>
             <h1>Login</h1>
 
-            <ToggleButtonGroup size="medium" value={role} exclusive onChange={()=>{}}>
+            <ToggleButtonGroup size="medium" value={role} exclusive>
               <ToggleButton value="CCA" onClick={()=>setRole("CCA")}>
                 CCA
               </ToggleButton>,
@@ -81,13 +85,25 @@ function LoginPage({user, dispatch}) {
             
             <br/>    
             <br/>
-
+            {isSubmitting && <LinearProgress />}
             <Button size="large" onClick={submitForm} variant="contained" color="primary" spacing= '10'>
               Submit
             </Button>
           </Form>
         )}
       </Formik>
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
+        open={(user.error != null) && snackOpen}
+        autoHideDuration={5000}
+        onClose={() => setSnackOpen(true)}
+        message={user.error}
+        action={
+          <IconButton size="small" aria-label="close" color="inherit" onClick={()=>setSnackOpen(false)}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        }
+      />
     </Container>  
   )
 }
