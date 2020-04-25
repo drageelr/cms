@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
-import { Grid, Typography, Box, Button } from '@material-ui/core'
+import { Grid, Typography, Box, Button, Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions } from '@material-ui/core'
 import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles'
 import NotesIcon from '@material-ui/icons/Notes'
 import SaveIcon from '@material-ui/icons/Save'
 import NotesSideBar from './NotesSideBar'
+import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
+import { createFormData, editFormData } from '../formDataSlice'
 
 const useStyles = makeStyles((theme) => ({
   propertiesPaper: {
@@ -15,10 +18,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function FormListBar({title, notesData, isCCA }) {
+export default function FormListBar({title, notesData, isCCA, createMode }) {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  
+  const [exitDialogOpen, setExitDialogOpen] = useState(false)
+  const dispatch = useDispatch()
+  const history = useHistory()
+
   function toggleDrawer() {
     setDrawerOpen(!drawerOpen)
   }
@@ -47,17 +53,36 @@ export default function FormListBar({title, notesData, isCCA }) {
               variant="contained"
               startIcon={<SaveIcon />}
               style={{marginLeft:10}}
+              onClick={()=>dispatch(createMode ? createFormData() : editFormData())}
             >Save</Button>
         
             <Button
-              variant="contained"
-              style={{marginLeft:10, marginRight: 15}}
-            >Cancel</Button>
+            variant="contained"
+            style={{marginLeft:10, marginRight: 15}}
+            onClick={()=>setExitDialogOpen(true)}
+            >Exit</Button>
           </Grid>
 
         </Grid>
       </Paper>
       <NotesSideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} notesData={notesData} isCCA={isCCA}/>
+
+      <Dialog aria-labelledby="conditional-item-dialog" open={exitDialogOpen}>
+        <DialogTitle id="exit-dialog-title">Exit</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to exit? (All unsaved changes will be lost.)
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>history.push('/request-list')} color="primary">
+            Yes
+          </Button>
+          <Button onClick={()=>setExitDialogOpen(false)}>
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   )
 }

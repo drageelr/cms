@@ -41,8 +41,6 @@ export default function AddEditSocietyDialog(isOpen) {
                   margin="normal"
                   required
                   label="Society Initial"
-                  autoComplete="name"
-                  fullWidth = "true"
                   autoFocus
                 > Initial </TextField>
           </Grid>
@@ -54,9 +52,6 @@ export default function AddEditSocietyDialog(isOpen) {
                 margin="normal"
                 required
                 label="Society Name"
-                autoComplete="name"
-                fullWidth = "true"
-                autoFocus
                 > Society Name  </TextField>
           </Grid>
 
@@ -67,9 +62,6 @@ export default function AddEditSocietyDialog(isOpen) {
                 margin="normal"
                 required
                 label="Society Email ID"
-                autoComplete="name"
-                fullWidth = "true"
-                autoFocus 
               > Email ID </TextField>
           </Grid>
 
@@ -79,9 +71,6 @@ export default function AddEditSocietyDialog(isOpen) {
                 margin = "normal"
                 required
                 label="Password Initial"
-                autoComplete="name"
-                fullWidth = "true"
-                autoFocus
                 > Password </TextField>
           </Grid>
 
@@ -91,9 +80,6 @@ export default function AddEditSocietyDialog(isOpen) {
               margin = "normal"
               required
               label="President Email Address"
-              autoComplete="name"
-              fullWidth = "true"
-              autoFocus
               > President Email Address </TextField>
           </Grid>
 
@@ -102,11 +88,7 @@ export default function AddEditSocietyDialog(isOpen) {
               variant="outlined"
               margin = "normal"
               required
-              label="Patron Email Address"
-              autoComplete="name"
-              fullWidth = "true"
-              autoFocus
-              
+              label="Patron Email Address"              
             > Patron Email Address </TextField>
           </Grid>
         </Grid>

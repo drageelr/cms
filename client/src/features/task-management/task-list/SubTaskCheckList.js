@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { changeCheckStatus } from '../taskDataSlice'
-import { Grid, Checkbox, FormControlLabel } from '@material-ui/core'
+import { Checkbox, FormControlLabel } from '@material-ui/core'
 import SelectAssigneeButton from "./SelectAssigneeButton"
 
 /**

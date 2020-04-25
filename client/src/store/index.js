@@ -9,6 +9,7 @@ import propertiesDataReducer from '../features/form-management/propertiesDataSli
 import formListReducer from '../features/form-management/formListSlice'
 import ccaDetailsReducer from '../features/account-settings/ccaDetailsSlice'
 import userReducer from '../features/account-settings/userSlice'
+import submissionListReducer from "../features/request-management/submissionListSlice"
 
 export default configureStore({
   reducer: {
@@ -22,5 +23,6 @@ export default configureStore({
     propertiesData: propertiesDataReducer,
     formList: formListReducer,
     user: userReducer,
+    submissionListData: submissionListReducer
   },
 })

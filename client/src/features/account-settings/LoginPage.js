@@ -2,12 +2,13 @@ import React from 'react'
 import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Container } from '@material-ui/core'
+import { Button, Container, LinearProgress, IconButton } from '@material-ui/core'
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
-import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButton from '@material-ui/lab/ToggleButton'
 import { TextField } from 'formik-material-ui'
-import { login } from './userSlice'
 import { connect } from 'react-redux'
+import { login, clearError } from './userSlice'
+import ErrorSnackbar from '../../ui/ErrorSnackbar'
 
 // card styling
 const useStyles = makeStyles({
@@ -21,11 +22,9 @@ const useStyles = makeStyles({
 function LoginPage({user, dispatch}) {
   const classes = useStyles()
   const [role, setRole] = React.useState("CCA")
-  
+
   return (
     <Container component="main" className={classes.root}>
-      {/* <img style={{position:"absolute", marginLeft: 0, marginTop: 0, width: '80%', height: '40%'}}
-          src=""/> */}
       <Formik
       validateOnChange={false} validateOnBlur={true}
       initialValues = {{
@@ -38,15 +37,19 @@ function LoginPage({user, dispatch}) {
               .required('Required'),
           password: Yup.string()
       })}
-      onSubmit={(values) => {
-        dispatch(login({email: values.email, password: values.password, role: role}))
-      }}
+      onSubmit={ (values, { setSubmitting }) => {
+          dispatch(login({email: values.email, password: values.password, role: role}))
+          .then(() => {
+            setSubmitting(false)
+          })  
+        }
+      }
       >
-        {({submitForm})=>(
+        {({submitForm, isSubmitting})=>(
           <Form>
             <h1>Login</h1>
 
-            <ToggleButtonGroup size="medium" value={role} exclusive onChange={()=>{}}>
+            <ToggleButtonGroup size="medium" value={role} exclusive>
               <ToggleButton value="CCA" onClick={()=>setRole("CCA")}>
                 CCA
               </ToggleButton>,
@@ -81,13 +84,14 @@ function LoginPage({user, dispatch}) {
             
             <br/>    
             <br/>
-
+            {isSubmitting && <LinearProgress />}
             <Button size="large" onClick={submitForm} variant="contained" color="primary" spacing= '10'>
               Submit
             </Button>
           </Form>
         )}
       </Formik>
+      <ErrorSnackbar stateError={user.error} clearError={clearError}/>
     </Container>  
   )
 }

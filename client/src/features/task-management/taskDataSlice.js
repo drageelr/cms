@@ -119,33 +119,33 @@ const initialState = {
   },
   
   checkListItems : [
-    {
-      id:"checkItem-1",
-      formId: "R-ID-1",
-      title: "Make the Checklist by tonight asap.",
-      description: "I am trying my best.",
-      sectionIndex: "1.1",
-      isAssigned: false,
-      isChecked: false,
-    },
-    {
-      id:"checkItem-2",
-      formId: "R-ID-1",
-      title: "Complete UI tonight.",
-      description: "OK",
-      sectionIndex: "1.2",
-      isAssigned: false,
-      isChecked: false,
-    },
-    {
-      id:"checkItem-3",
-      formId: "R-ID-2",
-      title: "Material UI complete",
-      description: "Nothing",
-      sectionIndex: "1.3",
-      isAssigned: false,
-      isChecked: false,
-    },
+    // {
+    //   id:"checkItem-1",
+    //   formId: "R-ID-1",
+    //   title: "Make the Checklist by tonight asap.",
+    //   description: "I am trying my best.",
+    //   sectionIndex: "1.1",
+    //   isAssigned: false,
+    //   isChecked: false,
+    // },
+    // {
+    //   id:"checkItem-2",
+    //   formId: "R-ID-1",
+    //   title: "Complete UI tonight.",
+    //   description: "OK",
+    //   sectionIndex: "1.2",
+    //   isAssigned: false,
+    //   isChecked: false,
+    // },
+    // {
+    //   id:"checkItem-3",
+    //   formId: "R-ID-2",
+    //   title: "Material UI complete",
+    //   description: "Nothing",
+    //   sectionIndex: "1.3",
+    //   isAssigned: false,
+    //   isChecked: false,
+    // },
   ],
 }
 
@@ -176,6 +176,7 @@ const taskdata = createSlice({
         status: '',
         assigneeList: [],
         subTasksList: [],
+        logsList:[]
       }
   
       state.tasks[taskId] = newTask
@@ -305,8 +306,7 @@ const taskdata = createSlice({
 
     createNewLog: (state, action) => {
       const {taskId, logText} = action.payload
-      
-      console.log(taskId, logText)  
+    
       lId+=1
       let newLog = {
         id: `log${lId}`,

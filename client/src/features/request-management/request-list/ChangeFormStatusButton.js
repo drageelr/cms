@@ -7,23 +7,22 @@ import { useDispatch } from 'react-redux'
   This is a state-ful Select Menu that provides the admin with a list of statuses that they
   can associate to tasks. 
 
-  @param {variable} index this is the index of the form, that is stored in the forms List, it is 
-  dispatched to the reducer, when the admin changes a particular tasks' status, in reducer this 
-  index is used to access the particular form and change the form status.   
+  @param {number} requestId the id of the request whose status we are going to change, will be
+  dispatched the store   
 */
 
-export default function ChangeFormStatusButton({index}) {
+export default function ChangeFormStatusButton({requestId, requestStatus}) {
   const dispatch = useDispatch()
-  
-  const [open, setOpen] = React.useState(false)
-  const [status, setStatus] = React.useState("")
 
-  function handleClick(e) {
+  const [open, setOpen] = React.useState(false)
+  const [status, setStatus] = React.useState(requestStatus)
+
+  function handleChange(e) {
     setStatus(e.target.value)
     var status= e.target.value
-    dispatch(changeFormStatus({status, index}))
+    dispatch(changeFormStatus({requestId, status}))
   }
-
+  
   function handleOpen() {
     setOpen(true)
   }
@@ -32,9 +31,11 @@ export default function ChangeFormStatusButton({index}) {
     setOpen(false)
   }
 
+  const options = ["Pending", "Issue", "Approved", "Rejected"]
+
   return (
     <div>
-      <FormControl>
+      <FormControl variant="outlined">
         <Select
           labelId = "status-label"
           id="label"
@@ -42,28 +43,21 @@ export default function ChangeFormStatusButton({index}) {
           onClose={handleClose}
           value={status}
           onOpen={handleOpen}
-          onChange={handleClick}
           style={{height: 30, width: 100}}
           variant = "outlined"
+          onChange={handleChange}
         >
-          <MenuItem value="Pending" onClick={handleClick}>
-            Pending
-          </MenuItem>
-
-          <MenuItem value="Issue" onClick={handleClick}>
-            Issue
-          </MenuItem>
-
-          <MenuItem value="Approved" onClick={handleClick}>
-            Approved
-          </MenuItem>
-
-          <MenuItem value="Rejected" onClick={handleClick}>
-            Rejected
-          </MenuItem>
+          {
+            options.map((option, index) => {
+              return (
+                <MenuItem value={option}>{option}</MenuItem>
+              )
+            })
+          }
         </Select>
       </FormControl>
     </div>
   )
 }
+
 
