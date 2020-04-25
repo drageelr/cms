@@ -23,10 +23,14 @@ import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
 
 import MoreButton from '../../ui/MoreButton'
-
 import DeleteIcon from '@material-ui/icons/Delete'
-
 import EditIcon from '@material-ui/icons/Edit'
+
+import {login, clearError} from './taskStatusDetailsSlice'
+import ErrorSnackbar from '../../ui/ErrorSnackbar'
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -54,9 +58,7 @@ const useStyles = makeStyles({
 
 function TaskStatusPanel({taskStatusDetails,dispatch}){
 
-  useEffect(async () => {
-    await dispatch(fetchTaskStatus())
-  },[])
+  useEffect(() => {dispatch(fetchTaskStatus())},[])
   // console.log(societyData)
 
   const classes = useStyles()
@@ -130,6 +132,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
             return errors
           }}
           onSubmit={(values,{setSubmitting}) => {
+            // (taskStatusDetails.isPending) ? <CircularProgress/>
             dispatch(editMode 
               ?editTaskStatus(({id: editId, name: values.name, colorHex: values.colorHex}))
               :addTaskStatus({name: values.name, colorHex: values.colorHex}))
@@ -163,7 +166,8 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
               </DialogActions>
             </Form>
           )}
-        </Formik>        
+        </Formik>
+        {/* <ErrorSnackbar stateError={taskStatusDetails.error} clearError={clearError} />    */}
       </Dialog>
     )
   }
@@ -171,51 +175,58 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
 
   
   return (
-  <div>
-    <div style={{float : 'right', marginRight : 10, marginTop: 3, marginBottom: 10}}>
-      <Fab 
-        variant="extended" 
-        color="secondary" 
-        float = "right"
-        onClick = {handleAdd}
-      >
-        <AddIcon/>
-        Add Task Status
-      </Fab>
-      <TaskStatusDialog/>
+    <div>
+    {
+    taskStatusDetails.isPending? <LinearProgress variant = "indeterminate"/>:
+    <div>
+    
+      <div style={{float : 'right', marginRight : 10, marginTop: 3, marginBottom: 10}}>
+        <Fab 
+          variant="extended" 
+          color="secondary" 
+          float = "right"
+          onClick = {handleAdd}
+        >
+          <AddIcon/>
+          Add Task Status
+        </Fab>
+        <TaskStatusDialog/>
+      </div>
+
+      <h3 style = {{textAlign: 'center', fontSize: 20}}>Task Status Panel </h3>
+      <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="customized table">
+        <TableHead>
+          <TableRow>
+            <StyledTableCell>Task Status</StyledTableCell>
+            <StyledTableCell align="center">Color</StyledTableCell>
+            <StyledTableCell align="right">Options</StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {taskStatusDetails.taskList.map((taskStatusDetail,index) => (
+            <StyledTableRow key={index}>
+              <StyledTableCell component="th" scope="row">
+                {taskStatusDetail.name}
+              </StyledTableCell>
+              <StyledTableCell align="center">
+                <Button variant="contained" style={{backgroundColor:taskStatusDetail.colorHex}}/>
+
+              </StyledTableCell>
+
+              <StyledTableCell align="right">
+                <EditDeleteMoreButton id={taskStatusDetail.id}/>
+              </StyledTableCell>
+            </StyledTableRow>
+          ))}
+        </TableBody>
+      </Table>
+      </TableContainer>
+
     </div>
-
-    <h3 style = {{textAlign: 'center', fontSize: 20}}>Task Status Panel </h3>
-    <TableContainer component={Paper}>
-    <Table className={classes.table} aria-label="customized table">
-      <TableHead>
-        <TableRow>
-          <StyledTableCell>Task Status</StyledTableCell>
-          <StyledTableCell align="center">Color</StyledTableCell>
-          <StyledTableCell align="right">Options</StyledTableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {taskStatusDetails.taskList.map((taskStatusDetail,index) => (
-          <StyledTableRow key={index}>
-            <StyledTableCell component="th" scope="row">
-              {taskStatusDetail.name}
-            </StyledTableCell>
-            <StyledTableCell align="center">
-              <Button variant="contained" style={{backgroundColor:taskStatusDetail.colorHex}}/>
-                          
-            </StyledTableCell>
-
-            <StyledTableCell align="right">
-              <EditDeleteMoreButton id={taskStatusDetail.id}/>
-            </StyledTableCell>
-          </StyledTableRow>
-        ))}
-      </TableBody>
-    </Table>
-    </TableContainer>
-
-  </div>
+    }
+    <ErrorSnackbar stateError={taskStatusDetails.error} clearError={clearError} />
+    </div>
   )
 }
 

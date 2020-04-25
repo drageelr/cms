@@ -47,13 +47,11 @@ export const fetchSocietyAccounts = createAsyncThunk(
       })
       return promise
     }
-
     const result = await fetchCall()
     console.log(sampleState)
     return result
   }
 )
-
 
 export const deleteSocietyAccount = createAsyncThunk(
   'societyData/deleteSocietyAccount',
@@ -95,37 +93,9 @@ const societyData = createSlice({
   name: 'societyData',
   initialState: initialState,
   reducers: {
-    // addSocietyAccount: (state,action) =>{
-    //   sId += 1
-    //   state.push({
-    //     id: `s-${sId}`,
-    //     name: action.payload.name,
-    //     nameInitials: action.payload.nameInitials,
-    //     email: action.payload.email,
-    //     presidentEmail: action.payload.presidentEmail,
-    //     patronEmail: action.payload.patronEmail,
-    //     password: action.payload.password,
-    //   })
-    // },
-    // deleteSocietyAccount: (state,action)=>{
-    //   let i = 0
-    //   console.log(action.payload.id)
-    //   state.map((obj,index) => {
-    //     if (obj.id === action.payload.id){
-    //       i = index
-    //     }  
-    //   })  
-    //   state.splice(i,1)
-    // },
-    // editSocietyAccount: (state,action)=>{
-    //   let i = 0
-    //   state.map((obj,index) => {
-    //     if (obj.id === action.payload.id){
-    //       i = index
-    //     }
-    //   })
-    //   state[i] = action.payload
-    // }
+    clearError: (state, action)=>{
+      state.error = null
+    }
   },
 
   extraReducers: {
@@ -145,6 +115,7 @@ const societyData = createSlice({
           }  
         })  
         state.societyList.splice(i,1)
+        state.error = 'Society Account Deleted Successfully'
       }
     },
     [deleteSocietyAccount.rejected]: (state, action) => {
@@ -168,6 +139,7 @@ const societyData = createSlice({
         id : action.payload.id, 
         ...action.payload.societyObject
       })
+      state.error = 'Society Account Added Successfully'
       } 
     },
     [addSocietyAccount.rejected]: (state, action) => {
@@ -193,6 +165,7 @@ const societyData = createSlice({
           }
         })
         state.societyList[i] = action.payload
+        state.error = 'Society Account Edited Successfully'
       }
     },
     [editSocietyAccount.rejected]: (state, action) => {
@@ -211,7 +184,7 @@ const societyData = createSlice({
       if(state.isPending === true){
         state.isPending = false
         state.societyList = action.payload.societyList
-        // console.log(state)
+        state.error = 'Society Accounts Loaded'
       }
     },
     [fetchSocietyAccounts.rejected]: (state, action) => {
@@ -224,6 +197,7 @@ const societyData = createSlice({
   }
 })
 
-// export const {addSocietyAccount,deleteSocietyAccount,editSocietyAccount} = societyData.actions
+
+export const {clearError} = societyData.actions
 
 export default societyData.reducer

@@ -25,7 +25,11 @@ import MoreButton from '../../ui/MoreButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 
 import EditIcon from '@material-ui/icons/Edit'
+import {login, clearError} from './societyDataSlice'
+import ErrorSnackbar from '../../ui/ErrorSnackbar'
 
+// import CircularProgress from '@material-ui/core/CircularProgress';
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 const useStyles = makeStyles({
   root: {
@@ -37,10 +41,8 @@ const useStyles = makeStyles({
 })
 
 function SocietyAccountsPanel({societyData,dispatch}) {
-  useEffect(async () => {
-    await dispatch(fetchSocietyAccounts())
-  },[])
-  console.log(societyData)
+  useEffect(() => {dispatch(fetchSocietyAccounts())},[])
+  // console.log(societyData)
 
 
   const classes = useStyles()
@@ -200,6 +202,9 @@ function SocietyAccountsPanel({societyData,dispatch}) {
   }
   return (
     <div>
+    {
+      societyData.isPending? <LinearProgress variant = "indeterminate"/>:
+      <div>
       <h2>SocietyAccountsPanel</h2>
       <div>
         <Button
@@ -225,6 +230,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
           
         <TableBody>
         {societyData.societyList.map((society,index) => (
+          societyData.isPending? <CircularProgress variant = "indeterminate"/>:
           <TableRow key={index}>
             <TableCell component="th" scope="row">
               {society.nameInitials}
@@ -242,6 +248,9 @@ function SocietyAccountsPanel({societyData,dispatch}) {
       </TableContainer>
       </Paper>
       
+    </div>
+        }
+        <ErrorSnackbar stateError={societyData.error} clearError={clearError} />
     </div>
     )
 }
