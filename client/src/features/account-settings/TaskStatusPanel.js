@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { withStyles, makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -16,7 +16,7 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { Grid } from '@material-ui/core'
-import {addTaskStatus,editTaskStatus,deleteTaskStatus} from './taskStatusDetailsSlice'
+import {addTaskStatus,editTaskStatus,deleteTaskStatus,fetchTaskStatus} from './taskStatusDetailsSlice'
 
 import {connect} from 'react-redux'
 import { Formik, Form, Field } from 'formik'
@@ -53,6 +53,11 @@ const useStyles = makeStyles({
 })
 
 function TaskStatusPanel({taskStatusDetails,dispatch}){
+
+  useEffect(async () => {
+    await dispatch(fetchTaskStatus())
+  },[])
+  // console.log(societyData)
 
   const classes = useStyles()
   const [isOpen,setIsOpen] = useState(false)
@@ -94,7 +99,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
     }
 
     if (editMode){
-      const taskDetail = taskStatusDetails.find((task,index) =>{
+      const taskDetail = taskStatusDetails.taskList.find((task,index) =>{
         return task.id === editId
       })
       if (taskDetail != undefined){
@@ -124,12 +129,17 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
             const errors = {}
             return errors
           }}
-          onSubmit={(values) => {
-            dispatch(editMode ? editTaskStatus(({id: editId, name: values.name, colorHex: values.colorHex})):addTaskStatus({name: values.name, colorHex: values.colorHex}))
+          onSubmit={(values,{setSubmitting}) => {
+            dispatch(editMode 
+              ?editTaskStatus(({id: editId, name: values.name, colorHex: values.colorHex}))
+              :addTaskStatus({name: values.name, colorHex: values.colorHex}))
+              .then(()=>{
+                setSubmitting(false)
+              })
             handleClose()
           }}
         >
-          {({submitForm}) => (
+          {({submitForm, isSubmitting}) => (
             <Form>
               <DialogContent>
                 <Grid container direction = "column" justify = "center" alignItems = "center" style = {{width: 400}}>
@@ -186,12 +196,11 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
         </TableRow>
       </TableHead>
       <TableBody>
-        {taskStatusDetails.map((taskStatusDetail,index) => (
+        {taskStatusDetails.taskList.map((taskStatusDetail,index) => (
           <StyledTableRow key={index}>
             <StyledTableCell component="th" scope="row">
               {taskStatusDetail.name}
             </StyledTableCell>
-            {/* ///////////////////////////need to do color picker option */}
             <StyledTableCell align="center">
               <Button variant="contained" style={{backgroundColor:taskStatusDetail.colorHex}}/>
                           
