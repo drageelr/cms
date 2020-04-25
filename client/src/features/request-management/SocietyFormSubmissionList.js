@@ -4,8 +4,9 @@ import { Button, Paper} from '@material-ui/core'
 import MUIDataTable from "mui-datatables"
 import LinearProgress from '@material-ui/core/LinearProgress'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { deleteFormSubmission } from './requestListSlice'
+// import { deleteFormSubmission } from './requestListSlice'
 import { makeStyles } from '@material-ui/core/styles'
+
 /**
   The component displays a table of all the forms submitted by the society. The society can view
   the submission, as well as delete ir from their screen.
@@ -28,7 +29,8 @@ export function SocietyFormSubmissionView({userId, requestListData, dispatch}) {
   const classes = useStyles()
 
   function handleDelete({index}) {
-    dispatch(deleteFormSubmission(index))
+    console.log("hell")
+    // dispatch(deleteFormSubmission(index))
   }
   
   function selectValue(formStatus) {

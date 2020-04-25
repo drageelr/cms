@@ -1,110 +1,123 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
 /**
   A temporary initial state has been created to test with the components and render meaningful
   on the screen
 */
 
-const initialState = {
-
-  formTitles: [
-    {id: "form-1", title: "Design Approval"},
-    {id: "form-2", title: "Auditorium Booking"},
-    {id: "form-3", title: "Petition"},
-    {id: "form-4", title: "Event Approval"},
-    {id: "form-5", title: "Service Request"},    
-  ],
-
-  formData : [
+const sampleState = {
+  formDataList : [
     {
       id: "R-ID-1",
-      formId: "form-1",
-      userId: "lumun",
+      title: "Design Form",
+      date: "15/02/2019",
+      society: "LUMUN",
       formStatus: 'Approved',
-      timestampCreated: '02/13/2009 21:31:30',
-      timestampModified: '02/13/2009 21:31:31'
     },
     {
-      id: "R-ID-2", //form data id
-      formId: "form-4", //form Id
-      userId: "lumun", //user id of the user that submitted
+      id: "R-ID-2",
+      society: "LUMUN",
+      date: "12/01/2020",
+      title: "Auditorium Booking",
       formStatus: 'Unassigned',
-      timestampCreated: '02/13/2009 21:31:30',
-      timestampModified: '02/13/2009 21:31:31'
-    },
-    {
-      id: "R-ID-3", //form data id
-      formId: "form-3", //form Id
-      userId: "lumun", //user id of the user that submitted
-      formStatus: 'Issue',
-      timestampCreated: '02/13/2009 21:31:30',
-      timestampModified: '02/13/2009 21:31:31'
-    },
-    {
-      id: "R-ID-2", //form data id
-      formId: "form-4", //form Id
-      userId: "lumun", //user id of the user that submitted
-      formStatus: 'Unassigned',
-      timestampCreated: '02/13/2009 21:31:30',
-      timestampModified: '02/13/2009 21:31:31'
-    },
-    {
-      id: "R-ID-2", //form data id
-      formId: "form-4", //form Id
-      userId: "lumun", //user id of the user that submitted
-      formStatus: 'Unassigned',
-      ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!',
-      ccaNoteTimestampModified: '03/13/2009 21:31:30',
-      societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
-      itemsData: { //itemId : itemData
-        4: true, //checkbox
-        2: 'Small', //dropdown
-        3: 'Vice President', //radio
-        5: "../../../public/logo192.png", //file
-        0: "lumun@lums.edu.pk", //textbox
-        1: "" //textlabel
-      },
-      timestampCreated: '02/13/2009 21:31:30',
-      timestampModified: '02/13/2009 21:31:31'
-    },
-    {
-      id: "R-ID-1",
-      formId: "form-1",
-      userId: "lumun",
-      formStatus: 'Approved',
-      ccaNote: "1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!",
-      ccaNoteTimestampModified: '03/13/2009 21:31:30',
-      societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
-      itemsData: { //itemId : itemData
-        4: true, //checkbox
-        2: 'Small', //dropdown
-        3: 'Vice President', //radio
-        5: "../../../public/logo192.png", //file
-        0: "lumun@lums.edu.pk", //textbox
-        1: "" //textlabel
-      },
-      timestampCreated: '02/13/2009 21:31:30',
-      timestampModified: '02/13/2009 21:31:31'
-    },
+    }
   ]
 }
+
+const initialState = {
+  formDataList: [],
+  isPending: true,
+  error: null
+}
+
+export const fetchCCARequestList = createAsyncThunk(
+  'requestListData/fetchCCARequestList',
+  async (_, { getState, rejectWithValue }) => {
+    const { isPending } = getState().requestListData
+    
+    if (isPending != true) {
+      return
+    } 
+
+    const fetchCall = () => {
+      var promise = new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(sampleState)
+        }, 5000)
+      })
+      return promise
+    }
+    
+    // return rejectWithValue("TBD")
+    return sampleState
+  }
+)
+
+export const changeFormStatus = createAsyncThunk(
+  'requestListData/changeFormStatus',
+  async (statusObj, { getState }) => {
+    const { isPending } = getState().requestListData
+    
+    if (isPending != true) {
+      return
+    } 
+
+    return statusObj
+  }
+)
 
 const requestListData = createSlice ({
   name:'requestListData',
   initialState: initialState,
   reducers: {
-    changeFormStatus: (state, action) => {
-      const {status, index} = action.payload
-      state.formData[index].formStatus = status
+    //  // this is reducer is called if they society delete their submission
+    // deleteFormSubmission: (state,action) => {
+    //   state.formData.splice(action.payload, 1)
+    // }
+  },
+
+  extraReducers: {
+    [fetchCCARequestList.pending]: (state, action) => {
+      if (state.isPending === false) {
+        state.isPending = true
+      }
+    },
+    [fetchCCARequestList.fulfilled]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.formDataList = action.payload.formDataList
+      }
+    },
+    [fetchCCARequestList.rejected]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = action.payload.message
+      }
     },
 
-     // this is reducer is called if they society delete their submission
-    deleteFormSubmission: (state,action) => {
-      state.formData.splice(action.payload, 1)
-    }
+    [changeFormStatus.pending]: (state, action) => {
+      if (state.isPending === false) {
+        state.isPending = true
+      }
+    },
+    [changeFormStatus.fulfilled]: (state, action) => {
+      const {requestId, status} = action.payload
+      if (state.isPending === true) {
+        state.isPending = false
+        state.formDataList.map(request => {
+          if(request.id === requestId) {
+            request.formStatus = status
+          }
+        })
+      }
+    },
+    [changeFormStatus.rejected]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = action.payload.message
+      }
+    },
   }
 })
-
-export const { changeFormStatus, deleteFormSubmission } = requestListData.actions
 
 export default requestListData.reducer

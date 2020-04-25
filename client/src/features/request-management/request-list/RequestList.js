@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
 import ChangeFormStatusButton from './ChangeFormStatusButton'
-import { Button } from '@material-ui/core'
+import { Button, CircularProgress, LinearProgress } from '@material-ui/core'
+import { fetchCCARequestList } from '../requestListSlice'
+import ErrorSnackBar from "../../../ui/ErrorSnackbar"
 
 /**
   The component displays a table of all the requests provided to the CCA. THe CCA admin can view 
@@ -13,7 +15,12 @@ import { Button } from '@material-ui/core'
 
 const columns = ["Req ID", "Form Title", "Date", "Society", "Form Status", ""]
 
-export function RequestList({requestListData}) {
+export function RequestList({requestListData, dispatch}) {
+
+  useEffect(async () => {
+    await dispatch(fetchCCARequestList())
+  }, [])
+  
   const options = {
     search:false,
     searchOpen:false,
@@ -24,33 +31,38 @@ export function RequestList({requestListData}) {
     disableToolbarSelect: true,
     selectableRows:false,
   }
-
+  
   function handleClick(event) {
-    console.log(event.target.value)
   }
-
+  
   return (
-    <MUIDataTable
-      title={"Request List"} 
-      data={requestListData.formData.map((request, index) => [
-        request.formId,
-        requestListData.formTitles.map(formList=>{
-          return formList.id === request.formId ? formList.title : null
-        }),
-        request.timestampModified,
-        request.userId,
-        <ChangeFormStatusButton request={request} index= {index}/>,
-        <Button 
-          value={request.id}
-          type = "button" 
-          onClick={handleClick}
-          variant="outlined"
-        >
-          view submission</Button>
-      ])} 
-      columns={columns} 
-      options={options}
-    />
+    <div>
+      {
+        requestListData.isPending ? <LinearProgress/> :
+        <MUIDataTable
+          title={"Request List"} 
+          data={
+            requestListData.formDataList.map((request, index) => [
+              request.id,
+              request.title,
+              request.date,
+              request.society,
+              <ChangeFormStatusButton requestId={request.id}/>,
+              <Button 
+                value={request.id}
+                type = "button" 
+                onClick={handleClick}
+                variant="outlined"
+              >
+                view submission
+              </Button>
+            ])} 
+          columns={columns}
+          options={options}
+        />
+      }
+      <ErrorSnackBar stateError={requestListData.error}/>
+    </div>
   )
 }
 

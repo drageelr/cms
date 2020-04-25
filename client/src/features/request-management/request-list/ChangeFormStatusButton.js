@@ -7,12 +7,11 @@ import { useDispatch } from 'react-redux'
   This is a state-ful Select Menu that provides the admin with a list of statuses that they
   can associate to tasks. 
 
-  @param {variable} index this is the index of the form, that is stored in the forms List, it is 
-  dispatched to the reducer, when the admin changes a particular tasks' status, in reducer this 
-  index is used to access the particular form and change the form status.   
+  @param {number} requestId the id of the request whose status we are going to change, will be
+  dispatched the store   
 */
 
-export default function ChangeFormStatusButton({index}) {
+export default function ChangeFormStatusButton({requestId}) {
   const dispatch = useDispatch()
   
   const [open, setOpen] = React.useState(false)
@@ -21,9 +20,9 @@ export default function ChangeFormStatusButton({index}) {
   function handleClick(e) {
     setStatus(e.target.value)
     var status= e.target.value
-    dispatch(changeFormStatus({status, index}))
+    dispatch(changeFormStatus({requestId, status}))
   }
-
+  
   function handleOpen() {
     setOpen(true)
   }
