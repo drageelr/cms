@@ -33,58 +33,149 @@ const PUBLIC_URL = 'http//:167.71.224.73/'
 //2.1 Action Creator for Creating CCA Account
 
 export const ccaCreate = createAsyncThunk(
-  'account/cca/create'
-  async(email, password, firstName, lastName, picture, permissions, {getState}) => {
-    const {isPending} = getState.formTemplate
+  'account/cca/create',
+  async({email, password, firstName, lastName, picture, permissions}, {getState, rejectWithValue}) => {
+    const {isPending} = getState().account
     if (isPending != true){
       return
     }
-  }
 
-  let api = '/api/account/cca/create-account'
+    let QUERY = '/account/cca/create-account'
 
-  const res = await fetch(PUBLIC_URL + api, {
-    method: 'POST',
-    body: {
-      email: email,
-      password: password,
-      firstName: firstName,
-      lastName: lastName,
-      picture: picture,
-      permissions: permissions //List<Boolean>
+    try {
+      const res = await fetch(PUBLIC_URL + QUERY, {
+        method: 'POST',
+        mode: 'no-cors', 
+        body: {
+          email: email,
+          password: password,
+          firstName: firstName,
+          lastName: lastName,
+          picture: picture,
+          permissions: permissions
+        }
+      })
+      if (res.ok) {
+        const data = res.json()
+        return {ccaId: data.ccaId}
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
     }
-  })
-  
-  const data = res.json()
-  console.log(data)
-  return {ccaID: data.ccaID}
+    catch (error){
+      return rejectWithValue(err.toString())
+    }
+  }
 )
 
 //2.2 Action Creator for Creating Society Account
 
 export const societyCreate = createAsyncThunk(
-  'account/society/create'
-  async(email, password, name, nameInitials, presidentEmail, patronEmail, {getState}) => {
-    const {isPending} = getState.formTemplateif (isPending != true){
+  `account/society/create`,
+  async({email, password, name, nameInitials, presidentEmail, patronEmail}, {getState, rejectWithValue}) => {
+    const {isPending} = getState().user
+    if (isPending != true){
       return
     }
-  }
 
-  let api = '/api/account/society/create-account'
+    let QUERY = '/account/society/create-account'
 
-  const res = await fetch(PUBLIC_URL + api, {
-    method: 'POST',
-    body: {
-      email: email,
-      password: password,
-      name: name,
-      nameInitials: nameInitials,
-      presidentEmail: presidentEmail,
-      patronEmail: patronEmail
+    try {
+      const res = await fetch(PUBLIC_URL + QUERY, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: {
+          email: email,
+          password: password,
+          name: name,
+          nameInitials: nameInitials,
+          presidentEmail: presidentEmail,
+          patronEmail: patronEmail
+        }
+      })
+      if (res.ok) {
+        const data = res.json()
+        return {societyId: data.societyId}
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
     }
-  })
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
+)
 
-  const data = res.json()
-  console.log(data)
-  return {societyID: data.societyID}
+//2.3 Action Creator for Editing CCA Account
+
+export const ccaEdit= createAsyncThunk(
+  `account/cca/edit`,
+  async(ccaId, email, password, firstName, lastName, picture, permissions, {getState}) =>  {
+    const {isPending} = getState().account
+    if (isPending != true){
+      return
+    }
+
+    let QUERY = '/account/cca/edit-account'
+
+    try {
+      const res = await fetch(PUBLIC_URL+QUERY, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: {
+          ccaId: ccaId,
+          email: email,
+          password: password,
+          firstName: firstName,
+          lastName: lastName,
+          picture: picture,
+          permissions: permissions //List<Boolean>
+        }
+      })
+      if (res.ok) {
+        const data = res.json()
+        return
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
+)
+
+//2.4 Action Creator for Editing Society Account
+
+export const login = createAsyncThunk(
+  'account/society/edit',
+  async({societyId, email, password, name, nameInitials, presidentEmail, patronEmail}, {getState, rejectWithValue}) => {
+    const {isPending} = getState().account
+    if (isPending != true){
+      return
+    }
+
+    let QUERY = '/account/society/edit-account'
+
+    try {
+      const res = await fetch(PUBLIC_URL + QUERY, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: {
+          societyId: societyId,
+          email: email,
+          password: password,
+          name: name,
+          nameInitials: nameInitials,
+          presidentEmail: presidentEmail,
+          patronEmail: patronEmail
+        }
+      })
+      if (res.ok) {
+        const data = res.json()
+        return
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
 )
