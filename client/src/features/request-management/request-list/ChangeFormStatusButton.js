@@ -11,13 +11,13 @@ import { useDispatch } from 'react-redux'
   dispatched the store   
 */
 
-export default function ChangeFormStatusButton({requestId}) {
+export default function ChangeFormStatusButton({requestId, requestStatus}) {
   const dispatch = useDispatch()
-  
-  const [open, setOpen] = React.useState(false)
-  const [status, setStatus] = React.useState("")
 
-  function handleClick(e) {
+  const [open, setOpen] = React.useState(false)
+  const [status, setStatus] = React.useState(requestStatus)
+
+  function handleChange(e) {
     setStatus(e.target.value)
     var status= e.target.value
     dispatch(changeFormStatus({requestId, status}))
@@ -31,9 +31,11 @@ export default function ChangeFormStatusButton({requestId}) {
     setOpen(false)
   }
 
+  const options = ["Pending", "Issue", "Approved", "Rejected"]
+
   return (
     <div>
-      <FormControl>
+      <FormControl variant="outlined">
         <Select
           labelId = "status-label"
           id="label"
@@ -41,28 +43,21 @@ export default function ChangeFormStatusButton({requestId}) {
           onClose={handleClose}
           value={status}
           onOpen={handleOpen}
-          onChange={handleClick}
           style={{height: 30, width: 100}}
           variant = "outlined"
+          onChange={handleChange}
         >
-          <MenuItem value="Pending" onClick={handleClick}>
-            Pending
-          </MenuItem>
-
-          <MenuItem value="Issue" onClick={handleClick}>
-            Issue
-          </MenuItem>
-
-          <MenuItem value="Approved" onClick={handleClick}>
-            Approved
-          </MenuItem>
-
-          <MenuItem value="Rejected" onClick={handleClick}>
-            Rejected
-          </MenuItem>
+          {
+            options.map((option, index) => {
+              return (
+                <MenuItem value={option}>{option}</MenuItem>
+              )
+            })
+          }
         </Select>
       </FormControl>
     </div>
   )
 }
+
 

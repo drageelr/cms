@@ -129,7 +129,7 @@ const ccaDetails = createSlice({
         state.isPending = false
         let i = 0
         console.log(action.payload.id)
-        state.map((obj,index) => {
+        state.ccaList.map((obj,index) => {
           if (obj.id === action.payload.id){
             i = index
           }  
@@ -223,7 +223,10 @@ const ccaDetails = createSlice({
         state.isPending = true
       }
     },
-    [changeCCAPicture.fulfilled]: (state, action) => {  
+    [changeCCAPicture.fulfilled]: (state, action) => { 
+      if (state.isPending === true) {
+        state.isPending = false
+      }
       state.ccaList.map(ccaUser => {
         if (ccaUser.id === action.payload.ccaAccountId) {
           ccaUser.picture = action.payload.url

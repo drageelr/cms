@@ -1,21 +1,21 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Button, Paper} from '@material-ui/core'
 import MUIDataTable from "mui-datatables"
 import LinearProgress from '@material-ui/core/LinearProgress'
 import DeleteIcon from '@material-ui/icons/Delete'
-// import { deleteFormSubmission } from './requestListSlice'
+import { deleteFormSubmission } from './requestListSlice'
 import { makeStyles } from '@material-ui/core/styles'
+import { fetchSocietyList, deleteSubmission } from './submissionListSlice'
 
 /**
   The component displays a table of all the forms submitted by the society. The society can view
   the submission, as well as delete ir from their screen.
 
-  @param {string} userId userId is the society user ID. the Id is used to fetch all forms submitted by user
-  @param {object} requestListData corresponding slice from redux, used to fetch the forms data  
+  @param {object} user use is the society object. the Id from it is used to fetch all forms submitted by user
+  @param {object} submissionListData corresponding slice from redux, used to fetch the forms data  
   @param {function} dispatch redux function which dispatches the delete form action to the reducer  
 */
-
 
 const useStyles = makeStyles((theme) => ({
   submissionListPaper: {
@@ -24,13 +24,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export function SocietyFormSubmissionView({userId, requestListData, dispatch}) {
+export function SocietyFormSubmissionView({user, submissionListData, dispatch}) {
+  useEffect(async () => {
+    await dispatch(fetchSocietyList())
+  }, [])
+  
   const columns = ["Submitted Forms", "Last edited", "Progress Bar", "Form Status", " ", " "]
   const classes = useStyles()
 
-  function handleDelete({index}) {
-    console.log("hell")
-    // dispatch(deleteFormSubmission(index))
+  function handleDelete({reqId}) {
+    dispatch(deleteSubmission({reqId}))
   }
   
   function selectValue(formStatus) {
@@ -56,9 +59,9 @@ export function SocietyFormSubmissionView({userId, requestListData, dispatch}) {
     selectableRows:false,
   }
 
-  var rows = 0
-  requestListData.formData.map(form => {
-    if (form.userId === userId) {
+  var rows = submissionListData.formDataList.length
+  submissionListData.formDataList.map(form => {
+    if (form.id === user.id) {
     rows+=1
   }})
 
@@ -67,30 +70,22 @@ export function SocietyFormSubmissionView({userId, requestListData, dispatch}) {
     data[i] = new Array(columns.length)
   }
 
-  requestListData.formData.map((submittedForm, index) => {
-    if(submittedForm.userId === userId) {
-      requestListData.formTitles.map(formTitle => {
-        if(submittedForm.formId === formTitle.id) {
-          let progressVal = selectValue(submittedForm.formStatus)
-          data[index][0] = formTitle.title
-          data[index][1] = submittedForm.timestampModified
-          data[index][2] = <LinearProgress 
-            value={progressVal}
-            thickness={15}
-            style={{color: "yellow"}}
-            variant="determinate"
-            />
-          data[index][3] = submittedForm.formStatus
-          data[index][4] = <Button variant="outlined" color="primary" style={{marginRight: -30}}>
-            View Submission
-            </Button>
-          data[index][5] = <DeleteIcon onClick={() => handleDelete({index})}/> 
-          // pass the request id to delete the submitted form, as a submission is essentially a request, 
-          // to delete the form, send the form index to the reducer and t will delete the form object 
-          // from the array at that index
-        }
-      })
-    }
+  submissionListData.formDataList.map((submittedForm, index) => {
+    let progressVal = selectValue(submittedForm.formStatus)
+    var reqId = submittedForm.id
+    data[index][0] = submittedForm.title
+    data[index][1] = submittedForm.date
+    data[index][2] = <LinearProgress 
+      value={progressVal}
+      thickness={15}
+      style={{color: "yellow"}}
+      variant="determinate"
+      />
+    data[index][3] = submittedForm.formStatus
+    data[index][4] = <Button variant="outlined" color="primary" style={{marginRight: -30}}>
+      View Submission
+      </Button>
+    data[index][5] = <DeleteIcon onClick={() => handleDelete({reqId})}/> 
   })
 
   return (
@@ -106,8 +101,8 @@ export function SocietyFormSubmissionView({userId, requestListData, dispatch}) {
 }
 
 const mapStateToProps = (state) => ({
-  userData: state.userData,
-  requestListData: state.requestListData
+  user: state.user,
+  submissionListData: state.submissionListData
 })
 
 export default connect(mapStateToProps)(SocietyFormSubmissionView)

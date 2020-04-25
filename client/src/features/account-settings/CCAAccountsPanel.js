@@ -1,7 +1,7 @@
 import React, { useState, useEffect }from 'react'
 import { addCCAAccount, deleteCCAAccount, editCCAAccount, fetchCCAAccounts, changeCCAPicture } from './ccaDetailsSlice'
 import { Button, Card, CardHeader, CardMedia, CardContent, Grid, Typography, 
-  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Input } from '@material-ui/core'
+  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Input, LinearProgress } from '@material-ui/core'
 import {connect} from 'react-redux'
 import MoreButton from '../../ui/MoreButton'
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -12,19 +12,21 @@ import ErrorSnackbar from "../../ui/ErrorSnackbar"
 
 function CCAAccountPanel({ccaDetails,dispatch}) {
 
-  useEffect(async () => {
-    await dispatch(fetchCCAAccounts())
+  useEffect(() => {
+    dispatch(fetchCCAAccounts())
   }, [])
   
   const [isOpen, setIsOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
-  const [picture, setPicture] = useState(null)
+  const [picture, setPicture] = useState("")
 
   function handleImageUpload(event, id) {
-    const ccaAccountId = id
     const url = URL.createObjectURL(event.target.files[0])
-    dispatch(changeCCAPicture({ccaAccountId, url}))
+    setPicture(url)
+    if(editMode) {
+      dispatch(changeCCAPicture({id, url}))
+    }
   }
 
 
@@ -133,7 +135,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
               setSubmitting(false)
             })
           setEditMode(false)
-          handleClose()
+          // handleClose()
         }}
       >
         {({submitForm, isSubmitting})=>(
@@ -162,24 +164,16 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
                   </Grid>
                 </Grid>
                 <Grid item>
-                  {
-                    ccaDetails.ccaList.map(ccaUserInfo => {
-                      console.log(editId)
-                      if (ccaUserInfo.id === editId) {
-                        return (
-                          <Grid direction="column" justify="flex-end" alignItems="flex-start">
-                            <Grid item>
-                              <Avatar style = {{width:180, height:180, marginLeft: 50, marginTop: 30}} src = {ccaUserInfo.picture}/>
-                            </Grid>
-                            <Grid item>
-                              <input style = {{marginLeft: 80, marginTop: 10}} type="file" onChange={(e) => {handleImageUpload(e, editId)}}/>
-                            </Grid>
-                          </Grid>
-                        )
-                      }
-                    })
-                  }
+                  <Grid direction="column" justify="flex-end" alignItems="flex-start">
+                    <Grid item>
+                      <Avatar style = {{width:180, height:180, marginLeft: 50, marginTop: 30}} src = {initialValues.picture}/>
+                    </Grid>
+                    <Grid item>
+                      <input style = {{marginLeft: 80, marginTop: 10}} type="file" onChange={(e) => {handleImageUpload(e, editId)}}/>
+                    </Grid>
+                  </Grid>
                 </Grid>
+                
               </Grid>
             </DialogContent>
             <DialogActions>
@@ -202,42 +196,46 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
 
   return (
     <div>
-      <div align="center">
-        <h1>CCA Accounts Panel</h1>
-        <Button
-          variant="contained" 
-          color="primary" 
-          spacing= '10' 
-          style = {{float: "right", marginBottom:10}}
-          onClick = {handleAdd}
-        > Add CCA member
-        </Button>
-        <CCADialog />
-      </div>
-      <Grid container spacing={3} >
-      {
-        ccaDetails.ccaList.map((ccaDetail,index) => (
-          <Grid item xs={3}> 
-            <Card variant="outlined" style = {{maxWidth: 300, background: "snow"}}>
-              <CardHeader
-                avatar={
-                  <Avatar style = {{width:150, height:150}} src = {ccaDetail.picture}/>
-                }
-                action={
-                  <EditDeleteMoreButton id={ccaDetail.id}/>
-                }
-              />
-              <CardContent>
-                <Typography style = {{textAlign: 'left', fontSize: 20}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
-                <Typography>{ccaDetail.role}</Typography>
-                <Typography>{ccaDetail.email}</Typography>
-              
-              </CardContent>
-            </Card>
+      {ccaDetails.isPending ? <LinearProgress /> :
+        <div>
+          <div align="center">
+            <h1>CCA Accounts Panel</h1>
+            <Button
+              variant="contained" 
+              color="primary" 
+              spacing= '10' 
+              style = {{float: "right", marginBottom:10}}
+              onClick = {handleAdd}
+            > Add CCA member
+            </Button>
+            <CCADialog />
+          </div>
+          <Grid container spacing={3} >
+          {
+            ccaDetails.ccaList.map((ccaDetail,index) => (
+              <Grid item xs={3}> 
+                <Card variant="outlined" style = {{maxWidth: 300, background: "snow"}}>
+                  <CardHeader
+                    avatar={
+                      <Avatar style = {{width:150, height:150}} src = {ccaDetail.picture}/>
+                    }
+                    action={
+                      <EditDeleteMoreButton id={ccaDetail.id}/>
+                    }
+                  />
+                  <CardContent>
+                    <Typography style = {{textAlign: 'left', fontSize: 20}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
+                    <Typography>{ccaDetail.role}</Typography>
+                    <Typography>{ccaDetail.email}</Typography>
+                  
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))
+          }
           </Grid>
-        ))
+        </div>
       }
-        </Grid>
     </div>
   )
 }

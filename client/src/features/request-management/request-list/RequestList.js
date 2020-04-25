@@ -5,6 +5,8 @@ import ChangeFormStatusButton from './ChangeFormStatusButton'
 import { Button, CircularProgress, LinearProgress } from '@material-ui/core'
 import { fetchCCARequestList } from '../requestListSlice'
 import ErrorSnackBar from "../../../ui/ErrorSnackbar"
+import {clearError} from "../../account-settings/userSlice"
+import { useHistory } from "react-router-dom"
 
 /**
   The component displays a table of all the requests provided to the CCA. THe CCA admin can view 
@@ -17,10 +19,12 @@ const columns = ["Req ID", "Form Title", "Date", "Society", "Form Status", ""]
 
 export function RequestList({requestListData, dispatch}) {
 
-  useEffect(async () => {
-    await dispatch(fetchCCARequestList())
+  useEffect(() => {
+    dispatch(fetchCCARequestList())
   }, [])
   
+  let history = useHistory()
+
   const options = {
     search:false,
     searchOpen:false,
@@ -32,13 +36,15 @@ export function RequestList({requestListData, dispatch}) {
     selectableRows:false,
   }
   
-  function handleClick(event) {
+  function handleClick(reqId) {
+    console.log(reqId)
+    history.push(`/form-viewer/${reqId}`)
   }
   
   return (
     <div>
       {
-        requestListData.isPending ? <LinearProgress/> :
+        requestListData.isPending ? <LinearProgress variant="indeterminate"/> :
         <MUIDataTable
           title={"Request List"} 
           data={
@@ -47,11 +53,11 @@ export function RequestList({requestListData, dispatch}) {
               request.title,
               request.date,
               request.society,
-              <ChangeFormStatusButton requestId={request.id}/>,
+              <ChangeFormStatusButton requestId={request.id} requestStatus={request.formStatus} />,
               <Button 
                 value={request.id}
                 type = "button" 
-                onClick={handleClick}
+                onClick={() => {handleClick(request.id)}}
                 variant="outlined"
               >
                 view submission
