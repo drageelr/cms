@@ -5,7 +5,7 @@ const initialState = {
   formId: 0, //form Id
   userId: 0, //user id of the user that submitted
   formStatus: 'Pending',
-  ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!',
+  ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!1. Please do not worry if',
   ccaNoteTimestampModified: '03/13/2009 21:31:30',
   societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
   itemsData: { //itemId : itemData
@@ -31,12 +31,16 @@ const formData = createSlice({
 
     setItemData: (state, action) => {
       state.itemsData[action.payload.id] = action.payload.data
-    }
+    },
+
+    addSocietyNote: (state, action) => {
+      state.societyNotes.push(action.payload.newSocietyNote)
+    },
 
   }
 })
 
-export const { updateCcaNote, setItemData } = formData.actions
+export const { updateCcaNote, setItemData, addSocietyNote } = formData.actions
 
 
 export default formData.reducer

@@ -7,6 +7,8 @@ import formDataReducer from '../features/form-management/formDataSlice'
 import formTemplateReducer from '../features/form-management/formTemplateSlice'
 import propertiesDataReducer from '../features/form-management/propertiesDataSlice'
 import formListReducer from '../features/form-management/formListSlice'
+import ccaDetailsReducer from '../features/account-settings/ccaDetailsSlice'
+import userReducer from '../features/account-settings/userSlice'
 
 export default configureStore({
   reducer: {
@@ -14,9 +16,11 @@ export default configureStore({
     requestListData: requestListReducer,
     taskStatusDetails: taskStatusDetailsReducer,
     societyData: societyDataReducer,
+    ccaDetails:ccaDetailsReducer,
     formTemplate: formTemplateReducer,
     formData: formDataReducer,
     propertiesData: propertiesDataReducer,
-    formList: formListReducer
+    formList: formListReducer,
+    user: userReducer,
   },
 })

@@ -21,7 +21,7 @@ export default function TextboxProperties({propertyAddMode, propertyId, itemData
   console.log(parentId)
 
   function closeProperties() {
-    dispatch(closePropertiesWindow)
+    dispatch(closePropertiesWindow())
   }
 
   return (

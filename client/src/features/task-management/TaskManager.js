@@ -39,7 +39,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 function TaskManager({ columnData, dispatch }) {
   
   const classes = useStyles()
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   function handleClickOpen() {
     setOpen(true)

@@ -13,8 +13,8 @@ var logger = require('morgan');
 var mongoose = require('./services/mongoose');
 
 // Routes:
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var authRouter = require('./routes/auth.route')
+var accountRouter = require('./routes/account.route');
 
 // Others:
 var { errorHandler } = require('./errors/errorhandler');
@@ -39,11 +39,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // Add Routes To App:
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/account', accountRouter);
 
 // Add Error Handler
-app.use(errorHandler());
+app.use(errorHandler);
 
 // Connect With Mongoose
 mongoose.connect();

@@ -11,13 +11,12 @@ import LoginPage from './features/account-settings/LoginPage'
 import CCASettingsHome from './features/account-settings/CCASettingsHome'
 import FormList from './features/form-management/form-list/FormList'
 import FormViewer from './features/form-management/form-viewer/FormViewer'
-import SocietyFormList from './features/form-management/form-list/SocietyFormList'
-
-
-import CCAAccountsPanel from './features/account-settings/cca-panel/CCAAccountsPanel'
+import CCAAccountsPanel from './features/account-settings/CCAAccountsPanel'
 import SocietyAccountsPanel from './features/account-settings/SocietyAccountsPanel'
 import TaskStatusPanel from './features/account-settings/TaskStatusPanel'
 import ChangePassword from './features/account-settings/ChangePassword'
+import SocietyDashboard from './ui/SocietyDashboard'
+import { connect } from 'react-redux'
 
 const appTheme = createMuiTheme({
   palette: {
@@ -42,25 +41,39 @@ const appTheme = createMuiTheme({
   }
 })
 
-export default function App() {
+function App({ user }) {
+  const { isLoggedIn, role, nameInitials, name, picture } = user
+
   return (
     <Router>
       <ThemeProvider theme={appTheme}>
-        <NavBar/>
+        { isLoggedIn ?
+        <div>
+          <NavBar nameInitials={nameInitials} name={name} role={role} picture={picture}/>
           <Switch> 
-            <Route path="/" exact component={LoginPage}/>
+            <Route path="/" exact component={role === "CCA" ? TaskManager : SocietyDashboard}/>
             <Route path="/form-viewer" component={FormViewer}/>
             <Route path="/forms" component={FormList}/>
             <Route path="/form-maker" component={FormMaker}/>
             <Route path="/request-list" component={RequestList}/>
+            <Route path="/society-dashboard" component={SocietyDashboard}/>
             <Route path="/task-manager" component={TaskManager}/>
             <Route path="/settings" component={CCASettingsHome}/>
-            <Route path="/ccapanel" exact component={CCAAccountsPanel}/>
-            <Route path="/changepassword" exact component={ChangePassword}/>
-            <Route path="/societypanel" exact component={SocietyAccountsPanel}/>
-            <Route path="/taskstatuspanel" exact component={TaskStatusPanel}/>          
+            <Route path="/cca-panel" exact component={CCAAccountsPanel}/>
+            <Route path="/change-password" exact component={ChangePassword}/>
+            <Route path="/society-panel" exact component={SocietyAccountsPanel}/>
+            <Route path="/task-status-panel" exact component={TaskStatusPanel}/>          
           </Switch>
+        </div>
+        : <LoginPage/>
+        }
       </ThemeProvider>
     </Router>
   )
 }
+
+const mapStateToProps = (state) => ({
+  user: state.user,
+})
+
+export default connect(mapStateToProps) (App)

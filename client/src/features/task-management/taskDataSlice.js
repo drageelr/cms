@@ -210,7 +210,7 @@ const taskdata = createSlice({
 
       state.columns[ownerId].taskIds.map(id => {
         if (taskId === id) {
-          var filteredAry = state.columns[ownerId].taskIds.filter(function(e) { return e !== id })
+          var filteredAry = state.columns[ownerId].taskIds.filter(function(e) { return e != id })
           const obj = state.tasks[taskId]
           state.archiveList.push(obj)
           state.columns[ownerId].taskIds = filteredAry
@@ -223,7 +223,7 @@ const taskdata = createSlice({
       
       state.columns[ownerId].taskIds.push(taskId) // put the task back in owners list
       state.archiveList.map(id => {
-        var filteredAry = state.archiveList.filter(function(e) { return e.id !== taskId })
+        var filteredAry = state.archiveList.filter(function(e) { return e.id != taskId })
         state.archiveList = filteredAry
       })
     },

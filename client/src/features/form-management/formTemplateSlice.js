@@ -1,9 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
 // Form Maker template creation state stored here, this could have been done locally inside the Form Maker as well
 // but is done so to set aside the rigorous business logic required
 
-const initialState = { // Sample form currently
+const sampleForm = { // Sample form currently
   id: 0,
   isPublic: false,
   title: "Event Approval",
@@ -72,12 +72,55 @@ const initialState = { // Sample form currently
       defaultVisibility: true
     },
   },
-  checklist: {0:"Verify Email", 1:"Check Society"} //sectionId: subTask
+  checklist: {0:"Verify Email", 1:"Check Society"}, //sectionId: subTask
+}
+
+const initialState = { 
+  id: 0,
+  isPublic: false,
+  title: "",
+  creatorId: 1,
+  sectionsOrder: [], 
+  sections: {},
+  componentsOrder: {},
+  components: {},
+  itemsOrder: {},
+  items: {},
+  checklist: {},
+  isPending: false,
+  error: ''
 }
 
 let sId = 1 //section
 let cId = 2//component
 let iId = 5 //iId
+
+export const fetchFormById = createAsyncThunk(
+  'formTemplate/fetchFormById',
+  async (formId, { getState }) => {
+    const { isPending } = getState().formTemplate
+    
+    if (isPending != true) {
+      return
+    }
+
+    const fetchCall = () => {
+      var promise = new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(sampleForm)
+        }, 1000)
+      })
+      return promise
+    }
+
+    cId = 0
+    sId = 0
+    iId = 0 
+
+    const result = await fetchCall()
+    return result
+  }
+)
 
 const formTemplate = createSlice({
   name: 'formTemplate',
@@ -218,11 +261,33 @@ const formTemplate = createSlice({
             state.itemsOrder[parentId].splice(index, 1) //remove from array
             delete state.items[id] //item data removed
           }
-
           break
         }
       }
     },
+  },
+  extraReducers: {
+    [fetchFormById.pending]: (state, action) => {
+      if (state.isPending === false) {
+        state.isPending = true
+      }
+    },
+    [fetchFormById.fulfilled]: (state, action) => {
+      if (state.isPending === true) {
+        return {
+          ...action.payload,
+          isPending: false,
+          error: ''
+        }
+      }
+    },
+    [fetchFormById.rejected]: (state, action) => {
+      console.log(action)
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = action.error
+      }
+    }
   }
 })
 

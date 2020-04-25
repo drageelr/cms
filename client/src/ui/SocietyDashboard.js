@@ -6,8 +6,8 @@ export default function SocietyDashboard() {
 
   return (
     <div>
+      <SocietyFormSubmissionList userId="lumun"/>
       <SocietyFormList/>
-      <SocietyFormSubmissionList/>
     </div>
   )
 }
