@@ -179,3 +179,159 @@ export const login = createAsyncThunk(
     }
   }
 )
+
+//2.5 Action Creator for Getting CCA Account List
+
+export const ccaList = createAsyncThunk(
+  'account/cca/list',
+  async({getState, rejectWithValue}) => {
+    const {isPending} = getState().account
+    if (isPending != true){
+      return
+    }
+
+    let QUERY = '/account/cca/account-list'
+
+    try {
+      const res= await  fetch(PUBLIC_URL + QUERY, {
+        method: 'POST',
+        mode: 'no-cors'
+      })
+      if (res.ok) {
+        const data = res.json()
+        return {userList: data.userList} //userList: [{ccaID, email, firstName, lastName, picture, active}]
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
+)
+
+//2.6 Action Creator for Getting Society Account List
+
+export const societyList = createAsyncThunk(
+  'account/society/list',
+  async({getState, rejectWithValue}) => {
+    const {isPending} = getState().account
+    if (isPending != true){
+      return
+    }
+
+    let QUERY = '/account/society/account-list'
+
+    try {
+      const res = await fetch(PUBLIC_URL + QUERY, {
+        method: 'POST',
+        mode: 'no-cors'
+      })
+      if (res.ok) {
+        const data = res.json()
+        return {userList: data.userList}
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
+)
+
+//2.7 Action Creator for Changing CCA Password
+
+export const ccaChangePassword = createAsyncThunk(
+  'account/cca/change-password',
+  async({passwordCurrent, passwordNew}, {getState, rejectWithValue}) => {
+    const {isPending} = getState().account
+    if (isPending != true){
+      return
+    }
+
+    let QUERY = '/account/cca/change-password'
+    
+    try {
+      const res = await fetch(PUBLIC_URL + QUERY, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: {
+          passwordCurrent: passwordCurrent,
+          passwordNew: passwordNew
+        }
+      })
+      if (res.ok) {
+        const data = res.json()
+        return
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
+)
+
+//2.8 Action Creator for Changing Society Password
+
+export const login = createAsyncThunk(
+  'account/society/change-password',
+  async ({passwordCurrent, passwordNew}, {getState, rejectWithValue}) => {
+    const {isPending} = getState().user
+    if (isPending != true){
+      return
+    }
+
+    let QUERY = '/account/society/change-password'
+
+    try {
+      const res = await fetch(PUBLIC_URL, QUERY, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: {
+          passwordCurrent: passwordCurrent,
+          passwordNew: passwordNew
+        }
+      })
+      if (res.ok) {
+        const data = res.json()
+        return
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
+)
+
+//2.9 Action Creator for Change CCA Picture
+
+export const ccaChangePicture = createAsyncThunk(
+  'account/cca/change-picture',
+  async({picture}, {getState, rejectWithValue}) => {
+    const {isPending} = getState().user
+    if (isPending != true){
+      return
+    }
+
+    let QUERY = '/account/cca/change-picture'
+
+    try {
+      const res = await fetch(PUBLIC_URL + QUERY, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: {
+          picture: picture
+        }
+      })
+      if (res.ok) {
+        const data = res.json()
+        return 
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
+)
