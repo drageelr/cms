@@ -75,7 +75,7 @@ export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {
   function renderDialogBox() {
     return (
       <Dialog 
-        fullWidth={true}
+        fullWidth
         maxWidth="md"
         open={open} 
         onClose={handleClickClose} 
@@ -85,7 +85,7 @@ export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {
         <Grid style={{padding: "15px"}} item container direction="row" justify="space-between" alignItems="flex-start">
           <Grid>
               <Typography gutterBottom variant="h5" color="inherit">
-                <Grid direction="row"> 
+                <Grid container direction="row"> 
                   <Grid item>
                     Task Name:
                     <TextField 
@@ -214,8 +214,8 @@ export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {
                 <MenuItem value={""} disabled>
                   <em>None</em>
                 </MenuItem>
-                {taskData.users.map(person => {
-                  return <MenuItem value={person}>{person}</MenuItem>  
+                {taskData.users.map((person, index) => {
+                  return <MenuItem key={index} value={person}>{person}</MenuItem>  
                 })}
               </Select>
             </FormControl>

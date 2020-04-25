@@ -7,7 +7,8 @@ import SaveIcon from '@material-ui/icons/Save'
 import ListIcon from '@material-ui/icons/List'
 import {useDispatch} from 'react-redux'
 import { setPropertyWindow } from '../propertiesDataSlice'
-import { toggleIsPublic } from '../formTemplateSlice'
+import { toggleIsPublic, createForm, editForm } from '../formTemplateSlice'
+import { useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,9 +27,10 @@ const useStyles = makeStyles((theme) => ({
   @param {bool} isPublic status for the form
 */
 
-export default function FormMakerBar({title, isPublic}) {
+export default function FormMakerBar({title, isPublic, createMode}) {
   const classes = useStyles()
   const dispatch = useDispatch()
+  const history = useHistory()
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
 
   function viewChecklist(){
@@ -63,6 +65,7 @@ export default function FormMakerBar({title, isPublic}) {
             variant="contained"
             startIcon={<SaveIcon />}
             style={{marginLeft:10}}
+            onClick={()=> dispatch(createMode ? createForm() : editForm())}
             >Save</Button>
             
             <Button
@@ -94,7 +97,7 @@ export default function FormMakerBar({title, isPublic}) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>{}} color="primary">
+          <Button onClick={()=>history.push('/forms')} color="primary">
             Yes
           </Button>
           <Button onClick={()=>setExitDialogOpen(false)}>

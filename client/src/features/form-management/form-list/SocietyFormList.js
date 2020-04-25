@@ -1,7 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/styles'
-import { Paper, List, Typography } from '@material-ui/core'
+import { Paper, List, Typography, Button } from '@material-ui/core'
+import { useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   formListPaper: {
@@ -14,19 +15,22 @@ const useStyles = makeStyles((theme) => ({
 
 function SocietyFormList({formList}) {
   const classes = useStyles()
+  const history = useHistory()
 
   return (
     <Paper className={classes.formListPaper} style={{position: 'absolute'}}>
         <h4 style={{marginLeft: '30%', marginBottom: 7, color: 'white'}}>Forms List</h4>
         <List>
           {
-            formList.map((form, index) => {
+            formList.list.map((form, index) => {
               return (
                 form.isPublic ?  //display public forms only to societies
                 <Paper key={index} style={{borderRadius: 3, margin: 10, backgroundColor: 'white'}} >
-                  <Typography style={{margin: 5}}>
-                  {form.title}
-                  </Typography>
+                  <Button onClick={()=>history.push(`/form-viewer/${form.formId}`)}>
+                    <Typography style={{margin: 5}}>
+                    {form.title}
+                    </Typography>
+                  </Button>
                   <br/>
                 </Paper>
                 : null

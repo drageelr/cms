@@ -2,13 +2,13 @@ import React from 'react'
 import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Container, LinearProgress, Snackbar, IconButton } from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
+import { Button, Container, LinearProgress, IconButton } from '@material-ui/core'
 import ToggleButton from '@material-ui/lab/ToggleButton'
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
 import { TextField } from 'formik-material-ui'
-import { login } from './userSlice'
 import { connect } from 'react-redux'
+import { login, clearError } from './userSlice'
+import ErrorSnackbar from '../../ui/ErrorSnackbar'
 
 // card styling
 const useStyles = makeStyles({
@@ -22,7 +22,6 @@ const useStyles = makeStyles({
 function LoginPage({user, dispatch}) {
   const classes = useStyles()
   const [role, setRole] = React.useState("CCA")
-  const [snackOpen, setSnackOpen] = React.useState(true)
 
   return (
     <Container component="main" className={classes.root}>
@@ -92,18 +91,7 @@ function LoginPage({user, dispatch}) {
           </Form>
         )}
       </Formik>
-      <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
-        open={(user.error != null) && snackOpen}
-        autoHideDuration={5000}
-        onClose={() => setSnackOpen(true)}
-        message={user.error}
-        action={
-          <IconButton size="small" aria-label="close" color="inherit" onClick={()=>setSnackOpen(false)}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        }
-      />
+      <ErrorSnackbar stateError={user.error} clearError={clearError}/>
     </Container>  
   )
 }

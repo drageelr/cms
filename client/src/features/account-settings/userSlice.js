@@ -4,8 +4,8 @@ const initialState = {
   id: -1,
   email: "",
   password: "",
-  name: "",
-  nameInitials: "",
+  name: "Developer",
+  nameInitials: "CD",
   role: "CCA",
   isLoggedIn: true,
   picture: "",
@@ -30,7 +30,7 @@ export const login = createAsyncThunk(
       QUERY = '/api/auth/society/login'
     }
     try {
-      const res = await fetch(API+QUERY, {
+      const res = await fetch(QUERY, {
         method: 'POST',
         mode: 'no-cors', // no-cors, *cors, same-origin
         body: {
@@ -38,14 +38,15 @@ export const login = createAsyncThunk(
           password: password,
         }
       })
+      console.log(res)
       if (res.ok) {
         const data = res.json()
         return {token: data.token, user: data.user}
       }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+      throw new Error(`${res.status}, ${res.statusText}`)
     }
     catch (err) {
-      return rejectWithValue(err)
+      return rejectWithValue(err.toString())
     }
   }
 )
@@ -80,6 +81,9 @@ const user = createSlice ({
         error: null
       }
     },
+    clearError: (state, action) => {
+      state.error = null
+    }
   },
   extraReducers: {
     [login.pending]: (state, action) => {
@@ -100,7 +104,7 @@ const user = createSlice ({
     [login.rejected]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
-        state.error = action.payload.message
+        state.error = action.payload
       }
     },
     [changePassword.pending]: (state, action) => {
@@ -116,12 +120,12 @@ const user = createSlice ({
     [changePassword.rejected]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
-        state.error = action.payload.message
+        state.error = action.payload
       }
     }
   }
 })
 
-export const { logout } = user.actions
+export const { logout, clearError } = user.actions
 
 export default user.reducer
