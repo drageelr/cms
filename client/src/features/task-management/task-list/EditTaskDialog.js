@@ -182,7 +182,7 @@ export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {
           alignItems="flex-start"
           style={{padding: "0px 17px 0px 17px"}}
         >
-          <Grid item> {/*CHECKLIST-SUBTASK*/}
+          <Grid item style={{marginBottom: 20}}> {/*CHECKLIST-SUBTASK*/}
             { taskId[0] === 'r' && <SubTask taskId={taskId}/> }
           </Grid>
           <Grid item style={{marginTop: 5}}> {/*Task Status Colors*/}

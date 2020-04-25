@@ -1,31 +1,34 @@
-import React, { useState }from 'react'
-import { addCCAAccount, deleteCCAAccount, editCCAAccount } from './ccaDetailsSlice'
-import { makeStyles } from '@material-ui/core/styles'
+import React, { useState, useEffect }from 'react'
+import { addCCAAccount, deleteCCAAccount, editCCAAccount, fetchCCAAccounts, changeCCAPicture } from './ccaDetailsSlice'
 import { Button, Card, CardHeader, CardMedia, CardContent, Grid, Typography, 
-  Avatar, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core'
+  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Input, LinearProgress } from '@material-ui/core'
 import {connect} from 'react-redux'
 import MoreButton from '../../ui/MoreButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
-
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-  },
-  container: {
-    maxHeight: '60%',
-  },
-})
+import ErrorSnackbar from "../../ui/ErrorSnackbar"
 
 function CCAAccountPanel({ccaDetails,dispatch}) {
-  const classes = useStyles()
 
+  useEffect(() => {
+    dispatch(fetchCCAAccounts())
+  }, [])
+  
   const [isOpen, setIsOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
-  const [picture, setPicture] = useState(null)
+  const [picture, setPicture] = useState("")
+
+  function handleImageUpload(event, id) {
+    const url = URL.createObjectURL(event.target.files[0])
+    setPicture(url)
+    if(editMode) {
+      dispatch(changeCCAPicture({id, url}))
+    }
+  }
+
 
   function EditDeleteMoreButton({id}){
     const menusList=[
@@ -35,9 +38,9 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
         onClick: ()=>handleEdit(id)
       },
       {
-        text: 'Delete',
-        icon: <DeleteIcon/>,
-        onClick: ()=>dispatch(deleteCCAAccount({id})),
+        text: 'Deactivate',
+        icon: <DeleteIcon/>,  
+        onClick: ()=>dispatch(deleteCCAAccount({id}))
       },
     ]
     return <MoreButton menusList={menusList}/>
@@ -67,11 +70,10 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     }
 
     if(editMode){
-      const ccaMemberDetail = ccaDetails.find((detail,index) => {
+      const ccaMemberDetail = ccaDetails.ccaList.find((detail,index) => {
         return detail.id === editId
       })
-      if (ccaMemberDetail !== undefined){
-        console.log(ccaMemberDetail.firstName)
+      if(ccaMemberDetail !== undefined){
         initialValues = {
           firstName: ccaMemberDetail.firstName,
           lastName: ccaMemberDetail.lastName,
@@ -89,9 +91,6 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       setIsOpen(false)
     }
 
-    function onDrop(picture){
-      setPicture(picture)
-    }
     return(
       <Dialog 
         open={isOpen}
@@ -100,7 +99,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       >
 
       <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-        {editMode ? "Edit Task Status" : "Add Task Status"}
+        {editMode ? "Edit Account" : "Add Account"}
       </DialogTitle>
       
       <Formik
@@ -110,8 +109,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
           const errors = {}
           return errors
         }}
-        onSubmit={(values) => {
-          console.log(values)
+        onSubmit={(values, {setSubmitting}) => {
           dispatch(editMode ?
             editCCAAccount({
               id: editId,
@@ -133,38 +131,54 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
               role:values.role,
               timestampCreated: values.timestampCreated,
               permission:values.permission,
-            }))
-            setEditMode(false)
-            handleClose()
+            })).then(() => {
+              setSubmitting(false)
+            })
+          setEditMode(false)
+          // handleClose()
         }}
       >
-        {({submitForm})=>(
+        {({submitForm, isSubmitting})=>(
           <Form>
-            <DialogContent>
-              <Grid container direction = "column" justify = "center" alignItems = "center" style = {{width: 400}}>
-                <Grid item style = {{width: 350}}>
-                  <Field component={TextField} name="firstName" required label="First Name"/>
-                </Grid>
+            <DialogContent> 
+              <Grid container direction="row" justify="space-evenly" alignItems="center">
+                <Grid item direction = "column" justify = "center" alignItems = "center" style = {{width: 200}}>
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="firstName" required label="First Name"/>
+                  </Grid>
 
-                <Grid item style = {{width: 350}}>
-                  <Field component={TextField} name="lastName" required label="Last Name"/>
-                </Grid>
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="lastName" required label="Last Name"/>
+                  </Grid>
 
-                <Grid item style = {{width: 350}}>
-                  <Field component={TextField} name="email" required label="Email"/>
-                </Grid>
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="email" required label="Email"/>
+                  </Grid>
 
-                <Grid item style = {{width: 350}}>
-                  <Field component={TextField} name="password" required label="Password"/>
-                </Grid>
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="password" required label="Password"/>
+                  </Grid>
 
-                <Grid item style = {{width: 350}}>
-                  <Field component={TextField} name="role" required label="Role"/>
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="role" required label="Role"/>
+                  </Grid>
                 </Grid>
-
+                <Grid item>
+                  <Grid direction="column" justify="flex-end" alignItems="flex-start">
+                    <Grid item>
+                      <Avatar style = {{width:180, height:180, marginLeft: 50, marginTop: 30}} src = {initialValues.picture}/>
+                    </Grid>
+                    <Grid item>
+                      <input style = {{marginLeft: 80, marginTop: 10}} type="file" onChange={(e) => {handleImageUpload(e, editId)}}/>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                
               </Grid>
             </DialogContent>
             <DialogActions>
+              {isSubmitting && <CircularProgress/>}
+
               <Button onClick={submitForm} color="primary">
                 Save
               </Button>
@@ -182,42 +196,48 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
 
   return (
     <div>
-      <div align="center">
-        <h1>CCA Accounts Panel</h1>
-        <Button
-          variant="contained" 
-          color="primary" 
-          spacing= '10' 
-          style = {{float: "right", marginBottom:10}}
-          onClick = {handleAdd}
-        > Add CCA member
-        </Button>
-        <CCADialog/>
-      </div>
-      <Grid container spacing={3} >
-      {ccaDetails.map((ccaDetail,index) => (
-        <Grid item xs={4}> 
-          <Card variant="outlined" style = {{maxWidth: 345}}>
-            <CardHeader
-              avatar={
-                <Avatar style = {{width: 200, height:200}} src = {ccaDetail.picture}/>
-              }
-              action={
-                <EditDeleteMoreButton id={ccaDetail.id}/>
-              }
-            />
-            <CardContent>
-              <Typography style = {{textAlign: 'left', fontSize: 20}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
-              <Typography>{ccaDetail.role}</Typography>
-              <Typography>{ccaDetail.email}</Typography>
-            
-            </CardContent>
-          </Card>
-        </Grid>
-        ))}
-        </Grid>
-      </div>
-    )
+      {ccaDetails.isPending ? <LinearProgress /> :
+        <div>
+          <div align="center">
+            <h1>CCA Accounts Panel</h1>
+            <Button
+              variant="contained" 
+              color="primary" 
+              spacing= '10' 
+              style = {{float: "right", marginBottom:10}}
+              onClick = {handleAdd}
+            > Add CCA member
+            </Button>
+            <CCADialog />
+          </div>
+          <Grid container spacing={3} >
+          {
+            ccaDetails.ccaList.map((ccaDetail,index) => (
+              <Grid item xs={3}> 
+                <Card variant="outlined" style = {{maxWidth: 300, background: "snow"}}>
+                  <CardHeader
+                    avatar={
+                      <Avatar style = {{width:150, height:150}} src = {ccaDetail.picture}/>
+                    }
+                    action={
+                      <EditDeleteMoreButton id={ccaDetail.id}/>
+                    }
+                  />
+                  <CardContent>
+                    <Typography style = {{textAlign: 'left', fontSize: 20}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
+                    <Typography>{ccaDetail.role}</Typography>
+                    <Typography>{ccaDetail.email}</Typography>
+                  
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))
+          }
+          </Grid>
+        </div>
+      }
+    </div>
+  )
 }
 
 const mapStateToProps = (state) => ({
