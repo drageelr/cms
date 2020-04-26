@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { changeCheckStatus } from '../taskDataSlice'
-import { Grid, Checkbox, FormControlLabel } from '@material-ui/core'
+import { Checkbox, FormControlLabel } from '@material-ui/core'
 import SelectAssigneeButton from "./SelectAssigneeButton"
 
 /**
@@ -29,7 +29,7 @@ export function SubTask({taskId, taskData, dispatch}) {
     <div>
     {
       taskData.checkListItems.map(checkListObj => {
-        if ((taskData.tasks[taskId].formDataId !== "") && taskData.tasks[taskId].formDataId === checkListObj.formId) { 
+        if ((taskData.tasks[taskId].formDataId != "") && taskData.tasks[taskId].formDataId === checkListObj.formId) { 
           return (
           <div>
               <FormControlLabel

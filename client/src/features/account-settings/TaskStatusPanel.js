@@ -1,32 +1,17 @@
-import React, {useState} from 'react'
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { Grid } from '@material-ui/core';
-import {addTaskStatus,editTaskStatus,deleteTaskStatus} from './taskStatusDetailsSlice'
-
+import React, {useState, useEffect} from 'react'
+import { withStyles, makeStyles } from '@material-ui/core/styles'
+import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog,
+  DialogActions, DialogContent, DialogTitle, LinearProgress } from '@material-ui/core'
+import {addTaskStatus,editTaskStatus,deleteTaskStatus,fetchTaskStatus} from './taskStatusDetailsSlice'
 import {connect} from 'react-redux'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
-
 import MoreButton from '../../ui/MoreButton'
-
 import DeleteIcon from '@material-ui/icons/Delete'
-
 import EditIcon from '@material-ui/icons/Edit'
+import {clearError} from './taskStatusDetailsSlice'
+import ErrorSnackbar from '../../ui/ErrorSnackbar'
+import PanelBar from './PanelBar'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -36,7 +21,7 @@ const StyledTableCell = withStyles((theme) => ({
   body: {
     fontSize: 14,
   },
-}))(TableCell);
+}))(TableCell)
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -44,17 +29,19 @@ const StyledTableRow = withStyles((theme) => ({
       backgroundColor: theme.palette.background.default,
     },
   },
-}))(TableRow);
+}))(TableRow)
 
 const useStyles = makeStyles({
   table: {
     minWidth: 600,
   },
-});
+})
 
 function TaskStatusPanel({taskStatusDetails,dispatch}){
 
-  const classes = useStyles();
+  useEffect(() => {dispatch(fetchTaskStatus())},[])
+
+  const classes = useStyles()
   const [isOpen,setIsOpen] = useState(false)
 
   const [editMode,setEditMode] = useState(false)
@@ -94,7 +81,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
     }
 
     if (editMode){
-      const taskDetail = taskStatusDetails.find((task,index) =>{
+      const taskDetail = taskStatusDetails.taskList.find((task,index) =>{
         return task.id === editId
       })
       if (taskDetail != undefined){
@@ -124,12 +111,18 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
             const errors = {}
             return errors
           }}
-          onSubmit={(values) => {
-            dispatch(editMode ? editTaskStatus(({id: editId, name: values.name, colorHex: values.colorHex})):addTaskStatus({name: values.name, colorHex: values.colorHex}))
+          onSubmit={(values,{setSubmitting}) => {
+            // (taskStatusDetails.isPending) ? <CircularProgress/>
+            dispatch(editMode 
+              ?editTaskStatus(({id: editId, name: values.name, colorHex: values.colorHex}))
+              :addTaskStatus({name: values.name, colorHex: values.colorHex}))
+              .then(()=>{
+                setSubmitting(false)
+              })
             handleClose()
           }}
         >
-          {({submitForm}) => (
+          {({submitForm, isSubmitting}) => (
             <Form>
               <DialogContent>
                 <Grid container direction = "column" justify = "center" alignItems = "center" style = {{width: 400}}>
@@ -153,7 +146,8 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
               </DialogActions>
             </Form>
           )}
-        </Formik>        
+        </Formik>
+        {/* <ErrorSnackbar stateError={taskStatusDetails.error} clearError={clearError} />    */}
       </Dialog>
     )
   }
@@ -161,52 +155,46 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
 
   
   return (
-  <div>
-    <div style={{float : 'right', marginRight : 10, marginTop: 3, marginBottom: 10}}>
-      <Fab 
-        variant="extended" 
-        color="secondary" 
-        float = "right"
-        onClick = {handleAdd}
-      >
-        <AddIcon/>
-        Add Task Status
-      </Fab>
+    <div>
+    {
+    taskStatusDetails.isPending? <LinearProgress variant = "indeterminate"/>:
+    <div>
+      <PanelBar handleAdd={handleAdd} title="Task Status Panel" buttonText="Add New Task Status"/>
       <TaskStatusDialog/>
+      <h3 style = {{textAlign: 'center', fontSize: 20, marginLeft: '15%'}}>Task Status Panel </h3>
+      <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="customized table">
+        <TableHead>
+          <TableRow>
+            <StyledTableCell>Task Status</StyledTableCell>
+            <StyledTableCell align="center">Color</StyledTableCell>
+            <StyledTableCell align="right">Options</StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {taskStatusDetails.taskList.map((taskStatusDetail,index) => (
+            <StyledTableRow key={index}>
+              <StyledTableCell component="th" scope="row">
+                {taskStatusDetail.name}
+              </StyledTableCell>
+              <StyledTableCell align="center">
+                <Button variant="contained" style={{backgroundColor:taskStatusDetail.colorHex}}/>
+
+              </StyledTableCell>
+
+              <StyledTableCell align="right">
+                <EditDeleteMoreButton id={taskStatusDetail.id}/>
+              </StyledTableCell>
+            </StyledTableRow>
+          ))}
+        </TableBody>
+      </Table>
+      </TableContainer>
+
     </div>
-
-    <h3 style = {{textAlign: 'center', fontSize: 20}}>Task Status Panel </h3>
-    <TableContainer component={Paper}>
-    <Table className={classes.table} aria-label="customized table">
-      <TableHead>
-        <TableRow>
-          <StyledTableCell>Task Status</StyledTableCell>
-          <StyledTableCell align="center">Color</StyledTableCell>
-          <StyledTableCell align="right">Options</StyledTableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {taskStatusDetails.map((taskStatusDetail,index) => (
-          <StyledTableRow key={index}>
-            <StyledTableCell component="th" scope="row">
-              {taskStatusDetail.name}
-            </StyledTableCell>
-            {/* ///////////////////////////need to do color picker option */}
-            <StyledTableCell align="center">
-              <Button variant="contained" style={{backgroundColor:taskStatusDetail.colorHex}}/>
-                          
-            </StyledTableCell>
-
-            <StyledTableCell align="right">
-              <EditDeleteMoreButton id={taskStatusDetail.id}/>
-            </StyledTableCell>
-          </StyledTableRow>
-        ))}
-      </TableBody>
-    </Table>
-    </TableContainer>
-
-  </div>
+    }
+    <ErrorSnackbar stateError={taskStatusDetails.error} clearError={clearError} />
+    </div>
   )
 }
 

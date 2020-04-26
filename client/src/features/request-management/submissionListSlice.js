@@ -1,9 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
-/**
-  A temporary initial state has been created to test with the components and render meaningful
-  on the screen
-*/
+// send the userId to the server and it will return me the list of forms corresponding to that id
 
 const sampleState = {
   formDataList : [
@@ -19,7 +16,7 @@ const sampleState = {
       society: "LUMUN",
       date: "12/01/2020",
       title: "Auditorium Booking",
-      formStatus: 'Issue',
+      formStatus: 'Unassigned',
     }
   ],
   isPending: true,
@@ -32,15 +29,15 @@ const initialState = {
   error: null
 }
 
-export const fetchCCARequestList = createAsyncThunk(
-  'requestListData/fetchCCARequestList',
-  async (_, { getState, rejectWithValue }) => {
-    const { isPending } = getState().requestListData
-    
+export const fetchSocietyList = createAsyncThunk(
+  'submissionListData/fetchSocietyList',
+  async (_, { getState, rejectWithValue}) => {
+    const { isPending } = getState().submissionListData
+
     if (isPending != true) {
       return
     } 
-
+    
     const fetchCall = () => {
       var promise = new Promise((resolve) => {
         setTimeout(() => {
@@ -50,70 +47,63 @@ export const fetchCCARequestList = createAsyncThunk(
       return promise
     }
     
-    // return rejectWithValue("TBD")
     return sampleState
   }
 )
 
-export const changeFormStatus = createAsyncThunk(
-  'requestListData/changeFormStatus',
-  async (statusObj, { getState, rejectWithValue}) => {
-    const { isPending } = getState().requestListData
-    
+export const deleteSubmission = createAsyncThunk(
+  'submissionListData/deleteSubmission',
+  async (reqId, { getState, rejectWithValue}) => {
+    const { isPending } = getState().submissionListData
+
     if (isPending != true) {
       return
-    } 
-
-    return statusObj
+    }
+    
+    // console.log(reqId)
+    return reqId
   }
 )
 
-const requestListData = createSlice ({
-  name:'requestListData',
+const submissionListData = createSlice ({
+  name:'submissionListData',
   initialState: initialState,
-  reducers: {
-    //  // this is reducer is called if they society delete their submission
-    // deleteFormSubmission: (state,action) => {
-    //   state.formData.splice(action.payload, 1)
-    // }
-  },
-
   extraReducers: {
-    [fetchCCARequestList.pending]: (state, action) => {
+    [fetchSocietyList.pending]: (state, action) => {
       if (state.isPending === false) {
         state.isPending = true
       }
     },
-    [fetchCCARequestList.fulfilled]: (state, action) => {
+    [fetchSocietyList.fulfilled]: (state, action) => {      
       if (state.isPending === true) {
         state.isPending = false
         state.formDataList = action.payload.formDataList
       }
     },
-    [fetchCCARequestList.rejected]: (state, action) => {
+    [fetchSocietyList.rejected]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
         state.error = action.payload
       }
     },
 
-    [changeFormStatus.pending]: (state, action) => {
+    [deleteSubmission.pending]: (state, action) => {
       if (state.isPending === false) {
         state.isPending = true
       }
     },
-    [changeFormStatus.fulfilled]: (state, action) => {
-      const {requestId, status} = action.payload
+    [deleteSubmission.fulfilled]: (state, action) => {
+      const {reqId} = action.payload
       if (state.isPending === true) {
         state.isPending = false
-        state.formDataList.map(request => {
-          if(request.id === requestId) {
-            request.formStatus = status
+        state.formDataList.map((formObj, index) => {
+          if (formObj.id === reqId) {
+            state.formDataList.splice(index, 1)
           }
         })
       }
     },
-    [changeFormStatus.rejected]: (state, action) => {
+    [deleteSubmission.rejected]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
         state.error = action.payload
@@ -122,4 +112,4 @@ const requestListData = createSlice ({
   }
 })
 
-export default requestListData.reducer
+export default submissionListData.reducer

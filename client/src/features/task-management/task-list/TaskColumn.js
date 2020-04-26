@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import TaskCard from './TaskCard'
 import TaskAddButton from './TaskAddButton'
 import { Droppable } from 'react-beautiful-dnd'
-import styled from 'styled-components'
 
 /**
   Displays all the columns in the Task Manager. Each column belongs to a specific CCA user with
@@ -14,18 +13,19 @@ import styled from 'styled-components'
   the a particular owner to pass them on and populate the column.
 */
 
-const ColumnContainer = styled.div`
-  background-color: #dfe3e6;
-  padding: 8px;
-  border-radius: 3px;
-  width: 300px;
-  height: 100%;
-  margin-right: 8px;
-  margin-left: 3px
-`
+const columnStyle = {
+  backgroundColor: '#dfe3e6',
+  padding: 8,
+  borderRadius: 3,
+  width: 300,
+  height: '100%',
+  marginRight: 8,
+  marginLeft: 3
+}
+
 export function TaskColumn({ownerId, taskData}) {
   return (
-    <ColumnContainer>
+    <div style={columnStyle}>
       <h4 style={{textAlign: 'left'}}> {taskData.columns[ownerId].title} </h4>
       <Droppable droppableId={ownerId}>
       {
@@ -40,7 +40,7 @@ export function TaskColumn({ownerId, taskData}) {
         )
       }
       </Droppable>
-    </ColumnContainer>
+    </div>
   )
 }
 

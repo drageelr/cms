@@ -5,8 +5,8 @@ import Section from './Section'
 import {makeStyles, List, Paper, CircularProgress, Snackbar} from '@material-ui/core'
 import {connect} from 'react-redux'
 import FormMakerAddButton from './FormMakerAddButton'
-import { unwrapResult } from '@reduxjs/toolkit'
-import { fetchFormById } from '../formTemplateSlice'
+import { fetchForm, clearError, setCreateMode, setTitle } from '../formTemplateSlice'
+import ErrorSnackbar from '../../../ui/ErrorSnackbar'
 
 export const useStyles = makeStyles((theme) => ({
   viewPaper: {
@@ -29,21 +29,27 @@ export const useStyles = makeStyles((theme) => ({
   form maker and properties view based on the current form loaded
 */
 
-function FormMaker({ formTemplate, dispatch }) {
-  const { title, isPublic, sections, sectionsOrder, componentsOrder, components, itemsOrder, items, isPending, error } = formTemplate
+function FormMaker({ formTemplate, dispatch, match }) {
+  const { createMode, title, isPublic, sections, sectionsOrder, componentsOrder, components, itemsOrder, items, isPending, error } = formTemplate
   const classes = useStyles()
-
-  useEffect(async () => {
-    const actionResult = await dispatch(fetchFormById({formId: 0}))
-    // const formTemplate = unwrapResult(actionResult)
+  const formId = match.params.id
+  
+  useEffect(() => {
+    if (formId !== undefined){
+      dispatch(fetchForm(formId))
+      setCreateMode({createMode: false})
+    }
+    else{
+      dispatch(setTitle({title: "New Form"}))
+    }
   }, [])
 
   return (
     <div>
-      <Properties formTemplate = {formTemplate} />
-      <FormMakerBar title={title} isPublic={isPublic}/>
+      <Properties formTemplate={formTemplate} />
+      <FormMakerBar title={title} isPublic={isPublic} createMode={createMode}/>
       {
-      isPending ? <CircularProgress style={{marginLeft: '55vw', marginTop: '30vh'}}/> :  
+      (!createMode && isPending) ? <CircularProgress style={{marginLeft: '55vw', marginTop: '30vh'}}/> :  
       <Paper square variant="outlined"className={classes.viewPaper}>
         <List>
           {
@@ -55,6 +61,7 @@ function FormMaker({ formTemplate, dispatch }) {
         </List>
       </Paper>
       }
+      <ErrorSnackbar stateError={formTemplate.error} clearError={clearError}/>
     </div>
   )
 }

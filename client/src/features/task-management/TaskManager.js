@@ -4,8 +4,7 @@ import TaskColumn from './task-list/TaskColumn'
 import { moveTask } from './taskDataSlice'
 import TaskArchive from './task-archive/TaskArchiveList'
 import { DragDropContext } from 'react-beautiful-dnd'
-import styled from 'styled-components'
-import { Fab, Dialog, AppBar, Toolbar, Typography, Slide, IconButton, makeStyles } from '@material-ui/core'
+import { Fab, Dialog, AppBar, Toolbar, Typography, Slide, IconButton, makeStyles, Box } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import ArchiveIcon from '@material-ui/icons/Archive'
 
@@ -16,11 +15,6 @@ import ArchiveIcon from '@material-ui/icons/Archive'
   each column and pass it on to the sub components
   @param {function} dispatch from redux, used to dispatch the moveTask action to the reducer 
 */
-
-const TaskManagerContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-`
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -39,7 +33,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 function TaskManager({ columnData, dispatch }) {
   
   const classes = useStyles()
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   function handleClickOpen() {
     setOpen(true)
@@ -72,7 +66,8 @@ function TaskManager({ columnData, dispatch }) {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <TaskManagerContainer>
+      <br/>
+      <Box display="flex" flex-direction="row" marginLeft={2}>
         { 
           columnData.map(ownerId => {
           return <TaskColumn 
@@ -81,7 +76,7 @@ function TaskManager({ columnData, dispatch }) {
               />
           })
         }
-      </TaskManagerContainer>
+      </Box>
 
       <div>
         <div style={{display: 'flex', justifyContent: 'flex-end'}}>

@@ -1,164 +1,143 @@
 import React from 'react'
-import SocietyFormSubmissionList from '../request-management/SocietyFormSubmissionList'
-import {Formik, useField, Form} from 'formik'
+import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card'
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Container from '@material-ui/core/Container';
-import Avatar from '@material-ui/core/Avatar';
-import {Link} from 'react-router-dom'
+import { makeStyles } from '@material-ui/core/styles'
+import { Button, Container, LinearProgress, Grid } from '@material-ui/core'
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
+import NavigateNextIcon from '@material-ui/icons/NavigateNext'
+import ToggleButton from '@material-ui/lab/ToggleButton'
+import { TextField } from 'formik-material-ui'
+import { connect } from 'react-redux'
+import { login, clearError } from './userSlice'
+import ErrorSnackbar from '../../ui/ErrorSnackbar'
+import landingBG from './landingBG.svg'
 
 // card styling
 const useStyles = makeStyles({
   root: {
-    minWidth: 275,
-    backgroundColor: '#D3D3D3'
+    position: 'absolute',
+    maxWidth: '32vw',
+    marginLeft: 0,
+    marginTop: 0,
+    height: '100%',
+    backgroundColor: "#3578fa",
+    color: 'white'
   },
-  avatar: {
-    margin: '10',
-    backgroundColor: 'red',
-  },
-});
+  input: {
+    color: 'white',
+    "&:hover": {
+      background: 'white',
+    }
+  }
+})
 
-const CustomTextInput = ({label, ...props}) =>{
-  const [field, meta] = useField(props)
+function LoginPage({error, dispatch}) {
+  const classes = useStyles()
 
-  return (
-    <>
-      <label htmlFor = {props.id || props.name}>{label}</label>
-      <input className = "text-input" {...field}{...props}/>
-      {meta.touched && meta.error ? (
-        <div>{meta.error}</div>
-      ): null}
-    </>
-  )
-}
+  const [userType, setUserType] = React.useState("CCA")
 
-const CustomSelect = ({label, ...props}) =>{
-  const [field, meta] = useField(props)
-  return (
-    <>
-      <label htmlfor = {props.id || props.name}>{label}</label>
-      <select className = "text-input" {...field}{...props}/>
-      {meta.touched && meta.error ? (
-        <div>{meta.error}</div>
-      ): null}
-    </>
-  )
-}
-
-
-export default function LoginPage() {
-  const classes = useStyles();
-  //<SocietyFormSubmissionList userId={"lumun"}/>
+  // React.useEffect(() => {
+  //   dispatch(login({email: "admin@lums.edu.pk", password: "zoraiz123", userType: "CCA"}))
+  // }, [])
   
+  const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
+  const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
+  const [role, setRole] = React.useState("CCA")
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" className={classes.root}>
+      <img style={{position: 'absolute', left: '30vw', width: '70vw', height: '100vh'}}
+      src={landingBG} alt="CMS"/>
+      <div style={{marginTop: '30vh', marginLeft: '3vw'}}>
       <Formik
-      initialValues = {{
-          name: '',
-          email: '',
-          acceptedTerms: false, //like some checkbox
-          specialPowers: '',
-      }}
-      validationSchema={Yup.object({
-          name: Yup.string()
-              .min(3,'Must be atleast 3 characters')
-              .max(15,'Must be atmost 15 characters')
-              .required('Required'),
-          email: Yup.string()
+        validateOnChange={false} validateOnBlur={true}
+        initialValues = {{
+            email: '',
+            password: '',
+        }}
+        validationSchema={Yup.object({
+            email: Yup.string()
               .email('Invalid Email Address')
               .required('Required'),
-          acceptedTerms: Yup.boolean()
+            password: Yup.string()
               .required('Required')
-              .oneOf([true],'You Must Accept the Terms & conditions'),
-          specialPowers: Yup.string()
-              .oneOf(['Admin','Society'],'Invalid special powers')
-              .required('Required')
+        })}
+        onSubmit={ (values, { setSubmitting }) => {
+            dispatch(login({email: values.email, password: values.password, userType: userType}))
+            .then(() => {
+              setSubmitting(false)
+            })  
+          }
+        }
+        >
+          {({submitForm, isSubmitting})=>(
+            <Form>
+              <h1 style={{color: "white"}}>Login</h1>
 
-      })}
-      onSubmit={(values,{setSubmitting, resetForm}) =>{
-          setTimeout(()=>{
-            alert(JSON.stringify(values,null,2))
-            resetForm()
-            setSubmitting(false)
-                    
-          },3000)
-      }}
-      >
-        {props=>(
-          <Form>
-            {/* <Avatar className={classes.avatar}>
-              <LockOutlinedIcon />
-            </Avatar> */}
-            <h1 style = {{align: 'center' , marginRight: 10}}>LOGIN IN</h1>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              label="User name"
-              name="name"
-              autoComplete="name"
-              fullWidth = "false"
-              autoFocus
-            ><CustomTextInput/> </TextField>
-            {/* <Grid>
-              <CustomTextInput name = "name" type= "text" placeholder='Username'/>
-            </Grid> */}
-            <br/>
-            <br/>
-            
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              label="email"
-              name="email"
-              autoComplete="email"
-              fullWidth = "false"
-              autoFocus
-            >
-              <CustomTextInput name = "email"/> 
-            </TextField>
-            
-            <br/>    
-            <br/>
-            
-            <CustomSelect name = "specialPower" type= "text" placeholder="Frank" placeholderTextColor = 'red'>
-              <option Role = "">Select Your Role</option>
-              <option Admin = "">Admin</option>
-              <option CCA User = "">CCA User</option>
-              <option Society User = "">SocietyUser</option>
-            </CustomSelect>
-            <br/>    
-            <br/>
+              <ToggleButtonGroup size="medium" value={userType} exclusive>
+                <ToggleButton
+                value="CCA" 
+                onClick={()=>setUserType("CCA")} 
+                style={userType==="CCA" ? selectedBGStyle : normalBGStyle}>
+                  CCA
+                </ToggleButton>,
+                <ToggleButton 
+                value="Society" 
+                onClick={()=>setUserType("Society")}
+                style={userType==="Society" ? selectedBGStyle : normalBGStyle}>
+                  Society
+                </ToggleButton>
+              </ToggleButtonGroup>
+              <br/>            
 
-            <Button variant="contained" color="primary" spacing= '10'>
-              {props.isSubmitting ?'loading...': 'submit'}
-            </Button>
-            
-            <br/>
-            <br/>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-          </Form>
-        )}
-      </Formik>
-    </Container>  
+              <Field
+                component={TextField}
+                variant="filled"
+                margin="normal"
+                required
+                label="Email"
+                name="email"
+                autoFocus
+                InputProps={{
+                  className: classes.input,
+                }}
+              ></Field>
+              <br/>            
+              <Field
+                component={TextField}
+                variant="filled"
+                margin="normal"
+                required
+                label="Password"
+                name="password"
+                type="password"
+                autoFocus
+                InputProps={{
+                  className: classes.input,
+                }}
+              > 
+              </Field>
+              
+              <br/>    
+              <br/>
+              {/* {isSubmitting && <LinearProgress />} */}
+              <Button size="large" onClick={submitForm} 
+              variant="contained" color="secondary" spacing= '10'
+              endIcon={<NavigateNextIcon/>}>
+                Login
+              </Button>
+            </Form>
+          )}
+        </Formik>
+        
+        </div>
+          
+      <ErrorSnackbar stateError={error} clearError={clearError}/>
+    </Container>
   )
 }
 
-const styles = {
-  button: {
-    backgroundColor: 'red',
-    borderRadius: '8px',
-    color: 'white',
-  }
-}
+const mapStateToProps = (state) => ({
+  error: state.user.error,
+})
+
+export default connect(mapStateToProps) (LoginPage)

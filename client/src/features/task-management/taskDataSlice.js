@@ -17,7 +17,19 @@ const initialState = {
       lastName: "Javaid",
       picture: "",
       role: "",
-      permissions: "",
+      userType: "",
+      permissions: {
+        societyCRUD: true,
+        ccaCRUD: true,
+        accessFormMaker: true,
+        createReqTask: true,
+        createCustomTask: true,
+        createTaskStatus: true,
+        archiveTask: true,
+        unarchiveTask: true,
+        setFormStatus: true,
+        addCCANote: true
+      },
       timeStampCreated: ""
     },
     {
@@ -28,7 +40,19 @@ const initialState = {
       lastName: "Khan",
       picture: "",
       role: "",
-      permissions: "",
+      userType: "CCA",
+      permissions: {
+        societyCRUD: true,
+        ccaCRUD: true,
+        accessFormMaker: true,
+        createReqTask: true,
+        createCustomTask: true,
+        createTaskStatus: true,
+        archiveTask: true,
+        unarchiveTask: true,
+        setFormStatus: true,
+        addCCANote: true
+      },
       timeStampCreated: ""
     },
   ],
@@ -119,33 +143,33 @@ const initialState = {
   },
   
   checkListItems : [
-    {
-      id:"checkItem-1",
-      formId: "R-ID-1",
-      title: "Make the Checklist by tonight asap.",
-      description: "I am trying my best.",
-      sectionIndex: "1.1",
-      isAssigned: false,
-      isChecked: false,
-    },
-    {
-      id:"checkItem-2",
-      formId: "R-ID-1",
-      title: "Complete UI tonight.",
-      description: "OK",
-      sectionIndex: "1.2",
-      isAssigned: false,
-      isChecked: false,
-    },
-    {
-      id:"checkItem-3",
-      formId: "R-ID-2",
-      title: "Material UI complete",
-      description: "Nothing",
-      sectionIndex: "1.3",
-      isAssigned: false,
-      isChecked: false,
-    },
+    // {
+    //   id:"checkItem-1",
+    //   formId: "R-ID-1",
+    //   title: "Make the Checklist by tonight asap.",
+    //   description: "I am trying my best.",
+    //   sectionIndex: "1.1",
+    //   isAssigned: false,
+    //   isChecked: false,
+    // },
+    // {
+    //   id:"checkItem-2",
+    //   formId: "R-ID-1",
+    //   title: "Complete UI tonight.",
+    //   description: "OK",
+    //   sectionIndex: "1.2",
+    //   isAssigned: false,
+    //   isChecked: false,
+    // },
+    // {
+    //   id:"checkItem-3",
+    //   formId: "R-ID-2",
+    //   title: "Material UI complete",
+    //   description: "Nothing",
+    //   sectionIndex: "1.3",
+    //   isAssigned: false,
+    //   isChecked: false,
+    // },
   ],
 }
 
@@ -176,6 +200,7 @@ const taskdata = createSlice({
         status: '',
         assigneeList: [],
         subTasksList: [],
+        logsList:[]
       }
   
       state.tasks[taskId] = newTask
@@ -209,7 +234,7 @@ const taskdata = createSlice({
 
       state.columns[ownerId].taskIds.map(id => {
         if (taskId === id) {
-          var filteredAry = state.columns[ownerId].taskIds.filter(function(e) { return e !== id })
+          var filteredAry = state.columns[ownerId].taskIds.filter(function(e) { return e != id })
           const obj = state.tasks[taskId]
           state.archiveList.push(obj)
           state.columns[ownerId].taskIds = filteredAry
@@ -222,7 +247,7 @@ const taskdata = createSlice({
       
       state.columns[ownerId].taskIds.push(taskId) // put the task back in owners list
       state.archiveList.map(id => {
-        var filteredAry = state.archiveList.filter(function(e) { return e.id !== taskId })
+        var filteredAry = state.archiveList.filter(function(e) { return e.id != taskId })
         state.archiveList = filteredAry
       })
     },
@@ -305,8 +330,7 @@ const taskdata = createSlice({
 
     createNewLog: (state, action) => {
       const {taskId, logText} = action.payload
-      
-      console.log(taskId, logText)  
+    
       lId+=1
       let newLog = {
         id: `log${lId}`,

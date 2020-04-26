@@ -1,123 +1,115 @@
 import React from 'react'
-import { Formik, Form, Field } from 'formik';
-// import { Button, LinearProgress } from '@material-ui/core';
-// import { TextField } from 'formik-material-ui';
+import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
-import TextField from '@material-ui/core/TextField';
-import Container from '@material-ui/core/Container';
-import Avatar from '@material-ui/core/Avatar';
-import { makeStyles } from '@material-ui/core/styles';
-import {Link} from 'react-router-dom'
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles'
+import Button from '@material-ui/core/Button'
+import {Container, LinearProgress} from '@material-ui/core'
+import { TextField } from 'formik-material-ui'
+import { changePassword, clearError } from './userSlice'
+import { connect } from 'react-redux'
+import ErrorSnackbar from '../../ui/ErrorSnackbar'
+import { useHistory } from 'react-router-dom'
 
-const useStyles = makeStyles({
-  root: {
-    minWidth: 275,
-    backgroundColor: '#D3D3D3'
-  },
-  avatar: {
-    margin: '10',
-    backgroundColor: 'red',
-  },
-});
+function ChangePassword({error, dispatch}) {
+  const history = useHistory()
 
-
-export default function ChangePassword() {
-  const classes = useStyles();
   return (
     <Container component="main" maxWidth="xs"> 
-    <h1>Change Password</h1>
-    <Formik
-      initialValues = {{
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      }}
-      validationSchema = {Yup.object({
-        currentPassword: Yup.string()
-          .required('Required'),
-        newPassword: Yup.string()
-          .required('Required')
-          .min(5,'Must be atleast 5 characters')
-          .max(12,'Must be atmost 15 characters'),
-        confirmPassword: Yup.string()
-          .when("newPassword",{
-            is: val => (val && val.length > 0 ? true : false),
-            then: Yup.string().oneOf(
-              [Yup.ref("newPassword")],"Both password need to be same"
-            )
-          })
-      })}
-      onSubmit = {() => {}}
-    >
-      {({values, errors, handleSubmit, handleChange, handleBlur})=>{
-        return(
-          <form onSubmit={handleSubmit}>
-            {/* <Typography>Current Password</Typography> */}
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              label="Current Password"
-              autoComplete="name"
-              fullWidth = "false"
-              autoFocus
-              type="password"
-              name="currentPassword"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value = {values.currentPassword}
-            ></TextField>
-            <br/>
-            <br/>
-            {/* <Typography>New Password</Typography> */}
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              label="New Password"
-              autoComplete="name"
-              fullWidth = "false"
-              autoFocus
-              type="password"
-              name="newPassword"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value = {values.newPassword}
-            ></TextField>
+      <h1 style={{marginLeft: 40}}>Change Password</h1>
+      <Formik
+        validateOnChange={false} validateOnBlur={true}
+        initialValues = {{
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        }}
+        validationSchema = {Yup.object({
+          currentPassword: Yup.string()
+            .required('Required')
+            .min(8,'Must be at least 8 characters')
+            .max(30,'Must be atmost 30 characters'),
+          newPassword: Yup.string()
+            .required('Required')
+            .min(8,'Must be at least 8 characters')
+            .max(30,'Must be atmost 30 characters')
+            .matches('^[a-zA-Z0-9]+$', 'All passwords must be alphanumeric (no special symbols).'),
+          confirmPassword: Yup.string()
+            .when("newPassword",{
+              is: val => (val && val.length > 0 ? true : false),
+              then: Yup.string().oneOf(
+                [Yup.ref("newPassword")],"Both passwords need to be the same."
+              )
+            })
+        })}
+        onSubmit={(values, { setSubmitting }) => {
+          dispatch(changePassword({ currentPassword: values.currentPassword, newPassword: values.newPassword}))
+          .then(() => {
+            setSubmitting(false)
+          })  
+        }}
+      >
+        {({onSubmit, isSubmitting})=>{
+          return(
+            <Form>
+              <p>Minimum 8 characters, maximum 30 characters and must be alphanumeric.</p>
 
-            <br/>
-            <br/>
+              <Field
+                component={TextField}
+                variant="outlined"
+                margin="normal"
+                required
+                label="Password"
+                name="currentPassword"
+                type="password"
+                fullWidth
+                autoFocus
+              ></Field>
+              <br/>
+              <br/>
 
-            {/* <Typography>Confirm Password</Typography> */}
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              label="Confirm Password"
-              autoComplete="name"
-              fullWidth = "false"
-              autoFocus
-              type="password"
-              name="confirmPassword"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.confirmPassword}
-            ></TextField>
-            <br/>
-            <span class="error" style={{ color: "red" }}>
-              {errors.confirmPassword}
-            </span>
-            <br/>
-            <br/>
-            <Button type="submit" variant="contained" color="primary" spacing= '10'>Change Password</Button>
-            <Button type="submit" variant="contained" color="primary" spacing= '10' style = {{marginLeft: 30}}>Cancel</Button>
-          
-          </form>
-        )
-      }}
-    </Formik>
+              <Field
+                component={TextField}
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                label="New Password"
+                name="newPassword"
+                autoFocus
+                type="password"
+              ></Field>
+
+              <br/>
+              <br/>
+
+              <Field
+                component={TextField}
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                label="Confirm Password"
+                name="confirmPassword"
+                autoFocus
+                type="password"
+              ></Field>
+              <br/>
+              <br/>
+              {isSubmitting && <LinearProgress />}
+              <Button type="submit" variant="contained" color="primary" spacing= '10' onClick={onSubmit} >Change my Password</Button>
+              <Button type="submit" variant="contained" color="primary" spacing= '10' style = {{marginLeft: 30}}>Cancel</Button>
+            
+            </Form>
+          )
+        }}
+      </Formik>
+      <ErrorSnackbar stateError={error} clearError={clearError} />
     </Container>
   )
 }
+
+const mapStateToProps = (state) => ({
+  error: state.user.error,
+})
+
+export default connect(mapStateToProps) (ChangePassword)

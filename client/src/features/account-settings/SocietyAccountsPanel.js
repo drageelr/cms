@@ -1,64 +1,53 @@
-import React, {useState} from 'react'
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { Grid } from '@material-ui/core';
-import {addSocietyAccount,editSocietyAccount,deleteSocietyAccount} from './societyDataSlice'
-
+import React, {useState,useEffect} from 'react'
+import { withStyles, makeStyles } from '@material-ui/core/styles'
+import {Table, TableContainer, TableBody, TableCell, TableHead, TableRow, Paper, Button, Dialog, DialogContent, DialogTitle, 
+  DialogContentText, DialogActions, Grid, CircularProgress, LinearProgress, Typography} from '@material-ui/core'
+import {addSocietyAccount,editSocietyAccount,toggleActiveSocietyAccount,fetchSocietyAccounts} from './societyDataSlice'
 import {connect} from 'react-redux'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
-
 import MoreButton from '../../ui/MoreButton'
-
-import DeleteIcon from '@material-ui/icons/Delete'
-
+import ToggleOffIcon from '@material-ui/icons/ToggleOff'
+import ToggleOnIcon from '@material-ui/icons/ToggleOn'
+import * as Yup from 'yup'
 import EditIcon from '@material-ui/icons/Edit'
+import {clearError} from './societyDataSlice'
+import ErrorSnackbar from '../../ui/ErrorSnackbar'
+import PanelBar from './PanelBar'
 
-// import AddEditSocietyDialog from './AddEditSocietyDialog'
 
-///////////////////////////////////////////////////////////////////
 const useStyles = makeStyles({
   root: {
     width: '100%',
+    maxHeight: '100%',
+    overflow: 'auto'
   },
   container: {
-    maxHeight: '60%',
+    maxHeight: '70%',
   },
-});
+})
 
 function SocietyAccountsPanel({societyData,dispatch}) {
+  useEffect(() => {
+    dispatch(fetchSocietyAccounts())
+  },[])
 
-  const classes = useStyles();
+  const classes = useStyles()
   const [isOpen,setIsOpen] = useState(false)
-
   const [editMode,setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
 
-  function EditDeleteMoreButton({id}) {
+  function EditDeleteMoreButton({societyId, active}) {
     const menusList=[
       {
         text: 'Edit',
         icon: <EditIcon/>,
-        onClick: ()=>handleEdit(id)
+        onClick: ()=>handleEdit(societyId)
       },
       {
-        text: 'Delete',
-        icon: <DeleteIcon/>,
-        onClick: ()=>dispatch(deleteSocietyAccount({id})),
+        text: active ? 'Deactivate' : 'Activate',
+        icon: active ? <ToggleOffIcon/> : <ToggleOnIcon/>, 
+        onClick: ()=> dispatch(toggleActiveSocietyAccount({societyId, active}))
       },
     ]
     return <MoreButton menusList={menusList}/>
@@ -69,30 +58,37 @@ function SocietyAccountsPanel({societyData,dispatch}) {
     setIsOpen (true)
   }
 
-  function handleEdit(id){
-    setEditId(id)
+  function handleEdit(societyId){
+    setEditId(societyId)
     setEditMode(true)  
     setIsOpen (true)
   }
 
   function SocietyDialog(){
+
     let initialValues = {
-      name: '',
-      colorHex: ''
+      nameInitials: '',
+      name:'',
+      email: '',
+      presidentEmail: '',
+      patronEmail: '',
+      password: '',
+      passwordRequired: !editMode,
     }
 
     if (editMode){
-      const societyDetail = societyData.find((society,index) =>{
-        return society.id === editId
+      const societyDetail = societyData.societyList.find((society,index) =>{
+        return society.societyId === editId
       })
-      if (societyDetail != undefined){
+      if (societyDetail !== undefined){
           initialValues = {
           nameInitials: societyDetail.nameInitials,
           name: societyDetail.name,
           email: societyDetail.email,
           presidentEmail: societyDetail.presidentEmail,
           patronEmail: societyDetail.patronEmail,
-          password: societyDetail.password  
+          password: societyDetail.password  ,
+          passwordRequired: !editMode,
         }
       }  
     }
@@ -105,24 +101,45 @@ function SocietyAccountsPanel({societyData,dispatch}) {
       <Dialog
         open={isOpen}
         onClose={handleClose}
-        // PaperComponent={PaperComponent}
         aria-labelled by="draggable-dialog-title"
         >
         <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-          {editMode ? "Edit Task Status" : "Add Task Status"}
+          {editMode ? "Edit Society Account" : "Add Society Account"}
         </DialogTitle>
 
         <Formik
           validateOnChange={false} validateOnBlur={true}
           initialValues={initialValues}
-          validate={values => {
-            const errors = {}
-            return errors
-          }}
-          onSubmit={(values) => {
+          validationSchema={Yup.object({
+            passwordRequired: Yup.boolean(),
+            email: Yup.string()
+                .email('Invalid Email Address')
+                .required('Required'),
+            password: Yup.string()
+            .min(8,'Must be at least 8 characters')
+            .max(30,'Must be atmost 30 characters')
+            .matches('^[a-zA-Z0-9]+$', 'All passwords must be alphanumeric (no special symbols).')
+            .when("passwordRequired", {
+              is: true,
+              then: Yup.string().required("Must enter a password for the new account")
+            }),
+            nameInitials: Yup.string()
+            .required('Required')
+            .max(10,'Must be atmost 10 characters'),
+            name: Yup.string()
+            .required('Required')
+            .max(100,'Must be atmost 100 characters'),
+            presidentEmail: Yup.string()
+              .email('Invalid Email Address')
+              .required('Required'),
+            patronEmail: Yup.string()
+              .email('Invalid Email Address')  
+              .required('Required'),
+          })}
+          onSubmit={(values,{setSubmitting}) => {
             dispatch(editMode? 
               editSocietyAccount({
-                id: editId, 
+                societyId: editId, 
                 nameInitials: values.nameInitials,
                 name: values.name,
                 email: values.email,
@@ -131,48 +148,54 @@ function SocietyAccountsPanel({societyData,dispatch}) {
                 password: values.password
               })
               :addSocietyAccount({
-              nameInitials: values.nameInitials,
-              name: values.name,
-              email: values.email,
-              presidentEmail: values.presidentEmail,
-              patronEmail: values.patronEmail,
-              password: values.password
+                nameInitials: values.nameInitials,
+                name: values.name,
+                email: values.email,
+                presidentEmail: values.presidentEmail,
+                patronEmail: values.patronEmail,
+                password: values.password
+            })).then(()=>{
+              setSubmitting(false)
             })
-            )
             handleClose()
           }}
         >
-          {({submitForm}) => (
+          {({submitForm, isSubmitting}) => (
             <Form>
               <DialogContent>
                 <Grid container direction = "column" justify = "center" alignItems = "center" style = {{width: 400}}>
-                  <Grid item style = {{width: 350}}>
+                  <Grid item style = {{width: 350, marginBottom: 10}}>
                     <Field component={TextField} name="name" required label="Name"/>
                   </Grid>
                   
-                  <Grid item style = {{width: 350}}>
+                  <Grid item style = {{width: 350, marginBottom: 10}}>
                     <Field component={TextField} name="nameInitials" required label="Name Initials"/>    
                   </Grid>
 
-                  <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="email" required label="Email"/>    
+                  <Grid item style = {{width: 350, marginBottom: 10}}>
+                    <Field component={TextField} name="email" type="email" required label="Email"/>    
                   </Grid>
                   
-                  <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="presidentEmail" required label="President Email"/>    
+                  <Grid item style = {{width: 350, marginBottom: 10}}>
+                    <Field component={TextField} name="presidentEmail" type="email" required label="President Email"/>    
                   </Grid>
 
-                  <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="patronEmail" required label="Patron Email"/>    
+                  <Grid item style = {{width: 350, marginBottom: 10}}>
+                    <Field component={TextField} name="patronEmail" type="email" required label="Patron Email"/>    
                   </Grid>
 
-                  <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="password" required label="Password"/>    
+                  <Grid item style = {{width: 350, marginBottom: 10}}>
+                    <Field component={TextField} name="password" type="password" required label={editMode ? "New Password" : "Password"}/>    
                   </Grid>
                 </Grid>
               </DialogContent>
+              {isSubmitting && <CircularProgress />}
               <DialogActions>
-                <Button onClick={submitForm} color="primary">
+                <Button 
+                  onClick={submitForm} 
+                  color="primary"
+                  disabled={isSubmitting}
+                  >
                   Save
                 </Button>
                 
@@ -188,48 +211,44 @@ function SocietyAccountsPanel({societyData,dispatch}) {
   }
   return (
     <div>
-      <h2>SocietyAccountsPanel</h2>
+    {
+      societyData.isPending? <LinearProgress variant = "indeterminate"/>:
       <div>
-        <Button
-          variant="contained" 
-          color="primary" 
-          spacing= '10' 
-          style = {{float: "right", marginBottom:10}}
-          onClick = {handleAdd}
-          >Add society
-        </Button>
+        <PanelBar handleAdd={handleAdd} title="Society Accounts" buttonText="Add Society Account"/>
         <SocietyDialog/>
+        <Paper className={classes.root}>
+          <TableContainer className={classes.container}>
+            <Table>
+              <TableHead >
+                <TableRow>
+                  <TableCell >Initials</TableCell>
+                  <TableCell align="right">Society Name</TableCell>
+                  <TableCell align="right">Society Email</TableCell>  
+                </TableRow>
+              </TableHead>
+                
+              <TableBody>
+              {societyData.societyList.map((society,index) => (
+                societyData.isPending? <CircularProgress variant = "indeterminate"/>:
+                <TableRow key={index} style={{background: society.active ? 'whitesmoke' : 'lightgray'}}>
+                  <TableCell component="th" scope="row">
+                    <Typography>{society.nameInitials}</Typography>
+                  </TableCell>
+                  <TableCell align="right"><Typography>{society.name}</Typography></TableCell>
+                  <TableCell align="right"><Typography>{society.email}</Typography></TableCell>
+                  <TableCell align="right">
+                    <EditDeleteMoreButton societyId={society.societyId} active={society.active}/>
+                  </TableCell>
+                </TableRow>
+              ))}
+              </TableBody>
+              
+            </Table>
+          </TableContainer>
+        </Paper>
       </div>
-      <Paper className={classes.root} style={{maxHeight: 450, overflow: 'auto'}}>
-      <TableContainer className={classes.container}>
-      <Table>
-      <TableHead >
-          <TableRow>
-            <TableCell style = {{position: 'sticky', top: 0}}>Initials</TableCell>
-            <TableCell align="right" style = {{position: 'sticky', top: 0}}>Society Name</TableCell>
-            <TableCell align="right" style = {{position: 'sticky', top: 0}}>Society Email</TableCell>  
-          </TableRow>
-        </TableHead>
-          
-        <TableBody>
-        {societyData.map((societyData,index) => (
-          <TableRow key={index}>
-            <TableCell component="th" scope="row">
-              {societyData.nameInitials}
-            </TableCell>
-            <TableCell align="right">{societyData.name}</TableCell>
-            <TableCell align="right">{societyData.email}</TableCell>
-            <TableCell align="right">
-              <EditDeleteMoreButton id={societyData.id}/>
-            </TableCell>
-          </TableRow>
-        ))}
-        </TableBody>
-          
-      </Table>
-      </TableContainer>
-      </Paper>
-      
+      }
+      <ErrorSnackbar stateError={societyData.error} clearError={clearError} />
     </div>
     )
 }

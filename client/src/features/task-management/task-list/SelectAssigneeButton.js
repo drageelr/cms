@@ -4,7 +4,7 @@ import { createSubTask } from '../taskDataSlice'
 import { Button, Menu, MenuItem } from '@material-ui/core'
 
 /**
-  Renders a stateful button that allows the user to add an assignee to the checklist item. Upon 
+  Renders a state-ful button that allows the user to add an assignee to the checklist item. Upon 
   getting an assignee, the checklist item is converted to a subtask and is displayed in the 
   assignee's column in the task manager window.
 
@@ -40,7 +40,7 @@ export function SelectAssigneeButton({taskId, checkListObj, userData, dispatch})
       >
         {userData.map(userObj => {
           return <MenuItem onClick={() => {dispatch(createSubTask({taskId, userObj, checkListObj}))}}>
-            {userObj.firstName}
+            {userObj.name}
           </MenuItem>
         })}
       </Menu>
