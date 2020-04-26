@@ -18,14 +18,12 @@ Any line of the commit message cannot be longer 100 characters.
 Must be one of the following:
 
 * **add**: Create capability (feature / test / dependency)
-* **drop**: Delete capability.
 * **fix**: Fix an issue e.g. bug, typo in code.
 * **docs**: Documentation only changes (typo, rename, docs creation / deletion).
 * **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc).
 * **refactor**: A code change that neither fixes a bug nor adds a feature.
 * **perf**: A code change that improves performance.
 * **test**: Adding missing tests.
-* **chore**: Changes to the build process or auxiliary tools and libraries such as documentation generation.
 
 #### Subject
 The subject contains succinct description of the change:
@@ -39,7 +37,7 @@ Just as in the **subject**, use the imperative, present tense: "change" not "cha
 The body should include the motivation for the change and contrast this with previous behavior.
 
 #### Footer
-The footer should contain any information about **Breaking Changes** and is also the place to reference GitHub issues that this commit **Closes**, e.g. Closes #2 (automatically closes Issue ID #2)
+The footer is optional but it should contain any information about **Breaking Changes** and is also the place to reference GitHub issues that this commit **Closes**, e.g. Closes #2 (automatically closes Issue ID #2)
 
 #### Guidelines:
 
@@ -51,7 +49,7 @@ The footer should contain any information about **Breaking Changes** and is also
 - Ensure sufficient information to decide WHETHER TO REVIEW.
 - The FIRST COMMIT LINE is the most important.
 - Describe any LIMITATIONS of the current code.
-- Do NOT include patch set-specific comments.
+- Do NOT include version set-specific comments.
 
 ##### Main Rule:
 The commit message must contain all the information required to fully understand & review the patch for correctness. The more the better.
@@ -60,6 +58,6 @@ The commit message must contain all the information required to fully understand
 - The first line should be limited to 50 characters and should not end with a period.
 - Subsequent lines should be wrapped at 72 characters.
 
-#### Acknowlegements
+#### Acknowledgements
 * https://gist.github.com/develar/273e2eb938792cf5f86451fbac2bcd51
 * https://wiki.openstack.org/wiki/GitCommitMessages#Information_in_commit_messages
