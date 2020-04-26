@@ -133,7 +133,6 @@ const taskStatusDetails = createSlice({
       }
     },
     [addTaskStatus.fulfilled]: (state, action) => {
-      console.log("hello",action.payload)
       if (state.isPending === true){
         state.isPending = false
         state.taskList.push({

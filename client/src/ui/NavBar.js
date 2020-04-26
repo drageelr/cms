@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function NavBar({nameInitials, name, role, picture}) {
+export default function NavBar({name, userType, picture}) {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const dispatch = useDispatch()
@@ -60,7 +60,7 @@ export default function NavBar({nameInitials, name, role, picture}) {
           <Grid container direction='row' justify="space-between" alignItems="center">
             
             <Grid item>
-            { role === "CCA" &&
+            { userType === "CCA" &&
               <IconButton edge="start" onClick={toggleDrawer} >
                 <MenuIcon />
               </IconButton>
@@ -85,7 +85,7 @@ export default function NavBar({nameInitials, name, role, picture}) {
             <Grid item style={{ display: 'flex', alignItems: 'center'}}>
               <Avatar
                 style={{margin: 5, width: 35, height: 35}} 
-                alt={nameInitials} 
+                alt={name} 
                 src={picture}
               />
               <Typography>
@@ -94,7 +94,7 @@ export default function NavBar({nameInitials, name, role, picture}) {
                 </Box>
               </Typography>
               {
-              role=="CCA" && 
+              userType==="CCA" && 
               <Link to='settings'>
                 <IconButton edge="end" style={{padding: 10, marginRight: 5}}>
                   <SettingsIcon/>

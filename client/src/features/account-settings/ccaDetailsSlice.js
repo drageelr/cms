@@ -12,7 +12,7 @@ const sampleState = {
       email: "zq@gmail.com",
       password: 'TEST',
       picture: 'https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg',
-      role:'Admin',
+      role:'admin',
       timestampCreated: '02/13/2020',
       permissions:[]
     },
@@ -23,7 +23,7 @@ const sampleState = {
       email: "fr@gmail.com",
       password: 'TEST',
       picture: 'https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg',
-      role:'Member',
+      role:'member',
       timestampCreated: '02/13/2020',
       permissions:[]
     },  
@@ -92,7 +92,7 @@ export const addCCAAccount = createAsyncThunk(
   async (userData, { getState, rejectWithValue }) => {
     const { isPending } = getState().ccaDetails
     const { firstName, lastName, email, password, 
-      picture, role, timestampCreated, permissions } = userData
+      picture, role, userType, timestampCreated, permissions } = userData
     if (isPending != true) {
       return
     }
@@ -103,19 +103,20 @@ export const addCCAAccount = createAsyncThunk(
     try {
       const res = await fetch(QUERY, {
         method: 'POST',
-        body: {
+        body: JSON.stringify({
           email: email,
           password: password,
           firstName: firstName,
           lastName: lastName,
           picture: picture,
           permissions: permissions
-        }
+        })
       })
 
       console.log(res)
       if (res.ok) {
         const data = res.json()
+        console.log(data)
         return {id: data.ccaId, userData}
       }
       throw new Error(`Error: ${res.status}, ${res.statusText}`)

@@ -172,8 +172,8 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
                         }}
                         style={{width: 100}}
                       >
-                        <MenuItem value={'Member'}>Member</MenuItem>
-                        <MenuItem value={'Admin'}>Admin</MenuItem>
+                        <MenuItem value={'member'}>Member</MenuItem>
+                        <MenuItem value={'admin'}>Admin</MenuItem>
                       </Field>
                     </FormControl>
                   </Grid>

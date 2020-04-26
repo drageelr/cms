@@ -42,16 +42,16 @@ const appTheme = createMuiTheme({
 })
 
 function App({ user }) {
-  const { isLoggedIn, role, nameInitials, name, picture } = user
+  const { isLoggedIn, userType, name, picture } = user
 
   return (
     <Router>
       <ThemeProvider theme={appTheme}>
         { isLoggedIn ?
         <div>
-          <NavBar nameInitials={nameInitials} name={name} role={role} picture={picture}/>
+          <NavBar name={name} userType={userType} picture={picture}/>
           <Switch> 
-            <Route path="/" exact component={role === "CCA" ? TaskManager : SocietyDashboard}/>
+            <Route path="/" exact component={userType === "CCA" ? TaskManager : SocietyDashboard}/>
             <Route path="/form-viewer" exact component={FormViewer}/>
             <Route path="/form-viewer/:id" component={FormViewer}/>
             <Route path="/forms" component={FormList}/>

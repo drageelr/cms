@@ -40,7 +40,7 @@ export function SelectAssigneeButton({taskId, checkListObj, userData, dispatch})
       >
         {userData.map(userObj => {
           return <MenuItem onClick={() => {dispatch(createSubTask({taskId, userObj, checkListObj}))}}>
-            {userObj.firstName}
+            {userObj.name}
           </MenuItem>
         })}
       </Menu>

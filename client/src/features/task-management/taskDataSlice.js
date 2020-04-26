@@ -17,6 +17,7 @@ const initialState = {
       lastName: "Javaid",
       picture: "",
       role: "",
+      userType: "",
       permissions: "",
       timeStampCreated: ""
     },
@@ -28,6 +29,7 @@ const initialState = {
       lastName: "Khan",
       picture: "",
       role: "",
+      userType: "CCA",
       permissions: "",
       timeStampCreated: ""
     },

@@ -21,7 +21,7 @@ const useStyles = makeStyles({
 
 function LoginPage({error, dispatch}) {
   const classes = useStyles()
-  const [role, setRole] = React.useState("CCA")
+  const [userType, setUserType] = React.useState("CCA")
 
   return (
     <Container component="main" className={classes.root}>
@@ -38,7 +38,7 @@ function LoginPage({error, dispatch}) {
           password: Yup.string()
       })}
       onSubmit={ (values, { setSubmitting }) => {
-          dispatch(login({email: values.email, password: values.password, role: role}))
+          dispatch(login({email: values.email, password: values.password, userType: userType}))
           .then(() => {
             setSubmitting(false)
           })  
@@ -49,11 +49,11 @@ function LoginPage({error, dispatch}) {
           <Form>
             <h1>Login</h1>
 
-            <ToggleButtonGroup size="medium" value={role} exclusive>
-              <ToggleButton value="CCA" onClick={()=>setRole("CCA")}>
+            <ToggleButtonGroup size="medium" value={userType} exclusive>
+              <ToggleButton value="CCA" onClick={()=>setUserType("CCA")}>
                 CCA
               </ToggleButton>,
-              <ToggleButton value="Society" onClick={()=>setRole("Society")}>
+              <ToggleButton value="Society" onClick={()=>setUserType("Society")}>
                 Society
               </ToggleButton>
             </ToggleButtonGroup>

@@ -4,41 +4,63 @@ const initialState = {
   id: -1,
   email: "",
   password: "",
-  name: "Developer",
+  name: "",
   nameInitials: "CD",
-  role: "CCA",
-  isLoggedIn: true,
+  role: "admin",
+  userType: "CCA",
+  isLoggedIn: false,
   picture: "",
   token: "",
+  permissions: {
+    ccaCRUD: true,
+    accessFormMaker: true,
+    createReqTask: true,
+    createCustomTask: true,
+    createTaskStatus: true,
+    archiveTask: true,
+    unarchiveTask: true,
+    setFormStatus: true,
+    addCCANote: true
+  },
   isPending: true,
   error: null
 }
 
-// const API = 'http://localhost:3030/api'
-
 export const login = createAsyncThunk(
   'user/login',
-  async({email, password, role}, {getState, rejectWithValue}) => {
+  async({email, password, userType}, {getState, rejectWithValue}) => {
     const {isPending} = getState().user
     if (isPending != true){
       return
     }
 
-    const QUERY = (role === "Society") ?  '/api/auth/society/login' : '/api/auth/cca/login'
-  
+    const QUERY = (userType === "Society") ?  '/api/auth/society/login' : '/api/auth/cca/login'
+
     try {
       const res = await fetch(QUERY, {
         method: 'POST',
-        body: {
+        headers: { 
+          'Accept': 'application/json',
+          'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({
           email: email,
-          password: password,
-        }
+          password: password
+        })
       })
       console.log(res)
+
       if (res.ok) {
-        const data = res.json()
-        console.log(data)
-        return {token: data.token, user: data.user}
+        const data = await res.json()
+        if (data.statusCode != 200) {
+          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+        }
+        if (userType==="CCA"){
+          return {token: data.token, user: {email, userType, password, name: data.user.firstName + ' ' + data.user.lastName,...data.user},}
+        }
+        else {
+          return {token: data.token, user: {email, userType, password, ...data.user},}
+        }
       }
       throw new Error(`${res.status}, ${res.statusText}`)
     }
@@ -51,29 +73,33 @@ export const login = createAsyncThunk(
 export const changePassword = createAsyncThunk(
   'user/changePassword',
   async({currentPassword, newPassword}, {getState, rejectWithValue}) => {
-    const {isPending, role, token} = getState().user
+    const {isPending, userType, token} = getState().user
     if (isPending != true){
       return
     }
 
-    
-    const QUERY = (role === "Society") ? '/api/account/society/change-password' : '/api/account/cca/change-password'
+    const QUERY = (userType === "Society") ? '/api/account/society/change-password' : '/api/account/cca/change-password'
 
     try {
       const res = await fetch(QUERY, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
-          'Bearer Token': token, 
+          'Authorization': token, 
         },
-        body: {
+        body: JSON.stringify({
           passwordCurrent: currentPassword,
           passwordNew: newPassword,
-        }
+        })
       })
+
       console.log(res)
       if (res.ok) {
         const data = res.json()
+        console.log(data)
+        if (data.statusCode != 200) {
+          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+        }
+
         return newPassword
       }
       throw new Error(`Error: ${res.status}, ${res.statusText}`)
@@ -89,18 +115,7 @@ const user = createSlice ({
   initialState: initialState,
   reducers: {
     logout: (state,action) => {
-      return {
-        id: -1,
-        email: "",
-        password: "",
-        name: "",
-        nameInitials: "",
-        role: "CCA",
-        isLoggedIn: false,
-        token: "",
-        isPending: true,
-        error: null
-      }
+      return initialState
     },
     clearError: (state, action) => {
       state.error = null
@@ -116,7 +131,9 @@ const user = createSlice ({
       if (state.isPending === true) {
         return {
           ...action.payload.user,
+          role: "admin",
           token: action.payload.token,
+          isLoggedIn: true,
           isPending: false,
           error: null
         }

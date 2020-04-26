@@ -82,16 +82,16 @@ export const societyCreate = createAsyncThunk(
       const res = await fetch(QUERY, {
         method: 'POST',
         headers: {
-          'Bearer Token': token, 
+          'Authorization': token, 
         },
-        body: {
+        body: JSON.stringify({
           email: email,
           password: password,
           name: name,
           nameInitials: nameInitials,
           presidentEmail: presidentEmail,
           patronEmail: patronEmail
-        }
+        })
       })
       console.log(res)
       if (res.ok) {
@@ -123,9 +123,9 @@ export const ccaEdit= createAsyncThunk(
       const res = await fetch(QUERY, {
         method: 'POST',
         headers: {
-          'Bearer Token': token, 
+          'Authorization': token, 
         },
-        body: {
+        body: JSON.stringify({
           ccaId: ccaId,
           email: email,
           password: password,
@@ -133,7 +133,7 @@ export const ccaEdit= createAsyncThunk(
           lastName: lastName,
           picture: picture,
           permissions: permissions //List<Boolean>
-        }
+        })
       })
       console.log(res)
       if (res.ok) {
@@ -165,9 +165,9 @@ export const editSocietyAccount = createAsyncThunk(
       const res = await fetch(QUERY, {
         method: 'POST',
         headers: {
-          'Bearer Token': token, 
+          'Authorization': token, 
         },
-        body: {
+        body: JSON.stringify({
           societyId: societyId,
           email: email,
           password: password,
@@ -175,7 +175,7 @@ export const editSocietyAccount = createAsyncThunk(
           nameInitials: nameInitials,
           presidentEmail: presidentEmail,
           patronEmail: patronEmail
-        }
+        })
       })
       console.log(res)
       if (res.ok) {
@@ -204,10 +204,10 @@ export const ccaList = createAsyncThunk(
     const QUERY = '/api/account/cca/account-list'
 
     try {
-      const res= await  fetch(QUERY, {
+      const res= await fetch(QUERY, {
         method: 'POST',
         headers: {
-          'Bearer Token': token, 
+          'Authorization': token, 
         },
       })
       console.log(res)
@@ -232,7 +232,6 @@ export const societyList = createAsyncThunk(
     if (isPending != true){
       return
     }
-
     
     const QUERY = '/api/account/society/account-list'
 
@@ -240,7 +239,7 @@ export const societyList = createAsyncThunk(
       const res = await fetch(QUERY, {
         method: 'POST',
         headers: {
-          'Bearer Token': token, 
+          'Authorization': token, 
         },
       })
       console.log(res)
@@ -341,11 +340,11 @@ export const ccaChangePicture = createAsyncThunk(
       const res = await fetch(QUERY, {
         method: 'POST',
         headers: {
-          'Bearer Token': token, 
+          'Authorization': token, 
         },
-        body: {
+        body: JSON.stringify({
           picture: picture
-        }
+        })
       })
       console.log(res)
       if (res.ok) {

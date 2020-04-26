@@ -9,7 +9,6 @@ import { Grid, TextField } from '@material-ui/core'
 import Paper from '@material-ui/core/Paper'
 
 export default function AddEditSocietyDialog(isOpen) {
-  console.log("dialog")
   const [open, setOpen] = useState(isOpen)
 
   const handleClose = () => {
@@ -21,7 +20,6 @@ export default function AddEditSocietyDialog(isOpen) {
   }
 
 
-  console.log("hello")
   return (
     <Dialog
       open={open}

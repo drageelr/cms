@@ -74,9 +74,7 @@ const submissionListData = createSlice ({
         state.isPending = true
       }
     },
-    [fetchSocietyList.fulfilled]: (state, action) => {
-      console.log("here")
-      
+    [fetchSocietyList.fulfilled]: (state, action) => {      
       if (state.isPending === true) {
         state.isPending = false
         state.formDataList = action.payload.formDataList
