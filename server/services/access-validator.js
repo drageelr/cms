@@ -32,10 +32,10 @@ const userAccess = {
   "/api/account/cca/change-picture": ["cca"],
 
   // 3. Form Management API "form.route.js":
-  "/api/form/fetch": ["cca", "soc"],
   "/api/form/create": ["cca"],
   "/api/form/edit": ["cca"],
   "/api/form/delete": ["cca"],
+  "/api/form/fetch": ["cca", "soc"],
   "/api/form/fetch-list": ["cca", "soc"],
   
   // 4. Request Management API "submission.route.js":
@@ -74,41 +74,48 @@ const ccaAccess = {
 */
 
 exports.validateUserAccess = (req, res, next) => {
-  let accessList = userAccess[req.originalUrl];
-  if (accessList) {
-    let accessGranted = false;
+  try {
+    let accessList = userAccess[req.originalUrl];
+    if (accessList) {
+      let accessGranted = false;
     
-    for (let a of accessList) {
-      if (a == req.body.userObj.type) {
-        accessGranted = true;
-        break;
+      for (let a of accessList) {
+        if (a == req.body.userObj.type) {
+          accessGranted = true;
+          break;
+        }
+      }
+
+      if (req.originalUrl == "/api/form-submission/view" && (req.body.userObj.type == "pres" || req.body.userObj.type == "pat")) {
+        // To do..
+      }
+
+      if (accessGranted) {
+        next();
+      } else {
+        throw new customError.ForbiddenAccessError("forbidden access to resource", "RouteError");
       }
     }
-
-    if (req.originalUrl == "/api/form-submission/view" && (req.body.userObj.type == "pres" || req.body.userObj.type == "pat")) {
-      // To do..
-    }
-
-    if (accessGranted) {
-      next();
-    } else {
-      throw new customError.ForbiddenAccessError("forbidden access to resource", "RouteError");
-    }
+  } catch (err) {
+    next(err)
   }
 }
 
 exports.validateCCAAccess = async (req, res, next) => {
-  let reqCCA = await CCA.findById(req.body.userObj._id, 'role permissions');
-
-  if (reqCCA.role != "admin") {
-    let access = ccaAccess[req.originalUrl];
+  try {
+    let reqCCA = await CCA.findById(req.body.userObj._id, 'role permissions');
+    if (reqCCA.role != "admin") {
+      let access = ccaAccess[req.originalUrl];
     
-    if(reqCCA.permissions[access]) {
-      next();
+      if(reqCCA.permissions[access]) {
+        next();
+      } else {
+        throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
+      }
     } else {
-      throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
+      next();
     }
-  } else {
-    next();
+  } catch (err) {
+    next(err);
   }
 }

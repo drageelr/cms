@@ -108,9 +108,43 @@ class UserNotFoundError extends Error {
   }
 }
 
+// Form Valdiation Error Class:
+class FormValdiationError extends Error {
+
+  /**
+  * Creates a FormValdiationError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "FormValdiationError";
+    this.statusCode = 400;
+    this.message = "Form not valid!";
+    this.details = errDetails;
+    this.subName = "N/A";
+  }
+}
+
+// Form Not Found Error Class:
+class FormNotFoundError extends Error {
+
+  /**
+  * Creates a FormNotFoundError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "FormNotFoundError";
+    this.statusCode = 404;
+    this.message = "Form not found!";
+    this.details = errDetails;
+    this.subName = "N/A";
+  }
+}
+
 // Export Classes:
 module.exports.TokenError = TokenError;
 module.exports.AuthenticationError = AuthenticationError;
 module.exports.ForbiddenAccessError = ForbiddenAccessError;
 module.exports.DuplicateUserError = DuplicateUserError;
 module.exports.UserNotFoundError = UserNotFoundError;
+module.exports.FormValdiationError = FormValdiationError;
+module.exports.FormNotFoundError = FormNotFoundError;

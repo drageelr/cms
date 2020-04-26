@@ -39,7 +39,9 @@ exports.errorHandler = (err, req, res, next) => {
     err instanceof customError.AuthenticationError ||
     err instanceof customError.ForbiddenAccessError ||
     err instanceof customError.DuplicateUserError ||
-    err instanceof customError.UserNotFoundError) {
+    err instanceof customError.UserNotFoundError ||
+    err instanceof customError.FormValdiationError ||
+    err instanceof customError.FormNotFoundError) {
     res.json({
       statusCode: err.statusCode,
       statusName: httpStatus.getName(err.statusCode),
