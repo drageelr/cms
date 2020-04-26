@@ -6,11 +6,14 @@ import { Button, Container, LinearProgress, Grid } from '@material-ui/core'
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
 import ToggleButton from '@material-ui/lab/ToggleButton'
 import NavigateNextIcon from '@material-ui/icons/NavigateNext'
+import ToggleButton from '@material-ui/lab/ToggleButton'
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
 import { TextField } from 'formik-material-ui'
 import { connect } from 'react-redux'
 import { login, clearError } from './userSlice'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import landingBG from './landingBG.svg'
+
 // card styling
 const useStyles = makeStyles({
   root: {
@@ -30,6 +33,7 @@ const useStyles = makeStyles({
 
 function LoginPage({error, dispatch}) {
   const classes = useStyles()
+
   const [userType, setUserType] = React.useState("CCA")
 
   // React.useEffect(() => {
@@ -37,7 +41,7 @@ function LoginPage({error, dispatch}) {
   // }, [])
   const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
   const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
-
+  const [role, setRole] = React.useState("CCA")
   return (
     <Container component="main" className={classes.root}>
       <img style={{position: 'absolute', left: '30vw', width: '70vw', height: '100vh'}}
