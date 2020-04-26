@@ -35,7 +35,7 @@ const initialState = {
 
 export const fetchTaskStatus = createAsyncThunk(
   'taskStatusDetails/fetchTaskStatus',
-  async(_, { getState }) => {
+  async(_, { getState, rejectWithValue}) => {
     const { isPending } = getState().taskStatusDetails
     if (isPending != true) {
       return
@@ -58,7 +58,7 @@ export const fetchTaskStatus = createAsyncThunk(
 
 export const deleteTaskStatus = createAsyncThunk(
   'taskStatusDetails/deleteTaskStatus',
-  async(id, { getState }) => {
+  async(id, { getState, rejectWithValue}) => {
     const { isPending } = getState().taskStatusDetails
     if (isPending != true) {
       return
@@ -69,7 +69,7 @@ export const deleteTaskStatus = createAsyncThunk(
 
 export const addTaskStatus = createAsyncThunk(
   'taskStatusDetails/addTaskStatus',
-  async (taskStatusObject, { getState }) => {
+  async (taskStatusObject, { getState, rejectWithValue}) => {
     const { isPending } = getState().taskStatusDetails
     if (isPending != true) {
       return
@@ -80,7 +80,7 @@ export const addTaskStatus = createAsyncThunk(
 
 export const editTaskStatus = createAsyncThunk(
   'taskStatusDetails/editTaskStatus',
-  async (taskStatusObject, { getState }) => {
+  async (taskStatusObject, { getState, rejectWithValue}) => {
     const { isPending } = getState().taskStatusDetails
     if (isPending != true) {
       return

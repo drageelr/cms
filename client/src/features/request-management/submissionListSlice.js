@@ -31,7 +31,7 @@ const initialState = {
 
 export const fetchSocietyList = createAsyncThunk(
   'submissionListData/fetchSocietyList',
-  async (_, { getState }) => {
+  async (_, { getState, rejectWithValue}) => {
     const { isPending } = getState().submissionListData
 
     if (isPending != true) {
@@ -53,7 +53,7 @@ export const fetchSocietyList = createAsyncThunk(
 
 export const deleteSubmission = createAsyncThunk(
   'submissionListData/deleteSubmission',
-  async (reqId, { getState }) => {
+  async (reqId, { getState, rejectWithValue}) => {
     const { isPending } = getState().submissionListData
 
     if (isPending != true) {

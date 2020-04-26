@@ -57,7 +57,7 @@ export const fetchCCARequestList = createAsyncThunk(
 
 export const changeFormStatus = createAsyncThunk(
   'requestListData/changeFormStatus',
-  async (statusObj, { getState }) => {
+  async (statusObj, { getState, rejectWithValue}) => {
     const { isPending } = getState().requestListData
     
     if (isPending != true) {

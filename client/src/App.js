@@ -20,7 +20,9 @@ import { connect } from 'react-redux'
 
 const appTheme = createMuiTheme({
   palette: {
-    primary: blue,
+    primary: {
+      main: '#3578fa',
+    },
     secondary: {
       main: '#ffffff',
     },

@@ -1,15 +1,17 @@
 import React, { useState, useEffect }from 'react'
-import { addCCAAccount, deleteCCAAccount, editCCAAccount, fetchCCAAccounts, changeCCAPicture, clearError } from './ccaDetailsSlice'
+import { addCCAAccount, toggleActiveCCAAccount, editCCAAccount, fetchCCAAccounts, changeCCAPicture, clearError } from './ccaDetailsSlice'
 import { Button, Card, CardHeader, CardContent, Grid, Typography, FormControl, InputLabel, MenuItem, 
-  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, LinearProgress } from '@material-ui/core'
+  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, LinearProgress, makeStyles, Container } from '@material-ui/core'
 import {connect} from 'react-redux'
 import MoreButton from '../../ui/MoreButton'
-import DeleteIcon from '@material-ui/icons/Delete'
+import ToggleOffIcon from '@material-ui/icons/ToggleOff'
+import ToggleOnIcon from '@material-ui/icons/ToggleOn'
 import EditIcon from '@material-ui/icons/Edit'
 import { Formik, Form, Field } from 'formik'
 import { TextField, Select } from 'formik-material-ui'
 import * as Yup from 'yup'
 import ErrorSnackbar from "../../ui/ErrorSnackbar"
+import PanelBar from './PanelBar'
 
 function CCAAccountPanel({ccaDetails,dispatch}) {
 
@@ -20,30 +22,25 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
   const [isOpen, setIsOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
-  const [picture, setPicture] = useState("")
+  const [picture, setPicture] = useState("https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-6.png")
 
-  function handleImageUpload(event, id) {
-    console.log(id)
+  function handleImageUpload(event, ccaId) {
     const url = URL.createObjectURL(event.target.files[0])
     setPicture(url)
-
-    if(editMode) {
-      dispatch(changeCCAPicture({id, url}))
-    }
   }
 
 
-  function EditDeleteMoreButton({id}){
+  function EditDeleteMoreButton({ccaId, active}){
     const menusList=[
       {
         text: 'Edit',
         icon: <EditIcon/>,
-        onClick: ()=>handleEdit(id)
+        onClick: ()=>handleEdit(ccaId)
       },
       {
-        text: 'Deactivate',
-        icon: <DeleteIcon/>,  
-        onClick: ()=>dispatch(deleteCCAAccount({id}))
+        text: active ? 'Deactivate' : 'Activate',
+        icon: active ? <ToggleOffIcon/> : <ToggleOnIcon/>,  
+        onClick: ()=>dispatch(toggleActiveCCAAccount({ccaId, active}))
       },
     ]
     return <MoreButton menusList={menusList}/>
@@ -54,8 +51,8 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     setIsOpen(true)
   }
   
-  function handleEdit(id){
-    setEditId(id)
+  function handleEdit(ccaId){
+    setEditId(ccaId)
     setEditMode(true)
     setIsOpen(true)
   }
@@ -66,9 +63,9 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       lastName: '',
       email: '',
       password: '',
-      picture: '',
+      passwordRequired: !editMode,
+      picture: 'https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-6.png',
       role:'',
-      timestampCreated: '',
       permissions: {
         societyCRUD: true,
         ccaCRUD: true,
@@ -84,12 +81,14 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     }
 
     if(editMode){
-      const ccaMember = ccaDetails.ccaList.find((detail,index) => {
-        return detail.id === editId
+      const ccaMember = ccaDetails.ccaList.find((member,index) => {
+        return member.ccaId === editId
       })
       if(ccaMember !== undefined){
         initialValues = {
-          ...ccaMember
+          ...ccaMember,
+          passwordRequired: !editMode,
+
         }
       }
     }
@@ -105,7 +104,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
         aria-labelledby="draggable-dialog-title"
       >
 
-      <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+      <DialogTitle style={{ cursor: 'move' }} ccaId="draggable-dialog-title">
         {editMode ? "Edit Account" : "Add Account"}
       </DialogTitle>
       
@@ -113,23 +112,27 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
         validateOnChange={false} validateOnBlur={true}
         initialValues = {initialValues}
         validationSchema={Yup.object({
+          passwordRequired: Yup.boolean(),
           email: Yup.string()
             .email('Invalid Email Address')
             .required('Required'),
           password: Yup.string()
-          .required('Required')
           .min(8,'Must be at least 8 characters')
           .max(30,'Must be atmost 30 characters')
-          .matches('^[a-zA-Z0-9]+$', 'All passwords must be alphanumeric (no special symbols).'),
+          .matches('^[a-zA-Z0-9]+$', 'All passwords must be alphanumeric (no special symbols).')
+          .when("passwordRequired", {
+            is: true,
+            then: Yup.string().required("Must enter a password for the new account")
+          }),
           firstName: Yup.string().required(),
           lastName: Yup.string().required(),
-          picture: Yup.string().required(),
+          picture: Yup.string(),
           role: Yup.string().required(),
         })}
         onSubmit={(values, {setSubmitting}) => {
           dispatch(editMode ?
             editCCAAccount({
-              id: editId,
+              ccaId: editId,
               firstName: values.firstName,
               lastName: values.lastName,
               email: values.email,
@@ -195,7 +198,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
                   </Grid>
 
                   <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="password" required type="password" label="Password"/>
+                    <Field component={TextField} name="password" required type="password" label={editMode ? "New Password" : "Password"}/>
                   </Grid>
 
                   <Grid item style = {{width: 350}}>
@@ -250,30 +253,21 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     <div>
       {ccaDetails.isPending ? <LinearProgress /> :
         <div>
-          <h2 style={{marginLeft: '1%'}}>CCA Accounts</h2>
-          <div align="center">
-            <Button
-              size="large"
-              variant="contained" 
-              color="primary" 
-              spacing= '10' 
-              style = {{float: "right", marginBottom:10, marginRight: 50}}
-              onClick = {handleAdd}
-            > Add CCA Member
-            </Button>
-            <CCADialog />
-          </div>
-          <Grid container spacing={3} >
+          <PanelBar handleAdd={handleAdd} title="CCA Accounts" buttonText="Add CCA Account"/>
+          <CCADialog />
+          <br/>
+          <Container style={{color: "gray"}} >
+          <Grid container spacing={3}>
           {
             ccaDetails.ccaList.map((ccaDetail,index) => (
-              <Grid item xs={2}> 
-                <Card variant="outlined" style = {{marginLeft: 20, maxWidth: 300, background: "whitesmoke"}}>
+              <Grid item xs={3}> 
+                <Card variant="outlined" style = {{marginLeft: 10, maxWidth: 300, background: ccaDetail.active ? "whitesmoke" : "darkgray"}}>
                   <CardHeader
                     avatar={
                       <Avatar style = {{width:150, height:150}} src = {ccaDetail.picture}/>
                     }
                     action={
-                      <EditDeleteMoreButton id={ccaDetail.id}/>
+                      <EditDeleteMoreButton ccaId={ccaDetail.ccaId} active={ccaDetail.active}/>
                     }
                   />
                   <CardContent>
@@ -286,6 +280,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
             ))
           }
           </Grid>
+          </Container>
         </div>
       }
       <ErrorSnackbar stateError={ccaDetails.error} clearError={clearError}/>
