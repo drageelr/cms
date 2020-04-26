@@ -1,4 +1,4 @@
-const API = 'http//:167.71.224.73/api'
+
 //TODO: Localhost change to actual link
 
 //1.1/1.2 Action Creator for CCA/Society Login
@@ -41,7 +41,7 @@ const API = 'http//:167.71.224.73/api'
 //     const QUERY = '/account/cca/create-account'
 
 //     try {
-//       const res = await fetch(API + QUERY, {
+//       const res = await fetch(QUERY, {
 //         method: 'POST',
 //         mode: 'no-cors', 
 //         body: {
@@ -75,13 +75,12 @@ export const societyCreate = createAsyncThunk(
       return
     }
 
-    const API = 'http//:167.71.224.73/api'
-    const QUERY = '/account/society/create-account'
+    
+    const QUERY = '/api/account/society/create-account'
 
     try {
-      const res = await fetch(API + QUERY, {
+      const res = await fetch(QUERY, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Bearer Token': token, 
         },
@@ -94,6 +93,7 @@ export const societyCreate = createAsyncThunk(
           patronEmail: patronEmail
         }
       })
+      console.log(res)
       if (res.ok) {
         const data = res.json()
         return {societyId: data.societyId}
@@ -116,13 +116,12 @@ export const ccaEdit= createAsyncThunk(
       return
     }
 
-    const API = 'http//:167.71.224.73/api'
-    const QUERY = '/account/cca/edit-account'
+    
+    const QUERY = '/api/account/cca/edit-account'
 
     try {
-      const res = await fetch(API+QUERY, {
+      const res = await fetch(QUERY, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Bearer Token': token, 
         },
@@ -136,6 +135,7 @@ export const ccaEdit= createAsyncThunk(
           permissions: permissions //List<Boolean>
         }
       })
+      console.log(res)
       if (res.ok) {
         const data = res.json()
         return
@@ -158,13 +158,12 @@ export const editSocietyAccount = createAsyncThunk(
       return
     }
 
-    const API = 'http//:167.71.224.73/api'
-    const QUERY = '/account/society/edit-account'
+    
+    const QUERY = '/api/account/society/edit-account'
 
     try {
-      const res = await fetch(API + QUERY, {
+      const res = await fetch(QUERY, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Bearer Token': token, 
         },
@@ -178,6 +177,7 @@ export const editSocietyAccount = createAsyncThunk(
           patronEmail: patronEmail
         }
       })
+      console.log(res)
       if (res.ok) {
         const data = res.json()
         return
@@ -200,17 +200,17 @@ export const ccaList = createAsyncThunk(
       return
     }
 
-    const API = 'http//:167.71.224.73/api'
-    const QUERY = '/account/cca/account-list'
+    
+    const QUERY = '/api/account/cca/account-list'
 
     try {
-      const res= await  fetch(API + QUERY, {
+      const res= await  fetch(QUERY, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Bearer Token': token, 
         },
       })
+      console.log(res)
       if (res.ok) {
         const data = res.json()
         return {userList: data.userList} //userList: [{ccaID, email, firstName, lastName, picture, active}]
@@ -233,17 +233,17 @@ export const societyList = createAsyncThunk(
       return
     }
 
-    const API = 'http//:167.71.224.73/api'
-    const QUERY = '/account/society/account-list'
+    
+    const QUERY = '/api/account/society/account-list'
 
     try {
-      const res = await fetch(API + QUERY, {
+      const res = await fetch(QUERY, {
         method: 'POST',
         headers: {
           'Bearer Token': token, 
         },
-        mode: 'no-cors'
       })
+      console.log(res)
       if (res.ok) {
         const data = res.json()
         return {userList: data.userList}
@@ -266,11 +266,11 @@ export const societyList = createAsyncThunk(
 //       return
 //     }
 
-//     const API = 'http//:167.71.224.73/api'
+//     
 //     const QUERY = '/account/cca/change-password'
     
 //     try {
-//       const res = await fetch(API + QUERY, {
+//       const res = await fetch(QUERY, {
 //         method: 'POST',
 //         mode: 'no-cors',
 //         body: {
@@ -300,7 +300,7 @@ export const societyList = createAsyncThunk(
 //       return
 //     }
 
-//     const API = 'http//:167.71.224.73/api'
+//     
 //     const QUERY = '/account/society/change-password'
 
 //     try {
@@ -334,13 +334,12 @@ export const ccaChangePicture = createAsyncThunk(
       return
     }
 
-    const API = 'http//:167.71.224.73/api'
-    const QUERY = '/account/cca/change-picture'
+    
+    const QUERY = '/api/account/cca/change-picture'
 
     try {
-      const res = await fetch(API + QUERY, {
+      const res = await fetch(QUERY, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Bearer Token': token, 
         },
@@ -348,6 +347,7 @@ export const ccaChangePicture = createAsyncThunk(
           picture: picture
         }
       })
+      console.log(res)
       if (res.ok) {
         const data = res.json()
         return 

@@ -97,14 +97,12 @@ export const addCCAAccount = createAsyncThunk(
       return
     }
 
-    return {id: -1, userData}
-    const API = 'http//:167.71.224.73/api'
-    const QUERY = '/account/cca/create-account'
+    
+    const QUERY = '/api/account/cca/create-account'
 
     try {
-      const res = await fetch(API + QUERY, {
+      const res = await fetch(QUERY, {
         method: 'POST',
-        mode: 'no-cors', 
         body: {
           email: email,
           password: password,
@@ -114,6 +112,8 @@ export const addCCAAccount = createAsyncThunk(
           permissions: permissions
         }
       })
+
+      console.log(res)
       if (res.ok) {
         const data = res.json()
         return {id: data.ccaId, userData}
@@ -157,7 +157,6 @@ const ccaDetails = createSlice({
       if (state.isPending === true) {
         state.isPending = false
         let i = 0
-        console.log(action.payload.id)
         state.ccaList.map((obj,index) => {
           if (obj.id === action.payload.id){
             i = index
@@ -168,7 +167,6 @@ const ccaDetails = createSlice({
       }
     },
     [deleteCCAAccount.rejected]: (state, action) => {
-      // console.log(action)
       if (state.isPending === true) {
         state.isPending = false
         state.error = action.payload

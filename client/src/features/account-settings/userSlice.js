@@ -15,7 +15,6 @@ const initialState = {
 }
 
 // const API = 'http://localhost:3030/api'
-const API = 'http//:167.71.224.7/api'
 
 export const login = createAsyncThunk(
   'user/login',
@@ -24,15 +23,12 @@ export const login = createAsyncThunk(
     if (isPending != true){
       return
     }
-    
-    let QUERY = '/auth/cca/login'
-    if (role === "Society"){
-      QUERY = '/api/auth/society/login'
-    }
+
+    const QUERY = (role === "Society") ?  '/api/auth/society/login' : '/api/auth/cca/login'
+  
     try {
       const res = await fetch(QUERY, {
         method: 'POST',
-        mode: 'no-cors', // no-cors, *cors, same-origin
         body: {
           email: email,
           password: password,
@@ -41,6 +37,7 @@ export const login = createAsyncThunk(
       console.log(res)
       if (res.ok) {
         const data = res.json()
+        console.log(data)
         return {token: data.token, user: data.user}
       }
       throw new Error(`${res.status}, ${res.statusText}`)
@@ -59,13 +56,11 @@ export const changePassword = createAsyncThunk(
       return
     }
 
-    const API = 'http//:167.71.224.73/api'
-    let QUERY = '/account/cca/change-password'
-    if (role === "Society")
-      QUERY = '/account/society/change-password'
+    
+    const QUERY = (role === "Society") ? '/api/account/society/change-password' : '/api/account/cca/change-password'
 
     try {
-      const res = await fetch(API + QUERY, {
+      const res = await fetch(QUERY, {
         method: 'POST',
         mode: 'no-cors',
         headers: {
@@ -76,6 +71,7 @@ export const changePassword = createAsyncThunk(
           passwordNew: newPassword,
         }
       })
+      console.log(res)
       if (res.ok) {
         const data = res.json()
         return newPassword
