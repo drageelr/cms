@@ -18,7 +18,18 @@ const initialState = {
       picture: "",
       role: "",
       userType: "",
-      permissions: "",
+      permissions: {
+        societyCRUD: true,
+        ccaCRUD: true,
+        accessFormMaker: true,
+        createReqTask: true,
+        createCustomTask: true,
+        createTaskStatus: true,
+        archiveTask: true,
+        unarchiveTask: true,
+        setFormStatus: true,
+        addCCANote: true
+      },
       timeStampCreated: ""
     },
     {
@@ -30,7 +41,18 @@ const initialState = {
       picture: "",
       role: "",
       userType: "CCA",
-      permissions: "",
+      permissions: {
+        societyCRUD: true,
+        ccaCRUD: true,
+        accessFormMaker: true,
+        createReqTask: true,
+        createCustomTask: true,
+        createTaskStatus: true,
+        archiveTask: true,
+        unarchiveTask: true,
+        setFormStatus: true,
+        addCCANote: true
+      },
       timeStampCreated: ""
     },
   ],

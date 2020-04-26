@@ -14,7 +14,18 @@ const sampleState = {
       picture: 'https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg',
       role:'admin',
       timestampCreated: '02/13/2020',
-      permissions:[]
+      permissions:{
+        "societyCRUD": true,
+        "ccaCRUD": true,
+        "accessFormMaker": true,
+        "createReqTask": true,
+        "createCustomTask": true,
+        "createTaskStatus": true,
+        "archiveTask": true,
+        "unarchiveTask": true,
+        "setFormStatus": true,
+        "addCCANote": true
+      }
     },
     {
       id: 'cca-2',
@@ -25,7 +36,18 @@ const sampleState = {
       picture: 'https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg',
       role:'member',
       timestampCreated: '02/13/2020',
-      permissions:[]
+      permissions:{
+        "societyCRUD": true,
+        "ccaCRUD": true,
+        "accessFormMaker": true,
+        "createReqTask": true,
+        "createCustomTask": true,
+        "createTaskStatus": true,
+        "archiveTask": true,
+        "unarchiveTask": true,
+        "setFormStatus": true,
+        "addCCANote": true
+      }
     },  
   ],
   isPending: true,
@@ -92,7 +114,7 @@ export const addCCAAccount = createAsyncThunk(
   async (userData, { getState, rejectWithValue }) => {
     const { isPending } = getState().ccaDetails
     const { firstName, lastName, email, password, 
-      picture, role, userType, timestampCreated, permissions } = userData
+      picture, role, userType, permissions } = userData
     if (isPending != true) {
       return
     }
@@ -109,13 +131,24 @@ export const addCCAAccount = createAsyncThunk(
           firstName: firstName,
           lastName: lastName,
           picture: picture,
-          permissions: permissions
+          permissions: {
+            societyCRUD: true,
+            ccaCRUD: true,
+            accessFormMaker: true,
+            createReqTask: true,
+            createCustomTask: true,
+            createTaskStatus: true,
+            archiveTask: true,
+            unarchiveTask: true,
+            setFormStatus: true,
+            addCCANote: true
+          }
         })
       })
 
       console.log(res)
       if (res.ok) {
-        const data = res.json()
+        const data = await res.json()
         console.log(data)
         return {id: data.ccaId, userData}
       }

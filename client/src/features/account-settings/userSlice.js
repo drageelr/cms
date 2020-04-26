@@ -94,7 +94,7 @@ export const changePassword = createAsyncThunk(
 
       console.log(res)
       if (res.ok) {
-        const data = res.json()
+        const data = await res.json()
         console.log(data)
         if (data.statusCode != 200) {
           throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)

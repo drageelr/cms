@@ -69,7 +69,18 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       picture: '',
       role:'',
       timestampCreated: '',
-      permissions:[]
+      permissions: {
+        societyCRUD: true,
+        ccaCRUD: true,
+        accessFormMaker: true,
+        createReqTask: true,
+        createCustomTask: true,
+        createTaskStatus: true,
+        archiveTask: true,
+        unarchiveTask: true,
+        setFormStatus: true,
+        addCCANote: true
+      }
     }
 
     if(editMode){
@@ -122,7 +133,18 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
               picture: picture,
               role:values.role,
               timestampCreated: values.timestampCreated,
-              permissions:values.permissions,
+              permissions: {
+                societyCRUD: true,
+                ccaCRUD: true,
+                accessFormMaker: true,
+                createReqTask: true,
+                createCustomTask: true,
+                createTaskStatus: true,
+                archiveTask: true,
+                unarchiveTask: true,
+                setFormStatus: true,
+                addCCANote: true
+              },
             })
             :addCCAAccount({
               firstName: values.firstName,
@@ -132,7 +154,18 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
               picture: picture,
               role:values.role,
               timestampCreated: values.timestampCreated,
-              permissions:values.permissions,
+              permissions: {
+                societyCRUD: true,
+                ccaCRUD: true,
+                accessFormMaker: true,
+                createReqTask: true,
+                createCustomTask: true,
+                createTaskStatus: true,
+                archiveTask: true,
+                unarchiveTask: true,
+                setFormStatus: true,
+                addCCANote: true
+              },
             })).then(() => {
               setSubmitting(false)
               setEditMode(false)

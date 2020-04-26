@@ -95,7 +95,7 @@ export const societyCreate = createAsyncThunk(
       })
       console.log(res)
       if (res.ok) {
-        const data = res.json()
+        const data = await res.json()
         return {societyId: data.societyId}
       }
       throw new Error(`Error: ${res.status}, ${res.statusText}`)
@@ -137,7 +137,7 @@ export const ccaEdit= createAsyncThunk(
       })
       console.log(res)
       if (res.ok) {
-        const data = res.json()
+        const data = await res.json()
         return
       }
       throw new Error(`Error: ${res.status}, ${res.statusText}`)
@@ -179,7 +179,7 @@ export const editSocietyAccount = createAsyncThunk(
       })
       console.log(res)
       if (res.ok) {
-        const data = res.json()
+        const data = await res.json()
         return
       }
       throw new Error(`Error: ${res.status}, ${res.statusText}`)
@@ -212,7 +212,7 @@ export const ccaList = createAsyncThunk(
       })
       console.log(res)
       if (res.ok) {
-        const data = res.json()
+        const data = await res.json()
         return {userList: data.userList} //userList: [{ccaID, email, firstName, lastName, picture, active}]
       }
       throw new Error(`Error: ${res.status}, ${res.statusText}`)
@@ -244,7 +244,7 @@ export const societyList = createAsyncThunk(
       })
       console.log(res)
       if (res.ok) {
-        const data = res.json()
+        const data = await res.json()
         return {userList: data.userList}
       }
       throw new Error(`Error: ${res.status}, ${res.statusText}`)
@@ -348,7 +348,7 @@ export const ccaChangePicture = createAsyncThunk(
       })
       console.log(res)
       if (res.ok) {
-        const data = res.json()
+        const data = await res.json()
         return 
       }
       throw new Error(`Error: ${res.status}, ${res.statusText}`)
