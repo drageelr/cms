@@ -21,11 +21,13 @@ const useStyles = makeStyles({
     marginTop: 0,
     height: '100%',
     backgroundColor: "#3578fa",
-    color: "secondary"
+    color: 'white'
   },
   input: {
-    backgroundColor: 'white',
-    color: '#3578fa'
+    color: 'white',
+    "&:hover": {
+      background: 'white',
+    }
   }
 })
 
@@ -34,9 +36,9 @@ function LoginPage({error, dispatch}) {
 
   const [userType, setUserType] = React.useState("CCA")
 
-  React.useEffect(() => {
-    dispatch(login({email: "admin@lums.edu.pk", password: "zoraiz123", userType: "CCA"}))
-  }, [])
+  // React.useEffect(() => {
+  //   dispatch(login({email: "admin@lums.edu.pk", password: "zoraiz123", userType: "CCA"}))
+  // }, [])
   
   const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
   const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
