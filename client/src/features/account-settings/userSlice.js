@@ -48,15 +48,18 @@ export const login = createAsyncThunk(
           password: password
         })
       })
-      console.log(res)
 
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 200) {
           throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
         }
+
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('localUser', JSON.stringify({userType, ...data.user}))
+
         if (userType==="CCA"){
-          return {token: data.token, user: {email, userType, password, name: data.user.firstName + ' ' + data.user.lastName,...data.user},}
+          return {token: data.token, user: {email, userType, password, name: (data.user.firstName + ' ' + data.user.lastName),...data.user},}
         }
         else {
           return {token: data.token, user: {email, userType, password, ...data.user},}
@@ -73,7 +76,7 @@ export const login = createAsyncThunk(
 export const changePassword = createAsyncThunk(
   'user/changePassword',
   async({currentPassword, newPassword}, {getState, rejectWithValue}) => {
-    const {isPending, userType, token} = getState().user
+    const {isPending, userType} = getState().user
     if (isPending != true){
       return
     }
@@ -84,7 +87,9 @@ export const changePassword = createAsyncThunk(
       const res = await fetch(QUERY, {
         method: 'POST',
         headers: {
-          'Authorization': token, 
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
         },
         body: JSON.stringify({
           passwordCurrent: currentPassword,
@@ -92,11 +97,9 @@ export const changePassword = createAsyncThunk(
         })
       })
 
-      console.log(res)
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
-        if (data.statusCode != 200) {
+        if (data.statusCode != 203) {
           throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
         }
 
@@ -114,7 +117,9 @@ const user = createSlice ({
   name:'user',
   initialState: initialState,
   reducers: {
-    logout: (state,action) => {
+    logout: (state, action) => {
+      localStorage.removeItem("token")
+      localStorage.removeItem("localUser")
       return initialState
     },
     clearError: (state, action) => {
@@ -153,6 +158,7 @@ const user = createSlice ({
     [changePassword.fulfilled]: (state, action) => {
       if (state.isPending === true) {
         state.password = action.payload
+        state.error = "Changed Password Successfully"
       }
     },
     [changePassword.rejected]: (state, action) => {

@@ -23,6 +23,10 @@ function LoginPage({error, dispatch}) {
   const classes = useStyles()
   const [userType, setUserType] = React.useState("CCA")
 
+  // React.useEffect(() => {
+  //   dispatch(login({email: "admin@lums.edu.pk", password: "zoraiz123", userType: "CCA"}))
+  // }, [])
+
   return (
     <Container component="main" className={classes.root}>
       <Formik

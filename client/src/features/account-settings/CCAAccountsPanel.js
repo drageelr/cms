@@ -116,7 +116,11 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
           email: Yup.string()
             .email('Invalid Email Address')
             .required('Required'),
-          password: Yup.string().required(),
+          password: Yup.string()
+          .required('Required')
+          .min(8,'Must be at least 8 characters')
+          .max(30,'Must be atmost 30 characters')
+          .matches('^[a-zA-Z0-9]+$', 'All passwords must be alphanumeric (no special symbols).'),
           firstName: Yup.string().required(),
           lastName: Yup.string().required(),
           picture: Yup.string().required(),

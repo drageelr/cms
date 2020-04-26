@@ -8,9 +8,10 @@ import { TextField } from 'formik-material-ui'
 import { changePassword, clearError } from './userSlice'
 import { connect } from 'react-redux'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
-
+import { useHistory } from 'react-router-dom'
 
 function ChangePassword({error, dispatch}) {
+  const history = useHistory()
 
   return (
     <Container component="main" maxWidth="xs"> 
@@ -24,11 +25,14 @@ function ChangePassword({error, dispatch}) {
         }}
         validationSchema = {Yup.object({
           currentPassword: Yup.string()
-            .required('Required'),
+            .required('Required')
+            .min(8,'Must be at least 8 characters')
+            .max(30,'Must be atmost 30 characters'),
           newPassword: Yup.string()
             .required('Required')
             .min(8,'Must be at least 8 characters')
-            .max(25,'Must be atmost 25 characters'),
+            .max(30,'Must be atmost 30 characters')
+            .matches('^[a-zA-Z0-9]+$', 'All passwords must be alphanumeric (no special symbols).'),
           confirmPassword: Yup.string()
             .when("newPassword",{
               is: val => (val && val.length > 0 ? true : false),
@@ -47,6 +51,8 @@ function ChangePassword({error, dispatch}) {
         {({onSubmit, isSubmitting})=>{
           return(
             <Form>
+              <p>Minimum 8 characters, maximum 30 characters and must be alphanumeric.</p>
+
               <Field
                 component={TextField}
                 variant="outlined"
@@ -90,7 +96,7 @@ function ChangePassword({error, dispatch}) {
               <br/>
               <br/>
               {isSubmitting && <LinearProgress />}
-              <Button type="submit" variant="contained" color="primary" spacing= '10' onClick={onSubmit} >Change Password</Button>
+              <Button type="submit" variant="contained" color="primary" spacing= '10' onClick={onSubmit} >Change my Password</Button>
               <Button type="submit" variant="contained" color="primary" spacing= '10' style = {{marginLeft: 30}}>Cancel</Button>
             
             </Form>
