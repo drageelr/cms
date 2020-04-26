@@ -5,20 +5,20 @@ const sampleState = {
     {
       id: 's-1',
       nameInitials: "LUMUN",
-      name: "LUMS model united nations",
+      name: "LUMS Model United Nations",
       email: "lumun@lums.edu.pk",
       presidentEmail: "zozo@gmail.com",
       patronEmail: "hamza@gmail.com",
-      password: ''
+      password: 'TEST'
     },
     {
       id: 's-2',
       nameInitials: "LUMUN",
-      name: "LUMS model united nations",
+      name: "LUMS Model United Nations",
       email: "lumun@lums.edu.pk",
       presidentEmail: "zozo@gmail.com",
       patronEmail: "hamza@gmail.com",
-      password: ''
+      password: 'TEST'
     }
   ],
   isPending: true,
@@ -28,7 +28,7 @@ const sampleState = {
 const initialState = {
   societyList: [],
   isPending: true,
-  error: ''
+  error: null
 }
 
 export const fetchSocietyAccounts = createAsyncThunk(
@@ -108,7 +108,6 @@ const societyData = createSlice({
       if (state.isPending === true) {
         state.isPending = false
         let i = 0
-        console.log(action.payload.id)
         state.societyList.map((obj,index) => {
           if (obj.id === action.payload.id){
             i = index
@@ -119,10 +118,9 @@ const societyData = createSlice({
       }
     },
     [deleteSocietyAccount.rejected]: (state, action) => {
-      console.log(action)
       if (state.isPending === true) {
         state.isPending = false
-        state.error = action.error
+        state.error = action.payload
       }
     },
 
@@ -132,7 +130,6 @@ const societyData = createSlice({
       }
     },
     [addSocietyAccount.fulfilled]: (state, action) => {
-      console.log("hello",action.payload)
       if (state.isPending === true){
         state.isPending = false
         state.societyList.push({
@@ -143,10 +140,9 @@ const societyData = createSlice({
       } 
     },
     [addSocietyAccount.rejected]: (state, action) => {
-      console.log(action)
       if (state.isPending === true) {
         state.isPending = false
-        state.error = action.error
+        state.error = action.payload
       }
     },
 
@@ -169,10 +165,9 @@ const societyData = createSlice({
       }
     },
     [editSocietyAccount.rejected]: (state, action) => {
-      console.log(action)
       if (state.isPending === true) {
         state.isPending = false
-        state.error = action.error
+        state.error = action.payload
       }
     },
     [fetchSocietyAccounts.pending]: (state, action) => {
@@ -184,14 +179,12 @@ const societyData = createSlice({
       if(state.isPending === true){
         state.isPending = false
         state.societyList = action.payload.societyList
-        state.error = 'Society Accounts Loaded'
       }
     },
     [fetchSocietyAccounts.rejected]: (state, action) => {
-      console.log(action)
       if (state.isPending === true) {
         state.isPending = false
-        state.error = action.error
+        state.error = action.payload
       }
     }
   }

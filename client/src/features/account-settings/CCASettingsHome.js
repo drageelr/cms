@@ -33,7 +33,7 @@ export default function CCASettingsHome() {
       </Grid>
 
       <Grid item style = {{marginTop: 30}}>
-          <Link to={"/society-panel"} style={{ textDecoration: 'none' }}>
+          <Link to={"/task-status-panel"} style={{ textDecoration: 'none' }}>
             <Button size = "large" variant = "contained" startIcon={<FormatListBulletedIcon/>}
             style = {{marginLeft: 10}}> Task Status Panel </Button>
           </Link>

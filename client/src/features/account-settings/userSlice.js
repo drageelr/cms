@@ -53,13 +53,38 @@ export const login = createAsyncThunk(
 
 export const changePassword = createAsyncThunk(
   'user/changePassword',
-  async({currentPassword, newPassword}, {getState}) => {
-    const {isPending} = getState().user
+  async({currentPassword, newPassword}, {getState, rejectWithValue}) => {
+    const {isPending, role, token} = getState().user
     if (isPending != true){
       return
     }
 
-    return newPassword
+    const API = 'http//:167.71.224.73/api'
+    let QUERY = '/account/cca/change-password'
+    if (role === "Society")
+      QUERY = '/account/society/change-password'
+
+    try {
+      const res = await fetch(API + QUERY, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Bearer Token': token, 
+        },
+        body: {
+          passwordCurrent: currentPassword,
+          passwordNew: newPassword,
+        }
+      })
+      if (res.ok) {
+        const data = res.json()
+        return newPassword
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
   }
 )
 

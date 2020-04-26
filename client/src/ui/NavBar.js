@@ -58,12 +58,14 @@ export default function NavBar({nameInitials, name, role, picture}) {
       <AppBar position="static" style={{height: 45, boxShadow: "none", background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 82%,rgba(237,237,237,1) 100%)'}} >
         <Toolbar style={{minHeight: 30}} >
           <Grid container direction='row' justify="space-between" alignItems="center">
+            
             <Grid item>
+            { role === "CCA" &&
               <IconButton edge="start" onClick={toggleDrawer} >
                 <MenuIcon />
               </IconButton>
+              }
             </Grid>
-
           
             <Grid item display='flex' flexDirection='row' style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
               <Grid container>
@@ -113,8 +115,7 @@ export default function NavBar({nameInitials, name, role, picture}) {
         <br/>
         <br/>
         <br/>
-        <RoundLinkButton link={'/'} icon={<VpnKeyIcon fontSize='large'/> } title={'Login'}/>
-        <RoundLinkButton link={'/task-manager'} icon={<PlaylistAddCheckIcon fontSize='large'/>} title={'Task Manager'}/>
+        <RoundLinkButton link={'/'} icon={<PlaylistAddCheckIcon fontSize='large'/>} title={'Task Manager'}/>
         <RoundLinkButton link={'/forms'} icon={<EditIcon fontSize='large'/>} title={'Form Maker'}/>
         <RoundLinkButton link={'/request-list'} icon={<ListAltIcon fontSize='large'/>} title={'Request List'}/>
       </Drawer>

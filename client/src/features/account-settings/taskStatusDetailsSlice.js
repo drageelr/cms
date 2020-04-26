@@ -123,7 +123,7 @@ const taskStatusDetails = createSlice({
       console.log(action)
       if (state.isPending === true) {
         state.isPending = false
-        state.error = action.error
+        state.error = action.payload
       }
     },
 
@@ -148,7 +148,7 @@ const taskStatusDetails = createSlice({
       console.log(action)
       if (state.isPending === true) {
         state.isPending = false
-        state.error = action.error
+        state.error = action.payload
       }
     },
 
@@ -174,7 +174,7 @@ const taskStatusDetails = createSlice({
       console.log(action)
       if (state.isPending === true) {
         state.isPending = false
-        state.error = action.error
+        state.error = action.payload
       }
     },
     [fetchTaskStatus.pending]: (state, action) => {
@@ -193,7 +193,7 @@ const taskStatusDetails = createSlice({
       console.log(action)
       if (state.isPending === true) {
         // state.isPending = false
-        state.error = action.error
+        state.error = action.payload
       }
     } 
 }})

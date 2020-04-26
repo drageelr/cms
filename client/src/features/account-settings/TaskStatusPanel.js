@@ -8,9 +8,6 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
-import Fab from '@material-ui/core/Fab'
-import AddIcon from '@material-ui/icons/Add'
-
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -26,10 +23,8 @@ import MoreButton from '../../ui/MoreButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 
-import {login, clearError} from './taskStatusDetailsSlice'
+import {clearError} from './taskStatusDetailsSlice'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
-
-import CircularProgress from '@material-ui/core/CircularProgress';
 import LinearProgress from '@material-ui/core/LinearProgress'
 
 const StyledTableCell = withStyles((theme) => ({
@@ -59,7 +54,6 @@ const useStyles = makeStyles({
 function TaskStatusPanel({taskStatusDetails,dispatch}){
 
   useEffect(() => {dispatch(fetchTaskStatus())},[])
-  // console.log(societyData)
 
   const classes = useStyles()
   const [isOpen,setIsOpen] = useState(false)
@@ -181,19 +175,18 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
     <div>
     
       <div style={{float : 'right', marginRight : 10, marginTop: 3, marginBottom: 10}}>
-        <Fab 
-          variant="extended" 
-          color="secondary" 
-          float = "right"
+        <Button
+          variant="contained" 
+          color="primary" 
+          spacing= '10' 
+          style = {{float: "right", marginBottom:10, marginRight: 50}}
           onClick = {handleAdd}
-        >
-          <AddIcon/>
-          Add Task Status
-        </Fab>
+          >Add Task Status
+        </Button>
         <TaskStatusDialog/>
       </div>
 
-      <h3 style = {{textAlign: 'center', fontSize: 20}}>Task Status Panel </h3>
+      <h3 style = {{textAlign: 'center', fontSize: 20, marginLeft: '15%'}}>Task Status Panel </h3>
       <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="customized table">
         <TableHead>

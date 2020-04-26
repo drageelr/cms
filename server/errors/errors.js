@@ -70,7 +70,7 @@ class ForbiddenAccessError extends Error {
     super();
     this.name = "ForbiddenAccessError";
     this.statusCode = 403;
-    this.message = "You don't have the necessary permission for this resource!";
+    this.message = "You don't have the necessary permissions for this resource!";
     this.details = errDetails;
     this.subName = "N/A";
   }

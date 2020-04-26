@@ -58,8 +58,6 @@ function App({ user }) {
             <Route path="/form-maker" exact component={FormMaker}/>
             <Route path="/form-maker/:id" component={FormMaker}/>
             <Route path="/request-list" component={RequestList}/>
-            <Route path="/society-dashboard" component={SocietyDashboard}/>
-            <Route path="/task-manager" component={TaskManager}/>
             <Route path="/settings" component={CCASettingsHome}/>
             <Route path="/cca-panel" exact component={CCAAccountsPanel}/>
             <Route path="/change-password" exact component={ChangePassword}/>

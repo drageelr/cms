@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useEffect} from 'react'
 import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/styles'
 import { Paper, List, Typography, Button } from '@material-ui/core'
 import { useHistory } from 'react-router-dom'
+import { fetchFormList } from '../formListSlice'
 
 const useStyles = makeStyles((theme) => ({
   formListPaper: {
@@ -13,9 +14,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function SocietyFormList({formList}) {
+function SocietyFormList({formList, dispatch}) {
   const classes = useStyles()
   const history = useHistory()
+
+  useEffect(() => {
+    dispatch(fetchFormList())
+  }, [])
 
   return (
     <Paper className={classes.formListPaper} style={{position: 'absolute'}}>

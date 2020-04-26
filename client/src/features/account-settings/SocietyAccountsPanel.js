@@ -1,35 +1,18 @@
 import React, {useState,useEffect} from 'react'
 import { withStyles, makeStyles } from '@material-ui/core/styles'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import Paper from '@material-ui/core/Paper'
-import Button from '@material-ui/core/Button'
-
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import { Grid, CircularProgress } from '@material-ui/core'
+import {Table, TableContainer, TableBody, TableCell, TableHead, TableRow, Paper, Button, Dialog, DialogContent, DialogTitle, 
+  DialogContentText, DialogActions, Grid, CircularProgress, LinearProgress} from '@material-ui/core'
 import {addSocietyAccount,editSocietyAccount,deleteSocietyAccount,fetchSocietyAccounts} from './societyDataSlice'
-
 import {connect} from 'react-redux'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
-
 import MoreButton from '../../ui/MoreButton'
-
 import DeleteIcon from '@material-ui/icons/Delete'
-
+import * as Yup from 'yup'
 import EditIcon from '@material-ui/icons/Edit'
 import {login, clearError} from './societyDataSlice'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
 
-// import CircularProgress from '@material-ui/core/CircularProgress';
-import LinearProgress from '@material-ui/core/LinearProgress'
 
 const useStyles = makeStyles({
   root: {
@@ -42,8 +25,6 @@ const useStyles = makeStyles({
 
 function SocietyAccountsPanel({societyData,dispatch}) {
   useEffect(() => {dispatch(fetchSocietyAccounts())},[])
-  // console.log(societyData)
-
 
   const classes = useStyles()
   const [isOpen,setIsOpen] = useState(false)
@@ -113,20 +94,29 @@ function SocietyAccountsPanel({societyData,dispatch}) {
       <Dialog
         open={isOpen}
         onClose={handleClose}
-        // PaperComponent={PaperComponent}
         aria-labelled by="draggable-dialog-title"
         >
         <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-          {editMode ? "Edit Task Status" : "Add Task Status"}
+          {editMode ? "Edit Society Account" : "Add Society Account"}
         </DialogTitle>
 
         <Formik
           validateOnChange={false} validateOnBlur={true}
           initialValues={initialValues}
-          validate={values => {
-            const errors = {}
-            return errors
-          }}
+          validationSchema={Yup.object({
+            email: Yup.string()
+                .email('Invalid Email Address')
+                .required('Required'),
+            password: Yup.string().required('Required'),
+            nameInitials: Yup.string().required('Required'),
+            name: Yup.string().required('Required'),
+            presidentEmail: Yup.string()
+              .email('Invalid Email Address')
+              .required('Required'),
+            patronEmail: Yup.string()
+              .email('Invalid Email Address')  
+              .required('Required'),
+          })}
           onSubmit={(values,{setSubmitting}) => {
             dispatch(editMode? 
               editSocietyAccount({
@@ -164,19 +154,19 @@ function SocietyAccountsPanel({societyData,dispatch}) {
                   </Grid>
 
                   <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="email" required label="Email"/>    
+                    <Field component={TextField} name="email" type="email" required label="Email"/>    
                   </Grid>
                   
                   <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="presidentEmail" required label="President Email"/>    
+                    <Field component={TextField} name="presidentEmail" type="email" required label="President Email"/>    
                   </Grid>
 
                   <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="patronEmail" required label="Patron Email"/>    
+                    <Field component={TextField} name="patronEmail" type="email" required label="Patron Email"/>    
                   </Grid>
 
                   <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="password" required label="Password"/>    
+                    <Field component={TextField} name="password" type="password" required label="Password"/>    
                   </Grid>
                 </Grid>
               </DialogContent>
@@ -205,52 +195,50 @@ function SocietyAccountsPanel({societyData,dispatch}) {
     {
       societyData.isPending? <LinearProgress variant = "indeterminate"/>:
       <div>
-      <h2>SocietyAccountsPanel</h2>
-      <div>
-        <Button
-          variant="contained" 
-          color="primary" 
-          spacing= '10' 
-          style = {{float: "right", marginBottom:10}}
-          onClick = {handleAdd}
-          >Add society
-        </Button>
-        <SocietyDialog/>
+        <h2 style={{marginLeft: '1%'}}>Society Accounts</h2>
+        <div>
+          <Button
+            variant="contained" 
+            color="primary" 
+            style = {{float: "right", marginBottom:10, marginRight: 50}}
+            onClick = {handleAdd}
+            >Add Society Account
+          </Button>
+          <SocietyDialog/>
+        </div>
+        <Paper className={classes.root} style={{maxHeight: 450, overflow: 'auto'}}>
+        <TableContainer className={classes.container}>
+        <Table>
+        <TableHead >
+            <TableRow>
+              <TableCell style = {{position: 'sticky', top: 0}}>Initials</TableCell>
+              <TableCell align="right" style = {{position: 'sticky', top: 0}}>Society Name</TableCell>
+              <TableCell align="right" style = {{position: 'sticky', top: 0}}>Society Email</TableCell>  
+            </TableRow>
+          </TableHead>
+            
+          <TableBody>
+          {societyData.societyList.map((society,index) => (
+            societyData.isPending? <CircularProgress variant = "indeterminate"/>:
+            <TableRow key={index}>
+              <TableCell component="th" scope="row">
+                {society.nameInitials}
+              </TableCell>
+              <TableCell align="right">{society.name}</TableCell>
+              <TableCell align="right">{society.email}</TableCell>
+              <TableCell align="right">
+                <EditDeleteMoreButton id={society.id}/>
+              </TableCell>
+            </TableRow>
+          ))}
+          </TableBody>
+            
+        </Table>
+        </TableContainer>
+        </Paper>
       </div>
-      <Paper className={classes.root} style={{maxHeight: 450, overflow: 'auto'}}>
-      <TableContainer className={classes.container}>
-      <Table>
-      <TableHead >
-          <TableRow>
-            <TableCell style = {{position: 'sticky', top: 0}}>Initials</TableCell>
-            <TableCell align="right" style = {{position: 'sticky', top: 0}}>Society Name</TableCell>
-            <TableCell align="right" style = {{position: 'sticky', top: 0}}>Society Email</TableCell>  
-          </TableRow>
-        </TableHead>
-          
-        <TableBody>
-        {societyData.societyList.map((society,index) => (
-          societyData.isPending? <CircularProgress variant = "indeterminate"/>:
-          <TableRow key={index}>
-            <TableCell component="th" scope="row">
-              {society.nameInitials}
-            </TableCell>
-            <TableCell align="right">{society.name}</TableCell>
-            <TableCell align="right">{society.email}</TableCell>
-            <TableCell align="right">
-              <EditDeleteMoreButton id={society.id}/>
-            </TableCell>
-          </TableRow>
-        ))}
-        </TableBody>
-          
-      </Table>
-      </TableContainer>
-      </Paper>
-      
-    </div>
-        }
-        <ErrorSnackbar stateError={societyData.error} clearError={clearError} />
+      }
+      <ErrorSnackbar stateError={societyData.error} clearError={clearError} />
     </div>
     )
 }

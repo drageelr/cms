@@ -1,13 +1,14 @@
 import React, { useState, useEffect }from 'react'
-import { addCCAAccount, deleteCCAAccount, editCCAAccount, fetchCCAAccounts, changeCCAPicture } from './ccaDetailsSlice'
-import { Button, Card, CardHeader, CardMedia, CardContent, Grid, Typography, 
-  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Input, LinearProgress } from '@material-ui/core'
+import { addCCAAccount, deleteCCAAccount, editCCAAccount, fetchCCAAccounts, changeCCAPicture, clearError } from './ccaDetailsSlice'
+import { Button, Card, CardHeader, CardContent, Grid, Typography, FormControl, InputLabel, MenuItem, 
+  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, LinearProgress } from '@material-ui/core'
 import {connect} from 'react-redux'
 import MoreButton from '../../ui/MoreButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import { Formik, Form, Field } from 'formik'
-import { TextField } from 'formik-material-ui'
+import { TextField, Select } from 'formik-material-ui'
+import * as Yup from 'yup'
 import ErrorSnackbar from "../../ui/ErrorSnackbar"
 
 function CCAAccountPanel({ccaDetails,dispatch}) {
@@ -22,8 +23,10 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
   const [picture, setPicture] = useState("")
 
   function handleImageUpload(event, id) {
+    console.log(id)
     const url = URL.createObjectURL(event.target.files[0])
     setPicture(url)
+
     if(editMode) {
       dispatch(changeCCAPicture({id, url}))
     }
@@ -66,23 +69,16 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       picture: '',
       role:'',
       timestampCreated: '',
-      permission:[]
+      permissions:[]
     }
 
     if(editMode){
-      const ccaMemberDetail = ccaDetails.ccaList.find((detail,index) => {
+      const ccaMember = ccaDetails.ccaList.find((detail,index) => {
         return detail.id === editId
       })
-      if(ccaMemberDetail !== undefined){
+      if(ccaMember !== undefined){
         initialValues = {
-          firstName: ccaMemberDetail.firstName,
-          lastName: ccaMemberDetail.lastName,
-          email: ccaMemberDetail.email,
-          password: ccaMemberDetail.password,
-          picture: ccaMemberDetail.picture,
-          role:ccaMemberDetail.role,
-          timestampCreated: ccaMemberDetail.timestampCreated,
-          permission:ccaMemberDetail.permission,
+          ...ccaMember
         }
       }
     }
@@ -105,10 +101,16 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       <Formik
         validateOnChange={false} validateOnBlur={true}
         initialValues = {initialValues}
-        validate={values => {
-          const errors = {}
-          return errors
-        }}
+        validationSchema={Yup.object({
+          email: Yup.string()
+            .email('Invalid Email Address')
+            .required('Required'),
+          password: Yup.string().required(),
+          firstName: Yup.string().required(),
+          lastName: Yup.string().required(),
+          picture: Yup.string().required(),
+          role: Yup.string().required(),
+        })}
         onSubmit={(values, {setSubmitting}) => {
           dispatch(editMode ?
             editCCAAccount({
@@ -117,10 +119,10 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
               lastName: values.lastName,
               email: values.email,
               password: values.password,
-              picture: values.picture,
+              picture: picture,
               role:values.role,
               timestampCreated: values.timestampCreated,
-              permission:values.permission,
+              permissions:values.permissions,
             })
             :addCCAAccount({
               firstName: values.firstName,
@@ -130,19 +132,19 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
               picture: picture,
               role:values.role,
               timestampCreated: values.timestampCreated,
-              permission:values.permission,
+              permissions:values.permissions,
             })).then(() => {
               setSubmitting(false)
+              setEditMode(false)
+              handleClose()
             })
-          setEditMode(false)
-          // handleClose()
         }}
       >
         {({submitForm, isSubmitting})=>(
           <Form>
             <DialogContent> 
               <Grid container direction="row" justify="space-evenly" alignItems="center">
-                <Grid item direction = "column" justify = "center" alignItems = "center" style = {{width: 200}}>
+                <Grid item direction = "column" justify = "space-evenly" alignItems = "center" style = {{width: 200}}>
                   <Grid item style = {{width: 350}}>
                     <Field component={TextField} name="firstName" required label="First Name"/>
                   </Grid>
@@ -156,17 +158,30 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
                   </Grid>
 
                   <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="password" required label="Password"/>
+                    <Field component={TextField} name="password" required type="password" label="Password"/>
                   </Grid>
 
                   <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="role" required label="Role"/>
+                    <FormControl>
+                      <InputLabel htmlFor="role">Role</InputLabel>
+                      <Field
+                        component={Select}
+                        name="role"
+                        inputProps={{
+                          id: 'role',
+                        }}
+                        style={{width: 100}}
+                      >
+                        <MenuItem value={'Member'}>Member</MenuItem>
+                        <MenuItem value={'Admin'}>Admin</MenuItem>
+                      </Field>
+                    </FormControl>
                   </Grid>
                 </Grid>
                 <Grid item>
                   <Grid direction="column" justify="flex-end" alignItems="flex-start">
                     <Grid item>
-                      <Avatar style = {{width:180, height:180, marginLeft: 50, marginTop: 30}} src = {initialValues.picture}/>
+                      <Avatar style = {{width:180, height:180, marginLeft: 50, marginTop: 30}} src={editMode ? initialValues.picture : picture}/>
                     </Grid>
                     <Grid item>
                       <input style = {{marginLeft: 80, marginTop: 10}} type="file" onChange={(e) => {handleImageUpload(e, editId)}}/>
@@ -198,23 +213,24 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     <div>
       {ccaDetails.isPending ? <LinearProgress /> :
         <div>
+          <h2 style={{marginLeft: '1%'}}>CCA Accounts</h2>
           <div align="center">
-            <h1>CCA Accounts Panel</h1>
             <Button
+              size="large"
               variant="contained" 
               color="primary" 
               spacing= '10' 
-              style = {{float: "right", marginBottom:10}}
+              style = {{float: "right", marginBottom:10, marginRight: 50}}
               onClick = {handleAdd}
-            > Add CCA member
+            > Add CCA Member
             </Button>
             <CCADialog />
           </div>
           <Grid container spacing={3} >
           {
             ccaDetails.ccaList.map((ccaDetail,index) => (
-              <Grid item xs={3}> 
-                <Card variant="outlined" style = {{maxWidth: 300, background: "snow"}}>
+              <Grid item xs={2}> 
+                <Card variant="outlined" style = {{marginLeft: 20, maxWidth: 300, background: "whitesmoke"}}>
                   <CardHeader
                     avatar={
                       <Avatar style = {{width:150, height:150}} src = {ccaDetail.picture}/>
@@ -227,7 +243,6 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
                     <Typography style = {{textAlign: 'left', fontSize: 20}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
                     <Typography>{ccaDetail.role}</Typography>
                     <Typography>{ccaDetail.email}</Typography>
-                  
                   </CardContent>
                 </Card>
               </Grid>
@@ -236,6 +251,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
           </Grid>
         </div>
       }
+      <ErrorSnackbar stateError={ccaDetails.error} clearError={clearError}/>
     </div>
   )
 }

@@ -46,8 +46,8 @@ function FormMaker({ formTemplate, dispatch, match }) {
 
   return (
     <div>
-      <Properties formTemplate = {formTemplate} createMode={createMode} />
-      <FormMakerBar title={title} isPublic={isPublic}/>
+      <Properties formTemplate={formTemplate} />
+      <FormMakerBar title={title} isPublic={isPublic} createMode={createMode}/>
       {
       (!createMode && isPending) ? <CircularProgress style={{marginLeft: '55vw', marginTop: '30vh'}}/> :  
       <Paper square variant="outlined"className={classes.viewPaper}>

@@ -106,7 +106,7 @@ exports.validateCCAAccess = async (req, res, next) => {
     if(reqCCA.permissions[access]) {
       next();
     } else {
-      throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
+      throw new customError.ForbiddenAccessError("cca user does not have valid permissions for this resource", "PermissionError");
     }
   } else {
     next();

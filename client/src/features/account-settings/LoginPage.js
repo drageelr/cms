@@ -19,7 +19,7 @@ const useStyles = makeStyles({
   },
 })
 
-function LoginPage({user, dispatch}) {
+function LoginPage({error, dispatch}) {
   const classes = useStyles()
   const [role, setRole] = React.useState("CCA")
 
@@ -91,13 +91,13 @@ function LoginPage({user, dispatch}) {
           </Form>
         )}
       </Formik>
-      <ErrorSnackbar stateError={user.error} clearError={clearError}/>
+      <ErrorSnackbar stateError={error} clearError={clearError}/>
     </Container>  
   )
 }
 
 const mapStateToProps = (state) => ({
-  user: state.user,
+  error: state.user.error,
 })
 
 export default connect(mapStateToProps) (LoginPage)
