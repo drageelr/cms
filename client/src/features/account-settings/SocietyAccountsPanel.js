@@ -19,9 +19,11 @@ import PanelBar from './PanelBar'
 const useStyles = makeStyles({
   root: {
     width: '100%',
+    maxHeight: '100%',
+    overflow: 'auto'
   },
   container: {
-    maxHeight: '60%',
+    maxHeight: '70%',
   },
 })
 
@@ -214,7 +216,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
       <div>
         <PanelBar handleAdd={handleAdd} title="Society Accounts" buttonText="Add Society Account"/>
         <SocietyDialog/>
-        <Paper className={classes.root} style={{maxHeight: 450, overflow: 'auto'}}>
+        <Paper className={classes.root}>
           <TableContainer className={classes.container}>
             <Table>
               <TableHead >

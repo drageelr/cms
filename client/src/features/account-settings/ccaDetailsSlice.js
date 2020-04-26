@@ -124,11 +124,46 @@ export const toggleActiveCCAAccount = createAsyncThunk(
   }
 )
 
+export const editCCAPermissions = createAsyncThunk(
+  'ccaDetails/editCCAPermissions',
+  async ({ccaId, permissions}, { rejectWithValue }) => {
+    try {
+      const res = await fetch('/api/account/cca/edit-account', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          ccaId: ccaId,
+          permissions: permissions
+        })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        console.log(data)
+
+        if (data.statusCode != 203) {
+          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+        }
+
+        return {ccaId, permissions}
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
+)
+
 export const editCCAAccount = createAsyncThunk(
   'ccaDetails/editCCAAccount',
   async (ccaObject, { rejectWithValue }) => {
 
-    const {ccaId, firstName, lastName, email, password, picture, role, permissions} = ccaObject 
+    const {ccaId, firstName, lastName, email, password, picture, role} = ccaObject 
     let body = {
       ccaId: ccaId,
       email: email,
@@ -136,7 +171,6 @@ export const editCCAAccount = createAsyncThunk(
       lastName: lastName,
       picture: picture,
       role: role,
-      permissions: permissions
     }
     if (password !== undefined){
       body = {...body, password: password}
@@ -294,6 +328,7 @@ const ccaDetails = createSlice({
       if (state.isPending === true) {
         state.isPending = false
         state.ccaList = action.payload.ccaList 
+        // state.error = 'Fetched all CCA Accounts'
       }
     },
     [fetchCCAAccounts.rejected]: (state, action) => {
@@ -312,7 +347,20 @@ const ccaDetails = createSlice({
     },
     [changeCCAPicture.rejected]: (state, action) => {
         state.error = action.payload
-    }
+    },
+
+    [editCCAPermissions.fulfilled]: (state, action) => {
+      state.ccaList.map((obj,index) => {
+        if (obj.ccaId === action.payload.ccaId){
+          state.ccaList[index].permissions = action.payload.permissions
+        }  
+      })
+      state.error = 'CCA Account Permissions Edited'
+    },
+
+    [editCCAPermissions.rejected]: (state, action) => {
+        state.error = action.payload
+    },
   } 
 })
 
