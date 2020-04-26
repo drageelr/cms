@@ -61,6 +61,7 @@ function ChangePassword({error, dispatch}) {
                 label="Password"
                 name="currentPassword"
                 type="password"
+                fullWidth
                 autoFocus
               ></Field>
               <br/>
@@ -71,6 +72,7 @@ function ChangePassword({error, dispatch}) {
                 variant="outlined"
                 margin="normal"
                 required
+                fullWidth
                 label="New Password"
                 name="newPassword"
                 autoFocus
@@ -85,6 +87,7 @@ function ChangePassword({error, dispatch}) {
                 variant="outlined"
                 margin="normal"
                 required
+                fullWidth
                 label="Confirm Password"
                 name="confirmPassword"
                 autoFocus

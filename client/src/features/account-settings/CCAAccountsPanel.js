@@ -1,7 +1,6 @@
 import React, { useState, useEffect }from 'react'
-import { addCCAAccount, toggleActiveCCAAccount, editCCAAccount, fetchCCAAccounts, changeCCAPicture, clearError } from './ccaDetailsSlice'
 import { Button, Card, CardHeader, CardContent, Grid, Typography, FormControl, InputLabel, MenuItem, Switch, FormControlLabel, FormGroup,
-  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, LinearProgress, makeStyles, Container } from '@material-ui/core'
+  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, LinearProgress, Container } from '@material-ui/core'
 import {connect} from 'react-redux'
 import MoreButton from '../../ui/MoreButton'
 import ToggleOffIcon from '@material-ui/icons/ToggleOff'
@@ -14,6 +13,7 @@ import ErrorSnackbar from "../../ui/ErrorSnackbar"
 import PanelBar from './PanelBar'
 import AccessibilityIcon from '@material-ui/icons/Accessibility'
 
+import { addCCAAccount, toggleActiveCCAAccount, editCCAAccount, fetchCCAAccounts, clearError, editCCAPermissions } from './ccaDetailsSlice'
 
 function CCAAccountPanel({ccaDetails,dispatch}) {
 
@@ -22,44 +22,43 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
   }, [])
   
   const [isOpen, setIsOpen] = useState(false)
-  const [isOpenPermission, setIsOpenPermission] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
   const [picture, setPicture] = useState("https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-6.png")
-  const [permissions, setPermissions] = useState({
-    "ccaCRUD": false,
-    "accessFormMaker": false,
-    "createReqTask": false,
-    "createCustomTask": false,
-    "createTaskStatus": false,
-    "archiveTask": false,
-    "unarchiveTask": false,
-    "setFormStatus": false,
-    "addCCANote": false,
-  })
   const [permissionMode, setPermissionsMode] = useState(false)
+  const [permissions, setPermissions] = useState({})
+  
 
   function handleImageUpload(event, ccaId) {
     const url = URL.createObjectURL(event.target.files[0])
     setPicture(url)
   }
 
-  function handlePermissionsChange(event, editId){
+  function handlePermissionsChange(event){
     setPermissions({ 
       ...permissions, 
       [event.target.name]: event.target.checked 
     })
-
-    // dispatch(editCCAAccount({editId, permissions}))
+    console.log("test")
   }
 
-  function handlePermissions() {
+  function handleDispatchPermissionsChange() {
+    dispatch(editCCAPermissions({ccaId: editId, permissions: permissions}))
+  }
+
+  function handlePermissions(ccaId) {
+    setEditId(ccaId)
     setPermissionsMode(true)
-    setIsOpenPermission(true)
+    const ccaMember = ccaDetails.ccaList.find((member,index) => {
+      return member.ccaId === ccaId
+    })
+    if(ccaMember !== undefined){
+      setPermissions(ccaMember.permissions)
+    }
+    
   }
   
   function handleClosePermission() {
-    setIsOpenPermission(false)
     setPermissionsMode(false)
   }
 
@@ -82,7 +81,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       {
         text: 'Manage Permissions',
         icon: <AccessibilityIcon/>,
-        onClick: () => handlePermissions(id)
+        onClick: () => handlePermissions(ccaId)
       }
     ]
     return <MoreButton menusList={menusList}/>
@@ -97,6 +96,77 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     setEditId(ccaId)
     setEditMode(true)
     setIsOpen(true)
+  }
+
+  function PermissionsDialog(){
+    return (
+    <Dialog 
+      open={permissionMode}
+      onClose={handleClosePermission}
+    >
+      <DialogTitle style={{ cursor: 'move' }} >
+        Manage User Permissions
+      </DialogTitle>
+      <FormControl component="fieldset" style={{marginLeft: "10%", marginBottom: 20}}>
+        <FormGroup>
+          <FormControlLabel
+            control={<Switch color="primary" size="small" checked={permissions.societyCRUD} onChange={handlePermissionsChange} name="societyCRUD"/>}
+            label="Society CRUD"
+            style={{marginBottom: 8}}
+          />
+          <FormControlLabel
+            control={<Switch color="primary" size="small" checked={permissions.ccaCRUD} onChange={handlePermissionsChange} name="ccaCRUD"/>}
+            label="CCA CRUD"
+            style={{marginBottom: 8}}
+          />
+          <FormControlLabel
+            control={<Switch color="primary" size="small" checked={permissions.accessFormMaker} onChange={handlePermissionsChange} name="accessFormMaker"/>}
+            label="Access Form Maker"
+            style={{marginBottom: 8}}
+          />
+          <FormControlLabel
+            control={<Switch color="primary" size="small" checked={permissions.createReqTask} onChange={handlePermissionsChange} name="createReqTask"/>}
+            label="Create Request Task"
+            style={{marginBottom: 8}}
+          />
+          <FormControlLabel
+            control={<Switch color="primary" size="small" checked={permissions.createCustomTask} onChange={handlePermissionsChange} name="createCustomTask"/>}
+            label="Create Custom Task"
+            style={{marginBottom: 8}}
+          />
+          <FormControlLabel
+            control={<Switch color="primary" size="small" checked={permissions.createTaskStatus} onChange={handlePermissionsChange} name="createTaskStatus"/>}
+            label="Create Task Status"
+            style={{marginBottom: 8}}
+          />
+          <FormControlLabel
+            control={<Switch color="primary" size="small" checked={permissions.archiveTask} onChange={handlePermissionsChange} name="archiveTask"/>}
+            label="Archive Task"
+            style={{marginBottom: 8}}
+          />
+          <FormControlLabel
+            control={<Switch color="primary" size="small" checked={permissions.unarchiveTask} onChange={handlePermissionsChange} name="unarchiveTask"/>}
+            label="Unarchive Task"
+            style={{marginBottom: 8}}
+          />
+          <FormControlLabel
+            control={<Switch color="primary" size="small" checked={permissions.setFormStatus} onChange={handlePermissionsChange} name="setFormStatus"/>}
+            label="Set Form Status"
+            style={{marginBottom: 8}}
+          />
+          <FormControlLabel
+            control={<Switch color="primary" size="small" checked={permissions.addCCANote} onChange={handlePermissionsChange} name="addCCANote"/>}
+            label="Add CCA Note"
+            style={{marginBottom: 8}}
+          />
+        </FormGroup>
+      </FormControl>
+        <Button onClick={handleDispatchPermissionsChange} color="primary">
+          Change Permissions
+        </Button>
+        <br/>
+    </Dialog>
+    )
   }
 
   function CCADialog(){
@@ -177,19 +247,6 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
               password: values.password,
               picture: picture,
               role:values.role,
-              timestampCreated: values.timestampCreated,
-              permissions: {
-                societyCRUD: true,
-                ccaCRUD: true,
-                accessFormMaker: true,
-                createReqTask: true,
-                createCustomTask: true,
-                createTaskStatus: true,
-                archiveTask: true,
-                unarchiveTask: true,
-                setFormStatus: true,
-                addCCANote: true
-              },
             })
             :addCCAAccount({
               firstName: values.firstName,
@@ -198,7 +255,6 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
               password: values.password,
               picture: picture,
               role:values.role,
-              timestampCreated: values.timestampCreated,
               permissions: {
                 societyCRUD: true,
                 ccaCRUD: true,
@@ -276,168 +332,16 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
                 Save
               </Button>
 
-      (() => {
-        if(permissionMode) {
-          return (
-            <Dialog 
-              open={isOpenPermission}
-              onClose={handleClosePermission}
-              aria-labelledby="draggable-dialog-title"
-            >
-              <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-                Manage User Permissions
-              </DialogTitle>
-              <FormControl component="fieldset" style={{marginLeft: "10%", marginBottom: 20}}>
-                <FormGroup>
-                  <FormControlLabel
-                    control={<Switch color="primary" size="small" checked={permissions.ccaCRUD} onChange={handlePermissionsChange} name="ccaCRUD"/>}
-                    label="ccaCRUD"
-                    style={{marginBottom: 8}}
-                  />
-                  <FormControlLabel
-                    control={<Switch color="primary" size="small" checked={permissions.accessFormMaker} onChange={handlePermissionsChange} name="accessFormMaker"/>}
-                    label="Access Form Maker"
-                    style={{marginBottom: 8}}
-                  />
-                  <FormControlLabel
-                    control={<Switch color="primary" size="small" checked={permissions.createReqTask} onChange={handlePermissionsChange} name="createReqTask"/>}
-                    label="Create Request Task"
-                    style={{marginBottom: 8}}
-                  />
-                  <FormControlLabel
-                    control={<Switch color="primary" size="small" checked={permissions.createCustomTask} onChange={handlePermissionsChange} name="createCustomTask"/>}
-                    label="Create Custom Task"
-                    style={{marginBottom: 8}}
-                  />
-                  <FormControlLabel
-                    control={<Switch color="primary" size="small" checked={permissions.createTaskStatus} onChange={handlePermissionsChange} name="createTaskStatus"/>}
-                    label="Create Task Status"
-                    style={{marginBottom: 8}}
-                  />
-                  <FormControlLabel
-                    control={<Switch color="primary" size="small" checked={permissions.archiveTask} onChange={handlePermissionsChange} name="archiveTask"/>}
-                    label="Archive Task"
-                    style={{marginBottom: 8}}
-                  />
-                  <FormControlLabel
-                    control={<Switch color="primary" size="small" checked={permissions.unarchiveTask} onChange={handlePermissionsChange} name="unarchiveTask"/>}
-                    label="Unarchive Task"
-                    style={{marginBottom: 8}}
-                  />
-                  <FormControlLabel
-                    control={<Switch color="primary" size="small" checked={permissions.setFormStatus} onChange={handlePermissionsChange} name="setFormStatus"/>}
-                    label="Set Form Status"
-                    style={{marginBottom: 8}}
-                  />
-                  <FormControlLabel
-                    control={<Switch color="primary" size="small" checked={permissions.addCCANote} onChange={handlePermissionsChange} name="addCCANote"/>}
-                    label="Add CCA Note"
-                    style={{marginBottom: 8}}
-                  />
-                </FormGroup>
-              </FormControl>
-            </Dialog>
-          )
-        } else{
-          return (
-            <Dialog 
-              open={isOpen}
-              onClose={handleClose}
-              aria-labelledby="draggable-dialog-title"
-            >
-              <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-                {editMode ? "Edit Account" : "Add Account"}
-              </DialogTitle>
-              
-              <Formik
-                validateOnChange={false} validateOnBlur={true}
-                initialValues = {initialValues}
-                validate={values => {
-                  const errors = {}
-                  return errors
-                }}
-                onSubmit={(values, {setSubmitting}) => {
-                  dispatch(editMode ?
-                    editCCAAccount({
-                      id: editId,
-                      firstName: values.firstName,
-                      lastName: values.lastName,
-                      email: values.email,
-                      password: values.password,
-                      picture: values.picture,
-                      role:values.role,
-                      timestampCreated: values.timestampCreated,
-                      permission:values.permission,
-                    })
-                    :addCCAAccount({
-                      firstName: values.firstName,
-                      lastName: values.lastName,
-                      email: values.email,
-                      password: values.password,
-                      picture: picture,
-                      role:values.role,
-                      timestampCreated: values.timestampCreated,
-                      permission:values.permission,
-                    })).then(() => {
-                      setSubmitting(false)
-                    })
-                  setEditMode(false)
-                }}
-              >
-                {({submitForm, isSubmitting})=>(
-                  <Form>
-                    <DialogContent> 
-                      <Grid container direction="row" justify="space-evenly" alignItems="center">
-                        <Grid item direction = "column" justify = "center" alignItems = "center" style = {{width: 200}}>
-                          <Grid item style = {{width: 350}}>
-                            <Field component={TextField} name="firstName" required label="First Name"/>
-                          </Grid>
-
-                          <Grid item style = {{width: 350}}>
-                            <Field component={TextField} name="lastName" required label="Last Name"/>
-                          </Grid>
-
-                          <Grid item style = {{width: 350}}>
-                            <Field component={TextField} name="email" required label="Email"/>
-                          </Grid>
-
-                          <Grid item style = {{width: 350}}>
-                            <Field component={TextField} name="password" required label="Password"/>
-                          </Grid>
-
-                          <Grid item style = {{width: 350}}>
-                            <Field component={TextField} name="role" required label="Role"/>
-                          </Grid>
-                        </Grid>
-                        <Grid item>
-                          <Grid direction="column" justify="flex-end" alignItems="flex-start">
-                            <Grid item>
-                              <Avatar style = {{width:180, height:180, marginLeft: 50, marginTop: 30}} src = {initialValues.picture}/>
-                            </Grid>
-                            <Grid item>
-                              <input style = {{marginLeft: 80, marginTop: 10}} type="file" onChange={(e) => {handleImageUpload(e, editId)}}/>
-                            </Grid>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    </DialogContent>
-                    <DialogActions>
-                      {isSubmitting && <CircularProgress/>}
-                      <Button onClick={submitForm} color="primary">
-                        Save
-                      </Button>
-                      
-                      <Button autoFocus onClick={handleClose}>
-                        Cancel
-                      </Button>
-                    </DialogActions>
-                  </Form>
-                )}
-              </Formik>
-              </Dialog>
-          )}
-      })()
+              <Button autoFocus onClick={handleClose}>
+                Cancel
+              </Button>
+            </DialogActions>
+          </Form>
+        )}
+      </Formik>
+      </Dialog>
     )
+
   }
 
   return (
@@ -445,7 +349,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       {ccaDetails.isPending ? <LinearProgress /> :
         <div>
           <PanelBar handleAdd={handleAdd} title="CCA Accounts" buttonText="Add CCA Account"/>
-          <CCADialog />
+          {permissionMode ? <PermissionsDialog/> : <CCADialog />}
           <br/>
           <Container style={{color: "gray"}} >
           <Grid container spacing={3}>

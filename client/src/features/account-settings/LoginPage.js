@@ -4,10 +4,8 @@ import * as Yup from 'yup'
 import { makeStyles } from '@material-ui/core/styles'
 import { Button, Container, LinearProgress, Grid } from '@material-ui/core'
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
-import ToggleButton from '@material-ui/lab/ToggleButton'
 import NavigateNextIcon from '@material-ui/icons/NavigateNext'
 import ToggleButton from '@material-ui/lab/ToggleButton'
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
 import { TextField } from 'formik-material-ui'
 import { connect } from 'react-redux'
 import { login, clearError } from './userSlice'
@@ -36,9 +34,10 @@ function LoginPage({error, dispatch}) {
 
   const [userType, setUserType] = React.useState("CCA")
 
-  // React.useEffect(() => {
-  //   dispatch(login({email: "admin@lums.edu.pk", password: "zoraiz123", userType: "CCA"}))
-  // }, [])
+  React.useEffect(() => {
+    dispatch(login({email: "admin@lums.edu.pk", password: "zoraiz123", userType: "CCA"}))
+  }, [])
+  
   const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
   const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
   const [role, setRole] = React.useState("CCA")
