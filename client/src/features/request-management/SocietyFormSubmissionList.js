@@ -7,7 +7,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import { deleteFormSubmission } from './requestListSlice'
 import { makeStyles } from '@material-ui/core/styles'
 import { fetchSocietyList, deleteSubmission } from './submissionListSlice'
-
+import { useHistory } from 'react-router-dom'
 /**
   The component displays a table of all the forms submitted by the society. The society can view
   the submission, as well as delete ir from their screen.
@@ -25,8 +25,10 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export function SocietyFormSubmissionView({user, submissionListData, dispatch}) {
-  useEffect(async () => {
-    await dispatch(fetchSocietyList())
+  const history = useHistory()
+
+  useEffect(() => {
+    dispatch(fetchSocietyList())
   }, [])
   
   const columns = ["Submitted Forms", "Last edited", "Progress Bar", "Form Status", " ", " "]
@@ -82,7 +84,11 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
       variant="determinate"
       />
     data[index][3] = submittedForm.formStatus
-    data[index][4] = <Button variant="outlined" color="primary" style={{marginRight: -30}}>
+    data[index][4] = <Button variant="outlined" 
+    color="primary" 
+    style={{marginRight: -30}}
+    onClick={()=>history.push(`/form-viewer/${submittedForm.id}`)}
+    >
       View Submission
       </Button>
     data[index][5] = <DeleteIcon onClick={() => handleDelete({reqId})}/> 

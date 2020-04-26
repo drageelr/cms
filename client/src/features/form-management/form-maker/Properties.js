@@ -77,7 +77,7 @@ function Properties({propertiesData, formTemplate, dispatch}) {
 
   switch (propertyType) { //selecting property title and component to render inside based on property type
     case "add-item":
-      title = "Add Item"
+      title = "Item"
       renderProperties = <AddItemProperties/>
       break
     case "component":

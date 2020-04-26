@@ -1,36 +1,53 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
-import { act } from 'react-dom/test-utils'
 
 //basically a list of all CCA members details-> list of objects
 //need to add state for password verification
-const sampleState = {
-  ccaList: [
-    {
-      id: 'cca-1',
-      firstName: "Zoraiz",
-      lastName: "Qureshi",
-      email: "zq@gmail.com",
-      password: '',
-      picture: 'https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg',
-      role:'Admin',
-      timestampCreated: '02/13/2020',
-      permission:[]
-    },
-    {
-      id: 'cca-2',
-      firstName: "Farrukh",
-      lastName: "Rasool",
-      email: "fr@gmail.com",
-      password: '',
-      picture: 'https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg',
-      role:'Member',
-      timestampCreated: '02/13/2020',
-      permission:[]
-    },  
-  ],
-  isPending: true,
-  error: null
-}
+// const sampleState = {
+//   ccaList: [
+//     {
+//       ccaId: 'cca-1',
+//       firstName: "Zoraiz",
+//       lastName: "Qureshi",
+//       email: "zq@gmail.com",
+//       picture: 'https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg',
+//       role:'admin',
+//       permissions:{
+//         "societyCRUD": true,
+//         "ccaCRUD": true,
+//         "accessFormMaker": true,
+//         "createReqTask": true,
+//         "createCustomTask": true,
+//         "createTaskStatus": true,
+//         "archiveTask": true,
+//         "unarchiveTask": true,
+//         "setFormStatus": true,
+//         "addCCANote": true
+//       }
+//     },
+//     {
+//       ccaId: 'cca-2',
+//       firstName: "Farrukh",
+//       lastName: "Rasool",
+//       email: "fr@gmail.com",
+//       picture: 'https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg',
+//       role:'member',
+//       permissions:{
+//         "societyCRUD": true,
+//         "ccaCRUD": true,
+//         "accessFormMaker": true,
+//         "createReqTask": true,
+//         "createCustomTask": true,
+//         "createTaskStatus": true,
+//         "archiveTask": true,
+//         "unarchiveTask": true,
+//         "setFormStatus": true,
+//         "addCCANote": true
+//       }
+//     },  
+//   ],
+//   isPending: true,
+//   error: null
+// }
 
 const initialState = {
   ccaList : [],
@@ -40,163 +57,232 @@ const initialState = {
 
 export const fetchCCAAccounts = createAsyncThunk(
   'ccaDetails/fetchCCAAccounts',
-  async (_, { getState }) => {
+  async (_, { getState, rejectWithValue }) => {
     const { isPending } = getState().ccaDetails
-    
     if (isPending != true) {
       return
     } 
 
-  const fetchCall = () => {
-    var promise = new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(sampleState)
-      }, 1000)
-    })
-    return promise
-  }
+    try {
+      const res = await fetch('/api/account/cca/account-list', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+      })
 
-    const result = await fetchCall()
-    return result
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 200) {
+          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+        }
+
+        return {isPending: false, error: '' , ccaList: data.userList}
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
   }
 )
 
-export const deleteCCAAccount = createAsyncThunk(
-  'ccaDetails/deleteCCAAccount',
-  async (id, { getState }) => {
-    const { isPending } = getState().ccaDetails
-    
-    if (isPending != true) {
-      return
-    } 
+export const toggleActiveCCAAccount = createAsyncThunk(
+  'ccaDetails/toggleActiveCCAAccount',
+  async ({ccaId, active}, { rejectWithValue }) => {
+    try {
+      const res = await fetch('/api/account/cca/edit-account', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          ccaId: ccaId,
+          active: !active
+        })
+      })
 
-    return id
+      if (res.ok) {
+        const data = await res.json()
+        console.log(data)
+
+        if (data.statusCode != 203) {
+          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+        }
+
+        return {ccaId, active}
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
   }
 )
 
 export const editCCAAccount = createAsyncThunk(
   'ccaDetails/editCCAAccount',
-  async (userData, { getState }) => {
-    const { isPending } = getState().ccaDetails
-    
-    if (isPending != true) {
-      return
+  async (ccaObject, { rejectWithValue }) => {
+
+    const {ccaId, firstName, lastName, email, password, picture, role, permissions} = ccaObject 
+    let body = {
+      ccaId: ccaId,
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      picture: picture,
+      role: role,
+      permissions: permissions
+    }
+    if (password !== undefined){
+      body = {...body, password: password}
     }
 
-    return userData
+    try {
+      const res = await fetch('/api/account/cca/edit-account', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify(body)
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 203) {
+          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+        }
+
+        return {ccaId, ccaObject}
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
   }
 )
 
 export const addCCAAccount = createAsyncThunk(
   'ccaDetails/addCCAAccount',
-  async (userData, { getState }) => {
-    const { isPending } = getState().ccaDetails
+  async (ccaObject, { rejectWithValue }) => {
+    const { firstName, lastName, email, password, picture, role, permissions } = ccaObject
     
-    if (isPending != true) {
-      return
+    try {
+      const res = await fetch('/api/account/cca/create-account', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          firstName: firstName,
+          lastName: lastName,
+          picture: picture,
+          role: role,
+          permissions: permissions
+        })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 201) {
+          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+        }
+        return {ccaId: data.ccaId, ccaObject}
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
     }
-
-    const ccaData = {id: 1, userData: userData} 
-
-    return ccaData
+    catch (err){
+      return rejectWithValue(err.toString())
+    }
   }
 )
 
 export const changeCCAPicture = createAsyncThunk(
   'ccaDetails/changeCCAPicture',
-  async (userData, { getState }) => {
-    const { isPending } = getState().ccaDetails
-    if (isPending != true) {
-      return
-    }
+  async ({ccaId, url}, {rejectWithValue}) => {
+    
+    try {
+      const res = await fetch('/api/account/cca/change-picture', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          picture: url
+        })
+      })
 
-    return userData
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 203) {
+          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+        }
+        return {ccaId, url}
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err){
+      return rejectWithValue(err.toString())
+    }
   }
 )
 
-let ccaId = 2
 const ccaDetails = createSlice({
   name: 'ccaDetails',
   initialState: initialState,
-  extraReducers: {
-    [deleteCCAAccount.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
+  reducers: {
+    clearError: (state, action) => {
+      state.error = null
     },
-    [deleteCCAAccount.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        let i = 0
-        console.log(action.payload.id)
+  },
+  extraReducers: {
+    [toggleActiveCCAAccount.fulfilled]: (state, action) => {
         state.ccaList.map((obj,index) => {
-          if (obj.id === action.payload.id){
-            i = index
+          if (obj.ccaId === action.payload.ccaId){
+            state.ccaList[index].active = !action.payload.active
           }  
         })  
-
-        state.ccaList.splice(i,1)
-      }
     },
-    [deleteCCAAccount.rejected]: (state, action) => {
-      // console.log(action)
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload.message
-      }
+    [toggleActiveCCAAccount.rejected]: (state, action) => {
+        state.error = action.payload
     },
 
-    [editCCAAccount.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [editCCAAccount.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        
-        state.isPending = false
-        let i = 0
-        state.ccaList.map((obj,index) => {
-          if (obj.id === action.payload.id){
-            i = index
-          }
-        })
-        state.ccaList[i] = action.payload
-      }
+      let i = 0
+      state.ccaList.map((obj,index) => {
+        if (obj.ccaId === action.payload.ccaId){
+          i = index
+        }
+      })
+      state.ccaList[i] = action.payload.ccaObject
+      state.error = 'CCA Account Edited Successfully'
     },
     [editCCAAccount.rejected]: (state, action) => {
-      console.log(action)
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload.message
-      }
+      state.error = action.payload
     },
 
-    [addCCAAccount.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [addCCAAccount.fulfilled]: (state, action) => {
-      console.log(action.payload)
-
-      if (state.isPending === true) {
-        console.log("here")
-        state.isPending = false
-        ccaId+= 1
-        state.ccaList.push({
-          id: action.payload.id, 
-          ...action.payload.userData
-        })
-      }
+      state.ccaList.push({
+        ccaId: action.payload.ccaId, 
+        ...action.payload.ccaObject
+      })
+      state.error = 'CCA Account Added Successfully'
     },
     [addCCAAccount.rejected]: (state, action) => {
-      console.log(action)
-
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload.message
-      }
+        state.error = action.payload
     },
 
     [fetchCCAAccounts.pending]: (state, action) => {
@@ -211,36 +297,25 @@ const ccaDetails = createSlice({
       }
     },
     [fetchCCAAccounts.rejected]: (state, action) => {
-      console.log(action.payload.message)
       if (state.isPending === true) {
         state.isPending = false
-        state.error = action.payload.message
+        state.error = action.payload
       }
     },
 
-    [changeCCAPicture.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [changeCCAPicture.fulfilled]: (state, action) => { 
-      if (state.isPending === true) {
-        state.isPending = false
-      }
-      state.ccaList.map(ccaUser => {
-        if (ccaUser.id === action.payload.ccaAccountId) {
-          ccaUser.picture = action.payload.url
-        }
-      })
+        state.ccaList.map(ccaUser => {
+          if (ccaUser.ccaId === action.payload.ccaId) {
+            ccaUser.picture = action.payload.url
+          }
+        })
     },
     [changeCCAPicture.rejected]: (state, action) => {
-      console.log(action.payload.message)
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload.message
-      }
+        state.error = action.payload
     }
   } 
 })
+
+export const { clearError } = ccaDetails.actions
 
 export default ccaDetails.reducer

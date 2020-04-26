@@ -5,7 +5,7 @@
 
 ## Important Notes
 - ==Every **Response Object** will contain `{statusCode: Number, statusName: "String", message: "String"}` in addition to the mentioned object.==
-- ==All other APIs except **Authentication** API must send the `token`  as *"Bearer Token"* header with every request.==
+- ==All other APIs except **Authentication** API must send the `token`  as *"Authorization"* header with every request.==
 - ==Every API has **Error** `3.1` as a **Possible Error.**==
 - ==Changes will be highlighted (apart from this section) as compared with the previous version==
 

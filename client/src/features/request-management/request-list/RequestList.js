@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
-import ChangeFormStatusButton from './ChangeFormStatusButton'
+import ChangeFormStatusSelect from './ChangeFormStatusSelect'
 import { Button, CircularProgress, LinearProgress } from '@material-ui/core'
 import { fetchCCARequestList } from '../requestListSlice'
 import ErrorSnackBar from "../../../ui/ErrorSnackbar"
@@ -53,7 +53,7 @@ export function RequestList({requestListData, dispatch}) {
               request.title,
               request.date,
               request.society,
-              <ChangeFormStatusButton requestId={request.id} requestStatus={request.formStatus} />,
+              <ChangeFormStatusSelect requestId={request.id} requestStatus={request.formStatus} />,
               <Button 
                 value={request.id}
                 type = "button" 

@@ -1,14 +1,19 @@
 import React, { useState, useEffect }from 'react'
-import { addCCAAccount, deleteCCAAccount, editCCAAccount, fetchCCAAccounts, changeCCAPicture } from './ccaDetailsSlice'
-import { Button, Card, CardHeader, CardContent, Grid, Typography, 
-  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, LinearProgress, FormGroup, FormControlLabel, Switch, FormControl } from '@material-ui/core'
+import { addCCAAccount, toggleActiveCCAAccount, editCCAAccount, fetchCCAAccounts, changeCCAPicture, clearError } from './ccaDetailsSlice'
+import { Button, Card, CardHeader, CardContent, Grid, Typography, FormControl, InputLabel, MenuItem, Switch, FormControlLabel, FormGroup,
+  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, LinearProgress, makeStyles, Container } from '@material-ui/core'
 import {connect} from 'react-redux'
 import MoreButton from '../../ui/MoreButton'
-import DeleteIcon from '@material-ui/icons/Delete'
+import ToggleOffIcon from '@material-ui/icons/ToggleOff'
+import ToggleOnIcon from '@material-ui/icons/ToggleOn'
 import EditIcon from '@material-ui/icons/Edit'
 import { Formik, Form, Field } from 'formik'
-import { TextField } from 'formik-material-ui'
+import { TextField, Select } from 'formik-material-ui'
+import * as Yup from 'yup'
+import ErrorSnackbar from "../../ui/ErrorSnackbar"
+import PanelBar from './PanelBar'
 import AccessibilityIcon from '@material-ui/icons/Accessibility'
+
 
 function CCAAccountPanel({ccaDetails,dispatch}) {
 
@@ -20,7 +25,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
   const [isOpenPermission, setIsOpenPermission] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
-  const [picture, setPicture] = useState("")
+  const [picture, setPicture] = useState("https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-6.png")
   const [permissions, setPermissions] = useState({
     "ccaCRUD": false,
     "accessFormMaker": false,
@@ -34,12 +39,9 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
   })
   const [permissionMode, setPermissionsMode] = useState(false)
 
-  function handleImageUpload(event, id) {
+  function handleImageUpload(event, ccaId) {
     const url = URL.createObjectURL(event.target.files[0])
     setPicture(url)
-    if(editMode) {
-      dispatch(changeCCAPicture({id, url}))
-    }
   }
 
   function handlePermissionsChange(event, editId){
@@ -65,17 +67,17 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     setIsOpen(false)
   }
 
-  function EditDeleteMoreButton({id}){
+  function EditDeleteMoreButton({ccaId, active}){
     const menusList=[
       {
         text: 'Edit',
         icon: <EditIcon/>,
-        onClick: ()=>handleEdit(id)
+        onClick: ()=>handleEdit(ccaId)
       },
       {
-        text: 'Deactivate',
-        icon: <DeleteIcon/>,  
-        onClick: ()=>dispatch(deleteCCAAccount({id}))
+        text: active ? 'Deactivate' : 'Activate',
+        icon: active ? <ToggleOffIcon/> : <ToggleOnIcon/>,  
+        onClick: ()=>dispatch(toggleActiveCCAAccount({ccaId, active}))
       },
       {
         text: 'Manage Permissions',
@@ -91,8 +93,8 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     setIsOpen(true)
   }
   
-  function handleEdit(id){
-    setEditId(id)
+  function handleEdit(ccaId){
+    setEditId(ccaId)
     setEditMode(true)
     setIsOpen(true)
   }
@@ -103,31 +105,177 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       lastName: '',
       email: '',
       password: '',
-      picture: '',
+      passwordRequired: !editMode,
+      picture: 'https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-6.png',
       role:'',
-      timestampCreated: '',
-      permission:[]
+      permissions: {
+        societyCRUD: true,
+        ccaCRUD: true,
+        accessFormMaker: true,
+        createReqTask: true,
+        createCustomTask: true,
+        createTaskStatus: true,
+        archiveTask: true,
+        unarchiveTask: true,
+        setFormStatus: true,
+        addCCANote: true
+      }
     }
 
     if(editMode){
-      const ccaMemberDetail = ccaDetails.ccaList.find((detail,index) => {
-        return detail.id === editId
+      const ccaMember = ccaDetails.ccaList.find((member,index) => {
+        return member.ccaId === editId
       })
-      if(ccaMemberDetail !== undefined){
+      if(ccaMember !== undefined){
         initialValues = {
-          firstName: ccaMemberDetail.firstName,
-          lastName: ccaMemberDetail.lastName,
-          email: ccaMemberDetail.email,
-          password: ccaMemberDetail.password,
-          picture: ccaMemberDetail.picture,
-          role:ccaMemberDetail.role,
-          timestampCreated: ccaMemberDetail.timestampCreated,
-          permission:ccaMemberDetail.permission,
+          ...ccaMember,
+          passwordRequired: !editMode,
+
         }
       }
     }
 
     return(
+      <Dialog 
+        open={isOpen}
+        onClose={handleClose}
+        aria-labelledby="draggable-dialog-title"
+      >
+
+      <DialogTitle style={{ cursor: 'move' }} ccaId="draggable-dialog-title">
+        {editMode ? "Edit Account" : "Add Account"}
+      </DialogTitle>
+      
+      <Formik
+        validateOnChange={false} validateOnBlur={true}
+        initialValues = {initialValues}
+        validationSchema={Yup.object({
+          passwordRequired: Yup.boolean(),
+          email: Yup.string()
+            .email('Invalid Email Address')
+            .required('Required'),
+          password: Yup.string()
+          .min(8,'Must be at least 8 characters')
+          .max(30,'Must be atmost 30 characters')
+          .matches('^[a-zA-Z0-9]+$', 'All passwords must be alphanumeric (no special symbols).')
+          .when("passwordRequired", {
+            is: true,
+            then: Yup.string().required("Must enter a password for the new account")
+          }),
+          firstName: Yup.string().required(),
+          lastName: Yup.string().required(),
+          picture: Yup.string(),
+          role: Yup.string().required(),
+        })}
+        onSubmit={(values, {setSubmitting}) => {
+          dispatch(editMode ?
+            editCCAAccount({
+              ccaId: editId,
+              firstName: values.firstName,
+              lastName: values.lastName,
+              email: values.email,
+              password: values.password,
+              picture: picture,
+              role:values.role,
+              timestampCreated: values.timestampCreated,
+              permissions: {
+                societyCRUD: true,
+                ccaCRUD: true,
+                accessFormMaker: true,
+                createReqTask: true,
+                createCustomTask: true,
+                createTaskStatus: true,
+                archiveTask: true,
+                unarchiveTask: true,
+                setFormStatus: true,
+                addCCANote: true
+              },
+            })
+            :addCCAAccount({
+              firstName: values.firstName,
+              lastName: values.lastName,
+              email: values.email,
+              password: values.password,
+              picture: picture,
+              role:values.role,
+              timestampCreated: values.timestampCreated,
+              permissions: {
+                societyCRUD: true,
+                ccaCRUD: true,
+                accessFormMaker: true,
+                createReqTask: true,
+                createCustomTask: true,
+                createTaskStatus: true,
+                archiveTask: true,
+                unarchiveTask: true,
+                setFormStatus: true,
+                addCCANote: true
+              },
+            })).then(() => {
+              setSubmitting(false)
+              setEditMode(false)
+              handleClose()
+            })
+        }}
+      >
+        {({submitForm, isSubmitting})=>(
+          <Form>
+            <DialogContent> 
+              <Grid container direction="row" justify="space-evenly" alignItems="center">
+                <Grid item direction = "column" justify = "space-evenly" alignItems = "center" style = {{width: 200}}>
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="firstName" required label="First Name"/>
+                  </Grid>
+
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="lastName" required label="Last Name"/>
+                  </Grid>
+
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="email" required label="Email"/>
+                  </Grid>
+
+                  <Grid item style = {{width: 350}}>
+                    <Field component={TextField} name="password" required type="password" label={editMode ? "New Password" : "Password"}/>
+                  </Grid>
+
+                  <Grid item style = {{width: 350}}>
+                    <FormControl>
+                      <InputLabel htmlFor="role">Role</InputLabel>
+                      <Field
+                        component={Select}
+                        name="role"
+                        inputProps={{
+                          id: 'role',
+                        }}
+                        style={{width: 100}}
+                      >
+                        <MenuItem value={'member'}>Member</MenuItem>
+                        <MenuItem value={'admin'}>Admin</MenuItem>
+                      </Field>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <Grid item>
+                  <Grid direction="column" justify="flex-end" alignItems="flex-start">
+                    <Grid item>
+                      <Avatar style = {{width:180, height:180, marginLeft: 50, marginTop: 30}} src={editMode ? initialValues.picture : picture}/>
+                    </Grid>
+                    <Grid item>
+                      <input style = {{marginLeft: 80, marginTop: 10}} type="file" onChange={(e) => {handleImageUpload(e, editId)}}/>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                
+              </Grid>
+            </DialogContent>
+            <DialogActions>
+              {isSubmitting && <CircularProgress/>}
+
+              <Button onClick={submitForm} color="primary">
+                Save
+              </Button>
+
       (() => {
         if(permissionMode) {
           return (
@@ -296,29 +444,21 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     <div>
       {ccaDetails.isPending ? <LinearProgress /> :
         <div>
-          <div align="center">
-            <h1>CCA Accounts Panel</h1>
-            <Button
-              variant="contained" 
-              color="primary" 
-              spacing= '10' 
-              style = {{float: "right", marginBottom:10}}
-              onClick = {handleAdd}
-            > Add CCA member
-            </Button>
-            <CCADialog />
-          </div>
-          <Grid container spacing={3} >
+          <PanelBar handleAdd={handleAdd} title="CCA Accounts" buttonText="Add CCA Account"/>
+          <CCADialog />
+          <br/>
+          <Container style={{color: "gray"}} >
+          <Grid container spacing={3}>
           {
             ccaDetails.ccaList.map((ccaDetail,index) => (
               <Grid item xs={3}> 
-                <Card variant="outlined" style = {{maxWidth: 300, background: "snow"}}>
+                <Card variant="outlined" style = {{marginLeft: 10, maxWidth: 300, background: ccaDetail.active ? "whitesmoke" : "darkgray"}}>
                   <CardHeader
                     avatar={
                       <Avatar style = {{width:150, height:150}} src = {ccaDetail.picture}/>
                     }
                     action={
-                      <EditDeleteMoreButton id={ccaDetail.id}/>
+                      <EditDeleteMoreButton ccaId={ccaDetail.ccaId} active={ccaDetail.active}/>
                     }
                   />
                   <CardContent>
@@ -331,8 +471,10 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
             ))
           }
           </Grid>
+          </Container>
         </div>
       }
+      <ErrorSnackbar stateError={ccaDetails.error} clearError={clearError}/>
     </div>
   )
 }

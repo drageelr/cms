@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux'
   dispatched the store   
 */
 
-export default function ChangeFormStatusButton({requestId, requestStatus}) {
+export default function ChangeFormStatusSelect({requestId, requestStatus}) {
   const dispatch = useDispatch()
 
   const [open, setOpen] = React.useState(false)
@@ -43,7 +43,7 @@ export default function ChangeFormStatusButton({requestId, requestStatus}) {
           onClose={handleClose}
           value={status}
           onOpen={handleOpen}
-          style={{height: 30, width: 100}}
+          style={{height: 30, width: 150}}
           variant = "outlined"
           onChange={handleChange}
         >

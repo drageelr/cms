@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function FormViewer({formTemplate, formData, dispatch, role, match}) {
+function FormViewer({formTemplate, formData, dispatch, userType, match}) {
   const { title, sections, sectionsOrder, componentsOrder, itemsOrder, items } = formTemplate
   const { formId, createMode, ccaNote, ccaNoteTimestampModified, societyNotes, isPending } = formData
   const classes = useStyles()
@@ -39,7 +39,7 @@ function FormViewer({formTemplate, formData, dispatch, role, match}) {
 
   return (
     <div>
-      <FormViewerBar title={title} notesData={{ccaNote, ccaNoteTimestampModified, societyNotes}} isCCA={role==="CCA"} createMode={createMode}/>
+      <FormViewerBar title={title} notesData={{ccaNote, ccaNoteTimestampModified, societyNotes}} isCCA={userType==="CCA"} createMode={createMode}/>
       <br/>
       {
       (!createMode && isPending) ? <CircularProgress style={{marginLeft: '50vw', marginTop: '30vh'}}/> :  
@@ -71,7 +71,7 @@ function FormViewer({formTemplate, formData, dispatch, role, match}) {
 const mapStateToProps = (state) => ({ //needs both the template and data to render the form
   formTemplate: state.formTemplate,
   formData: state.formData,
-  role: state.user.role
+  userType: state.user.userType
 })
 
 

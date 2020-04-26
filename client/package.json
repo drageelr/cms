@@ -1,6 +1,7 @@
 {
   "name": "client",
   "version": "0.1.0",
+  "proxy": "http://localhost:3030",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.9.11",
@@ -23,7 +24,6 @@
     "react-scripts": "3.4.1",
     "react-textarea-autosize": "^7.1.2",
     "react-window": "^1.8.5",
-    "styled-components": "^5.1.0",
     "typeface-montserrat": "0.0.75",
     "yup": "^0.28.4"
   },

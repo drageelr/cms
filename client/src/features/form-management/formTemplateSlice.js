@@ -98,7 +98,7 @@ let iId = 0 //item Id max
 
 export const fetchForm = createAsyncThunk(
   'formTemplate/fetchForm',
-  async (formId, { getState }) => {
+  async (formId, { getState, rejectWithValue}) => {
     const { isPending } = getState().formTemplate
     
     if (isPending != true) {

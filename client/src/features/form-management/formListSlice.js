@@ -17,7 +17,7 @@ const initialState = {
 // const fId = 0
 export const fetchFormList = createAsyncThunk(
   'formList/fetchFormList',
-  async (_, { getState }) => {
+  async (_, { getState, rejectWithValue}) => {
     const { isPending } = getState().formList
     if (isPending != true) {
       return
@@ -29,7 +29,7 @@ export const fetchFormList = createAsyncThunk(
 
 export const deleteForm = createAsyncThunk(
   'formList/deleteForm',
-  async (index, { getState }) => {
+  async (index, { getState, rejectWithValue}) => {
     const { isPending, list } = getState().formList
     if (isPending != true) {
       return
@@ -42,7 +42,7 @@ export const deleteForm = createAsyncThunk(
 
 export const toggleStatus = createAsyncThunk(
   'formList/changeFormStatus',
-  async (index, { getState }) => {
+  async (index, { getState, rejectWithValue}) => {
     const { isPending, formList } = getState().formList
     if (isPending != true) {
       return
@@ -54,7 +54,7 @@ export const toggleStatus = createAsyncThunk(
 
 export const duplicateForm = createAsyncThunk(
   'formList/duplicateForm',
-  async (index, { getState }) => {
+  async (index, { getState, rejectWithValue}) => {
     const { isPending, formList } = getState().formList
     if (isPending != true) {
       return

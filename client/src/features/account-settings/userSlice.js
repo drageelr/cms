@@ -4,44 +4,66 @@ const initialState = {
   id: -1,
   email: "",
   password: "",
-  name: "Developer",
+  name: "",
   nameInitials: "CD",
-  role: "CCA",
-  isLoggedIn: true,
+  role: "admin",
+  userType: "CCA",
+  isLoggedIn: false,
   picture: "",
   token: "",
+  permissions: {
+    ccaCRUD: true,
+    accessFormMaker: true,
+    createReqTask: true,
+    createCustomTask: true,
+    createTaskStatus: true,
+    archiveTask: true,
+    unarchiveTask: true,
+    setFormStatus: true,
+    addCCANote: true
+  },
   isPending: true,
   error: null
 }
 
-// const API = 'http://localhost:3030/api'
-const API = 'http//:167.71.224.7/api'
-
 export const login = createAsyncThunk(
   'user/login',
-  async({email, password, role}, {getState, rejectWithValue}) => {
+  async({email, password, userType}, {getState, rejectWithValue}) => {
     const {isPending} = getState().user
     if (isPending != true){
       return
     }
-    
-    let QUERY = '/auth/cca/login'
-    if (role === "Society"){
-      QUERY = '/api/auth/society/login'
-    }
+
+    const QUERY = (userType === "Society") ?  '/api/auth/society/login' : '/api/auth/cca/login'
+
     try {
       const res = await fetch(QUERY, {
         method: 'POST',
-        mode: 'no-cors', // no-cors, *cors, same-origin
-        body: {
+        headers: { 
+          'Accept': 'application/json',
+          'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({
           email: email,
-          password: password,
-        }
+          password: password
+        })
       })
-      console.log(res)
+
       if (res.ok) {
-        const data = res.json()
-        return {token: data.token, user: data.user}
+        const data = await res.json()
+        if (data.statusCode != 200) {
+          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+        }
+
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('localUser', JSON.stringify({userType, ...data.user}))
+
+        if (userType==="CCA"){
+          return {token: data.token, user: {email, userType, password, name: (data.user.firstName + ' ' + data.user.lastName),...data.user},}
+        }
+        else {
+          return {token: data.token, user: {email, userType, password, ...data.user},}
+        }
       }
       throw new Error(`${res.status}, ${res.statusText}`)
     }
@@ -53,13 +75,42 @@ export const login = createAsyncThunk(
 
 export const changePassword = createAsyncThunk(
   'user/changePassword',
-  async({currentPassword, newPassword}, {getState}) => {
-    const {isPending} = getState().user
+  async({currentPassword, newPassword}, {getState, rejectWithValue}) => {
+    const {isPending, userType} = getState().user
     if (isPending != true){
       return
     }
 
-    return newPassword
+    const QUERY = (userType === "Society") ? '/api/account/society/change-password' : '/api/account/cca/change-password'
+
+    try {
+      const res = await fetch(QUERY, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          passwordCurrent: currentPassword,
+          passwordNew: newPassword,
+        })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        console.log(data)
+        if (data.statusCode != 203) {
+          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+        }
+
+        return newPassword
+      }
+      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
   }
 )
 
@@ -67,19 +118,10 @@ const user = createSlice ({
   name:'user',
   initialState: initialState,
   reducers: {
-    logout: (state,action) => {
-      return {
-        id: -1,
-        email: "",
-        password: "",
-        name: "",
-        nameInitials: "",
-        role: "CCA",
-        isLoggedIn: false,
-        token: "",
-        isPending: true,
-        error: null
-      }
+    logout: (state, action) => {
+      localStorage.removeItem("token")
+      localStorage.removeItem("localUser")
+      return initialState
     },
     clearError: (state, action) => {
       state.error = null
@@ -95,7 +137,9 @@ const user = createSlice ({
       if (state.isPending === true) {
         return {
           ...action.payload.user,
+          role: "admin",
           token: action.payload.token,
+          isLoggedIn: true,
           isPending: false,
           error: null
         }
@@ -115,6 +159,7 @@ const user = createSlice ({
     [changePassword.fulfilled]: (state, action) => {
       if (state.isPending === true) {
         state.password = action.payload
+        state.error = "Changed Password Successfully"
       }
     },
     [changePassword.rejected]: (state, action) => {
