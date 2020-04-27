@@ -15,7 +15,8 @@ var mongoose = require('./services/mongoose');
 // Routes:
 var authRouter = require('./routes/auth.route')
 var accountRouter = require('./routes/account.route');
-var formRotuer = require('./routes/form.route');
+var formRouter = require('./routes/form.route');
+var submissionRouter = require('./routes/submission.route');
 
 // Others:
 var { errorHandler } = require('./errors/errorhandler');
@@ -42,7 +43,8 @@ app.use(cookieParser());
 // Add Routes To App:
 app.use('/api/auth', authRouter);
 app.use('/api/account', accountRouter);
-app.use('/api/form', formRotuer);
+app.use('/api/form', formRouter);
+app.use('/api/submission', submissionRouter);
 
 // Add Error Handler
 app.use(errorHandler);

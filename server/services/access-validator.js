@@ -39,15 +39,12 @@ const userAccess = {
   "/api/form/fetch-list": ["cca", "soc"],
   
   // 4. Request Management API "submission.route.js":
-  "/api/form-submission/submit": ["soc"],
-  "/api/form-submission/edit": ["soc"],
-  "/api/form-submission/view": ["cca", "soc", "pres", "pat"],
-  "/api/form-submission/add-note-society": ["soc"],
-  "/api/form-submission/cca-list": ["cca"],
-  "/api/form-submission/society-list": ["soc"],
-  "/api/form-submission/update-status-cca": ["cca"],
-  "/api/form-submission/add-note-cca": ["cca"],
-  "/api/form-submission/update-status-pp": ["pres", "pat"],  
+  "/api/submission/submit": ["soc"],
+  "/api/submission/cca/add-note": ["cca"],
+  "/api/submission/society/add-note": ["soc"],
+  "/api/submission/fetch-list": ["cca", "soc"],
+  "/api/submission/cca/update-status": ["cca", "pres", "pat"],
+  "/api/submission/cca/fetch": ["cca", "soc", "pres", "pat"],
 };
 
 const ccaAccess = {
@@ -65,8 +62,8 @@ const ccaAccess = {
   "/api/form/delete": "accessFormMaker",
 
   // 4. Request Management API "submission.route.js":
-  "/api/form-submission/update-status-cca": "setFormStatus",
-  "/api/form-submission/add-note-cca": "addCCANote", 
+  "/api/submission/cca/add-note": "addCCANote",
+  "/api/submission/cca/update-status": "setFormStatus",
 };
 
 /*
@@ -86,10 +83,6 @@ exports.validateUserAccess = (req, res, next) => {
         }
       }
 
-      if (req.originalUrl == "/api/form-submission/view" && (req.body.userObj.type == "pres" || req.body.userObj.type == "pat")) {
-        // To do..
-      }
-
       if (accessGranted) {
         next();
       } else {
@@ -103,6 +96,7 @@ exports.validateUserAccess = (req, res, next) => {
 
 exports.validateCCAAccess = async (req, res, next) => {
   try {
+    if (req.body.userObj.type != "cca") next();
     let reqCCA = await CCA.findById(req.body.userObj._id, 'role permissions');
     if (reqCCA.role != "admin") {
       let access = ccaAccess[req.originalUrl];
@@ -113,11 +107,7 @@ exports.validateCCAAccess = async (req, res, next) => {
         throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
       }
     } else {
-<<<<<<< HEAD
-      throw new customError.ForbiddenAccessError("cca user does not have valid permissions for this resource", "PermissionError");
-=======
       next();
->>>>>>> server-master
     }
   } catch (err) {
     next(err);

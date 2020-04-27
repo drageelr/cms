@@ -180,7 +180,7 @@ exports.createForm = async (req, res, next) => {
       });
     } else {
       // throw form validation error
-      throw new customError.FormValdiationError(formValidationError);
+      throw new customError.FormValidationError(formValidationError);
     }
   } catch (err) {
     next(err);
@@ -258,11 +258,11 @@ exports.editForm = async (req, res, next) => {
         });
       } else {
         // throw form validation error
-        throw new customError.FormValdiationError(formValidationError);
+        throw new customError.FormValidationError(formValidationError);
       }
     } else {
       // throw invalid form id error
-      throw new customError.FormValdiationError("form does not exist");
+      throw new customError.FormValidationError("form does not exist");
     }
   } catch (err) {
     next(err);
