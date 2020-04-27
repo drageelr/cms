@@ -36,9 +36,9 @@ function LoginPage({error, dispatch}) {
 
   const [userType, setUserType] = React.useState("CCA")
 
-  // React.useEffect(() => {
-  //   dispatch(login({email: "admin@lums.edu.pk", password: "zoraiz123", userType: "CCA"}))
-  // }, [])
+  React.useEffect(() => {
+    dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
+  }, [])
   
   const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
   const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
