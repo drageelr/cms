@@ -108,15 +108,15 @@ class UserNotFoundError extends Error {
   }
 }
 
-// Form Valdiation Error Class:
-class FormValdiationError extends Error {
+// Form Validation Error Class:
+class FormValidationError extends Error {
 
   /**
-  * Creates a FormValdiationError object.
+  * Creates a FormValidationError object.
   */
   constructor(errDetails) {
     super();
-    this.name = "FormValdiationError";
+    this.name = "FormValidationError";
     this.statusCode = 400;
     this.message = "Form not valid!";
     this.details = errDetails;
@@ -140,11 +140,45 @@ class FormNotFoundError extends Error {
   }
 }
 
+// Submission Validation Error Class:
+class SubmissionValidationError extends Error {
+
+  /**
+  * Creates a SubmissionValidationError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "SubmissionValidationError";
+    this.statusCode = 400;
+    this.message = "Submission not valid!";
+    this.details = errDetails;
+    this.subName = "N/A";
+  }
+}
+
+// Submission Not Found Error Class:
+class SubmissionNotFoundError extends Error {
+
+  /**
+  * Creates a SubmissionNotFoundError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "SubmissionNotFoundError";
+    this.statusCode = 404;
+    this.message = "Submission not found!";
+    this.details = errDetails;
+    this.subName = "N/A";
+  }
+}
+
 // Export Classes:
 module.exports.TokenError = TokenError;
 module.exports.AuthenticationError = AuthenticationError;
 module.exports.ForbiddenAccessError = ForbiddenAccessError;
 module.exports.DuplicateUserError = DuplicateUserError;
 module.exports.UserNotFoundError = UserNotFoundError;
-module.exports.FormValdiationError = FormValdiationError;
+module.exports.FormValidationError = FormValidationError;
 module.exports.FormNotFoundError = FormNotFoundError;
+module.exports.SubmissionValidationError = SubmissionValidationError;
+module.exports.SubmissionNotFoundError = SubmissionNotFoundError;

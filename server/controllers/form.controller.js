@@ -4,7 +4,6 @@
 */
 
 // Models:
-var Society = require('../models/society.model');
 var CCA = require('../models/cca.model');
 var Form = require('../models/form.model');
 var Checklist = require('../models/checklist.model');
@@ -181,7 +180,7 @@ exports.createForm = async (req, res, next) => {
       });
     } else {
       // throw form validation error
-      throw new customError.FormValdiationError(formValidationError);
+      throw new customError.FormValidationError(formValidationError);
     }
   } catch (err) {
     next(err);
@@ -259,11 +258,11 @@ exports.editForm = async (req, res, next) => {
         });
       } else {
         // throw form validation error
-        throw new customError.FormValdiationError(formValidationError);
+        throw new customError.FormValidationError(formValidationError);
       }
     } else {
       // throw invalid form id error
-      throw new customError.FormValdiationError("form does not exist");
+      throw new customError.FormValidationError("form does not exist");
     }
   } catch (err) {
     next(err);
@@ -288,7 +287,7 @@ exports.fetchForm = async (req, res, next) => {
       let creatorId = await CCA.findById(reqForm.creatorId, 'ccaId');
 
       let formObj = {
-        id: reqForm.formId,
+        formId: reqForm.formId,
         isPublic: reqForm.isPublic,
         title: reqForm.title,
         creatorId: creatorId.ccaId,

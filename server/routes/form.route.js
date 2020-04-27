@@ -55,7 +55,7 @@ router.post(
   formController.fetchForm
 );
 
-// API 3.5: Fetch Form
+// API 3.5: Fetch Form List
 router.post(
   '/fetch-list',
   jwt.verify,
