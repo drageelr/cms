@@ -10,10 +10,10 @@ This product is tailor made for the **Co-curricular Activities Department** at *
 
 ### Prerequisites
 
-**1. [Install Node JS](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-18-04)**
-**2. [Install MongoDB](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)**
-**3. [Install PM2](https://pm2.keymetrics.io/)**
-**4. Set Up NGINX (Follow the following steps)**
+1. [Install Node JS](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-18-04)
+2. [Install MongoDB](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
+3. [Install PM2](https://pm2.keymetrics.io/)
+4. Set Up NGINX (Follow the following steps)
 
 #### Step 1 - Installing NGINX
 Run the following commands in terminal:
