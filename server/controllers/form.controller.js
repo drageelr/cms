@@ -4,7 +4,6 @@
 */
 
 // Models:
-var Society = require('../models/society.model');
 var CCA = require('../models/cca.model');
 var Form = require('../models/form.model');
 var Checklist = require('../models/checklist.model');
