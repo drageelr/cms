@@ -37,7 +37,6 @@ export function RequestList({requestListData, dispatch}) {
   }
   
   function handleClick(reqId) {
-    console.log(reqId)
     history.push(`/form-viewer/${reqId}`)
   }
   
