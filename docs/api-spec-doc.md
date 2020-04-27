@@ -44,11 +44,14 @@
 |2|Edit Form|Edits an existing Form |`/api/form/edit`|`{form*: formObjB}`|`POST`|`{formId: Number, checklistIds: [Number]}`|CCA|`7.1`, `8.1`|
 |3|Delete Form|Delete an existing Form|`/api/form/delete`|`{formId*: Number}`|`POST`|`{}`|CCA|`8.1`|
 |4|Fetch Form||Fetches complete details of Form|`/api/form/fetch`|`{formId*: Number}`|`POST`|`{form: formObjC}`|CCA + Society|`8.1`|
-|5|Fetch Form List|Fetches list of available Forms|`/api/form/fetch-list`|`{}`|`POST`|`{formList: [{formId: Number, title: "String", isPublic: Bool, timestampModified**: "DateString", creatorName**: "String"}]}`|CCA + Society|`8.1`|
+|5|Fetch Form List|Fetches list of available Forms|`/api/form/fetch-list`|`{}`|`POST`|`{formList: [formListObj]}`|CCA + Society|`8.1`|
 
 **Note: * means the field mentioned is required. (For `Request Object` OR `Object Schema` referenced in it)**
 **Note: ** means the field mentioned might not always be there. (For `Response Object` OR `Object Schema` referenced in this and `Request Object`)**
-**Note for API 2: 1) Send the complete form again - not only the edited portions. 2) In case of checklists, new ones should be given without their `checklistId` where as existing ones (either to alter or not) should be sent with it, otherwise new checklist item will be created. 3) Always returns the checklistIds in the order they are placed in the request array.**
+**Note for `API 2`: 1) Send the complete form again - not only the edited portions. 2) In case of checklists, new ones should be given without their `checklistId` where as existing ones (either to alter or not) should be sent with it, otherwise new checklist item will be created. 3) Always returns the checklistIds in the order they are placed in the request array.**
+**Note for `API 4`: In case of Society user checklist won't be sent.**
+**Note for `API 5`: In case of Society user ** fields won't be sent.**
+
 
 #### Object Schema
 |#|Name|Object|
@@ -61,6 +64,7 @@
 |4|`itemObj`|`{itemId*: Number, type*: "String", label*: "String", required*: Bool, defaultVisibility*: Bool, placeHolder**: "String", maxLength**: Number, options**: optionObj, conditionalItems**: conItemObject, fileTypes**: "String"}`|
 |5|`optionObj`|`{optionId*: Number, data*: "String"}`|
 |6|`conItemObj`|`{optionId*: Number, itemId*: Number}`|
+|7|`formListObj`|`{formId: Number, title: "String", isPublic: Bool, timestampModified**: "DateString", creatorName**: "String"}`|
 
 ### 4. Request Management
 *Note: Will contain APIs for submitting / editing forms / viewing (CCA + Society), getting request list, updating request status (CCA) etc*
