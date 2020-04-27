@@ -287,7 +287,7 @@ exports.fetchForm = async (req, res, next) => {
       let creatorId = await CCA.findById(reqForm.creatorId, 'ccaId');
 
       let formObj = {
-        id: reqForm.formId,
+        formId: reqForm.formId,
         isPublic: reqForm.isPublic,
         title: reqForm.title,
         creatorId: creatorId.ccaId,

@@ -57,8 +57,8 @@
 |#|Name|Object|
 |-|----|------|
 |1|`formObjA`|`{title*: "String", isPublic*: Bool, sections*: [sectionObj], components*: [componentObj], items*: [itemObj], checklistItems**: [{sectionId*: Number, description*: "String"}]}`|
-|2|`formObjB`|`{title*: "String", isPublic*: Bool, sections*: [sectionObj], components*: [componentObj], items*: [itemObj], checklistItems**: [{checklistId**: Number, sectionId*: Number, description*: "String"}]}`|
-|3|`formObjC`|`{title*: "String", isPublic*: Bool, sections*: [sectionObj], components*: [componentObj], items*: [itemObj], checklistItems**: [{checklistId*: Number, sectionId*: Number, description*: "String"}]}`|
+|2|`formObjB`|`{formId*: Number, title*: "String", isPublic*: Bool, sections*: [sectionObj], components*: [componentObj], items*: [itemObj], checklistItems**: [{checklistId**: Number, sectionId*: Number, description*: "String"}]}`|
+|3|`formObjC`|`{formId*: Number, title*: "String", isPublic*: Bool, sections*: [sectionObj], components*: [componentObj], items*: [itemObj], checklistItems**: [{checklistId*: Number, sectionId*: Number, description*: "String"}]}`|
 |2|`sectionObj`|`{sectionId*: Number, title*: "String-min(1)-max(100)", componentsOrder*: [Number]}`|
 |3|`componentObj`|`{componentId*: Number, title*: "String-min(1)-max(100)", itemsOrder*: [Number]}`|
 |4|`itemObj`|`{itemId*: Number, type*: "String", label*: "String", required*: Bool, defaultVisibility*: Bool, placeHolder**: "String", maxLength**: Number, options**: optionObj, conditionalItems**: conItemObject, fileTypes**: "String"}`|
