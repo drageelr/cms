@@ -18,7 +18,7 @@
 |1|CCA Login|Authentication for CCA Users|`/api/auth/cca/login`|`{email*: "String allow: ['lums.edu.pk']", password*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{token: "String", user: {id: Number, firstName: "String", lastName: "String", picture: "String", permissions: "String"}}`|CCA|`2.1`|
 |2|Society Login|Authentication for Society Users|`/api/auth/society/login`|`{email*: "String allow: ['lums.edu.pk']", password*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{token: "String", user: {id: Number, name: "String", nameInitials: "String", patronEmail: "String", presidentEmail: "String"}`|Society|`2.1`|
 
-**Note: * means the field mentioned is required (For `Request Object`)**
+- **Note: * means the field mentioned is required (For `Request Object`)**
 
 ### 2. User Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of CCA User (Admin/Member) and Society accounts.*
@@ -34,7 +34,7 @@
 |8|Change Password (Society)|Changes the password of a Society Account|`/api/account/society/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|Society|`2.1`|
 |9|Change Picture (CCA)|Changes the picture of a CCA Member Account|`/api/account/cca/change-picture`|`{picture*: "String"}`|POST|`{}`|CCA||
 
-**Note: * means the field mentioned is required (For `Request Object`)**
+- **Note: * means the field mentioned is required (For `Request Object`)**
 
 ### 3. Form Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of forms.*
@@ -46,11 +46,11 @@
 |4|Fetch Form||Fetches complete details of Form|`/api/form/fetch`|`{formId*: Number}`|`POST`|`{form: formObjC}`|CCA + Society|`8.1`|
 |5|Fetch Form List|Fetches list of available Forms|`/api/form/fetch-list`|`{}`|`POST`|`{formList: [formListObj]}`|CCA + Society|`8.1`|
 
-**Note: * means the field mentioned is required. (For `Request Object` OR `Object Schema` referenced in it)**
-**Note: ** means the field mentioned might not always be there. (For `Response Object` OR `Object Schema` referenced in this and `Request Object`)**
-**Note for `API 2`: 1) Send the complete form again - not only the edited portions. 2) In case of checklists, new ones should be given without their `checklistId` where as existing ones (either to alter or not) should be sent with it, otherwise new checklist item will be created. 3) Always returns the checklistIds in the order they are placed in the request array.**
-**Note for `API 4`: In case of Society user checklist won't be sent.**
-**Note for `API 5`: In case of Society user ** fields won't be sent.**
+- **Note for `API 2`: 1) Send the complete form again - not only the edited portions. 2) In case of checklists, new ones should be given without their `checklistId` where as existing ones (either to alter or not) should be sent with it, otherwise new checklist item will be created. 3) Always returns the checklistIds in the order they are placed in the request array.**
+- **Note for `API 4`: In case of Society user checklist won't be sent.**
+- **Note for `API 5`: In case of Society user ** fields won't be sent.**
+- **Note: * means the field mentioned is required. (For `Request Object` OR `Object Schema` referenced in it)**
+- **Note: ** means the field mentioned might not always be there. (For `Response Object` OR `Object Schema` referenced in this and `Request Object`)**
 
 
 #### Object Schema
