@@ -41,13 +41,14 @@
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
 |1|Create Form|Creates a new Form|`/api/form/create`|`{form*: formObjA}`|`POST`|`{formId: Number, checklistIds: [Number]}`|CCA|`7.1`|
-|2|Edit Form|Edits an existing Form *Note: **1)** Send the complete form again - not only the edited portions. **2)** In case of checklists, new ones should be given without their `checklistId` where as existing ones (either to alter or not) should be sent with it, otherwise new checklist item will be created. **3)** Always returns the checklistIds in the order they are placed in the request array.*|`/api/form/edit`|`{form*: formObjB}`|`POST`|`{}`|`{formId: Number, checklistIds: [Number]}`|CCA|`7.1`, `8.1`|
+|2|Edit Form|Edits an existing Form |`/api/form/edit`|`{form*: formObjB}`|`POST`|`{formId: Number, checklistIds: [Number]}`|CCA|`7.1`, `8.1`|
 |3|Delete Form|Delete an existing Form|`/api/form/delete`|`{formId*: Number}`|`POST`|`{}`|CCA|`8.1`|
 |4|Fetch Form||Fetches complete details of Form|`/api/form/fetch`|`{formId*: Number}`|`POST`|`{form: formObjC}`|CCA + Society|`8.1`|
 |5|Fetch Form List|Fetches list of available Forms|`/api/form/fetch-list`|`{}`|`POST`|`{formList: [{formId: Number, title: "String", isPublic: Bool, timestampModified**: "DateString", creatorName**: "String"}]}`|CCA + Society|`8.1`|
 
 **Note: * means the field mentioned is required. (For `Request Object` OR `Object Schema` referenced in it)**
 **Note: ** means the field mentioned might not always be there. (For `Response Object` OR `Object Schema` referenced in this and `Request Object`)**
+**Note for API 2: 1) Send the complete form again - not only the edited portions. 2) In case of checklists, new ones should be given without their `checklistId` where as existing ones (either to alter or not) should be sent with it, otherwise new checklist item will be created. 3) Always returns the checklistIds in the order they are placed in the request array.**
 
 #### Object Schema
 |#|Name|Object|
