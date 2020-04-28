@@ -72,7 +72,7 @@ exports.verify = async (req, res, next) => {
 
     let decodedObj = decodeToken(token);
     if (decodedObj.err == undefined) {
-      if (decodedObj.type == 'soc' || decodedObj.type == 'pat', decodedObj.type == 'pres') {
+      if (decodedObj.type == 'soc' || decodedObj.type == 'pat' || decodedObj.type == 'pres') {
         let reqSociety = await Society.findById(decodedObj._id, 'active');
         if (reqSociety) {
           if (reqSociety.active) {

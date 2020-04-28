@@ -6,7 +6,8 @@
 ## Important Notes
 - ==Every **Response Object** will contain `{statusCode: Number, statusName: "String", message: "String"}` in addition to the mentioned object.==
 - ==All other APIs except **Authentication** API must send the `token`  as *"Authorization"* header with every request.==
-- ==Every API has **Error** `3.1` as a **Possible Error.**==
+- ==Every API which has a **Request Object** will have **Error** `3.1` as a **Possible Error.**==
+- ==Every API apart from **Authentication** will have **Errors** `1.1`-`1.5` and `4.1` as a **Possible Error.**==
 - ==Changes will be highlighted (apart from this section) as compared with the previous version==
 
 ## APIs
@@ -14,32 +15,56 @@
 ### 1. Authentication
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|CCA Login|Authentication for CCA Users|`/api/auth/cca/login`|`{email: "String allow: ['lums.edu.pk']", password: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{token: "String", user: {id: Number, firstName: "String", lastName: "String", picture: "String", permissions: "String"}}`|CCA|`2.1`|
-|2|Society Login|Authentication for Society Users|`/api/auth/society/login`|`{email: "String allow: ['lums.edu.pk']", password: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{token: "String", user: {id: Number, name: "String", nameInitials: "String", patronEmail: "String", presidentEmail: "String"}`|Society|`2.1`|
+|1|CCA Login|Authentication for CCA Users|`/api/auth/cca/login`|`{email*: "String allow: ['lums.edu.pk']", password*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{token: "String", user: {id: Number, firstName: "String", lastName: "String", picture: "String", permissions: "String"}}`|CCA|`2.1`|
+|2|Society Login|Authentication for Society Users|`/api/auth/society/login`|`{email*: "String allow: ['lums.edu.pk']", password*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{token: "String", user: {id: Number, name: "String", nameInitials: "String", patronEmail: "String", presidentEmail: "String"}`|Society|`2.1`|
+
+- **Note: * means the field mentioned is required (For `Request Object`)**
 
 ### 2. User Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of CCA User (Admin/Member) and Society accounts.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Create CCA Account|Creates an account for a CCA Member|`/api/account/cca/create-account`|`{email*: "String allow: ['lums.edu.pk'], password*: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName*: "String-min(1)-max(30)", lastName*: "String-min(1)-max(30)", picture*: "String", permissions: {societyCRUD*: Boolean, ccaCRUD*: Boolean, accessFormMaker*: Boolean, createReqTask*: Boolean, createCustomTask*: Boolean, createTaskStatus*: Boolean, archiveTask*: Boolean, unarchiveTask*: Boolean, setFormStatus*: Boolean, addCCANote*: Boolean}}`|POST|`{ccaId: Number}`|CCA|`1.1`-`1.5`, `4.1`, `5.1`|
-|2|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{email*: "String allow: ['lums.edu.pk']", password*: "String-min(8)-max(30)-[a-zA-Z0-9]", name*: "String-min(1)-max(100)", nameInitials*: "String-min(1)-max(10)", presidentEmail*: "String allow: ['lums.edu.pk']", patronEmail*: "String allow: ['lums.edu.pk']"}`|POST|`{societyId: Number}`|CCA|`1.1`-`1.5`, `4.1`, `5.1`|
-|3|Edit CCA Account|Edits an account of a CCA Member|`/api/account/cca/edit-account`|`{email: "String allow: ['lums.edu.pk'], password: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName: "String-min(1)-max(30)", lastName: "String-min(1)-max(30)", picture: "String", permissions: {societyCRUD: Boolean, ccaCRUD: Boolean, accessFormMaker: Boolean, createReqTask: Boolean, createCustomTask: Boolean, createTaskStatus: Boolean, archiveTask: Boolean, unarchive: Boolean, setFormStatus: Boolean, addCCANote: Boolean}} "At least one field is required"`|POST|`{}`|CCA|`1.1`-`1.5`, `4.1`, `6.1`|
-|4|Edit Society Account|Edits an account of a Society|`/api/account/cca/edit-account`|`{email: "String allow: ['lums.edu.pk]", password: "String-min(8)-max(30)-[a-zA-Z0-9]", name: "String-min(1)-max(30)", nameInitials*: "String-min(1)-max(10)", presidentEmail: "String allow: ['lums.edu.pk]", patronEmail: "String allow: ['lums.edu.pk']" "At least one field is required"}`|POST|`{}`|CCA|`1.1`-`1.5`, `4.1`, `6.1`|
-|5|Get CCA Account List|Fetches the list of all existing CCA Member Accounts|`/api/account/cca/account-list`|`{}`|POST|`{userList: [{ccaId: Number, email: "String", role: "String", firstName: "String", lastName: "String", picture: "String", active: Boolean}]}`|CCA|`1.1`-`1.5`, `4.1`, `6.1`|
-|6|Get Society Account List|Fetches the list of all existing Society Accounts|`/api/account/society/account-list`|`{}`|POST|`{userList: [{societyId: Number, email: "String", name: "String", nameInitials: "String", presidentEmail: "String", patronEmail: "String", active: Boolean}]}`|CCA|`1.1`-`1.5`, `4.1`, `6.1`|
-|7|Change Password (CCA)|Changes the password of a CCA Member|`/api/account/cca/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|CCA|`1.1`-``1.5`, `2.1`, `4.1`|
-|8|Change Password (Society)|Changes the password of a Society Account|`/api/account/society/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|Society|`1.1`-`1.5`, `2.1`, `4.1`|
-|9|Change Picture (CCA)|Changes the picture of a CCA Member Account|`/api/account/cca/change-picture`|`{picture*: "String"}`|POST|`{}`|CCA|`1.1`-`1.5`, `4.1`|
+|1|Create CCA Account|Creates an account for a CCA Member|`/api/account/cca/create-account`|`{email*: "String allow: ['lums.edu.pk'], password*: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName*: "String-min(1)-max(30)", lastName*: "String-min(1)-max(30)", picture*: "String", permissions: {societyCRUD*: Boolean, ccaCRUD*: Boolean, accessFormMaker*: Boolean, createReqTask*: Boolean, createCustomTask*: Boolean, createTaskStatus*: Boolean, archiveTask*: Boolean, unarchiveTask*: Boolean, setFormStatus*: Boolean, addCCANote*: Boolean}}`|POST|`{ccaId: Number}`|CCA|`5.1`|
+|2|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{email*: "String allow: ['lums.edu.pk']", password*: "String-min(8)-max(30)-[a-zA-Z0-9]", name*: "String-min(1)-max(100)", nameInitials*: "String-min(1)-max(10)", presidentEmail*: "String allow: ['lums.edu.pk']", patronEmail*: "String allow: ['lums.edu.pk']"}`|POST|`{societyId: Number}`|CCA|`5.1`|
+|3|Edit CCA Account|Edits an account of a CCA Member|`/api/account/cca/edit-account`|`{email: "String allow: ['lums.edu.pk'], password: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName: "String-min(1)-max(30)", lastName: "String-min(1)-max(30)", picture: "String", permissions: {societyCRUD: Boolean, ccaCRUD: Boolean, accessFormMaker: Boolean, createReqTask: Boolean, createCustomTask: Boolean, createTaskStatus: Boolean, archiveTask: Boolean, unarchive: Boolean, setFormStatus: Boolean, addCCANote: Boolean}} "At least one field is required"`|POST|`{}`|CCA|`6.1`|
+|4|Edit Society Account|Edits an account of a Society|`/api/account/cca/edit-account`|`{email: "String allow: ['lums.edu.pk]", password: "String-min(8)-max(30)-[a-zA-Z0-9]", name: "String-min(1)-max(30)", nameInitials*: "String-min(1)-max(10)", presidentEmail: "String allow: ['lums.edu.pk]", patronEmail: "String allow: ['lums.edu.pk']" "At least one field is required"}`|POST|`{}`|CCA|`6.1`|
+|5|Get CCA Account List|Fetches the list of all existing CCA Member Accounts|`/api/account/cca/account-list`|`{}`|POST|`{userList: [{ccaId: Number, email: "String", role: "String", firstName: "String", lastName: "String", picture: "String", active: Boolean}]}`|CCA|`6.1`|
+|6|Get Society Account List|Fetches the list of all existing Society Accounts|`/api/account/society/account-list`|`{}`|POST|`{userList: [{societyId: Number, email: "String", name: "String", nameInitials: "String", presidentEmail: "String", patronEmail: "String", active: Boolean}]}`|CCA|`6.1`|
+|7|Change Password (CCA)|Changes the password of a CCA Member|`/api/account/cca/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|CCA|`2.1`|
+|8|Change Password (Society)|Changes the password of a Society Account|`/api/account/society/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|Society|`2.1`|
+|9|Change Picture (CCA)|Changes the picture of a CCA Member Account|`/api/account/cca/change-picture`|`{picture*: "String"}`|POST|`{}`|CCA||
+
+- **Note: * means the field mentioned is required (For `Request Object`)**
 
 ### 3. Form Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of forms.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Fetch Form Template|Fetches Form Template from Database|`/api/form/fetch`|`{}`|GET|`{id: Number, formID: Number, title: "String", isPublic: Boolean, sections: List<String>, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrrder: JSON, checklistItemIDs: List<Number>, creatorID: Number}`|CCA + Society|TBD|
-|2|Create Form|Creates an Event Approval Form|`/api/form/create`|`{id*: Number, title*: "String", isPublic*: Boolean, sections*: List<"String">, sectionsOrder*: List<Number>, components*: JSON, componentsOrder*: JSON, items*: JSON, itemsOrder*: JSON, checklistItemIDs*: List<Number>, timestampCreated*: DateTime, creatorID*: Number}`|POST|`{}`|CCA|TBD|
-|3|Edit Form|Edits an Event Approval Form|`/api/form/edit`|`{id*: Number, title: "String", isPublic: Boolean, sections: List<"String">, sectionsOrder: List<Number>, components: JSON, componentsOrder: JSON, items: JSON, itemsOrder: JSON, checklistItemIDs: List<Number>, timestampModified: DateTime, creatorID*: Number}`|PUT|`{}`|CCA|TBD|
-|4|Delete Form|Deletes an Event Approval Form|`/api/form/delete`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
-|5|Fetch Form List|Fetches list of form templates available|`/api/form/fetch-list`|`{}`|GET|`{formList: [{id: Number, title: "String"}]}`|CCA + Society|TBD|
+|1|Create Form|Creates a new Form|`/api/form/create`|`{form*: formObjA}`|`POST`|`{formId: Number, checklistIds: [Number]}`|CCA|`7.1`|
+|2|Edit Form|Edits an existing Form |`/api/form/edit`|`{form*: formObjB}`|`POST`|`{formId: Number, checklistIds: [Number]}`|CCA|`7.1`, `8.1`|
+|3|Delete Form|Delete an existing Form|`/api/form/delete`|`{formId*: Number}`|`POST`|`{}`|CCA|`8.1`|
+|4|Fetch Form|Fetches complete details of Form|`/api/form/fetch`|`{formId*: Number}`|`POST`|`{form: formObjC}`|CCA + Society|`8.1`|
+|5|Fetch Form List|Fetches list of available Forms|`/api/form/fetch-list`|`{}`|`POST`|`{formList: [formListObj]}`|CCA + Society|`8.1`|
+
+- **Note for `API 2`: 1) Send the complete form again - not only the edited portions. 2) In case of checklists, new ones should be given without their `checklistId` where as existing ones (either to alter or not) should be sent with it, otherwise new checklist item will be created. 3) Always returns the checklistIds in the order they are placed in the request array.**
+- **Note for `API 4`: In case of Society user checklist won't be sent.**
+- **Note for `API 5`: In case of Society user ** fields won't be sent.**
+- **Note: * means the field mentioned is required. (For `Request Object` OR `Object Schema` referenced in it)**
+- **Note: ** means the field mentioned might not always be there. (For `Response Object` OR `Object Schema` referenced in this and `Request Object`)**
+
+
+#### Object Schema
+|#|Name|Object|
+|-|----|------|
+|1|`formObjA`|`{title*: "String", isPublic*: Bool, sections*: [sectionObj], components*: [componentObj], items*: [itemObj], checklistItems**: [{sectionId*: Number, description*: "String"}]}`|
+|2|`formObjB`|`{formId*: Number, title*: "String", isPublic*: Bool, sections*: [sectionObj], components*: [componentObj], items*: [itemObj], checklistItems**: [{checklistId**: Number, sectionId*: Number, description*: "String"}]}`|
+|3|`formObjC`|`{formId*: Number, title*: "String", isPublic*: Bool, sections*: [sectionObj], components*: [componentObj], items*: [itemObj], checklistItems**: [{checklistId*: Number, sectionId*: Number, description*: "String"}]}`|
+|2|`sectionObj`|`{sectionId*: Number, title*: "String-min(1)-max(100)", componentsOrder*: [Number]}`|
+|3|`componentObj`|`{componentId*: Number, title*: "String-min(1)-max(100)", itemsOrder*: [Number]}`|
+|4|`itemObj`|`{itemId*: Number, type*: "String", label*: "String", required*: Bool, defaultVisibility*: Bool, placeHolder**: "String", maxLength**: Number, options**: optionObj, conditionalItems**: conItemObject, fileTypes**: "String"}`|
+|5|`optionObj`|`{optionId*: Number, data*: "String"}`|
+|6|`conItemObj`|`{optionId*: Number, itemId*: Number}`|
+|7|`formListObj`|`{formId: Number, title: "String", isPublic: Bool, timestampModified**: "DateString", creatorName**: "String"}`|
 
 ### 4. Request Management
 *Note: Will contain APIs for submitting / editing forms / viewing (CCA + Society), getting request list, updating request status (CCA) etc*
@@ -118,22 +143,22 @@
 Error object standard:
 ```javascript=1
 {
-  name: "String",
-  subName: "String",
-  details: object/"String"/Number
+name: "String",
+subName: "String",
+details: object/"String"/Number
 }
 ```
 Hence, standard error output:
 ```javascript=1
 {
-  statusCode: Number, 
-  statusName: "String", 
-  message: "String", 
-  error: {
+statusCode: Number, 
+statusName: "String", 
+message: "String", 
+error: {
     name: "String", 
     subName: "String", 
     details: object/"String"/Number
-  }
+}
 }
 ```
 
@@ -151,3 +176,5 @@ Hence, standard error output:
 |4.1|`ForbiddenAccessError`|`N/A`|`403`|`"String"`|User does not have the necessary permission to access resource|
 |5.1|`DuplicateUserError`|`N/A`|`400`|`"String"`|User with the same detail(s) already exists|
 |6.1|`UserNotFoundError`|`N/A`|`404`|`"String"`|User with the given parameters is not found|
+|7.1|`FormValidationError`|`N/A`|`400`|`"String"`|Logical error in form parameters|
+|8.1|`FormNotFoundError`|`N/A`|`404`|`"String"`|Form with the given parameters is not found|
