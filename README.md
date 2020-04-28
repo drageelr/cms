@@ -10,11 +10,11 @@ This product is tailor made for the **Co-curricular Activities Department** at *
       - [Step 1 - Installing NGINX](https://github.com/drageelr/cms/#step-1---installing-nginx)
       - [Step 2 - Adjusting Firewall](https://github.com/drageelr/cms/#step-2---adjusting-firewall)
       - [Step 3 - Set Up Server Block](https://github.com/drageelr/cms/#step-3---set-up-server-block)
-    - [Set Up CMS Using Deployer (For GitHub Contributors Only)](https://github.com/drageelr/cms/#set-up-cms-using-deployer-for-github-contributors-only)
+    - [Set Up CMS Using Deployer (For GitHub Contributors Only)](https://github.com/drageelr/cms/#set-up-cms-using-deployer---remote-server-for-github-contributors-only)
       - [Step 1 - Create SSH Key & Add To GitHub](https://github.com/drageelr/cms/#step-1---create-ssh-key--add-to-github)
       - [Step 2 - Set Up Deployer](https://github.com/drageelr/cms/#step-2---set-up-deployer)
       - [Step 3 - Deploy CMS](https://github.com/drageelr/cms/#step-3---deploy-cms)
-    - [Set Up CMS Manually](https://github.com/drageelr/cms/#set-up-cms-manually)
+    - [Set Up CMS Manually](https://github.com/drageelr/cms/#set-up-cms-manually---remote-server)
       - [Step 1 - Place Repository On Server](https://github.com/drageelr/cms/#step-1---place-repository-on-server)
       - [Step 2 - Run Commands To Deploy](https://github.com/drageelr/cms/#step-2---run-commands-to-deploy)
 
@@ -26,7 +26,7 @@ This product is tailor made for the **Co-curricular Activities Department** at *
 1. [Install Node JS](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-18-04)
 2. [Install MongoDB](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
 3. [Install PM2](https://pm2.keymetrics.io/)
-4. Set Up NGINX (Follow the following steps)
+4. Set Up NGINX - Follow the following steps (For Remote Server Deployement Only)
 
 #### Step 1 - Installing NGINX
 Run the following commands in terminal:
@@ -146,7 +146,7 @@ sudo systemctl restart nginx
 
 ---
 
-### Set Up CMS Using Deployer (For GitHub Contributors Only)
+### Set Up CMS Using Deployer - Remote Server (For GitHub Contributors Only)
 
 #### Step 1 - Create SSH Key & Add To GitHub
 Run the following command in any directory:
@@ -196,7 +196,7 @@ pm2 status
 ---
 
 
-### Set Up CMS Manually
+### Set Up CMS Manually - Remote Server
 
 #### Step 1 - Place Repository On Server
 - Place this repository on the server in the directory `~/GitHub`
