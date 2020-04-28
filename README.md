@@ -19,6 +19,9 @@ This product is tailor made for the **Co-curricular Activities Department** at *
     - [Set Up CMS Manually - Remote Server](https://github.com/drageelr/cms/#set-up-cms-manually---remote-server)
       - [Step 1 - Place Repository On Server](https://github.com/drageelr/cms/#step-1---place-repository-on-server)
       - [Step 2 - Run Commands To Deploy](https://github.com/drageelr/cms/#step-2---run-commands-to-deploy)
+    - [Local Server and Client App (Demo and Testing)](https://github.com/drageelr/cms/#local-server-and-client-app-(demo-and-testing))
+    - [Other Documents](https://github.com/drageelr/cms/#other-documents)
+    
 
 ## Installation
 **Note: This installation guide is for Ubuntu 18.04** 
@@ -213,5 +216,86 @@ pm2 status
 - Run the command **(from server folder)** `pm2 start bin/www.js --name "cms-server"`
 
 **Note: Make sure to replace the IP address `167.71.224.73` with your IP address**
+  
+---
+
+### Set Up CMS Using Deployer - Remote Server (For GitHub Contributors Only)
+
+#### Step 1 - Create SSH Key & Add To GitHub
+Run the following command in any directory:
+```
+ssh-keygen
+```
+Enter the following when prompted `Enter file in which to save the key`:
+```
+~/.ssh/id_cms_test
+```
+Now run the following command and copy the output:
+```
+cat ~/.ssh/id_cms_test
+```
+Go to [GitHub SSH and GPG Keys Setting](https://github.com/settings/keys) and press `New SSH key`. Paste there and press `Add SSH key` to save.
+
+#### Step 2 - Set Up Deployer
+Clone the repoistory and change deployer's directory by running the following commands in any directory:
+```
+mkdir ~/GitHub
+git clone https://github.com/drageelr/cms.git
+cp -r ~/GitHub/cms/deployer~/deployer
+```
+To configure deployer for your server edit 2 files,`dp-script-1` and `dp-script-2` , using `nano` text editor:
+```
+nano ~/deployer/resources/<file_name_here>
+```
+Replace the ip address `167.71.224.73` in both files with **your ip address** and save the file.
+
+Now start the deployer by executing the following commands:
+```
+cd ~/deployer
+npm install
+pm2 start bin/www.js --name "cms-deployer"
+```
+To verify that the deployer is running, run command:
+```
+pm2 status
+```
+
+#### Step 3 - Deploy CMS
+- Go to `http://<your_ip_address_here>/dev/site`
+- Select `Branch` to deploy from and `Database` to run on.
+- Press `Start Server` to deploy.
+- Press `Refresh` to check status of server.
 
 ---
+
+### Local Server and Client App (Demo and Testing)
+
+- Clone the repository to your local directory.
+```
+git clone https://github.com/drageelr/cms.git
+cd cms
+```
+- Install client-side dependencies and start React App
+```
+cd client
+npm install
+npm start
+```
+- Install server-side dependencies and start the server from another terminal / command-line
+```
+cd server
+npm install
+npm start
+```
+
+### Other Documents
+- [API Specification Document](https://github.com/drageelr/cms/blob/master/docs/api-spec-doc.md)
+- [Commit Process and Restrictions](https://github.com/drageelr/cms/blob/master/docs/commit-process-and-restrictions.md)
+- [Commit Format and Guidelines](https://github.com/drageelr/cms/blob/master/docs/github-commit-format.md)
+- [JS Code Conventions](https://github.com/drageelr/cms/blob/master/docs/js-code-conventions-and-practices.md)
+- [CMS Wiki (WIP)](https://github.com/drageelr/cms/wiki)
+
+---
+
+
+
