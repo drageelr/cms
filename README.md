@@ -7,9 +7,11 @@ This product is tailor made for the **Co-curricular Activities Department** at *
   - [Table Of Contents](https://github.com/drageelr/cms/#table-of-contents)
   - [Installation](https://github.com/drageelr/cms/#installation)
     - [Prerequisites](https://github.com/drageelr/cms/#prerequisites)
-      - [Step 1 - Installing NGINX](https://github.com/drageelr/cms/#step-1---installing-nginx)
-      - [Step 2 - Adjusting Firewall](https://github.com/drageelr/cms/#step-2---adjusting-firewall)
-      - [Step 3 - Set Up Server Block](https://github.com/drageelr/cms/#step-3---set-up-server-block)
+      - [List](https://github.com/drageelr/cms/#list)
+      - [Set Up NGINX - Remote Server](https://github.com/drageelr/cms/#set-up-nginx---remote-server)
+        - [Step 1 - Installing NGINX](https://github.com/drageelr/cms/#step-1---installing-nginx)
+        - [Step 2 - Adjusting Firewall](https://github.com/drageelr/cms/#step-2---adjusting-firewall)
+        - [Step 3 - Set Up Server Block](https://github.com/drageelr/cms/#step-3---set-up-server-block)
     - [Set Up CMS Using Deployer - Remote Server (For GitHub Contributors Only)](https://github.com/drageelr/cms/#set-up-cms-using-deployer---remote-server-for-github-contributors-only)
       - [Step 1 - Create SSH Key & Add To GitHub](https://github.com/drageelr/cms/#step-1---create-ssh-key--add-to-github)
       - [Step 2 - Set Up Deployer](https://github.com/drageelr/cms/#step-2---set-up-deployer)
@@ -23,19 +25,24 @@ This product is tailor made for the **Co-curricular Activities Department** at *
 
 ### Prerequisites
 
+#### List
 1. [Install Node JS](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-18-04)
 2. [Install MongoDB](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
 3. [Install PM2](https://pm2.keymetrics.io/)
-4. Set Up NGINX - Follow the following steps (For Remote Server Deployement Only)
+4. [Set Up NGINX](https://github.com/drageelr/cms/#set-up-nginx---remote-server) **- Remote Server Only**
 
-#### Step 1 - Installing NGINX
+---
+
+#### Set Up NGINX - Remote Server
+
+##### Step 1 - Installing NGINX
 Run the following commands in terminal:
 ```
 sudo apt update
 sudo apt install nginx
 ```
 
-#### Step 2 - Adjusting Firewall
+##### Step 2 - Adjusting Firewall
 Run the following command to get a list of application profiles:
 ```
 sudo ufw app list
@@ -70,7 +77,7 @@ OpenSSH (v6)               ALLOW       Anywhere (v6)
 Nginx HTTP (v6)            ALLOW       Anywhere (v6)
 ```
 
-#### Step 3 - Set Up Server Block
+##### Step 3 - Set Up Server Block
 Get public IP address by running the following command:
 ```
 curl -4 icanhazip.com
@@ -194,7 +201,6 @@ pm2 status
 - Press `Refresh` to check status of server.
 
 ---
-
 
 ### Set Up CMS Manually - Remote Server
 
