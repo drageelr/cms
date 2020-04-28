@@ -16,7 +16,6 @@ export default function TextlabelProperties({propertyAddMode, propertyId, itemDa
     defaultVisibility: true
   } : itemData
   
-  console.log(parentId)
 
   function closeProperties() {
     dispatch(closePropertiesWindow())

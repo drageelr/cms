@@ -60,7 +60,6 @@ export const deleteSubmission = createAsyncThunk(
       return
     }
     
-    // console.log(reqId)
     return reqId
   }
 )

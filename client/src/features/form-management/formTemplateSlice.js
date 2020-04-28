@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { convertToClientForm, convertToServerForm } from './helpers'
 
 // Form Maker template creation state stored here, this could have been done locally inside the Form Maker as well
 // but is done so to set aside the rigorous business logic required
@@ -7,7 +8,6 @@ const sampleState = { // Sample form currently
   id: 0,
   isPublic: false,
   title: "Event Approval",
-  creatorId: 1,
   sectionsOrder: [0, 1], //ordered list of section Ids (any Ids are not unique to any other forms)
   sections: {
     0:"Email Address", 
@@ -72,21 +72,20 @@ const sampleState = { // Sample form currently
       defaultVisibility: true
     },
   },
-  checklist: {0:"Verify Email", 1:"Check Society"}, //sectionId: subTask
+  checklistItems: {0:"Verify Email", 1:"Check Society"}, //sectionId: subTask
 }
 
 const initialState = { 
   id: 0,
   isPublic: false,
   title: "",
-  creatorId: 1,
   sectionsOrder: [], 
   sections: {},
   componentsOrder: {},
   components: {},
   itemsOrder: {},
   items: {},
-  checklist: {},
+  checklistItems: [],
   createMode: true,
   isPending: true,
   error: null,
@@ -112,31 +111,26 @@ export const fetchForm = createAsyncThunk(
           'Authorization': `Bearer ${localStorage.token}`, 
         },
         body: JSON.stringify({
-          form: formId
+          formId: formId
         })
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
-        if (data.statusCode != 203) {
+        if (data.statusCode != 200) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         
+        const id = data.form.formId
+        console.log(data)
+        delete data.form['formId']
+        console.log(convertToClientForm(data.form))
         return {
-          id: data.id,
-          isPublic: data.isPublic,
-          title: data.title,
-          // creatorId: //check res data
-          // sectionsOrder: ,//no section order at backend 
-          sections: data.sections,
-          // componentsOrder: {},
-          components: data.components,
-          // itemsOrder: {},
-          items: data.items,
-          checklist: data.checkListItems,
+          id,
+          ...convertToClientForm(data.form)  
         }
       }
       //CHANGE 2
@@ -150,7 +144,10 @@ export const fetchForm = createAsyncThunk(
 
 export const createForm = createAsyncThunk(
   'formTemplate/createForm',
-  async (_, {rejectWithValue }) => {
+  async (_, {getState, rejectWithValue }) => {
+    const {isPublic, title, sectionsOrder, sections, componentsOrder, components,
+    itemsOrder, items, checklistItems} = getState().formTemplate
+
     try {
       const res = await fetch('/api/form/create', {
         method: 'POST',
@@ -159,20 +156,35 @@ export const createForm = createAsyncThunk(
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.token}`, 
         },
+        body: JSON.stringify({
+          form: convertToServerForm({
+            title,
+            isPublic,
+            sections,
+            components,
+            items,
+            sectionsOrder,
+            componentsOrder,
+            itemsOrder,
+            checklistItems
+          })
+        })
       })
-      console.log(res)
+      
+      
       if (res.ok) {
         const data = await res.json()
-        if (data.statusCode != 203) {
+        
+        if (data.statusCode != 201) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         
         return {
           id: data.formId,
-          checklist: data.checklistIds
+          checklistIds: data.checklistIds
         }
       }
       //CHANGE 2
@@ -186,7 +198,10 @@ export const createForm = createAsyncThunk(
 
 export const editForm = createAsyncThunk(
   'formTemplate/editForm',
-  async (_, {rejectWithValue }) => {
+  async (_, {getState, rejectWithValue }) => {
+    const {id, isPublic, title, sectionsOrder, sections, componentsOrder, components,
+      itemsOrder, items, checklistItems} = getState().formTemplate
+
     try {
       const res = await fetch('/api/form/edit', {
         method: 'POST',
@@ -196,21 +211,32 @@ export const editForm = createAsyncThunk(
           'Authorization': `Bearer ${localStorage.token}`, 
         },
         body: JSON.stringify({
-          //
+          form: {formId: id,...convertToServerForm({
+            title,
+            isPublic,
+            sections,
+            components,
+            items,
+            sectionsOrder,
+            componentsOrder,
+            itemsOrder,
+            checklistItems
+          })}
         })
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
-        if (data.statusCode != 203) {
+        
+        if (data.statusCode != 200) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         return {
           id: data.formId,
-          checklist: data.checklistIds
+          checklistIds: data.checklistIds
         }
       }
       //CHANGE 2
@@ -222,16 +248,30 @@ export const editForm = createAsyncThunk(
   }
 )
 
+function getMaxKey(object) {
+  if (Object.keys(object).length === 0 && object.constructor === Object) return 0
+  if (object === []) return 0
+
+  let max = -Infinity
+  for(const key in object) {
+    if(Number(key) > max){
+      max = Number(key)
+    }
+  }
+  return max
+}
+
 const formTemplate = createSlice({
   name: 'formTemplate',
   initialState: initialState,
   reducers: {
     setCreateMode: (state, action) => { //example reducer
       state.createMode = action.payload.createMode
+      state.isPending = false
     },
 
     setTitle: (state, action) => { 
-      state.title = action.payload.title
+      state.title = action.payload
     },
 
     toggleIsPublic: (state, action) => {
@@ -247,7 +287,7 @@ const formTemplate = createSlice({
       state.sections[sId] = action.payload.title
       state.sectionsOrder.push(sId)
       state.componentsOrder[sId] = []
-      state.checklist[sId] = "Empty"
+      state.checklistItems.push({sectionId: sId, description: "Edit here"})
     },
 
     editSection: (state, action) => { 
@@ -306,12 +346,33 @@ const formTemplate = createSlice({
 
     editChecklistSubtask: (state, action) => {
       const {sectionId, subtask} = action.payload
-      state.checklist[sectionId] = subtask
+      state.checklistItems.forEach(checklistItem => {
+        if (checklistItem.sectionId === sectionId){
+          checklistItem.description = subtask
+        }
+      })
+    },
+
+    resetState: (state, action) => {
+      return { 
+        id: 0,
+        isPublic: false,
+        title: "",
+        sectionsOrder: [], 
+        sections: {},
+        componentsOrder: {},
+        components: {},
+        itemsOrder: {},
+        items: {},
+        checklistItems: [],
+        createMode: true,
+        isPending: true,
+        error: null,
+      }
     },
 
     deleteFormPart: (state, action) => { //example reducer
       const {type, id, parentId} = action.payload
-      console.log(action.payload)
       
       switch(type){
         case 'section':{
@@ -385,35 +446,19 @@ const formTemplate = createSlice({
       }
     },
     [fetchForm.fulfilled]: (state, action) => {
-      if (state.isPending === true) {        
-        let max = -Infinity
-        for(const x in action.payload.componentsOrder) {
-          if(x > max){
-            max = x
-          }
-        }
-        sId = max
-        max = -Infinity
-        for(const x in action.payload.itemsOrder) {
-          if(x > max){
-            max = x
-          }
-        }
-        cId = max
+      if (state.isPending === true) {  
+        sId = getMaxKey(action.payload.componentsOrder)
+        cId = getMaxKey(action.payload.itemsOrder)
+        iId = getMaxKey(action.payload.items)
 
-        max = -Infinity
-        for(const x in action.payload.items) {
-          if(x > max){
-            max = x
-          }
-        }
-        iId = max
-        
         return {
           ...action.payload,
           createMode: false,
           isPending: false,
-          error: null
+          error: null,
+          sId,
+          cId,
+          iId
         }
       }
     },
@@ -434,13 +479,13 @@ const formTemplate = createSlice({
       state.error = 'Form Edited'
     },
     [editForm.rejected]: (state, action) => {
-        state.error = action.payload
+      state.error = action.payload
     },
   }
 })
 
 
 export const { addSection, editSection, addItem, editItem, addComponent, editComponent,
-  editChecklistSubtask, deleteFormPart, toggleIsPublic, moveFormPart, clearError, setCreateMode, setTitle} = formTemplate.actions
+  editChecklistSubtask, deleteFormPart, toggleIsPublic, moveFormPart, clearError, setCreateMode, setTitle, resetState} = formTemplate.actions
 
 export default formTemplate.reducer

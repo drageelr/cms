@@ -23,7 +23,7 @@
 //     }
 //   })
 //   const data = res.json()
-//   console.log(data)
+//   
 //   return {token: data.token, user: data.user}
 //   }
 // )
@@ -95,7 +95,7 @@
 //           patronEmail: patronEmail
 //         })
 //       })
-//       console.log(res)
+//       
 //       if (res.ok) {
 //         const data = await res.json()
 //         return {societyId: data.societyId}
@@ -139,7 +139,7 @@
 //           permissions: permissions //List<Boolean>
 //         })
 //       })
-//       console.log(res)
+//       
 //       if (res.ok) {
 //         const data = await res.json()
 //         return
@@ -183,7 +183,7 @@
 //           patronEmail: patronEmail
 //         })
 //       })
-//       console.log(res)
+//       
 //       if (res.ok) {
 //         const data = await res.json()
 //         return
@@ -218,7 +218,7 @@ export const ccaList = createAsyncThunk(
           'Authorization': `Bearer ${localStorage.token}`, 
         },
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
         return {userList: data.userList} //userList: [{ccaID, email, firstName, lastName, picture, active}]
@@ -252,7 +252,7 @@ export const societyList = createAsyncThunk(
           'Authorization': `Bearer ${localStorage.token}`, 
         },
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
         return {userList: data.userList}
@@ -356,7 +356,7 @@ export const ccaChangePicture = createAsyncThunk(
           picture: picture
         })
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
         return 

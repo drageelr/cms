@@ -52,7 +52,7 @@ export const login = createAsyncThunk(
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 200) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
 
         localStorage.setItem('token', data.token)
@@ -99,9 +99,9 @@ export const changePassword = createAsyncThunk(
 
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
+        
         if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
 
         return newPassword
