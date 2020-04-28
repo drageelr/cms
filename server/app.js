@@ -20,6 +20,7 @@ var submissionRouter = require('./routes/submission.route');
 
 // Others:
 var { errorHandler } = require('./errors/errorhandler');
+var { defaultCredentails } = require('./services/credentials');
 
 /*
   ------------------ CODE BODY --------------------
@@ -51,6 +52,9 @@ app.use(errorHandler);
 
 // Connect With Mongoose
 mongoose.connect();
+
+// Make Default Credentials:
+defaultCredentails();
 
 // Export App
 module.exports = app;

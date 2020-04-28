@@ -72,12 +72,13 @@ export const fetchCCAAccounts = createAsyncThunk(
           'Authorization': `Bearer ${localStorage.token}`, 
         },
       })
-      
+
       if (res.ok) {
         const data = await res.json()
-        
         if (data.statusCode != 200) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          : `${data.statusCode}: ${data.message}`) 
         }
 
         return {isPending: false, error: '' , ccaList: data.userList}
@@ -109,10 +110,11 @@ export const toggleActiveCCAAccount = createAsyncThunk(
 
       if (res.ok) {
         const data = await res.json()
-        
-
+    
         if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          : `${data.statusCode}: ${data.message}`)
         }
 
         return {ccaId, active}
@@ -147,7 +149,9 @@ export const editCCAPermissions = createAsyncThunk(
         
 
         if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          : `${data.statusCode}: ${data.message}`)
         }
 
         return {ccaId, permissions}
@@ -191,7 +195,9 @@ export const editCCAAccount = createAsyncThunk(
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          : `${data.statusCode}: ${data.message}`)
         }
 
         return {ccaId, ccaObject}
@@ -231,7 +237,9 @@ export const addCCAAccount = createAsyncThunk(
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 201) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          : `${data.statusCode}: ${data.message}`)
         }
         return {ccaId: data.ccaId, ccaObject}
       }
@@ -263,7 +271,9 @@ export const changeCCAPicture = createAsyncThunk(
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          : `${data.statusCode}: ${data.message}`)
         }
         return {ccaId, url}
       }
