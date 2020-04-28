@@ -5,14 +5,14 @@ import { Checkbox, FormControlLabel } from '@material-ui/core'
 import SelectAssigneeButton from "./SelectAssigneeButton"
 
 /**
-  Displays a checklist of items that it receives in case a Form has been linked with this Task. 
-  The checklist displays a checkbox, a short description and a "Select Assignee" button. The user
+  Displays a checklistItems of items that it receives in case a Form has been linked with this Task. 
+  The checklistItems displays a checkbox, a short description and a "Select Assignee" button. The user
   can check and un-check the item as well as add a single assignee to the item.
 
-  @param {string} taskId used for fetching formId for the task and render that form checklist
+  @param {string} taskId used for fetching formId for the task and render that form checklistItems
   @param {object} taskData from the corresponding redux slice, retrieve data related to the 
-  task and the checklist 
-  @param {function} dispatch to dispatch the action of changing the checklist checked
+  task and the checklistItems 
+  @param {function} dispatch to dispatch the action of changing the checklistItems checked
 */
 
 export function SubTask({taskId, taskData, dispatch}) {

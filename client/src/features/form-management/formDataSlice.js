@@ -56,13 +56,13 @@ export const fetchFormData = createAsyncThunk(
           formId: formDataId
         })
       })
-      console.log(res)
+
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 200) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         return data.form
@@ -93,13 +93,12 @@ export const editFormData = createAsyncThunk(
           //
         })
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
-          //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         
@@ -129,13 +128,13 @@ export const deleteFormData = createAsyncThunk(
           formId: formDataId
         })
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         
@@ -165,13 +164,13 @@ export const createFormData = createAsyncThunk(
           form: formData
         })
       })
-      console.log(res)
+
+
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
-          //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         
@@ -235,7 +234,6 @@ const formData = createSlice({
       }
     },
     [editFormData.fulfilled]: (state, action) => {
-      console.log(action.payload)
       state.error = 'Edited Form Data'
     },
     [editFormData.rejected]: (state, action) => {

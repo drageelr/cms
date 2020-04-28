@@ -67,12 +67,12 @@
         dbName: selectedDB
         })
     })
-    console.log(res)
+    
 
     const data = await res.json()
     const {statusCode, statusName, message} = data
 
-    console.log(data)
+    
     }
     
     async function stopServer() {
@@ -88,11 +88,11 @@
         },
     })
 
-    console.log(res)
+    
 
     const data = await res.json()
           
-    console.log(data)
+    
     }
 
     async function refreshStatus() {
@@ -103,9 +103,9 @@
         },
     })
 
-    console.log(res)
+    
     const data = await res.json()
-    console.log(data)
+    
       
     const {statusCode, statusName, message,  branchName, dbName, serverStatus} = data
 
