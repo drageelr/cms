@@ -55,8 +55,9 @@ export const fetchFormList = createAsyncThunk(
 export const deleteForm = createAsyncThunk(
   'formList/deleteForm',
   async (index, { rejectWithValue}) => {
-    return rejectWithValue("API to be integrated. Deleting locally.")
 
+    return rejectWithValue("API to be integrated. Deleting locally.")
+    
     try {
       const res = await fetch('/api/form/delete', {
         method: 'POST',
@@ -107,11 +108,10 @@ export const toggleStatus = createAsyncThunk(
           isPublic: null
         })
       })
-      
+
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
-          //CHANGE 1
           throw new Error((data.error !== undefined) 
           ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 

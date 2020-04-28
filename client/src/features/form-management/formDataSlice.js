@@ -56,7 +56,7 @@ export const fetchFormData = createAsyncThunk(
           formId: formDataId
         })
       })
-      
+
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 200) {
@@ -97,7 +97,6 @@ export const editFormData = createAsyncThunk(
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
-          //CHANGE 1
           throw new Error((data.error !== undefined) 
           ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
@@ -165,11 +164,11 @@ export const createFormData = createAsyncThunk(
           form: formData
         })
       })
-      
+
+
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
-          //CHANGE 1
           throw new Error((data.error !== undefined) 
           ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 

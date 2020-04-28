@@ -201,7 +201,7 @@ export const editForm = createAsyncThunk(
   async (_, {getState, rejectWithValue }) => {
     const {id, isPublic, title, sectionsOrder, sections, componentsOrder, components,
       itemsOrder, items, checklistItems} = getState().formTemplate
-    
+
     try {
       const res = await fetch('/api/form/edit', {
         method: 'POST',
