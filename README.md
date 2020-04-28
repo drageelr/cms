@@ -1,6 +1,6 @@
 # CCA Management System (CMS)
 CMS is a **Task Management System** coupled with **Form Maker** to automate and ease **Data Management** and **Communication** between **CCA Users** and **Society Users.**
-This product is tailor made for the **Co-curricular Activities Department** at **Lahore University of Management Sciences (LUMS).**
+This product is tailor made for the **Co-Curricular Activities Department** at **Lahore University of Management Sciences (LUMS).**
 
 ## Table Of Contents:
 - [CCA Management System (CCA)](https://github.com/drageelr/cms/#cca-management-system-cms)
@@ -19,8 +19,8 @@ This product is tailor made for the **Co-curricular Activities Department** at *
     - [Set Up CMS Manually - Remote Server](https://github.com/drageelr/cms/#set-up-cms-manually---remote-server)
       - [Step 1 - Place Repository On Server](https://github.com/drageelr/cms/#step-1---place-repository-on-server)
       - [Step 2 - Run Commands To Deploy](https://github.com/drageelr/cms/#step-2---run-commands-to-deploy)
-    - [Local Server and Client App (Demo and Testing)](https://github.com/drageelr/cms/#local-server-and-client-app-(demo-and-testing))
-    - [Other Documents](https://github.com/drageelr/cms/#other-documents)
+    - [Local Server and Client App for Demo and Testing](https://github.com/drageelr/cms/#local-server-and-client-app-for-demo-and-testing)
+  - [Other Documents](https://github.com/drageelr/cms/#other-documents)
     
 
 ## Installation
