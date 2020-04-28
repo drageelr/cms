@@ -388,6 +388,6 @@ exports.fetchFormList = async (req, res, next) => {
       throw new customError.FormNotFoundError("no forms exist");
     }
   } catch (err) {
-
+    next(err);
   }
 }
