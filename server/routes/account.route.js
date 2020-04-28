@@ -19,9 +19,9 @@ var { validateUserAccess, validateCCAAccess } = require('../services/access-vali
 router.post(
   '/cca/create-account',
   validate(accountValidation.ccaCreateAccount, { keyByField: true }),
-  jwt.verify,
-  validateUserAccess,
-  validateCCAAccess,
+  // jwt.verify,
+  // validateUserAccess,
+  // validateCCAAccess,
   accountController.createCCAAccount
 );
 

@@ -100,38 +100,125 @@ export const fetchForm = createAsyncThunk(
   'formTemplate/fetchForm',
   async (formId, { getState, rejectWithValue}) => {
     const { isPending } = getState().formTemplate
-    
-    if (isPending != true) {
+    if (isPending !== true) {
       return
     }
-
-    return sampleState
+    try {
+      const res = await fetch('/api/form/fetch', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          form: formId
+        })
+      })
+      console.log(res)
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 203) {
+          //CHANGE 1
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          : `${data.statusCode}: ${data.message}`) 
+        }
+        
+        return {
+          id: data.id,
+          isPublic: data.isPublic,
+          title: data.title,
+          // creatorId: //check res data
+          // sectionsOrder: ,//no section order at backend 
+          sections: data.sections,
+          // componentsOrder: {},
+          components: data.components,
+          // itemsOrder: {},
+          items: data.items,
+          checklist: data.checkListItems,
+        }
+      }
+      //CHANGE 2
+      throw new Error(`${res.status}, ${res.statusText}`) 
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
   }
 )
 
 export const createForm = createAsyncThunk(
   'formTemplate/createForm',
-  async (_, { getState, rejectWithValue }) => {
-    const { isPending, title, creatorId, sectionsOrder, sections, 
-      componentsOrder, components, itemsOrder, items, checklist } = getState().formTemplate
-    if (isPending != true) {
-      return
+  async (_, {rejectWithValue }) => {
+    try {
+      const res = await fetch('/api/form/create', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+      })
+      console.log(res)
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 203) {
+          //CHANGE 1
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          : `${data.statusCode}: ${data.message}`) 
+        }
+        
+        return {
+          id: data.formId,
+          checklist: data.checklistIds
+        }
+      }
+      //CHANGE 2
+      throw new Error(`${res.status}, ${res.statusText}`) 
     }
-
-    return ''
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
   }
 )
 
 export const editForm = createAsyncThunk(
   'formTemplate/editForm',
-  async (_, { getState, rejectWithValue }) => {
-    const { isPending, title, creatorId, sectionsOrder, sections, 
-      componentsOrder, components, itemsOrder, items, checklist } = getState().formTemplate
-    if (isPending != true) {
-      return
+  async (_, {rejectWithValue }) => {
+    try {
+      const res = await fetch('/api/form/edit', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          //
+        })
+      })
+      console.log(res)
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 203) {
+          //CHANGE 1
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          : `${data.statusCode}: ${data.message}`) 
+        }
+        return {
+          id: data.formId,
+          checklist: data.checklistIds
+        }
+      }
+      //CHANGE 2
+      throw new Error(`${res.status}, ${res.statusText}`) 
     }
-
-    return ''
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }    
   }
 )
 
@@ -336,40 +423,18 @@ const formTemplate = createSlice({
         state.error = action.payload
       }
     },
-    [createForm.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [createForm.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = 'Form Created'
-        state.createMode = false
-      }
+      state.error = 'Form Created'
+      state.createMode = false
     },
     [createForm.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload
-      }
-    },
-    [editForm.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
+      state.error = action.payload
     },
     [editForm.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = 'Form Edited'
-      }
+      state.error = 'Form Edited'
     },
     [editForm.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
         state.error = action.payload
-      }
     },
   }
 })

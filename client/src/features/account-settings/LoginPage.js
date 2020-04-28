@@ -24,10 +24,10 @@ const useStyles = makeStyles({
     color: 'white'
   },
   input: {
-    color: 'white',
-    "&:hover": {
-      background: 'white',
-    }
+    color: 'black',
+    // "&:hover": {
+    //   background: 'white',
+    // }
   }
 })
 
@@ -36,9 +36,9 @@ function LoginPage({error, dispatch}) {
 
   const [userType, setUserType] = React.useState("CCA")
 
-  // React.useEffect(() => {
-  //   dispatch(login({email: "admin@lums.edu.pk", password: "zoraiz123", userType: "CCA"}))
-  // }, [])
+  React.useEffect(() => {
+    dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
+  }, [])
   
   const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
   const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
@@ -90,19 +90,21 @@ function LoginPage({error, dispatch}) {
               <br/>            
 
               <Field
+                style = {{backgroundColor: 'white'}}
                 component={TextField}
                 variant="filled"
                 margin="normal"
                 required
                 label="Email"
                 name="email"
-                autoFocus
+                // autoFocus
                 InputProps={{
                   className: classes.input,
                 }}
               ></Field>
               <br/>            
               <Field
+                style = {{backgroundColor: 'white'}}
                 component={TextField}
                 variant="filled"
                 margin="normal"
@@ -119,7 +121,6 @@ function LoginPage({error, dispatch}) {
               
               <br/>    
               <br/>
-              {/* {isSubmitting && <LinearProgress />} */}
               <Button size="large" onClick={submitForm} 
               variant="contained" color="secondary" spacing= '10'
               endIcon={<NavigateNextIcon/>}>
