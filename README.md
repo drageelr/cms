@@ -19,7 +19,7 @@ This product is tailor made for the **Co-Curricular Activities Department** at *
     - [Set Up CMS Manually - Remote Server](https://github.com/drageelr/cms/#set-up-cms-manually---remote-server)
       - [Step 1 - Place Repository On Server](https://github.com/drageelr/cms/#step-1---place-repository-on-server)
       - [Step 2 - Run Commands To Deploy](https://github.com/drageelr/cms/#step-2---run-commands-to-deploy)
-    - [Local Server and Client App for Demo and Testing](https://github.com/drageelr/cms/#local-server-and-client-app-for-demo-and-testing)
+    - [Local Server and Client App for Demo and Testing](https://github.com/drageelr/cms/#local-server-and-client-app-demo-and-testing)
   - [Other Documents](https://github.com/drageelr/cms/#other-documents)
     
 
