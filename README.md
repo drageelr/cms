@@ -1,9 +1,22 @@
-# CCA Managment System (CMS)
+# CCA Management System (CMS)
 CMS is a **Task Management System** coupled with **Form Maker** to automate and ease **Data Management** and **Communication** between **CCA Users** and **Society Users.**
 This product is tailor made for the **Co-curricular Activities Department** at **Lahore University of Management Sciences (LUMS).**
 
 ## Table Of Contents:
--[ToC]
+- [CCA Management System (CCA)](https://github.com/drageelr/cms/#cca-management-system-cms)
+  - [Table Of Contents](https://github.com/drageelr/cms/#table-of-contents)
+  - [Installation](https://github.com/drageelr/cms/#installation)
+    - [Prerequisites](https://github.com/drageelr/cms/#prerequisites)
+      - [Step 1 - Installing NGINX](https://github.com/drageelr/cms/#step-1---installing-nginx)
+      - [Step 2 - Adjusting Firewall](https://github.com/drageelr/cms/#step-2---adjusting-firewall)
+      - [Step 3 - Set Up Server Block](https://github.com/drageelr/cms/#step-3---set-up-server-block)
+    - [Set Up CMS Using Deployer (For GitHub Contributors Only)](https://github.com/drageelr/cms/#set-up-cms-using-deployer-for-github-contributors-only)
+      - [Step 1 - Create SSH Key & Add To GitHub](https://github.com/drageelr/cms/#step-1---create-ssh-key--add-to-github)
+      - [Step 2 - Set Up Deployer](https://github.com/drageelr/cms/#step-2---set-up-deployer)
+      - [Step 3 - Deploy CMS](https://github.com/drageelr/cms/#step-3---deploy-cms)
+    - [Set Up CMS Manually](https://github.com/drageelr/cms/#set-up-cms-manually)
+      - [Step 1 - Place Repository On Server](https://github.com/drageelr/cms/#step-1---place-repository-on-server)
+      - [Step 2 - Run Commands To Deploy](https://github.com/drageelr/cms/#step-2---run-commands-to-deploy)
 
 ## Installation
 **Note: This installation guide is for Ubuntu 18.04** 
@@ -57,7 +70,7 @@ OpenSSH (v6)               ALLOW       Anywhere (v6)
 Nginx HTTP (v6)            ALLOW       Anywhere (v6)
 ```
 
-#### Step 4 - Set Up Server Block
+#### Step 3 - Set Up Server Block
 Get public IP address by running the following command:
 ```
 curl -4 icanhazip.com
@@ -185,8 +198,10 @@ pm2 status
 
 ### Set Up CMS Manually
 
-#### Step 1 - Place Repository On Server:
+#### Step 1 - Place Repository On Server
 - Place this repository on the server in the directory `~/GitHub`
+
+#### Step 2 - Run Commands To Deploy
 - Run the commands **(from root directory of the system)** in the text file `deployer/resources/dp-script-1` from line `2` - `8`
 - Run the commands **(from root of this repository)** in the text file `deployer/resources/dp-script-2` from line `1` - `8`
 - Run the command **(from server folder)** `pm2 start bin/www.js --name "cms-server"`
