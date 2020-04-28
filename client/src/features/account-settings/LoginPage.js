@@ -2,7 +2,7 @@ import React from 'react'
 import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Container, LinearProgress, Grid } from '@material-ui/core'
+import { Button, Container } from '@material-ui/core'
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
 import NavigateNextIcon from '@material-ui/icons/NavigateNext'
 import ToggleButton from '@material-ui/lab/ToggleButton'
@@ -25,24 +25,20 @@ const useStyles = makeStyles({
   },
   input: {
     color: 'black',
-    // "&:hover": {
-    //   background: 'white',
-    // }
   }
 })
 
 function LoginPage({error, dispatch}) {
   const classes = useStyles()
-
   const [userType, setUserType] = React.useState("CCA")
-
-  React.useEffect(() => {
-    dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
-  }, [])
-  
   const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
   const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
-  const [role, setRole] = React.useState("CCA")
+
+  // React.useEffect(() => {
+  //   dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
+  // }, [])
+  
+
   return (
     <Container component="main" className={classes.root}>
       <img style={{position: 'absolute', left: '30vw', width: '70vw', height: '100vh'}}
@@ -121,7 +117,7 @@ function LoginPage({error, dispatch}) {
               
               <br/>    
               <br/>
-              <Button size="large" onClick={submitForm} 
+              <Button size="large" onClick={submitForm} type="submit"
               variant="contained" color="secondary" spacing= '10'
               endIcon={<NavigateNextIcon/>}>
                 Login
