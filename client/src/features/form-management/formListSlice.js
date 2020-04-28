@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
 const sampleFormList = [
-  {formId: 0, title: "Design Approval", creatorId: "Ashar Javaid", timestampModified: '02/13/2009 23:31:30', isPublic: false},
-  {formId: 1, title: "Auditorium Booking", creatorId: "Ashar Javaid", timestampModified: '02/13/2009 22:31:30', isPublic: true},
-  {formId: 2, title: "Petition", creatorId: "Zoraiz Qureshi", timestampModified: '02/13/2009 21:31:30', isPublic: true},
-  {formId: 3, title: "Event Approval", creatorId: "Farkhanda Khan", timestampModified: '02/13/2009 20:31:30', isPublic: false},
-  {formId: 4, title: "Service Request", creatorId: "Ashar Javaid", timestampModified: '02/13/2009 19:31:30', isPublic: true},
+  {formId: 0, title: "Design Approval", creatorName: "Ashar Javaid", timestampModified: '02/13/2009 23:31:30', isPublic: false},
+  {formId: 1, title: "Auditorium Booking", creatorName: "Ashar Javaid", timestampModified: '02/13/2009 22:31:30', isPublic: true},
+  {formId: 2, title: "Petition", creatorName: "Zoraiz Qureshi", timestampModified: '02/13/2009 21:31:30', isPublic: true},
+  {formId: 3, title: "Event Approval", creatorName: "Farkhanda Khan", timestampModified: '02/13/2009 20:31:30', isPublic: false},
+  {formId: 4, title: "Service Request", creatorName: "Ashar Javaid", timestampModified: '02/13/2009 19:31:30', isPublic: true},
 ]
 
 const initialState = {
@@ -14,7 +14,6 @@ const initialState = {
   error: null
 }
 
-// const fId = 0
 export const fetchFormList = createAsyncThunk(
   'formList/fetchFormList',
   async (_, { getState, rejectWithValue}) => {
@@ -22,6 +21,7 @@ export const fetchFormList = createAsyncThunk(
     if (isPending != true) {
       return
     }
+
     try {
       const res = await fetch('/api/form/fetch-list', {
         method: 'POST',
@@ -31,13 +31,14 @@ export const fetchFormList = createAsyncThunk(
           'Authorization': `Bearer ${localStorage.token}`, 
         },
       })
-      console.log("elo jee", res)
+      console.log(res)
       if (res.ok) {
         const data = await res.json()
+        console.log(data)
         if (data.statusCode != 200) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         return data.formList
@@ -72,7 +73,7 @@ export const deleteForm = createAsyncThunk(
         if (data.statusCode != 203) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         return index
@@ -109,7 +110,7 @@ export const toggleStatus = createAsyncThunk(
         if (data.statusCode != 203) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         
@@ -146,7 +147,7 @@ export const duplicateForm = createAsyncThunk(
         if (data.statusCode != 201) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         

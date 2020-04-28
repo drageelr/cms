@@ -34,7 +34,7 @@ export default function FormMakerBar({title, isPublic, createMode}) {
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
 
   function viewChecklist(){
-    dispatch(setPropertyWindow({propertyType: 'checklist', propertyId: ''}))
+    dispatch(setPropertyWindow({propertyType: 'checklistItems', propertyId: ''}))
   }
 
   function handleSwitchChange(){
