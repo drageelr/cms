@@ -31,10 +31,10 @@ export const fetchFormList = createAsyncThunk(
           'Authorization': `Bearer ${localStorage.token}`, 
         },
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
+        
         if (data.statusCode != 200) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
@@ -55,6 +55,8 @@ export const fetchFormList = createAsyncThunk(
 export const deleteForm = createAsyncThunk(
   'formList/deleteForm',
   async (index, { rejectWithValue}) => {
+    return rejectWithValue("API to be integrated. Deleting locally.")
+
     try {
       const res = await fetch('/api/form/delete', {
         method: 'POST',
@@ -91,6 +93,7 @@ export const deleteForm = createAsyncThunk(
 export const toggleStatus = createAsyncThunk(
   'formList/changeFormStatus',
   async (index, {rejectWithValue}) => {
+    return index
     try {
       const res = await fetch('/api/form/edit', {
         method: 'POST',
@@ -104,7 +107,7 @@ export const toggleStatus = createAsyncThunk(
           isPublic: null
         })
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
@@ -129,6 +132,7 @@ export const toggleStatus = createAsyncThunk(
 export const duplicateForm = createAsyncThunk(
   'formList/duplicateForm',
   async (index, {rejectWithValue}) => {
+    return index
     try {
       const res = await fetch('/api/form/create', {
         method: 'POST',
@@ -141,7 +145,7 @@ export const duplicateForm = createAsyncThunk(
           formObj: null //Object required
         })
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 201) {
@@ -207,6 +211,7 @@ const formList = createSlice({
     [duplicateForm.fulfilled]: (state, action) => {
       const idx = action.payload
       state.list.splice(idx,0,{...state.list[idx]})
+      state.error = ("API to be created. Duplicating locally.")
     },
     [duplicateForm.rejected]: (state, action) => {
       state.error = action.payload
@@ -215,6 +220,7 @@ const formList = createSlice({
     [toggleStatus.fulfilled]: (state, action) => {
       const idx = action.payload
       state.list[idx].isPublic = !state.list[idx].isPublic
+      state.error = ("API to be created. Changing status locally.")
     },
     [toggleStatus.rejected]: (state, action) => {
       state.error = action.payload

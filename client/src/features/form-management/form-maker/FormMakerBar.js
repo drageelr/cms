@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import { Grid, Typography, Box, Button, FormControlLabel, Switch, Dialog, 
-  DialogContent, DialogTitle, DialogContentText, DialogActions } from '@material-ui/core'
+  DialogContent, DialogTitle, DialogContentText, DialogActions, IconButton, TextField } from '@material-ui/core'
 import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles'
 import SaveIcon from '@material-ui/icons/Save'
@@ -8,7 +8,9 @@ import ListIcon from '@material-ui/icons/List'
 import {useDispatch} from 'react-redux'
 import { setPropertyWindow } from '../propertiesDataSlice'
 import { toggleIsPublic, createForm, editForm } from '../formTemplateSlice'
+import EditIcon from '@material-ui/icons/Edit'
 import { useHistory } from 'react-router-dom'
+import { setTitle } from '../formTemplateSlice'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,13 +34,20 @@ export default function FormMakerBar({title, isPublic, createMode}) {
   const dispatch = useDispatch()
   const history = useHistory()
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
-
+  const [titleDialogOpen, setTitleDialogOpen] = useState(false)
+  const [localTitle, setLocalTitle] = useState(title)
+  
   function viewChecklist(){
-    dispatch(setPropertyWindow({propertyType: 'checklistItems', propertyId: ''}))
+    dispatch(setPropertyWindow({propertyType: 'checklist', propertyId: ''}))
   }
 
   function handleSwitchChange(){
     dispatch(toggleIsPublic())
+  }
+
+  function handleTitleChange(e){
+    setLocalTitle(e.target.value)
+    console.log(e.target.value)
   }
 
   return (
@@ -50,6 +59,7 @@ export default function FormMakerBar({title, isPublic, createMode}) {
             <Typography variant="h5">
               <Box marginLeft={30} fontWeight={600} m={1}>
                 {title}
+                <IconButton onClick={()=>setTitleDialogOpen(true)}><EditIcon fontSize="small"/></IconButton>
               </Box>
             </Typography>
           </Grid>
@@ -65,7 +75,17 @@ export default function FormMakerBar({title, isPublic, createMode}) {
             variant="contained"
             startIcon={<SaveIcon />}
             style={{marginLeft:10}}
-            onClick={()=> dispatch(createMode ? createForm() : editForm())}
+            onClick={()=> {
+              if (createMode){
+                dispatch(createForm())
+                setTimeout(()=>{
+                  history.goBack()
+                }, 3000)
+              }
+              else {
+                dispatch(editForm())
+              }
+            }}
             >Save</Button>
             
             <Button
@@ -102,6 +122,31 @@ export default function FormMakerBar({title, isPublic, createMode}) {
           </Button>
           <Button onClick={()=>setExitDialogOpen(false)}>
             No
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog aria-labelledby="conditional-item-dialog" open={titleDialogOpen}>
+        <DialogTitle id="exit-dialog-title">Edit Title</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            <TextField 
+                variant="outlined"
+                name="formTitle"
+                margin="normal"
+                required
+                label="Form Title"
+                onChange={handleTitleChange}
+                autoFocus
+              > {localTitle} </TextField>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>dispatch(setTitle(localTitle))} color="primary">
+            Save
+          </Button>
+          <Button onClick={()=>setTitleDialogOpen(false)}>
+            Close
           </Button>
         </DialogActions>
       </Dialog>

@@ -18,7 +18,6 @@ export default function TextboxProperties({propertyAddMode, propertyId, itemData
     defaultVisibility: true
   } : itemData
   
-  console.log(parentId)
 
   function closeProperties() {
     dispatch(closePropertiesWindow())

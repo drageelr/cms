@@ -44,7 +44,7 @@ export function LogEditor({taskId, taskData, dispatch}) {
     </Grid>
       {
         (() => {
-          console.log(taskData.tasks[taskId].logsList.length)
+          // console.log(taskData.tasks[taskId].logsList.length)
           if (taskData.tasks[taskId].logsList.length === 0) {
             return null
           } else {

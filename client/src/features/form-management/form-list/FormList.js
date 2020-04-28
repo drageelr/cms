@@ -75,7 +75,6 @@ function FormList({formList, dispatch}) {
       
           onRowsDelete: (rowsDeleted) => {
             for (let dataIndex in rowsDeleted.lookup) {
-              // console.log(dataIndex)
               dispatch(deleteForm(dataIndex))
             }
           }

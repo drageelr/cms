@@ -114,7 +114,7 @@ export const fetchForm = createAsyncThunk(
           formId: formId
         })
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 200) {
@@ -123,9 +123,11 @@ export const fetchForm = createAsyncThunk(
           ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
-        console.log(data)
+        
         const id = data.form.formId
+        console.log(data)
         delete data.form['formId']
+        console.log(convertToClientForm(data.form))
         return {
           id,
           ...convertToClientForm(data.form)  
@@ -169,10 +171,10 @@ export const createForm = createAsyncThunk(
         })
       })
       
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
+        
         if (data.statusCode != 201) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
@@ -200,17 +202,6 @@ export const editForm = createAsyncThunk(
     const {id, isPublic, title, sectionsOrder, sections, componentsOrder, components,
       itemsOrder, items, checklistItems} = getState().formTemplate
     
-    console.log({formId: id,...convertToServerForm({
-      title,
-      isPublic,
-      sections,
-      components,
-      items,
-      sectionsOrder,
-      componentsOrder,
-      itemsOrder,
-      checklistItems
-    })})
     try {
       const res = await fetch('/api/form/edit', {
         method: 'POST',
@@ -233,10 +224,10 @@ export const editForm = createAsyncThunk(
           })}
         })
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
+        
         if (data.statusCode != 200) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
@@ -276,10 +267,11 @@ const formTemplate = createSlice({
   reducers: {
     setCreateMode: (state, action) => { //example reducer
       state.createMode = action.payload.createMode
+      state.isPending = false
     },
 
     setTitle: (state, action) => { 
-      state.title = action.payload.title
+      state.title = action.payload
     },
 
     toggleIsPublic: (state, action) => {
@@ -354,12 +346,33 @@ const formTemplate = createSlice({
 
     editChecklistSubtask: (state, action) => {
       const {sectionId, subtask} = action.payload
-      state.checklistItems.push({sectionId, description: subtask})
+      state.checklistItems.forEach(checklistItem => {
+        if (checklistItem.sectionId === sectionId){
+          checklistItem.description = subtask
+        }
+      })
+    },
+
+    resetState: (state, action) => {
+      return { 
+        id: 0,
+        isPublic: false,
+        title: "",
+        sectionsOrder: [], 
+        sections: {},
+        componentsOrder: {},
+        components: {},
+        itemsOrder: {},
+        items: {},
+        checklistItems: [],
+        createMode: true,
+        isPending: true,
+        error: null,
+      }
     },
 
     deleteFormPart: (state, action) => { //example reducer
       const {type, id, parentId} = action.payload
-      console.log(action.payload)
       
       switch(type){
         case 'section':{
@@ -433,11 +446,11 @@ const formTemplate = createSlice({
       }
     },
     [fetchForm.fulfilled]: (state, action) => {
-      if (state.isPending === true) {        
+      if (state.isPending === true) {  
         sId = getMaxKey(action.payload.componentsOrder)
         cId = getMaxKey(action.payload.itemsOrder)
         iId = getMaxKey(action.payload.items)
-        console.log(sId, cId, iId)
+
         return {
           ...action.payload,
           createMode: false,
@@ -466,13 +479,13 @@ const formTemplate = createSlice({
       state.error = 'Form Edited'
     },
     [editForm.rejected]: (state, action) => {
-        state.error = action.payload
+      state.error = action.payload
     },
   }
 })
 
 
 export const { addSection, editSection, addItem, editItem, addComponent, editComponent,
-  editChecklistSubtask, deleteFormPart, toggleIsPublic, moveFormPart, clearError, setCreateMode, setTitle} = formTemplate.actions
+  editChecklistSubtask, deleteFormPart, toggleIsPublic, moveFormPart, clearError, setCreateMode, setTitle, resetState} = formTemplate.actions
 
 export default formTemplate.reducer

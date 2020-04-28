@@ -5,7 +5,7 @@ import Section from './Section'
 import {makeStyles, List, Paper, CircularProgress, Snackbar} from '@material-ui/core'
 import {connect} from 'react-redux'
 import FormMakerAddButton from './FormMakerAddButton'
-import { fetchForm, clearError, setCreateMode, setTitle } from '../formTemplateSlice'
+import { fetchForm, clearError, setCreateMode, setTitle, resetState } from '../formTemplateSlice'
 import ErrorSnackbar from '../../../ui/ErrorSnackbar'
 
 export const useStyles = makeStyles((theme) => ({
@@ -36,10 +36,12 @@ function FormMaker({ formTemplate, dispatch, match }) {
   
   useEffect(() => {
     if (formId !== undefined){
+      console.log("fetching")
       dispatch(fetchForm(formId))
       setCreateMode({createMode: false})
     }
     else{
+      dispatch(resetState())
       dispatch(setTitle({title: "New Form"}))
     }
   }, [])

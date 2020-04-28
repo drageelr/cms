@@ -72,10 +72,10 @@ export const fetchCCAAccounts = createAsyncThunk(
           'Authorization': `Bearer ${localStorage.token}`, 
         },
       })
-      console.log(res)
+      
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
+        
         if (data.statusCode != 200) {
           throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
@@ -109,7 +109,7 @@ export const toggleActiveCCAAccount = createAsyncThunk(
 
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
+        
 
         if (data.statusCode != 203) {
           throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
@@ -144,7 +144,7 @@ export const editCCAPermissions = createAsyncThunk(
 
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
+        
 
         if (data.statusCode != 203) {
           throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)

@@ -44,7 +44,6 @@ export function AttachRequestForm({taskId, requestListData, dispatch}) {
     selectableRows:false,
     onRowClick : (rowData, rowMeta, dataIndex) => {
       var requestId = rowData[0]
-      console.log(rowData)
       dispatch(linkFormToTask({taskId, requestId}))
     }
   }

@@ -41,7 +41,7 @@ const sampleClientForm = { // Sample form currently
   checklistItems: [{sectionId: 1, description: "Verify Email"}, {sectionId: 2, description: "Check Society"}]
   }
   
-  const sampleServerForm = {
+const sampleServerForm = {
   title: "Test Form",
   isPublic: false,
   sections: [
@@ -115,10 +115,17 @@ export function convertToServerForm(clientForm) {
         itemsOrder: clientForm.itemsOrder[componentId]
       })
 
-      clientForm.itemsOrder[componentId].forEach(itemId => {
+      clientForm.itemsOrder[componentId].forEach(itemId => {        
+        let item = {...clientForm.items[itemId]}
+        if ('options' in item){
+          item['options'] = item.options.map((option,index) => ({'optionId': index,  'data': option}))
+        }
+        if (!('required' in item)){
+          item = {...item, required: true}
+        }
         items.push({ // items creation
           itemId,
-          ...clientForm.items[itemId]
+          ...item,
         })
       })
     })
@@ -158,16 +165,25 @@ export function convertToClientForm(serverForm) {
   
   // items, itemsOrder creation
   serverForm.items.forEach(item=>{
-    items[item.itemId] = {...item}
+    let itemCopy = {...item}
+    if ('options' in itemCopy){
+      itemCopy['options'] = itemCopy['options'].map(option => option.data)
+    }
+    if (!('required' in itemCopy)){
+      itemCopy = {...itemCopy, required: true}
+    }
+    items[item.itemId] = {...itemCopy}
     delete items[item.itemId]["itemId"]
   })
   
+  const checklistItems = serverForm.checklist.map(checklistItem => 
+    ({sectionId: checklistItem.sectionId, description: checklistItem.description}))
   // everything else will be directly copied
   return {
     isPublic: serverForm.isPublic,
     title: serverForm.title,
     sectionsOrder,
-    checklistItems: serverForm.checklistItems,
+    checklistItems: checklistItems,
     componentsOrder,
     itemsOrder,
     sections,

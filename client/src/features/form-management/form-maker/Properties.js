@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.secondary.main,
     marginBottom: 10,
   },
-  checklistItems: {
+  checklist: {
     marginTop: '-1%',
     position: 'fixed',
     width: 200,
@@ -88,7 +88,7 @@ function Properties({propertiesData, formTemplate, dispatch}) {
       title = "Section"
       renderProperties = <SectionProperties propertyAddMode={propertyAddMode} propertyId={propertyId} sectionTitle={propertyAddMode ? '' : sections[propertyId]}/>
       break    
-    case "checklistItems":
+    case "checklist":
       title = "Checklist"
       renderProperties = <FormChecklistProperties {...itemProperties}/>
       break
@@ -160,7 +160,7 @@ function Properties({propertiesData, formTemplate, dispatch}) {
   // Properties window for the Form Checklist editor, renders editable text fields for subtasks corresponding to every section
   function FormChecklistProperties(){
     return (
-      <List className={classes.checklistItems}>
+      <List className={classes.checklist}>
         {
           checklistItems.map(checklistItem => {
             const sectionId = checklistItem.sectionId
