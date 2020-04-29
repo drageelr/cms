@@ -55,6 +55,10 @@ class AuthenticationError extends Error {
     this.message = "Invalid credentials!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 
@@ -73,6 +77,10 @@ class ForbiddenAccessError extends Error {
     this.message = "You don't have the necessary permissions for this resource!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 
@@ -89,6 +97,10 @@ class DuplicateUserError extends Error {
     this.message = "User already exists!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 
@@ -105,6 +117,10 @@ class UserNotFoundError extends Error {
     this.message = "User not found!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 
@@ -121,6 +137,10 @@ class FormValidationError extends Error {
     this.message = "Form not valid!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 
@@ -137,6 +157,10 @@ class FormNotFoundError extends Error {
     this.message = "Form not found!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 
@@ -153,6 +177,10 @@ class SubmissionValidationError extends Error {
     this.message = "Submission not valid!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 
@@ -169,6 +197,10 @@ class SubmissionNotFoundError extends Error {
     this.message = "Submission not found!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 

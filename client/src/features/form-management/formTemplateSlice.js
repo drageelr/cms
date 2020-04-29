@@ -98,6 +98,7 @@ let iId = 0 //item Id max
 export const fetchForm = createAsyncThunk(
   'formTemplate/fetchForm',
   async (formId, { getState, rejectWithValue}) => {
+    console.log("Fetching")
     const { isPending } = getState().formTemplate
     if (isPending !== true) {
       return
@@ -125,9 +126,9 @@ export const fetchForm = createAsyncThunk(
         }
         
         const id = data.form.formId
-        console.log(data)
+        // console.log(data)
         delete data.form['formId']
-        console.log(convertToClientForm(data.form))
+        // console.log(convertToClientForm(data.form))
         return {
           id,
           ...convertToClientForm(data.form)  
@@ -354,21 +355,21 @@ const formTemplate = createSlice({
     },
 
     resetState: (state, action) => {
-      return { 
-        id: 0,
-        isPublic: false,
-        title: "",
-        sectionsOrder: [], 
-        sections: {},
-        componentsOrder: {},
-        components: {},
-        itemsOrder: {},
-        items: {},
-        checklistItems: [],
-        createMode: true,
-        isPending: true,
-        error: null,
-      }
+      // return { 
+      //   id: 0,
+      //   isPublic: false,
+      //   title: "",
+      //   sectionsOrder: [], 
+      //   sections: {},
+      //   componentsOrder: {},
+      //   components: {},
+      //   itemsOrder: {},
+      //   items: {},
+      //   checklistItems: [],
+      //   createMode: true,
+      //   isPending: true,
+      //   error: null,
+      // }
     },
 
     deleteFormPart: (state, action) => { //example reducer

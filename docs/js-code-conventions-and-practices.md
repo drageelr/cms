@@ -58,6 +58,8 @@ function getSum(x, y) {
 1. Use semicolon at the end of the last line in case of multiline statement *(Not necessary if statement is bounded by curly braces `{}`)*.
 2. A Line should never start with parenthesis `()` or square bracket `[]`. If so, add a semicolon in the beginning of line *(or end of previous line)*.
 
+==**Note:** Semicolons are required for all server code, front-end developers can opt for a no-semicolon approach.
+
 #### Examples:
 ##### Simple Statements:
 ```javascript=15

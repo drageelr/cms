@@ -36,13 +36,12 @@ function FormMaker({ formTemplate, dispatch, match }) {
   
   useEffect(() => {
     if (formId !== undefined){
-      console.log("fetching")
       dispatch(fetchForm(formId))
       setCreateMode({createMode: false})
     }
     else{
       dispatch(resetState())
-      dispatch(setTitle({title: "New Form"}))
+      dispatch(setTitle("New Form"))
     }
   }, [])
 
