@@ -72,7 +72,7 @@ const sampleState = { // Sample form currently
       defaultVisibility: true
     },
   },
-  checklist: {0:"Verify Email", 1:"Check Society"}, //sectionId: subTask
+  checklistItems: [{sectionId: 1, description: "Verify Email"}, {sectionId: 2, description: "Check Society"}]
 }
 
 const initialState = { 
@@ -86,7 +86,7 @@ const initialState = {
   components: {},
   itemsOrder: {},
   items: {},
-  checklist: {},
+  checklistItems: [],
   createMode: true,
   isPending: true,
   error: null,
@@ -104,6 +104,7 @@ export const fetchForm = createAsyncThunk(
       return
     }
     try {
+
       const res = await fetch('/api/form/fetch', {
         method: 'POST',
         headers: {
@@ -115,6 +116,7 @@ export const fetchForm = createAsyncThunk(
           form: formId
         })
       })
+
       console.log(res)
       if (res.ok) {
         const data = await res.json()
@@ -125,6 +127,7 @@ export const fetchForm = createAsyncThunk(
           : `${data.statusCode}: ${data.message}`) 
         }
         
+
         return {
           id: data.id,
           isPublic: data.isPublic,
@@ -136,7 +139,7 @@ export const fetchForm = createAsyncThunk(
           components: data.components,
           // itemsOrder: {},
           items: data.items,
-          checklist: data.checkListItems,
+          checkListItems: data.checkListItems,
         }
       }
       //CHANGE 2
@@ -160,9 +163,11 @@ export const createForm = createAsyncThunk(
           'Authorization': `Bearer ${localStorage.token}`, 
         },
       })
+      //
       console.log(res)
       if (res.ok) {
         const data = await res.json()
+        console.log(data)
         if (data.statusCode != 203) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
@@ -172,7 +177,7 @@ export const createForm = createAsyncThunk(
         
         return {
           id: data.formId,
-          checklist: data.checklistIds
+          checklistItems: data.checklistItems
         }
       }
       //CHANGE 2
@@ -247,7 +252,7 @@ const formTemplate = createSlice({
       state.sections[sId] = action.payload.title
       state.sectionsOrder.push(sId)
       state.componentsOrder[sId] = []
-      state.checklist[sId] = "Empty"
+      state.checklistItems.push({[sId]:"Empty"})
     },
 
     editSection: (state, action) => { 

@@ -162,9 +162,10 @@ function Properties({propertiesData, formTemplate, dispatch}) {
     return (
       <List className={classes.checklist}>
         {
-          sectionsOrder.map(sectionId => {
+          checklistItems.map(checklistItem => {
+            const sectionId = checklistItem.sectionId
             const sectionTitle = sections[sectionId]
-            const subtask = checklist[sectionId]
+            const subtask = checklistItem.description
             return (
               <Paper key={sectionId} className={classes.subtaskPaper}>
                 <h5 style={{marginBottom: 0, marginTop: 4}} >{sectionTitle}</h5>

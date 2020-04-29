@@ -31,6 +31,11 @@ const useStyles = makeStyles({
   }
 })
 
+/**
+  The LoginPage constitutes a toggle button to switch between a CCA or Society
+  Login and fields to enter the user email and password. 
+ */
+
 function LoginPage({error, dispatch}) {
   const classes = useStyles()
 
