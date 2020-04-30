@@ -8,6 +8,13 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import { Grid, TextField } from '@material-ui/core'
 import Paper from '@material-ui/core/Paper'
 
+/**
+  The AddEditSocietyDialog constitutes fields for Society Name, Name Initials, Email, 
+  President Email, Patron Email, and a button to add/edit the fields.
+
+  @param {bool} isOpen to open dialog box
+ */
+
 export default function AddEditSocietyDialog(isOpen) {
   const [open, setOpen] = useState(isOpen)
 

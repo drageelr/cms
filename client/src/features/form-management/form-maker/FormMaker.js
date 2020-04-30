@@ -27,6 +27,7 @@ export const useStyles = makeStyles((theme) => ({
 
   @param {object} formTemplate from the formTemplate redux slice, passed on in all child components for rendering of the
   form maker and properties view based on the current form loaded
+
 */
 
 function FormMaker({ formTemplate, dispatch, match }) {
