@@ -62,7 +62,7 @@ export const fetchFormData = createAsyncThunk(
         if (data.statusCode != 200) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         return data.form
@@ -99,7 +99,7 @@ export const editFormData = createAsyncThunk(
         if (data.statusCode != 203) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         
@@ -135,7 +135,7 @@ export const deleteFormData = createAsyncThunk(
         if (data.statusCode != 203) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         
@@ -171,7 +171,7 @@ export const createFormData = createAsyncThunk(
         if (data.statusCode != 203) {
           //CHANGE 1
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${data.error.details}"`
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
         }
         

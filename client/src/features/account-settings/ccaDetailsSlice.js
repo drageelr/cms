@@ -77,7 +77,7 @@ export const fetchCCAAccounts = createAsyncThunk(
         const data = await res.json()
         console.log(data)
         if (data.statusCode != 200) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
 
         return {isPending: false, error: '' , ccaList: data.userList}
@@ -112,7 +112,7 @@ export const toggleActiveCCAAccount = createAsyncThunk(
         console.log(data)
 
         if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
 
         return {ccaId, active}
@@ -147,7 +147,7 @@ export const editCCAPermissions = createAsyncThunk(
         console.log(data)
 
         if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
 
         return {ccaId, permissions}
@@ -191,7 +191,7 @@ export const editCCAAccount = createAsyncThunk(
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
 
         return {ccaId, ccaObject}
@@ -231,7 +231,7 @@ export const addCCAAccount = createAsyncThunk(
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 201) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
         return {ccaId: data.ccaId, ccaObject}
       }
@@ -263,7 +263,7 @@ export const changeCCAPicture = createAsyncThunk(
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
         return {ccaId, url}
       }
