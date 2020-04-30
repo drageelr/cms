@@ -1,0 +1,4 @@
+Filter Options:
+1) Statuses to include: ["Approved(Patron)", "Pending(CCA)", "Issue(CCA)", "Approved(CCA)", "Write-Up", "Completed"] -> Default (Don't send)
+2) Time: {dateStart: Date, dateEnd: Date}; -> All (Don't send this object) OR 1 month (Dedault) OR 3 months OR Year OR Calender (To impose Restriction)
+
