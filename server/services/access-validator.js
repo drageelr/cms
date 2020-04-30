@@ -4,7 +4,6 @@
 */
 
 // Models:
-var Society = require('../models/society.model');
 var CCA = require('../models/cca.model');
 
 // Services:
@@ -88,6 +87,8 @@ exports.validateUserAccess = (req, res, next) => {
       } else {
         throw new customError.ForbiddenAccessError("forbidden access to resource", "RouteError");
       }
+    } else {
+      next(err);
     }
   } catch (err) {
     next(err)

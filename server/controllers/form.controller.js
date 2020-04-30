@@ -70,7 +70,7 @@ function validateForm (params) {
 
       // Validate Item Based On Type:
       let itemKeyError = validateItemType(i);
-      if(!itemKeyError) { return itemKeyError }
+      if(itemKeyError) { return itemKeyError }
     } else {
       return "item ids not unqiue";
     }
@@ -127,7 +127,7 @@ function validateForm (params) {
   if (checklistItems) {
     for (let c of checklistItems) {
       let index = sectionIds.indexOf(c.sectionId);
-      if (index < 0) { return "checklist references a non existent section with id " + toString(c.sectionId) }
+      if (index < 0) { return "checklist references a non existent section with id " + c.sectionId }
     }
   }
 
