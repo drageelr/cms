@@ -36,7 +36,6 @@ const initialState = {
   error: null
 }
 
-
 export const fetchFormData = createAsyncThunk(
   'formData/fetchFormData',
   async (formDataId, { getState, rejectWithValue }) => {
@@ -45,46 +44,217 @@ export const fetchFormData = createAsyncThunk(
       return
     }
 
-    return sampleState
+    try {
+      const res = await fetch('/api/form/fetch', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          formId: formDataId
+        })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 200) {
+          //CHANGE 1
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
+          : `${data.statusCode}: ${data.message}`) 
+        }
+        return data.form
+      }
+      //CHANGE 2
+      throw new Error(`${res.status}, ${res.statusText}`) 
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+    // return sampleState
   }
 )
 
-
 export const editFormData = createAsyncThunk(
   'formData/editFormData',
-  async (_, { getState, rejectWithValue }) => {
-    const { isPending, id, formId, userId, formStatus, ccaNote, ccaNoteTimestampModified, 
-      societyNotes, itemsData, timestampModified, timestampCreated } = getState().formData
-    if (isPending != true) {
-      return
+  async (_, {rejectWithValue }) => {
+    try {
+      const res = await fetch('/api/form/edit', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          //
+        })
+      })
+      
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 203) {
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
+          : `${data.statusCode}: ${data.message}`) 
+        }
+        
+        return data.description
+      }
+      //CHANGE 2
+      throw new Error(`${res.status}, ${res.statusText}`) 
     }
-
-    return '' 
+    catch (err) {
+      return rejectWithValue(err.toString())
+    } 
   }
 )
 
 export const deleteFormData = createAsyncThunk(
   'formData/deleteFormData',
-  async (formDataId, { getState, rejectWithValue }) => {
-    const { isPending } = getState().formData
-    if (isPending != true) {
-      return
+  async (formDataId, {rejectWithValue }) => {
+    try {
+      const res = await fetch('/api/form/delete', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          formId: formDataId
+        })
+      })
+      
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 203) {
+          //CHANGE 1
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
+          : `${data.statusCode}: ${data.message}`) 
+        }
+        
+        return ''  
+      }
+      //CHANGE 2
+      throw new Error(`${res.status}, ${res.statusText}`) 
     }
-
-    return '' 
+    catch (err) {
+      return rejectWithValue(err.toString())
+    } 
   }
 )
 
 export const createFormData = createAsyncThunk(
   'formData/createFormData',
-  async (formData, { getState, rejectWithValue }) => {
-    const { isPending, formId, userId, formStatus, ccaNote, ccaNoteTimestampModified, 
-      societyNotes, itemsData, timestampModified, timestampCreated } = getState().formData
-    if (isPending != true) {
-      return
-    }
+  async (formData, {rejectWithValue }) => {
+    try {
+      const res = await fetch('/api/form/create', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          form: formData
+        })
+      })
 
-    return '' 
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 203) {
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
+          : `${data.statusCode}: ${data.message}`) 
+        }
+        
+        return ''
+        
+      }
+      //CHANGE 2
+      throw new Error(`${res.status}, ${res.statusText}`) 
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    } 
+  }
+)
+
+export const updateCcaNote = createAsyncThunk(
+  'formData/updateCcaNote',
+  async ({formId, note}, {rejectWithValue }) => {
+
+    try {
+      const res = await fetch('/api/submission/cca/add-note', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          submissionId: formId, 
+          note: note
+        })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 203) {
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
+          : `${data.statusCode}: ${data.message}`) 
+        }
+        
+        return {isPending: false, error: '', formId: formId, note: note}
+        
+      }
+      throw new Error(`${res.status}, ${res.statusText}`) 
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    } 
+  }
+)
+
+export const addSocietyNote = createAsyncThunk(
+  'formData/addSocietyNote',
+  async ({formId, note}, {rejectWithValue }) => {
+
+    try {
+      const res = await fetch('/api/submission/society/add-note', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`, 
+        },
+        body: JSON.stringify({
+          submissionId: formId, 
+          note: note
+        })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        if (data.statusCode != 203) {
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
+          : `${data.statusCode}: ${data.message}`) 
+        }
+        
+        return {isPending: false, error: '', formId: formId, note: note}
+        
+      }
+      throw new Error(`${res.status}, ${res.statusText}`) 
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    } 
   }
 )
 
@@ -92,21 +262,12 @@ const formData = createSlice({
   name: 'formData',
   initialState: initialState,
   reducers: {
-    updateCcaNote: (state, action) => {
-      state.ccaNote = action.payload.ccaNote
-      // change time modified
-    },
-
     setCreateMode: (state, action) => {
       state.createMode = action.payload.createMode
     },
 
     setItemData: (state, action) => {
       state.itemsData[action.payload.id] = action.payload.data
-    },
-
-    addSocietyNote: (state, action) => {
-      state.societyNotes.push(action.payload.newSocietyNote)
     },
 
     clearError: (state, action) => {
@@ -135,62 +296,41 @@ const formData = createSlice({
         state.error = action.payload
       }
     },
-    [editFormData.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [editFormData.fulfilled]: (state, action) => {
-      console.log(action.payload)
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = 'Edited Form Data'
-      }
+      state.error = 'Edited Form Data'
     },
     [editFormData.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload
-      }
-    },
-    [deleteFormData.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
+      state.error = action.payload
     },
     [deleteFormData.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = 'Deleted Form Data'
-      }
+      state.error = 'Deleted Form Data'
     },
     [deleteFormData.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload
-      }
-    },
-    [createFormData.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
+      state.error = action.payload
     },
     [createFormData.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = 'Created Form Data' 
-      }
+      state.error = 'Created Form Data' 
     },
     [createFormData.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload
-      }
+      state.error = action.payload
+    },
+
+    [updateCcaNote.fulfilled]: (state, action) => {
+      state.ccaNote = action.payload.note
+    },
+    [updateCcaNote.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [addSocietyNote.fulfilled]: (state, action) => {
+      state.societyNotes.push(action.payload.note)
+    },
+    [addSocietyNote.rejected]: (state, action) => {
+      state.error = action.payload
     },
   }
 })
 
-export const { updateCcaNote, setItemData, addSocietyNote, clearError, setCreateMode } = formData.actions
-
+export const { setItemData, clearError, setCreateMode } = formData.actions
 
 export default formData.reducer
