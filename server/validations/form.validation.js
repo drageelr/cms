@@ -39,7 +39,7 @@ const itemSchema = Joi.object({
   })),
   conditionalItems: Joi.array().items(Joi.object({
     optionId: Joi.number().required(),
-    itemId: Joi.array().items(Joi.number()).required()
+    itemId: Joi.number().required()
   })),
   fileTypes: Joi.string()
 });
