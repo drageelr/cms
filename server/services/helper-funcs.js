@@ -84,3 +84,26 @@ exports.createObjFromObjArr = (objArr, keyProp, keyValue, ignoreUndefined = fals
 
   return miniObj;
 }
+
+exports.compareLists = (list1, list2) => {
+  let count = 0;
+  for (let i of list1) {
+    let inList = false;
+    for (let j of list2) {
+      if (i == j) {
+        console.log("i: ", i);
+        console.log("j: ", j);
+        inList = true;
+        break;
+      }
+    }
+    if (inList) {
+      console.log("inc!");
+      count++;
+    }
+  }
+
+  console.log(count);
+  console.log(list2.length);
+  return (count == list2.length) && (count == list1.length);
+}
