@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
   @param {string} title for the form
   @param {bool} isPublic status for the form
+  @param {bool} createMode edit or delete mode
 */
 
 export default function FormMakerBar({title, isPublic, createMode}) {

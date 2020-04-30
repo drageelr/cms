@@ -28,15 +28,20 @@ const useStyles = makeStyles({
   }
 })
 
+/**
+  The LoginPage constitutes a toggle button to switch between a CCA or Society
+  Login and fields to enter the user email and password. 
+ */
+
 function LoginPage({error, dispatch}) {
   const classes = useStyles()
   const [userType, setUserType] = React.useState("CCA")
   const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
   const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
 
-  // React.useEffect(() => {
-  //   dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
-  // }, [])
+  React.useEffect(() => {
+    dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
+  }, [])
   
 
   return (

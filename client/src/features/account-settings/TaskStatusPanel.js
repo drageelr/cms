@@ -37,6 +37,13 @@ const useStyles = makeStyles({
   },
 })
 
+/**
+  The TaskStatusPanel consists of buttons to add new task statuses or 
+  add/delete existing ones.
+
+  @param {String} taskStatusDetails for task status to be added 
+ */
+
 function TaskStatusPanel({taskStatusDetails,dispatch}){
 
   useEffect(() => {dispatch(fetchTaskStatus())},[])

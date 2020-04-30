@@ -10,6 +10,14 @@ import { connect } from 'react-redux'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import { useHistory } from 'react-router-dom'
 
+/**
+  Description
+
+  @param {string} error shows errors from user state
+  @param {function} dispatch to dispatch actions to redux, prop by connect 
+  (these 2 will be commonly used by redux components so they will not be repeated in the comments)
+*/
+
 function ChangePassword({error, dispatch}) {
   const history = useHistory()
 

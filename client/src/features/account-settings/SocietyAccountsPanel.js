@@ -27,6 +27,13 @@ const useStyles = makeStyles({
   },
 })
 
+/**
+  The SocietyAccountsPanel Adds/Edits the data of a society, has fields with
+  validation for email, password, Name, Name Initials, president email, and patron email
+  
+  @param {String} societyData for creating account  
+ */
+
 function SocietyAccountsPanel({societyData,dispatch}) {
   useEffect(() => {
     dispatch(fetchSocietyAccounts())
