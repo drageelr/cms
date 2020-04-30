@@ -126,15 +126,14 @@ export const fetchForm = createAsyncThunk(
         }
         
         const id = data.form.formId
-        // console.log(data)
         delete data.form['formId']
-        // console.log(convertToClientForm(data.form))
+        
+        console.log(data.form)
         return {
           id,
           ...convertToClientForm(data.form)  
         }
       }
-      //CHANGE 2
       throw new Error(`${res.status}, ${res.statusText}`) 
     }
     catch (err) {
@@ -177,7 +176,6 @@ export const createForm = createAsyncThunk(
         const data = await res.json()
         
         if (data.statusCode != 201) {
-          //CHANGE 1
           throw new Error((data.error !== undefined) 
           ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
           : `${data.statusCode}: ${data.message}`) 
@@ -188,7 +186,6 @@ export const createForm = createAsyncThunk(
           checklistIds: data.checklistIds
         }
       }
-      //CHANGE 2
       throw new Error(`${res.status}, ${res.statusText}`) 
     }
     catch (err) {
@@ -204,6 +201,20 @@ export const editForm = createAsyncThunk(
       itemsOrder, items, checklistItems} = getState().formTemplate
 
     try {
+      const form = {formId: id,...convertToServerForm({
+        title,
+        isPublic,
+        sections,
+        components,
+        items,
+        sectionsOrder,
+        componentsOrder,
+        itemsOrder,
+        checklistItems
+      })}
+      
+      console.log(form)
+
       const res = await fetch('/api/form/edit', {
         method: 'POST',
         headers: {
@@ -212,17 +223,7 @@ export const editForm = createAsyncThunk(
           'Authorization': `Bearer ${localStorage.token}`, 
         },
         body: JSON.stringify({
-          form: {formId: id,...convertToServerForm({
-            title,
-            isPublic,
-            sections,
-            components,
-            items,
-            sectionsOrder,
-            componentsOrder,
-            itemsOrder,
-            checklistItems
-          })}
+          form: form
         })
       })
       
@@ -309,6 +310,7 @@ const formTemplate = createSlice({
 
     addItem: (state, action) => {
       iId += 1
+      console.log(action.payload)
       state.itemsOrder[action.payload.parentId].push(iId)
       state.items[iId] = action.payload.newItemData
     },

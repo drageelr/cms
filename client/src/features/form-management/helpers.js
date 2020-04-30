@@ -117,11 +117,9 @@ export function convertToServerForm(clientForm) {
 
       clientForm.itemsOrder[componentId].forEach(itemId => {        
         let item = {...clientForm.items[itemId]}
+        console.log(item['options'])
         if ('options' in item){
-          item['options'] = item.options.map((option,index) => ({'optionId': index,  'data': option}))
-        }
-        if (!('required' in item)){
-          item = {...item, required: true}
+          item['options'] = item['options'].map((option,index) => ({'optionId': index,  'data': option}))
         }
         items.push({ // items creation
           itemId,
@@ -134,7 +132,7 @@ export function convertToServerForm(clientForm) {
   return{
     title: clientForm.title,
     isPublic: clientForm.isPublic,
-    checklistItems: clientForm.checklistItems,
+    // checklistItems: clientForm.checklistItems,
     sections,
     components,
     items
@@ -166,12 +164,10 @@ export function convertToClientForm(serverForm) {
   // items, itemsOrder creation
   serverForm.items.forEach(item=>{
     let itemCopy = {...item}
-    if ('options' in itemCopy){
-      itemCopy['options'] = itemCopy['options'].map(option => option.data)
+    if ('options' in item){
+      itemCopy['options'] = item['options'].map(option => option.data)
     }
-    if (!('required' in itemCopy)){
-      itemCopy = {...itemCopy, required: true}
-    }
+    
     items[item.itemId] = {...itemCopy}
     delete items[item.itemId]["itemId"]
   })
