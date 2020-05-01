@@ -1,12 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-
-const sampleFormList = [
-  {formId: 0, title: "Design Approval", creatorName: "Ashar Javaid", timestampModified: '02/13/2009 23:31:30', isPublic: false},
-  {formId: 1, title: "Auditorium Booking", creatorName: "Ashar Javaid", timestampModified: '02/13/2009 22:31:30', isPublic: true},
-  {formId: 2, title: "Petition", creatorName: "Zoraiz Qureshi", timestampModified: '02/13/2009 21:31:30', isPublic: true},
-  {formId: 3, title: "Event Approval", creatorName: "Farkhanda Khan", timestampModified: '02/13/2009 20:31:30', isPublic: false},
-  {formId: 4, title: "Service Request", creatorName: "Ashar Javaid", timestampModified: '02/13/2009 19:31:30', isPublic: true},
-]
+import { apiCaller } from '../../helpers'
 
 const initialState = {
   list: [],
@@ -22,71 +15,19 @@ export const fetchFormList = createAsyncThunk(
       return
     }
 
-    try {
-      const res = await fetch('/api/form/fetch-list', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-      })
-      
-      if (res.ok) {
-        const data = await res.json()
-        
-        if (data.statusCode != 200) {
-          //CHANGE 1
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        return data.formList
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/form/fetch-list', {},
+    200, (data)=>data.formList, rejectWithValue)
   }
 )
+
 
 export const deleteForm = createAsyncThunk(
   'formList/deleteForm',
   async (index, { rejectWithValue}) => {
 
+    // return await apiCaller('/api/form/delete', {},
+    // 200, (data)=>data.index, rejectWithValue)
     return rejectWithValue("API to be integrated. Deleting locally.")
-    
-    try {
-      const res = await fetch('/api/form/delete', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          formId: index
-        })
-      })
-      // console.log("response: ",res)
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          //CHANGE 1
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        return index
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
   }
 )
 
@@ -94,76 +35,18 @@ export const deleteForm = createAsyncThunk(
 export const toggleStatus = createAsyncThunk(
   'formList/changeFormStatus',
   async (index, {rejectWithValue}) => {
+    // return await apiCaller('/api/form/delete', {},
+    // 200, (data)=>data.index, rejectWithValue)
     return index
-    try {
-      const res = await fetch('/api/form/edit', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          index: index,
-          isPublic: null
-        })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        
-        return index
-        // return {isPending: false, error: '' , ccaList: data.userList}
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
   }
 )
 
 export const duplicateForm = createAsyncThunk(
   'formList/duplicateForm',
   async (index, {rejectWithValue}) => {
+    // return await apiCaller('/api/form/delete', {},
+    // 200, (data)=>data.index, rejectWithValue)
     return index
-    try {
-      const res = await fetch('/api/form/create', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          formObj: null //Object required
-        })
-      })
-      
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 201) {
-          //CHANGE 1
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        
-        return index
-        // return {isPending: false, error: '' , ccaList: data.userList}
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
   }
 )
 
