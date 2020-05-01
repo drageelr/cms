@@ -39,7 +39,7 @@ const sampleClientForm = { // Sample form currently
     }
   },
   checklistItems: [{sectionId: 1, description: "Verify Email"}, {sectionId: 2, description: "Check Society"}]
-  }
+}
   
 const sampleServerForm = {
   title: "Test Form",

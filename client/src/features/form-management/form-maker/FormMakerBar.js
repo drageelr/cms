@@ -48,7 +48,6 @@ export default function FormMakerBar({title, isPublic, createMode}) {
 
   function handleTitleChange(e){
     setLocalTitle(e.target.value)
-    console.log(e.target.value)
   }
 
   return (
@@ -78,10 +77,13 @@ export default function FormMakerBar({title, isPublic, createMode}) {
             style={{marginLeft:10}}
             onClick={()=> {
               if (createMode){
-                dispatch(createForm())
-                setTimeout(()=>{
-                  history.goBack()
-                }, 3000)
+                dispatch(createForm()).then(()=> {
+                  if (!createMode){
+                    setTimeout(()=>{
+                      history.goBack()
+                    }, 3000)
+                  }
+                })
               }
               else {
                 dispatch(editForm())
