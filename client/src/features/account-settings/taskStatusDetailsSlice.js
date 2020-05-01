@@ -51,7 +51,6 @@ export const fetchTaskStatus = createAsyncThunk(
     }
 
     const result = await fetchCall()
-    console.log(sampleState)
     return result
   }
 )
@@ -109,7 +108,6 @@ const taskStatusDetails = createSlice({
       if (state.isPending === true) {
         state.isPending = false
         let i = 0
-        console.log(action.payload.id)
         state.taskList.map((obj,index) => {
           if (obj.id === action.payload.id){
             i = index
@@ -120,7 +118,6 @@ const taskStatusDetails = createSlice({
       }
     },
     [deleteTaskStatus.rejected]: (state, action) => {
-      console.log(action)
       if (state.isPending === true) {
         state.isPending = false
         state.error = action.payload
@@ -144,7 +141,6 @@ const taskStatusDetails = createSlice({
       } 
     },
     [addTaskStatus.rejected]: (state, action) => {
-      console.log(action)
       if (state.isPending === true) {
         state.isPending = false
         state.error = action.payload
@@ -170,7 +166,6 @@ const taskStatusDetails = createSlice({
       }
     },
     [editTaskStatus.rejected]: (state, action) => {
-      console.log(action)
       if (state.isPending === true) {
         state.isPending = false
         state.error = action.payload
@@ -189,7 +184,6 @@ const taskStatusDetails = createSlice({
       }
     },
     [fetchTaskStatus.rejected]: (state, action) => {
-      console.log(action)
       if (state.isPending === true) {
         // state.isPending = false
         state.error = action.payload

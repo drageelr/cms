@@ -1,53 +1,5 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
-
-//basically a list of all CCA members details-> list of objects
-//need to add state for password verification
-// const sampleState = {
-//   ccaList: [
-//     {
-//       ccaId: 'cca-1',
-//       firstName: "Zoraiz",
-//       lastName: "Qureshi",
-//       email: "zq@gmail.com",
-//       picture: 'https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg',
-//       role:'admin',
-//       permissions:{
-//         "societyCRUD": true,
-//         "ccaCRUD": true,
-//         "accessFormMaker": true,
-//         "createReqTask": true,
-//         "createCustomTask": true,
-//         "createTaskStatus": true,
-//         "archiveTask": true,
-//         "unarchiveTask": true,
-//         "setFormStatus": true,
-//         "addCCANote": true
-//       }
-//     },
-//     {
-//       ccaId: 'cca-2',
-//       firstName: "Farrukh",
-//       lastName: "Rasool",
-//       email: "fr@gmail.com",
-//       picture: 'https://pbs.twimg.com/profile_images/1031129865590898689/AOratooC_400x400.jpg',
-//       role:'member',
-//       permissions:{
-//         "societyCRUD": true,
-//         "ccaCRUD": true,
-//         "accessFormMaker": true,
-//         "createReqTask": true,
-//         "createCustomTask": true,
-//         "createTaskStatus": true,
-//         "archiveTask": true,
-//         "unarchiveTask": true,
-//         "setFormStatus": true,
-//         "addCCANote": true
-//       }
-//     },  
-//   ],
-//   isPending: true,
-//   error: null
-// }
+import { apiCaller } from "../../helpers"
 
 const initialState = {
   ccaList : [],
@@ -63,106 +15,41 @@ export const fetchCCAAccounts = createAsyncThunk(
       return
     } 
 
-    try {
-      const res = await fetch('/api/account/cca/account-list', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 200) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
-        }
-
-        return {isPending: false, error: '' , ccaList: data.userList}
-      }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/account/cca/account-list', {}, 200,
+    (data) => ({isPending: false, error: '' , ccaList: data.userList}),
+    rejectWithValue)
   }
 )
 
 export const toggleActiveCCAAccount = createAsyncThunk(
   'ccaDetails/toggleActiveCCAAccount',
   async ({ccaId, active}, { rejectWithValue }) => {
-    try {
-      const res = await fetch('/api/account/cca/edit-account', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          ccaId: ccaId,
-          active: !active
-        })
-      })
 
-      if (res.ok) {
-        const data = await res.json()
-        console.log(data)
-
-        if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
-        }
-
-        return {ccaId, active}
-      }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/account/cca/edit-account', {
+      ccaId: ccaId,
+      active: !active
+    }, 203,
+    (data) => ({ccaId, active}),
+    rejectWithValue)
   }
 )
 
 export const editCCAPermissions = createAsyncThunk(
   'ccaDetails/editCCAPermissions',
   async ({ccaId, permissions}, { rejectWithValue }) => {
-    try {
-      const res = await fetch('/api/account/cca/edit-account', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          ccaId: ccaId,
-          permissions: permissions
-        })
-      })
 
-      if (res.ok) {
-        const data = await res.json()
-        console.log(data)
-
-        if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
-        }
-
-        return {ccaId, permissions}
-      }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/account/cca/edit-account', {
+      ccaId: ccaId,
+      permissions: permissions
+    }, 203,
+    (data) => ({ccaId, permissions}),
+    rejectWithValue)
   }
 )
 
 export const editCCAAccount = createAsyncThunk(
   'ccaDetails/editCCAAccount',
   async (ccaObject, { rejectWithValue }) => {
-
     const {ccaId, firstName, lastName, email, password, picture, role} = ccaObject 
     let body = {
       ccaId: ccaId,
@@ -176,30 +63,9 @@ export const editCCAAccount = createAsyncThunk(
       body = {...body, password: password}
     }
 
-    try {
-      const res = await fetch('/api/account/cca/edit-account', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify(body)
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
-        }
-
-        return {ccaId, ccaObject}
-      }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/account/cca/edit-account', body, 203,
+    (data) => ({ccaId, ccaObject}),
+    rejectWithValue)
   }
 )
 
@@ -208,69 +74,30 @@ export const addCCAAccount = createAsyncThunk(
   async (ccaObject, { rejectWithValue }) => {
     const { firstName, lastName, email, password, picture, role, permissions } = ccaObject
     
-    try {
-      const res = await fetch('/api/account/cca/create-account', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          firstName: firstName,
-          lastName: lastName,
-          picture: picture,
-          role: role,
-          permissions: permissions
-        })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 201) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
-        }
-        return {ccaId: data.ccaId, ccaObject}
-      }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
-    }
-    catch (err){
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/account/cca/create-account', {
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      picture: picture,
+      role: role,
+      permissions: permissions
+    }, 201,
+    (data) => ({ccaId: data.ccaId, ccaObject}),
+    rejectWithValue)
   }
 )
 
 export const changeCCAPicture = createAsyncThunk(
   'ccaDetails/changeCCAPicture',
   async ({ccaId, url}, {rejectWithValue}) => {
-    
-    try {
-      const res = await fetch('/api/account/cca/change-picture', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          picture: url
-        })
-      })
 
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
-        }
-        return {ccaId, url}
-      }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
-    }
-    catch (err){
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/account/cca/edit-account', {
+      picture: url
+    }, 203,
+    (data) => ({ccaId, url}),
+    rejectWithValue)
+    
   }
 )
 

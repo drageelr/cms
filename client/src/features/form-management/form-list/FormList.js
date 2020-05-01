@@ -62,7 +62,7 @@ function FormList({formList, dispatch}) {
         title={<CreateNewFormButton/>} //Button inserted instead of title for form creation
         data={formList.list.map((form, index) => [
           form.title, 
-          form.creatorId, 
+          form.creatorName, 
           form.timestampModified,
           form.isPublic ? 'Public' : 'Private', 
           <MoreFormOptionsButton index={index}/>
@@ -75,7 +75,6 @@ function FormList({formList, dispatch}) {
       
           onRowsDelete: (rowsDeleted) => {
             for (let dataIndex in rowsDeleted.lookup) {
-              // console.log(dataIndex)
               dispatch(deleteForm(dataIndex))
             }
           }

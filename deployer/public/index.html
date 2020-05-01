@@ -2,11 +2,11 @@
 
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+<meta charset="utf-8">
 
-  <title>CMS Deployer</title>
-  <meta name="description" content="Deployer for CCA Management System">
-  <meta name="author" content="Hammad Nasir">
+<title>CMS Deployer</title>
+<meta name="description" content="Deployer for CCA Management System">
+<meta name="author" content="Hammad Nasir">
 </head>
 <body>
 <h1>CMS Deployer</h1>
@@ -25,65 +25,95 @@
 <h2>Deploy New Server Instance</h2>
 <h3>Branch:</h3>
 <select id="branch-select" name="branch-name">
-  <option selected="selected" value="master">Master</option>
-  <option value="server-master">Server Master</option>
-  <option value="server-wip-hn">Server WIP Hammad Nasir</option>
-  <option value="server-wip-ha">Server WIP Hamza Aqeel</option>
-  <option value="client-master">Client Master</option>
-  <option value="client-wip-zq">Client WIP Zoraiz Qureshi</option>
-  <option value="client-wip-fr">Client WIP Farrukh Rasool</option>
-  <option value="client-wip-hf">Client WIP Hamza Farooq</option>
+<option selected="selected" value="master">Master</option>
+<option value="server-master">Server Master</option>
+<option value="server-wip-hn">Server WIP Hammad Nasir</option>
+<option value="server-wip-ha">Server WIP Hamza Aqeel</option>
+<option value="client-master">Client Master</option>
+<option value="client-wip-zq">Client WIP Zoraiz Qureshi</option>
+<option value="client-wip-fr">Client WIP Farrukh Rasool</option>
+<option value="client-wip-hf">Client WIP Hamza Farooq</option>
 </select><br />
 <h3>Database:</h3>
 <select id="db-select" name="db-name">
-  <option selected="selected" value="prod">Production</option>
-  <option value="dev-hn">Hammad Nasir DB</option>
-  <option value="dev-ha">Hamza Aqeel DB</option>
-  <option value="dev-zq">Zoraiz Qureshi DB</option>
-  <option value="dev-fr">Farrukh Rasool DB</option>
-  <option value="dev-hf">Hamza Farooq DB</option>
+<option selected="selected" value="prod">Production</option>
+<option value="dev-hn">Hammad Nasir DB</option>
+<option value="dev-ha">Hamza Aqeel DB</option>
+<option value="dev-zq">Zoraiz Qureshi DB</option>
+<option value="dev-fr">Farrukh Rasool DB</option>
+<option value="dev-hf">Hamza Farooq DB</option>
 </select><br /> 
-<input onclick="startServer()"type="submit" value="Start Server" />
+<input onclick="startServer()"type="submit" id="startServerButton" value="Start Server" />
 <br>
-<input onclick="stopServer()"type="submit" value="Stop Server" />
+<input onclick="stopServer()"type="submit" id="stopServerButton" value="Stop Server" />
 
-  <script>
+<script>
     async function startServer() {
-      const selectedBranch = document.getElementById("branch-select").value
-      const selectedDB = document.getElementById("db-select").value
-      const res = await fetch('http://167.71.224.73/dev/api/start', {
+    document.getElementById("startServerButton").disabled = true
+    setTimeout(() => {
+        document.getElementById("startServerButton").disabled = false
+    }, 120000)
+
+    const selectedBranch = document.getElementById("branch-select").value
+    const selectedDB = document.getElementById("db-select").value
+    const res = await fetch('/dev/api/start', {
         method: 'POST',
-        body:{
-          branchName: selectedBranch,
-          dbName: selectedDB
-        }
-      })
-      const data = await res.json()
-      const {statusCode, statusName, message} = data
-      
-      console.log(data)
+        headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+        branchName: selectedBranch,
+        dbName: selectedDB
+        })
+    })
+    
+
+    const data = await res.json()
+    const {statusCode, statusName, message} = data
+
+    
     }
     
     async function stopServer() {
-      const res = await fetch('http://167.71.224.73/dev/api/stop', {
-        method: 'GET',
-      })
+    document.getElementById("stopServerButton").disabled = true
+    setTimeout(() => {
+        document.getElementById("stopServerButton").disabled = false
+    }, 120000)
 
-      const data = await res.json()
+    const res = await fetch('/dev/api/stop', {
+        method: 'GET',
+        headers: {
+        'Accept': 'application/json',
+        },
+    })
+
+    
+
+    const data = await res.json()
           
-      console.log(data)
+    
     }
 
     async function refreshStatus() {
-      const res = await fetch('http://167.71.224.73/dev/api/status', {method: 'GET'})
-      const data = await res.json()
-      console.log(data)
-      
-      const {statusCode, statusName, message,  branchName, dbName, serverStatus} = data
+    const res = await fetch('/dev/api/status', {
+        method: 'GET',
+        headers: {
+        'Accept': 'application/json',
+        },
+    })
 
-      document.getElementById("branch-div").innerHTML = branchName
-      document.getElementById("db-div").innerHTML = dbName
-      document.getElementById("status-div").innerHTML = `Status Code: ${statusCode}, Status Name: ${statusName}, Message: ${message}`
+    
+    const data = await res.json()
+    
+      
+    const {statusCode, statusName, message,  branchName, dbName, serverStatus} = data
+
+    document.getElementById("branch-div").innerHTML = branchName
+    document.getElementById("db-div").innerHTML = dbName
+    document.getElementById("status-div").innerHTML = `Status Code: ${statusCode}, Status Name: ${statusName}, Message: ${message}`
+    document.getElementById("server-status-div").innerHTML = serverStatus.replace(/\n/g, "<br />")
+
     }
 
 </script>

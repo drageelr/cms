@@ -16,7 +16,6 @@ export default function DropdownProperties({propertyAddMode, propertyId, itemDat
     defaultVisibility: true
   } : itemData
   
-  console.log(parentId)
 
   function closeProperties() {
     dispatch(closePropertiesWindow())
@@ -42,7 +41,8 @@ export default function DropdownProperties({propertyAddMode, propertyId, itemDat
           label: values.label,
           options: values.options.split(','), 
           required: values.required, 
-          defaultVisibility: values.defaultVisibility
+          defaultVisibility: values.defaultVisibility,
+          conditionalItems: [{optionId: 0, itemId: 0}]
         }
 
         if (propertyAddMode){

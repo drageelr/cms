@@ -1,12 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-
-const sampleFormList = [
-  {formId: 0, title: "Design Approval", creatorId: "Ashar Javaid", timestampModified: '02/13/2009 23:31:30', isPublic: false},
-  {formId: 1, title: "Auditorium Booking", creatorId: "Ashar Javaid", timestampModified: '02/13/2009 22:31:30', isPublic: true},
-  {formId: 2, title: "Petition", creatorId: "Zoraiz Qureshi", timestampModified: '02/13/2009 21:31:30', isPublic: true},
-  {formId: 3, title: "Event Approval", creatorId: "Farkhanda Khan", timestampModified: '02/13/2009 20:31:30', isPublic: false},
-  {formId: 4, title: "Service Request", creatorId: "Ashar Javaid", timestampModified: '02/13/2009 19:31:30', isPublic: true},
-]
+import { apiCaller } from '../../helpers'
 
 const initialState = {
   list: [],
@@ -14,7 +7,6 @@ const initialState = {
   error: null
 }
 
-// const fId = 0
 export const fetchFormList = createAsyncThunk(
   'formList/fetchFormList',
   async (_, { getState, rejectWithValue}) => {
@@ -23,47 +15,40 @@ export const fetchFormList = createAsyncThunk(
       return
     }
 
-    return sampleFormList
+    return await apiCaller('/api/form/fetch-list', {},
+    200, (data)=>data.formList, rejectWithValue)
   }
 )
 
+
 export const deleteForm = createAsyncThunk(
   'formList/deleteForm',
-  async (index, { getState, rejectWithValue}) => {
-    const { isPending, list } = getState().formList
-    if (isPending != true) {
-      return
-    }
+  async (index, { rejectWithValue}) => {
 
-    return index
+    // return await apiCaller('/api/form/delete', {},
+    // 200, (data)=>data.index, rejectWithValue)
+    return rejectWithValue("API to be integrated. Deleting locally.")
   }
 )
 
 
 export const toggleStatus = createAsyncThunk(
   'formList/changeFormStatus',
-  async (index, { getState, rejectWithValue}) => {
-    const { isPending, formList } = getState().formList
-    if (isPending != true) {
-      return
-    }
-
+  async (index, {rejectWithValue}) => {
+    // return await apiCaller('/api/form/delete', {},
+    // 200, (data)=>data.index, rejectWithValue)
     return index
   }
 )
 
 export const duplicateForm = createAsyncThunk(
   'formList/duplicateForm',
-  async (index, { getState, rejectWithValue}) => {
-    const { isPending, formList } = getState().formList
-    if (isPending != true) {
-      return
-    }
-
+  async (index, {rejectWithValue}) => {
+    // return await apiCaller('/api/form/delete', {},
+    // 200, (data)=>data.index, rejectWithValue)
     return index
   }
 )
-
 
 const formList = createSlice({
   name: 'formList',
@@ -93,66 +78,35 @@ const formList = createSlice({
       }
     },
 
-    [deleteForm.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [deleteForm.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        let i = 0
-        state.list.map((obj,index) => {
-          if (obj.id === action.payload){
-            i = index
-          }  
-        })  
-        state.list.splice(i,1)
-      }
+      let i = 0
+      state.list.map((obj,index) => {
+        if (obj.id === action.payload){
+          i = index
+        }  
+      })  
+      state.list.splice(i,1)
     },
     [deleteForm.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload
-      }
+      state.error = action.payload
     },
 
-    [duplicateForm.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [duplicateForm.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        const idx = action.payload
-        state.list.splice(idx,0,{...state.list[idx]})
-      }
+      const idx = action.payload
+      state.list.splice(idx,0,{...state.list[idx]})
+      state.error = ("API to be created. Duplicating locally.")
     },
     [duplicateForm.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload
-      }
+      state.error = action.payload
     },
 
-    [toggleStatus.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [toggleStatus.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        const idx = action.payload
-        state.list[idx].isPublic = !state.list[idx].isPublic
-      }
+      const idx = action.payload
+      state.list[idx].isPublic = !state.list[idx].isPublic
+      state.error = ("API to be created. Changing status locally.")
     },
     [toggleStatus.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload
-      }
+      state.error = action.payload
     },
   }
 })

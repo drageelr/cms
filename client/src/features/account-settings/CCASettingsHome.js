@@ -1,11 +1,15 @@
 import React from 'react'
-
 import { Link, Redirect } from 'react-router-dom'
 import { Grid, Button} from '@material-ui/core'
 import LockIcon from '@material-ui/icons/Lock'
 import PersonIcon from '@material-ui/icons/Person'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted'
+
+/**
+  The CCASettingsHome constitutes buttons for the following: Change Password, CCA Accounts,
+  Society Accounts, and Task Status Panel.
+ */
 
 export default function CCASettingsHome() {
   return (

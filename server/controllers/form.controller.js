@@ -35,10 +35,8 @@ const itemTypes = {
 
 function validateItemType (item) {
   let itemKeys = Object.keys(item);
-  console.log(itemKeys);
-  console.log(itemTypes[item.type]);
-  if (!helperFuncs.compareLists(itemKeys, itemTypes[item.type])) {
-    return "item with id " + item.itemId + " should have only these keys: " + JSON.stringify(itemTypes[item.type]);
+  if (itemKeys !== itemTypes[item.type]) {
+    return "item with id " + item.itemId + " should have only these key in the defined order: " + JSON.stringify(itemTypes[item.type]);
   }
   
   // Check For Duplicate Option Ids:

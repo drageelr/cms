@@ -52,7 +52,7 @@ export const fetchSocietyAccounts = createAsyncThunk(
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 200) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
 
         return {isPending: false, error: '' , societyList: data.userList}
@@ -84,10 +84,10 @@ export const toggleActiveSocietyAccount = createAsyncThunk(
 
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
+        
 
         if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
 
         return {societyId, active}
@@ -124,9 +124,9 @@ export const addSocietyAccount = createAsyncThunk(
 
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
+        
         if (data.status != 201) {
-          throw new Error(`${data.status}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.status}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
 
         return {societyId: data.societyId, societyObject}
@@ -170,7 +170,7 @@ export const editSocietyAccount = createAsyncThunk(
       if (res.ok) {
         const data = await res.json()
         if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${data.error.details}`)
+          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
 
         return {societyId, societyObject}

@@ -267,7 +267,6 @@ const taskdata = createSlice({
     changeTaskStatus: (state, action) => {
       const { taskId, status} = action.payload
       
-      console.log(taskId, status)
       state.taskStatuses.map(statObj => {
         if(statObj.name === status) {
           state.tasks[taskId].status = statObj.id

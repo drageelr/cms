@@ -2,7 +2,7 @@ import React from 'react'
 import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Container, LinearProgress, Grid } from '@material-ui/core'
+import { Button, Container } from '@material-ui/core'
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
 import NavigateNextIcon from '@material-ui/icons/NavigateNext'
 import ToggleButton from '@material-ui/lab/ToggleButton'
@@ -24,25 +24,31 @@ const useStyles = makeStyles({
     color: 'white'
   },
   input: {
-    color: 'white',
-    "&:hover": {
-      background: 'white',
-    }
+    color: 'black',
   }
 })
 
+/**
+  The LoginPage constitutes a toggle button to switch between a CCA or Society
+  Login and fields to enter the user email and password. 
+ */
+
 function LoginPage({error, dispatch}) {
   const classes = useStyles()
-
   const [userType, setUserType] = React.useState("CCA")
+
+  //   React.useEffect(() => {
+  //     dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
+  //   }, [])
+  
+  const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
+  const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
 
   React.useEffect(() => {
     dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
   }, [])
   
-  const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
-  const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
-  const [role, setRole] = React.useState("CCA")
+
   return (
     <Container component="main" className={classes.root}>
       <img style={{position: 'absolute', left: '30vw', width: '70vw', height: '100vh'}}
@@ -90,19 +96,20 @@ function LoginPage({error, dispatch}) {
               <br/>            
 
               <Field
+                style = {{backgroundColor: 'white'}}
                 component={TextField}
                 variant="filled"
                 margin="normal"
                 required
                 label="Email"
                 name="email"
-                autoFocus
                 InputProps={{
                   className: classes.input,
                 }}
               ></Field>
               <br/>            
               <Field
+                style = {{backgroundColor: 'white'}}
                 component={TextField}
                 variant="filled"
                 margin="normal"
@@ -110,7 +117,6 @@ function LoginPage({error, dispatch}) {
                 label="Password"
                 name="password"
                 type="password"
-                autoFocus
                 InputProps={{
                   className: classes.input,
                 }}
@@ -119,8 +125,7 @@ function LoginPage({error, dispatch}) {
               
               <br/>    
               <br/>
-              {/* {isSubmitting && <LinearProgress />} */}
-              <Button size="large" onClick={submitForm} 
+              <Button size="large" onClick={submitForm} type="submit"
               variant="contained" color="secondary" spacing= '10'
               endIcon={<NavigateNextIcon/>}>
                 Login

@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 function Properties({propertiesData, formTemplate, dispatch}) {
   const classes = useStyles()
   const { propertyType, propertyAddMode, propertyId, parentId } = propertiesData
-  const { sections, sectionsOrder, checklist, components, items } = formTemplate
+  const { sections, checklistItems, components, items } = formTemplate
   const itemProperties = { propertyAddMode, propertyId, parentId, itemData: propertyAddMode ?  null : items[propertyId] }
 
   let title = ""
@@ -162,9 +162,10 @@ function Properties({propertiesData, formTemplate, dispatch}) {
     return (
       <List className={classes.checklist}>
         {
-          sectionsOrder.map(sectionId => {
+          checklistItems.map(checklistItem => {
+            const sectionId = checklistItem.sectionId
             const sectionTitle = sections[sectionId]
-            const subtask = checklist[sectionId]
+            const subtask = checklistItem.description
             return (
               <Paper key={sectionId} className={classes.subtaskPaper}>
                 <h5 style={{marginBottom: 0, marginTop: 4}} >{sectionTitle}</h5>
