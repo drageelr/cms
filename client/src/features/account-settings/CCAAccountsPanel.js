@@ -39,7 +39,6 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       ...permissions, 
       [event.target.name]: event.target.checked 
     })
-    console.log("test")
   }
 
   function handleDispatchPermissionsChange() {
