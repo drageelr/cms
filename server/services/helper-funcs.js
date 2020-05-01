@@ -91,14 +91,19 @@ exports.compareLists = (list1, list2) => {
     let inList = false;
     for (let j of list2) {
       if (i == j) {
+        console.log("i: ", i);
+        console.log("j: ", j);
         inList = true;
         break;
       }
     }
     if (inList) {
+      console.log("inc!");
       count++;
     }
   }
-
+  
+  console.log(count);
+  console.log(list2.length);
   return (count == list2.length) && (count == list1.length);
 }

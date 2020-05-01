@@ -39,7 +39,7 @@ function FormViewer({formTemplate, formData, dispatch, userType, match}) {
 
   return (
     <div>
-      <FormViewerBar title={title} notesData={{ccaNote, ccaNoteTimestampModified, societyNotes}} isCCA={userType==="CCA"} createMode={createMode}/>
+      <FormViewerBar formId={formId} title={title} notesData={{ccaNote, ccaNoteTimestampModified, societyNotes}} isCCA={userType==="CCA"} createMode={createMode}/>
       <br/>
       {
       (!createMode && isPending) ? <CircularProgress style={{marginLeft: '50vw', marginTop: '30vh'}}/> :  

@@ -95,8 +95,7 @@ export default function NavBar({name, userType, picture}) {
                   {name}
                 </Box>
               </Typography>
-              {
-              
+              {      
               userType==="CCA" ? 
               <Link to='settings'>
                 <IconButton edge="end" style={{padding: 10, marginRight: 5}}>

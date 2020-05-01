@@ -298,7 +298,7 @@ exports.addSocietyNote = async (req, res, next) => {
   }
 }
 
-// Apply Filter!
+
 exports.getSubmissionList = async (req, res, next) => {
   let params = req.body;
 
