@@ -1,91 +1,21 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import { convertToClientForm, convertToServerForm } from './helpers'
+import { convertToClientForm, convertToServerForm } from './formConverters'
+import { apiCaller } from '../../helpers'
 
 // Form Maker template creation state stored here, this could have been done locally inside the Form Maker as well
 // but is done so to set aside the rigorous business logic required
-
-const sampleState = { // Sample form currently
-  id: 0,
-  isPublic: false,
-  title: "Event Approval",
-  sectionsOrder: [0, 1], //ordered list of section Ids (any Ids are not unique to any other forms)
-  sections: {
-    0:"Email Address", 
-    1:"Society"
-  },
-  componentsOrder: {
-    1: [2, 0], // sectionId:  list of component Ids in order
-    0: [1] 
-  },
-  components: {
-    0:"Component 1", //componentId: componentTitle
-    1:"Component 2", 
-    2:"Component 3"
-  },
-  itemsOrder: { 
-    0: [0, 1], //componentId: ordered list of itemIds
-    1: [4],
-    2: [2, 3, 5] 
-  },
-  items: { //itemId: itemData
-    0:{
-      type: "textbox",
-      label: "Society Email",
-      placeHolder: "spades@lums.edu.pk",
-      maxLength: 100,
-      required: true,
-      defaultVisibility: true
-    },
-    1:{
-      type: "textlabel",
-      label: "Important Notice: Please ensure that you have correctly filled out your entire details to prevent any future inconvenience.",
-      required: true,
-      defaultVisibility: true
-    },
-    2:{
-      type: "dropdown",
-      label: "Event Type",
-      options: ["Small", "Medium", "Mega"],
-      conditionalItems: {0: [3]}, // Key -> Index of option. [] -> List of Item Ids to trigger by that option selection
-      required: true,
-      defaultVisibility: false
-    },
-    3:{
-      type: "radio",
-      label: "Executive Council Role",
-      options: ["President", "Vice President", "Treasurer", "General Secretary"],
-      conditionalItems: {},
-      required: true,
-      defaultVisibility: false
-    },
-    4:{
-      type: "checkbox",
-      label: "I verify that I have provided all the correct details and have read the rules and guidelines.",
-      required: true,
-      defaultVisibility: true
-    },
-    5:{
-      type: "file",
-      label: "Upload Society Logo",
-      fileTypes: ".jpg, .png",
-      required: true,
-      defaultVisibility: true
-    },
-  },
-  checklistItems: {0:"Verify Email", 1:"Check Society"}, //sectionId: subTask
-}
 
 const initialState = { 
   id: 0,
   isPublic: false,
   title: "",
-  sectionsOrder: [], 
+  sectionsOrder: [], //ordered list of section Ids (any Ids are not unique to any other forms)
   sections: {},
-  componentsOrder: {},
-  components: {},
-  itemsOrder: {},
-  items: {},
-  checklistItems: [],
+  componentsOrder: {}, // sectionId:  list of component Ids in order
+  components: {}, //componentId: componentTitle
+  itemsOrder: {}, //componentId: ordered list of itemIds
+  items: {}, //itemId: itemData
+  checklistItems: [], //sectionId: subTask
   createMode: true,
   isPending: true,
   error: null,
@@ -95,104 +25,48 @@ let sId = 0 //section Id max
 let cId = 0 //component Id max
 let iId = 0 //item Id max
 
+
 export const fetchForm = createAsyncThunk(
   'formTemplate/fetchForm',
-  async (formId, { getState, rejectWithValue}) => {
-    console.log("Fetching")
-    const { isPending } = getState().formTemplate
-    if (isPending !== true) {
-      return
-    }
-    try {
-      const res = await fetch('/api/form/fetch', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          formId: formId
-        })
-      })
-      
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 200) {
-          //CHANGE 1
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        
-        const id = data.form.formId
-        delete data.form['formId']
-        
-        console.log(data.form)
-        return {
-          id,
-          ...convertToClientForm(data.form)  
-        }
+  async (formId, { getState, rejectWithValue }) => {
+    if (getState().formTemplate.isPending !== true) return
+    
+    return await apiCaller('/api/form/fetch', { formId: formId }, 200, 
+    (data) => {
+      delete data.form['formId']
+  
+      return {
+        id: data.form.formId,
+        ...convertToClientForm(data.form)  
       }
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    }, rejectWithValue)
   }
 )
 
 export const createForm = createAsyncThunk(
   'formTemplate/createForm',
-  async (_, {getState, rejectWithValue }) => {
+  async (_, { getState, rejectWithValue }) => {
     const {isPublic, title, sectionsOrder, sections, componentsOrder, components,
     itemsOrder, items, checklistItems} = getState().formTemplate
 
-    try {
-      const res = await fetch('/api/form/create', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          form: convertToServerForm({
-            title,
-            isPublic,
-            sections,
-            components,
-            items,
-            sectionsOrder,
-            componentsOrder,
-            itemsOrder,
-            checklistItems
-          })
-        })
-      })
-      
-      
-      if (res.ok) {
-        const data = await res.json()
-        
-        if (data.statusCode != 201) {
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        
-        return {
-          id: data.formId,
-          checklistIds: data.checklistIds
-        }
-      }
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/form/create', {form: convertToServerForm({
+      title,
+      isPublic,
+      sections,
+      components,
+      items,
+      sectionsOrder,
+      componentsOrder,
+      itemsOrder,
+      checklistItems
+    })}, 201, 
+    (data) => ({
+        id: data.formId,
+        checklistIds: data.checklistIds
+    }), rejectWithValue)
   }
 )
+
 
 export const editForm = createAsyncThunk(
   'formTemplate/editForm',
@@ -200,55 +74,28 @@ export const editForm = createAsyncThunk(
     const {id, isPublic, title, sectionsOrder, sections, componentsOrder, components,
       itemsOrder, items, checklistItems} = getState().formTemplate
 
-    try {
-      const form = {formId: id,...convertToServerForm({
-        title,
-        isPublic,
-        sections,
-        components,
-        items,
-        sectionsOrder,
-        componentsOrder,
-        itemsOrder,
-        checklistItems
-      })}
-      
-      console.log(form)
+    const form = {formId: id,...convertToServerForm({
+      title,
+      isPublic,
+      sections,
+      components,
+      items,
+      sectionsOrder,
+      componentsOrder,
+      itemsOrder,
+      checklistItems
+    })}
 
-      const res = await fetch('/api/form/edit', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          form: form
-        })
-      })
-      
-      if (res.ok) {
-        const data = await res.json()
-        
-        if (data.statusCode != 200) {
-          //CHANGE 1
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        return {
-          id: data.formId,
-          checklistIds: data.checklistIds
-        }
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }    
+    console.log("SENDING", form)
+
+    return await apiCaller('/api/form/edit', {form: form}, 200, 
+    (data) => ({
+      id: data.formId,
+      checklistIds: data.checklistIds
+    }), rejectWithValue)
   }
 )
+
 
 function getMaxKey(object) {
   if (Object.keys(object).length === 0 && object.constructor === Object) return 0
@@ -270,6 +117,10 @@ const formTemplate = createSlice({
     setCreateMode: (state, action) => { //example reducer
       state.createMode = action.payload.createMode
       state.isPending = false
+    },
+
+    setFormId: (state, action) => {
+      state.id = action.payload.id
     },
 
     setTitle: (state, action) => { 
@@ -310,7 +161,6 @@ const formTemplate = createSlice({
 
     addItem: (state, action) => {
       iId += 1
-      console.log(action.payload)
       state.itemsOrder[action.payload.parentId].push(iId)
       state.items[iId] = action.payload.newItemData
     },
@@ -357,21 +207,21 @@ const formTemplate = createSlice({
     },
 
     resetState: (state, action) => {
-      // return { 
-      //   id: 0,
-      //   isPublic: false,
-      //   title: "",
-      //   sectionsOrder: [], 
-      //   sections: {},
-      //   componentsOrder: {},
-      //   components: {},
-      //   itemsOrder: {},
-      //   items: {},
-      //   checklistItems: [],
-      //   createMode: true,
-      //   isPending: true,
-      //   error: null,
-      // }
+      return { 
+        id: 0,
+        isPublic: false,
+        title: "",
+        sectionsOrder: [], 
+        sections: {},
+        componentsOrder: {},
+        components: {},
+        itemsOrder: {},
+        items: {},
+        checklistItems: [],
+        createMode: true,
+        isPending: true,
+        error: null,
+      }
     },
 
     deleteFormPart: (state, action) => { //example reducer
@@ -442,6 +292,7 @@ const formTemplate = createSlice({
       }
     },
   },
+
   extraReducers: {
     [fetchForm.pending]: (state, action) => {
       if (state.isPending === false) {
@@ -472,8 +323,10 @@ const formTemplate = createSlice({
       }
     },
     [createForm.fulfilled]: (state, action) => {
+      state.isPending = false
       state.error = 'Form Created'
       state.createMode = false
+      state.id = action.payload.id
     },
     [createForm.rejected]: (state, action) => {
       state.error = action.payload
@@ -488,7 +341,7 @@ const formTemplate = createSlice({
 })
 
 
-export const { addSection, editSection, addItem, editItem, addComponent, editComponent,
+export const { addSection, editSection, addItem, editItem, addComponent, editComponent, setFormId,
   editChecklistSubtask, deleteFormPart, toggleIsPublic, moveFormPart, clearError, setCreateMode, setTitle, resetState} = formTemplate.actions
 
 export default formTemplate.reducer

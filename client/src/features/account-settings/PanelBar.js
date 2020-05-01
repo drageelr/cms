@@ -11,7 +11,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-
 export default function PanelBar({handleAdd, title, buttonText}){
   const classes = useStyles()
 

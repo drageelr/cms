@@ -28,8 +28,8 @@ const itemDataTypes = {
 };
 
 const submissionStatus = {
-  pres: ["Pending(President)", "Issue(President)"],
-  pat: ["Pending(Patron)", "Issue(Patron)", "Approved(Patron)"],
+  pres: ["Issue(President)", "Pending(Patron)"],
+  pat: ["Issue(Patron)", "Approved(Patron)"],
   cca: ["Pending(CCA)", "Issue(CCA)", "Approved(CCA)",  "Write-Up",  "Completed"],
 }
 
@@ -58,13 +58,13 @@ function itemIdValidation (formItems, itemsData, requiredCheck = false) {
   }
 
   // Validate All Required Ones Are Filled
-  if (requiredCheck) {
-    for (let iObj in formItemIds) {
-      if (iObj.required == true) {
-        return "all required objects are not filled";
-      }
-    }
-  }
+  // if (requiredCheck) {
+  //   for (let iObj in formItemIds) {
+  //     if (iObj.required == true) {
+  //       return "all required objects are not filled";
+  //     }
+  //   }
+  // }
 
   return false;
 }
@@ -118,6 +118,39 @@ function duplicateEntryValidation (reqSubmission, itemsData) {
   return false;
 }
 
+function validateStatus (statusList) {
+  if (statusList.length < 1 || statusList.length > 6) {
+    return "too many statuses given"
+  }
+
+  const statusApplicable = ["Approved(Patron)", "Pending(CCA)", "Issue(CCA)", "Approved(CCA)", "Write-Up", "Completed"];
+  let statusChecked = [];
+  for (let s of statusList) {
+    let sIndexA = statusApplicable.indexOf(s);
+    let sIndexC = statusChecked.indexOf(s);
+    if (sIndexA < 0 || sIndexC > -1) {
+      return "status " + s + " is either invalid or included multiple times";
+    } else {
+      statusChecked.push(s);
+    }
+  }
+
+  return false;
+}
+
+function autoStatusUpdate (currentStatus) {
+  const nextStatus = {
+    "Issue(President)": {status: "Pending(President)", email: "presidentEmail"},
+    "Issue(Patron)": {status: "Pending(Patron)", email: "patronEmail"},
+  };
+
+  return nextStatus[currentStatus];
+}
+
+function sendEmail (recipientEmail) {
+
+} 
+
 /*
   <<<<< EXPORT FUNCTIONS >>>>>
 */
@@ -149,7 +182,19 @@ exports.submitForm = async (req, res, next) => {
         submissionValidationError = duplicateEntryValidation(reqSubmission, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
 
-        await reqSubmission.update({$push: {itemsData}});
+        let resubmissionQuery = {$push: {itemsData}};
+
+        let statusToUpdateObj = autoStatusUpdate(reqSubmission.status);
+
+        if(statusToUpdateObj) {
+          resubmissionQuery.$set = {status: statusToUpdateObj.status};
+        }
+        
+        await reqSubmission.update(resubmissionQuery);
+
+        let reqSociety = await Society.findById(params.userObj._id, statusToUpdateObj.email);
+
+        sendEmail(reqSociety[statusToUpdateObj.email]);
       
         res.json({
           status: 200,
@@ -177,6 +222,10 @@ exports.submitForm = async (req, res, next) => {
           itemsData: params.itemsData
         });
         await newSubmission.save();
+
+        let reqSociety = await Society.findById(params.userObj._id, 'presidentEmail');
+
+        sendEmail(reqSociety.presidentEmail);
 
         res.json({
           status: 200,
@@ -249,16 +298,29 @@ exports.addSocietyNote = async (req, res, next) => {
   }
 }
 
+// Apply Filter!
 exports.getSubmissionList = async (req, res, next) => {
   let params = req.body;
 
   try {
-    let reqQuery = {status: { $ne: "Completed" }};
+    let reqQuery = {};
     
     if (params.userObj.type == "soc") {
       reqQuery.societyId = params.userObj._id;
-    } else if (params.userObj.type == "cca" && params.showCompleted) {
-      delete reqQuery["status"];
+      reqQuery.status = { $ne: "Completed" }
+    } else if (params.userObj.type == "cca") {
+      
+      if (params.statusList) {
+        let statusValidationError = validateStatus(params.statusList);
+
+        if (!statusValidationError) {
+          reqQuery.status = {$in: params.statusList};
+        }
+      }
+
+      if (params.timeObj) {
+        reqQuery.createdAt = {$gte: new Date(params.timeObj.dateStart), $lte: new Date(params.timeObj.dateEnd)};
+      }
     }
 
     let reqSubmissions = await Submission.find(reqQuery);
@@ -289,13 +351,14 @@ exports.getSubmissionList = async (req, res, next) => {
       });
     } else {
       // raise submission not found error
-      throw new customError.SubmissionNotFoundError("invalid submission id");
+      throw new customError.SubmissionNotFoundError("no matching submission found");
     }
   } catch (err) {
     next(err);
   }
 }
 
+// Apply Resubmission or other things to cater
 exports.updateSubmissionStatus = async (req, res, next) => {
   let params = req.body;
 
@@ -304,7 +367,7 @@ exports.updateSubmissionStatus = async (req, res, next) => {
     
     if (reqSubmission) {
       let statusAvailable = submissionStatus[params.userObj.type];
-      if (!(params.status in statusAvailable)) throw new customError.SubmissionValidationError("invalid status or status not allowed");
+      if (!(params.status in statusAvailable)) throw new customError.SubmissionValidationError("invalid status or status not allowed, allowed statuses are: ", JSON.stringify(statusAvailable));
 
       // params.status contains the string "Issue"
       if (params.status.includes("Issue") && params.issue && params.userObj.type != "cca"){
@@ -365,6 +428,6 @@ exports.fetchSubmission = async (req, res, next) => {
       throw new customError.SubmissionNotFoundError("invalid submission id");
     }
   } catch (err) {
-
+    next(err);
   }
 }

@@ -84,3 +84,21 @@ exports.createObjFromObjArr = (objArr, keyProp, keyValue, ignoreUndefined = fals
 
   return miniObj;
 }
+
+exports.compareLists = (list1, list2) => {
+  let count = 0;
+  for (let i of list1) {
+    let inList = false;
+    for (let j of list2) {
+      if (i == j) {
+        inList = true;
+        break;
+      }
+    }
+    if (inList) {
+      count++;
+    }
+  }
+
+  return (count == list2.length) && (count == list1.length);
+}

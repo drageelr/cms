@@ -23,11 +23,13 @@ export async function apiCaller(api, body, successCode, dataReturner, rejectWith
         if (!(Object.keys(body).length === 0 && body.constructor === Object)){
             req_init['body'] = JSON.stringify(body)
         }
-                
+      
+        console.log(req_init.body)
+        
         const res = await fetch(api, req_init)
-
         if (res.ok) {
             const data = await res.json()
+            console.log(data)
             if (data.statusCode != successCode) {
                 throw new Error((data.error !== undefined) 
                 ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`

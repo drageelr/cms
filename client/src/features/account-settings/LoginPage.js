@@ -98,7 +98,6 @@ function LoginPage({error, dispatch}) {
                 required
                 label="Email"
                 name="email"
-                // autoFocus
                 InputProps={{
                   className: classes.input,
                 }}
@@ -113,7 +112,6 @@ function LoginPage({error, dispatch}) {
                 label="Password"
                 name="password"
                 type="password"
-                autoFocus
                 InputProps={{
                   className: classes.input,
                 }}
