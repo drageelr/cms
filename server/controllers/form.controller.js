@@ -35,8 +35,6 @@ const itemTypes = {
 
 function validateItemType (item) {
   let itemKeys = Object.keys(item);
-  console.log(itemKeys);
-  console.log(itemTypes[item.type]);
   if (!helperFuncs.compareLists(itemKeys, itemTypes[item.type])) {
     return "item with id " + item.itemId + " should have only these keys: " + JSON.stringify(itemTypes[item.type]);
   }
@@ -45,9 +43,9 @@ function validateItemType (item) {
   if (item.options) {
     let options = item.options;
     let optionIds = [];
-    for (let o in options) {
+    for (let o of options) {
       let oIdIndex = optionIds.indexOf(o.optionId);
-      if (oIdIndex > -1) {
+      if (oIdIndex < 0) {
         optionIds.push(o.optionId);
       } else {
         return "item with id " + item.itemId + " has non unqiue option ids";
