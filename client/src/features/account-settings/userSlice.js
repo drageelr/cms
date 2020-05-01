@@ -7,7 +7,7 @@ const initialState = {
   password: "",
   name: "",
   nameInitials: "CD",
-  role: "admin",
+  role: "",
   userType: "CCA",
   isLoggedIn: false,
   picture: "",
