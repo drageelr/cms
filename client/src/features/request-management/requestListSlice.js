@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { apiCaller} from "../../helpers"
 
 /**
 A temporary initial state has been created to test with the components and render meaningful
@@ -37,32 +38,11 @@ export const fetchCCARequestList = createAsyncThunk(
       return
     } 
 
-    try {
-      const res = await fetch('/api/submission/fetch-list', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 200) {
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-
-        return {isPending: false, error: '' , ccaList: data.submissions}
-      }
-      
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/submission/fetch-list', {}, 200, 
+    (data) => {
+      return {isPending: false, error: '' , ccaList: data.submissions}
+    }, 
+    rejectWithValue)  
   }
 )
 
@@ -75,35 +55,15 @@ export const changeFormStatus = createAsyncThunk(
       return
     } 
 
-    try {
-      const res = await fetch('/api/submission/update-status', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          submissionId: requestId ,
-          status: status,
-          issue: "hello world" // probably remove this at the end/ used for sending emails
-        })
-      })
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        // console.log(requestId, status)
-        return {isPending: false, error: '', requestId: requestId, status: status}
-      }
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/submission/update-status', {
+      submissionId: requestId ,
+      status: status,
+      issue: "hello world" // probably remove this at the end/ used for sending emails
+    }, 203, 
+    (data) => {
+      return {isPending: false, error: '', requestId: requestId, status: status}
+    }, 
+    rejectWithValue)
   }
 )
 

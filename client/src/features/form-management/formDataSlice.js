@@ -44,143 +44,47 @@ export const fetchFormData = createAsyncThunk(
       return
     }
 
-    try {
-      const res = await fetch('/api/form/fetch', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          formId: formDataId
-        })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 200) {
-          //CHANGE 1
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        return data.form
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
-    // return sampleState
+    return await apiCaller('/api/form/fetch', {formId: formDataId}, 200, 
+    (data) => {
+      return data.form
+    }, 
+    rejectWithValue)
   }
 )
 
 export const editFormData = createAsyncThunk(
   'formData/editFormData',
   async (_, {rejectWithValue }) => {
-    try {
-      const res = await fetch('/api/form/edit', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          //
-        })
-      })
-      
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        
-        return data.description
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    } 
+    
+    return await apiCaller('/api/form/edit', {}, 203, 
+    (data) => {
+      return data.description
+    }, 
+    rejectWithValue)
   }
 )
 
 export const deleteFormData = createAsyncThunk(
   'formData/deleteFormData',
   async (formDataId, {rejectWithValue }) => {
-    try {
-      const res = await fetch('/api/form/delete', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          formId: formDataId
-        })
-      })
-      
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          //CHANGE 1
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        
-        return ''  
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    } 
+    
+    return await apiCaller('/api/form/delete', {formId: formDataId}, 203, 
+    (data) => {
+      return ''
+    }, 
+    rejectWithValue) 
   }
 )
 
 export const createFormData = createAsyncThunk(
   'formData/createFormData',
   async (formData, {rejectWithValue }) => {
-    try {
-      const res = await fetch('/api/form/create', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          form: formData
-        })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        
-        return ''
-        
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    } 
+    
+    return await apiCaller('/api/form/create', {form: formData}, 203, 
+    (data) => {
+      return ''
+    }, 
+    rejectWithValue)
   }
 )
 
@@ -188,36 +92,16 @@ export const updateCcaNote = createAsyncThunk(
   'formData/updateCcaNote',
   async ({formId, note}, {rejectWithValue }) => {
 
-    try {
-      const res = await fetch('/api/submission/cca/add-note', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          submissionId: formId, 
-          note: note
-        })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        
-        return {isPending: false, error: '', formId: formId, note: note}
-        
-      }
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    } 
+    console.log(formId, note)
+    
+    return await apiCaller('/api/submission/cca/add-note', {
+      submissionId: formId, 
+      note: note
+    }, 203, 
+    (data) => {
+      return {isPending: false, error: '', formId: formId, note: note}
+    }, 
+    rejectWithValue)
   }
 )
 
@@ -225,36 +109,16 @@ export const addSocietyNote = createAsyncThunk(
   'formData/addSocietyNote',
   async ({formId, note}, {rejectWithValue }) => {
 
-    try {
-      const res = await fetch('/api/submission/society/add-note', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          submissionId: formId, 
-          note: note
-        })
-      })
+    console.log(formId, note)
 
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        
-        return {isPending: false, error: '', formId: formId, note: note}
-        
-      }
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    } 
+    return await apiCaller('/api/submission/society/add-note', {
+      submissionId: formId, 
+      note: note
+    }, 203, 
+    (data) => {
+      return {isPending: false, error: '', formId: formId, note: note}
+    }, 
+    rejectWithValue)
   }
 )
 

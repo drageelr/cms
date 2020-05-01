@@ -4,7 +4,6 @@
 */
 
 // Models:
-var Society = require('../models/society.model');
 var CCA = require('../models/cca.model');
 
 // Services:
@@ -32,22 +31,19 @@ const userAccess = {
   "/api/account/cca/change-picture": ["cca"],
 
   // 3. Form Management API "form.route.js":
-  "/api/form/fetch": ["cca", "soc"],
   "/api/form/create": ["cca"],
   "/api/form/edit": ["cca"],
   "/api/form/delete": ["cca"],
+  "/api/form/fetch": ["cca", "soc"],
   "/api/form/fetch-list": ["cca", "soc"],
   
   // 4. Request Management API "submission.route.js":
-  "/api/form-submission/submit": ["soc"],
-  "/api/form-submission/edit": ["soc"],
-  "/api/form-submission/view": ["cca", "soc", "pres", "pat"],
-  "/api/form-submission/add-note-society": ["soc"],
-  "/api/form-submission/cca-list": ["cca"],
-  "/api/form-submission/society-list": ["soc"],
-  "/api/form-submission/update-status-cca": ["cca"],
-  "/api/form-submission/add-note-cca": ["cca"],
-  "/api/form-submission/update-status-pp": ["pres", "pat"],  
+  "/api/submission/submit": ["soc"],
+  "/api/submission/cca/add-note": ["cca"],
+  "/api/submission/society/add-note": ["soc"],
+  "/api/submission/fetch-list": ["cca", "soc"],
+  "/api/submission/cca/update-status": ["cca", "pres", "pat"],
+  "/api/submission/cca/fetch": ["cca", "soc", "pres", "pat"],
 };
 
 const ccaAccess = {
@@ -65,8 +61,8 @@ const ccaAccess = {
   "/api/form/delete": "accessFormMaker",
 
   // 4. Request Management API "submission.route.js":
-  "/api/form-submission/update-status-cca": "setFormStatus",
-  "/api/form-submission/add-note-cca": "addCCANote", 
+  "/api/submission/cca/add-note": "addCCANote",
+  "/api/submission/cca/update-status": "setFormStatus",
 };
 
 /*
@@ -74,41 +70,47 @@ const ccaAccess = {
 */
 
 exports.validateUserAccess = (req, res, next) => {
-  let accessList = userAccess[req.originalUrl];
-  if (accessList) {
-    let accessGranted = false;
+  try {
+    let accessList = userAccess[req.originalUrl];
+    if (accessList) {
+      let accessGranted = false;
     
-    for (let a of accessList) {
-      if (a == req.body.userObj.type) {
-        accessGranted = true;
-        break;
+      for (let a of accessList) {
+        if (a == req.body.userObj.type) {
+          accessGranted = true;
+          break;
+        }
       }
-    }
 
-    if (req.originalUrl == "/api/form-submission/view" && (req.body.userObj.type == "pres" || req.body.userObj.type == "pat")) {
-      // To do..
-    }
-
-    if (accessGranted) {
-      next();
+      if (accessGranted) {
+        next();
+      } else {
+        throw new customError.ForbiddenAccessError("forbidden access to resource", "RouteError");
+      }
     } else {
-      throw new customError.ForbiddenAccessError("forbidden access to resource", "RouteError");
+      next(err);
     }
+  } catch (err) {
+    next(err)
   }
 }
 
 exports.validateCCAAccess = async (req, res, next) => {
-  let reqCCA = await CCA.findById(req.body.userObj._id, 'role permissions');
-
-  if (reqCCA.role != "admin") {
-    let access = ccaAccess[req.originalUrl];
+  try {
+    if (req.body.userObj.type != "cca") next();
+    let reqCCA = await CCA.findById(req.body.userObj._id, 'role permissions');
+    if (reqCCA.role != "admin") {
+      let access = ccaAccess[req.originalUrl];
     
-    if(reqCCA.permissions[access]) {
-      next();
+      if(reqCCA.permissions[access]) {
+        next();
+      } else {
+        throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
+      }
     } else {
-      throw new customError.ForbiddenAccessError("cca user does not have valid permissions for this resource", "PermissionError");
+      next();
     }
-  } else {
-    next();
+  } catch (err) {
+    next(err);
   }
 }

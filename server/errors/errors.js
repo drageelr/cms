@@ -55,6 +55,10 @@ class AuthenticationError extends Error {
     this.message = "Invalid credentials!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 
@@ -73,6 +77,10 @@ class ForbiddenAccessError extends Error {
     this.message = "You don't have the necessary permissions for this resource!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 
@@ -89,6 +97,10 @@ class DuplicateUserError extends Error {
     this.message = "User already exists!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 
@@ -105,6 +117,90 @@ class UserNotFoundError extends Error {
     this.message = "User not found!";
     this.details = errDetails;
     this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
+  }
+}
+
+// Form Validation Error Class:
+class FormValidationError extends Error {
+
+  /**
+  * Creates a FormValidationError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "FormValidationError";
+    this.statusCode = 400;
+    this.message = "Form not valid!";
+    this.details = errDetails;
+    this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
+  }
+}
+
+// Form Not Found Error Class:
+class FormNotFoundError extends Error {
+
+  /**
+  * Creates a FormNotFoundError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "FormNotFoundError";
+    this.statusCode = 404;
+    this.message = "Form not found!";
+    this.details = errDetails;
+    this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
+  }
+}
+
+// Submission Validation Error Class:
+class SubmissionValidationError extends Error {
+
+  /**
+  * Creates a SubmissionValidationError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "SubmissionValidationError";
+    this.statusCode = 400;
+    this.message = "Submission not valid!";
+    this.details = errDetails;
+    this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
+  }
+}
+
+// Submission Not Found Error Class:
+class SubmissionNotFoundError extends Error {
+
+  /**
+  * Creates a SubmissionNotFoundError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "SubmissionNotFoundError";
+    this.statusCode = 404;
+    this.message = "Submission not found!";
+    this.details = errDetails;
+    this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
   }
 }
 
@@ -114,3 +210,7 @@ module.exports.AuthenticationError = AuthenticationError;
 module.exports.ForbiddenAccessError = ForbiddenAccessError;
 module.exports.DuplicateUserError = DuplicateUserError;
 module.exports.UserNotFoundError = UserNotFoundError;
+module.exports.FormValidationError = FormValidationError;
+module.exports.FormNotFoundError = FormNotFoundError;
+module.exports.SubmissionValidationError = SubmissionValidationError;
+module.exports.SubmissionNotFoundError = SubmissionNotFoundError;

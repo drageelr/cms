@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function FormListBar({title, notesData, isCCA, createMode }) {
+export default function FormListBar({formId, title, notesData, isCCA, createMode }) {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
@@ -65,7 +65,7 @@ export default function FormListBar({title, notesData, isCCA, createMode }) {
 
         </Grid>
       </Paper>
-      <NotesSideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} notesData={notesData} isCCA={isCCA}/>
+      <NotesSideBar formId={formId} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} notesData={notesData} isCCA={isCCA}/>
 
       <Dialog aria-labelledby="conditional-item-dialog" open={exitDialogOpen}>
         <DialogTitle id="exit-dialog-title">Exit</DialogTitle>
