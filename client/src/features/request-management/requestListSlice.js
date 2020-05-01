@@ -1,30 +1,27 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { apiCaller} from "../../helpers"
 
 /**
-  A temporary initial state has been created to test with the components and render meaningful
-  on the screen
+A temporary initial state has been created to test with the components and render meaningful
+on the screen
 */
 
-const sampleState = {
-  formDataList : [
-    {
-      id: "R-ID-1",
-      title: "Design Form",
-      date: "15/02/2019",
-      society: "LUMUN",
-      formStatus: 'Approved',
-    },
-    {
-      id: "R-ID-2",
-      society: "LUMUN",
-      date: "12/01/2020",
-      title: "Auditorium Booking",
-      formStatus: 'Issue',
-    }
-  ],
-  isPending: true,
-  error: null
-}
+// const sampleState = {
+// formDataList : [
+// {
+// societyId: "1",
+// status: "Approved",
+// formId: "REQ-1",
+// formTitle: "Design Form",
+// societyName: "LUMUN",
+// societyNameInitials: "lumun",
+// timestampCreated: "30/05/2020",
+// timestampModified: "01/04/2020"
+// },
+// ],
+// isPending: true,
+// error: null
+// }
 
 const initialState = {
   formDataList: [],
@@ -36,48 +33,44 @@ export const fetchCCARequestList = createAsyncThunk(
   'requestListData/fetchCCARequestList',
   async (_, { getState, rejectWithValue }) => {
     const { isPending } = getState().requestListData
-    
+
     if (isPending != true) {
       return
     } 
 
-    const fetchCall = () => {
-      var promise = new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(sampleState)
-        }, 5000)
-      })
-      return promise
-    }
-    
-    // return rejectWithValue("TBD")
-    return sampleState
+    return await apiCaller('/api/submission/fetch-list', {}, 200, 
+    (data) => {
+      return {isPending: false, error: '' , ccaList: data.submissions}
+    }, 
+    rejectWithValue)  
   }
 )
 
 export const changeFormStatus = createAsyncThunk(
   'requestListData/changeFormStatus',
-  async (statusObj, { getState, rejectWithValue}) => {
+  async ({requestId, status}, { getState, rejectWithValue}) => {
     const { isPending } = getState().requestListData
-    
+
     if (isPending != true) {
       return
     } 
 
-    return statusObj
+    return await apiCaller('/api/submission/update-status', {
+      submissionId: requestId ,
+      status: status,
+      issue: "hello world" // probably remove this at the end/ used for sending emails
+    }, 203, 
+    (data) => {
+      return {isPending: false, error: '', requestId: requestId, status: status}
+    }, 
+    rejectWithValue)
   }
 )
 
 const requestListData = createSlice ({
   name:'requestListData',
   initialState: initialState,
-  reducers: {
-    //  // this is reducer is called if they society delete their submission
-    // deleteFormSubmission: (state,action) => {
-    //   state.formData.splice(action.payload, 1)
-    // }
-  },
-
+  
   extraReducers: {
     [fetchCCARequestList.pending]: (state, action) => {
       if (state.isPending === false) {
@@ -87,7 +80,7 @@ const requestListData = createSlice ({
     [fetchCCARequestList.fulfilled]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
-        state.formDataList = action.payload.formDataList
+        state.formDataList = action.payload.ccaList
       }
     },
     [fetchCCARequestList.rejected]: (state, action) => {
@@ -107,8 +100,8 @@ const requestListData = createSlice ({
       if (state.isPending === true) {
         state.isPending = false
         state.formDataList.map(request => {
-          if(request.id === requestId) {
-            request.formStatus = status
+          if(request.formId === requestId) {
+            request.status = status
           }
         })
       }

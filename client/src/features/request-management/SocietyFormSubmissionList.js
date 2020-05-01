@@ -79,7 +79,7 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
     data[index][1] = submittedForm.date
     data[index][2] = <LinearProgress 
       value={progressVal}
-      thickness={15}
+      thickness={15}  
       style={{color: "yellow"}}
       variant="determinate"
       />

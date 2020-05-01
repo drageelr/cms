@@ -1,5 +1,5 @@
 import React from 'react'
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
 import 'typeface-montserrat'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core'
 import blue from '@material-ui/core/colors/blue'
@@ -46,25 +46,79 @@ const appTheme = createMuiTheme({
 function App({ user }) {
   const { isLoggedIn, userType, name, picture } = user
 
+  var userDetails = JSON.parse(localStorage.getItem("localUser"))
+  console.log(userDetails)
+  
   return (
     <Router>
       <ThemeProvider theme={appTheme}>
         { isLoggedIn ?
         <div>
-          <NavBar name={name} userType={userType} picture={picture}/>
-          <Switch> 
-            <Route path="/" exact component={userType === "CCA" ? TaskManager : SocietyDashboard}/>
+          <NavBar name={name} userType={userDetails.userType} picture={picture}/>
+          <Switch>
+            <Route path="/" exact component={userDetails.userType === "CCA" ? TaskManager : SocietyDashboard}/>
+            {
+              userDetails.userType === "CCA" ? (
+                <Route path="/settings" exact component={CCASettingsHome}/>
+                ) : (
+                  <Route path="/" exact component={SocietyDashboard}/>
+                )
+            }
+            {
+              userDetails.userType === "CCA" ? (
+                <Route path="/request-list" exact component={RequestList}/>
+                ) : (
+                  <Route path="/" component={SocietyDashboard}/>
+                )
+            }
+            {
+              userDetails.userType === "CCA" ? (
+                <Route path="/task-status-panel" exact component={TaskStatusPanel}/>
+                ) : (
+                  <Route path="/" component={SocietyDashboard}/>
+                )
+            }
+            {
+              userDetails.userType === "CCA" ? (
+                <Route path="/cca-panel" exact component={CCAAccountsPanel}/>
+              ) : (
+                <Route path="/" component={SocietyDashboard}/>
+              )
+            }
+            {
+              userDetails.userType === "CCA" ? (
+                <Route path="/society-panel" exact exact component={SocietyAccountsPanel}/>
+              ) : (
+                <Route path="/" component={SocietyDashboard}/>
+              )
+            }
+            {
+              userDetails.userType === "CCA" ? (
+                <Route path="/form-maker" exact component={FormMaker}/>
+              ) : (
+                <Route path="/" component={SocietyDashboard}/>
+              )
+            }
+            {
+              userDetails.userType === "CCA" ? (
+                <Route path="/form-maker/:id" exact component={FormMaker}/>
+              ) : (
+                <Route path="/" component={SocietyDashboard}/>
+              )
+            }
+            {
+              userDetails.userType === "CCA" ? (
+                <Route path="/forms" exact component={FormList}/>
+              ) : (
+                <Route path="/" component={SocietyDashboard}/>
+              )
+            }
             <Route path="/form-viewer" exact component={FormViewer}/>
             <Route path="/form-viewer/:id" component={FormViewer}/>
-            <Route path="/forms" component={FormList}/>
-            <Route path="/form-maker" exact component={FormMaker}/>
-            <Route path="/form-maker/:id" component={FormMaker}/>
-            <Route path="/request-list" component={RequestList}/>
-            <Route path="/settings" component={CCASettingsHome}/>
-            <Route path="/cca-panel" exact component={CCAAccountsPanel}/>
             <Route path="/change-password" exact component={ChangePassword}/>
-            <Route path="/society-panel" exact component={SocietyAccountsPanel}/>
-            <Route path="/task-status-panel" exact component={TaskStatusPanel}/>          
+
+            <Route path="*" component={LoginPage}/>
+
           </Switch>
         </div>
         : <LoginPage/>
