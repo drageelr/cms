@@ -42,7 +42,8 @@ export default function RadioProperties({propertyAddMode, propertyId, itemData, 
           label: values.label,
           options: values.options.split(','),
           required: values.required, 
-          defaultVisibility: values.defaultVisibility
+          defaultVisibility: values.defaultVisibility,
+          conditionalItems: [{optionId: 0, itemId: 0}]
         }
 
         if (propertyAddMode){
