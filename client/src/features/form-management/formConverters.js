@@ -132,7 +132,7 @@ export function convertToServerForm(clientForm) {
   return{
     title: clientForm.title,
     isPublic: clientForm.isPublic,
-    // checklistItems: clientForm.checklistItems,
+    checklistItems: clientForm.checklistItems,
     sections,
     components,
     items
@@ -146,7 +146,6 @@ export function convertToClientForm(serverForm) {
   let sectionsOrder = [], componentsOrder = {}, itemsOrder = {}, sections = {}, components = {}, items = {}
   
   // const {title, isPublic, sections, components, items } = serverForm
-  console.log("SERVER FORM", serverForm)
   // sections, sectionsOrder, componentsOrder creation
   serverForm.sections.forEach(section=>{
     const sectionId = section.sectionId
@@ -164,7 +163,7 @@ export function convertToClientForm(serverForm) {
   // items, itemsOrder creation
   serverForm.items.forEach(item=>{
     let itemCopy = {...item}
-    console.log(item['options'])
+
     if ('options' in item){
       itemCopy['options'] = item['options'].map(option => option.data)
     }
@@ -173,14 +172,14 @@ export function convertToClientForm(serverForm) {
     delete items[item.itemId]["itemId"]
   })
   
-  const checklistItems = serverForm.checklist.map(checklistItem => 
-    ({sectionId: checklistItem.sectionId, description: checklistItem.description}))
+  // const checklistItems = serverForm.checklist.map(checklistItem => 
+  //   ({sectionId: checklistItem.sectionId, description: checklistItem.description}))
   // everything else will be directly copied
   return {
     isPublic: serverForm.isPublic,
     title: serverForm.title,
     sectionsOrder,
-    checklistItems: checklistItems,
+    checklistItems: [],
     componentsOrder,
     itemsOrder,
     sections,

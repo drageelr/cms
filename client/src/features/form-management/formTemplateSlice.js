@@ -86,6 +86,8 @@ export const editForm = createAsyncThunk(
       checklistItems
     })}
 
+    console.log("SENDING", form)
+
     return await apiCaller('/api/form/edit', {form: form}, 200, 
     (data) => ({
       id: data.formId,
@@ -115,6 +117,10 @@ const formTemplate = createSlice({
     setCreateMode: (state, action) => { //example reducer
       state.createMode = action.payload.createMode
       state.isPending = false
+    },
+
+    setFormId: (state, action) => {
+      state.id = action.payload.id
     },
 
     setTitle: (state, action) => { 
@@ -335,7 +341,7 @@ const formTemplate = createSlice({
 })
 
 
-export const { addSection, editSection, addItem, editItem, addComponent, editComponent,
+export const { addSection, editSection, addItem, editItem, addComponent, editComponent, setFormId,
   editChecklistSubtask, deleteFormPart, toggleIsPublic, moveFormPart, clearError, setCreateMode, setTitle, resetState} = formTemplate.actions
 
 export default formTemplate.reducer
