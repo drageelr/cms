@@ -8,7 +8,6 @@ import { TextField } from 'formik-material-ui'
 import { changePassword, clearError } from './userSlice'
 import { connect } from 'react-redux'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
-import { useHistory } from 'react-router-dom'
 
 /**
   Description
@@ -19,7 +18,6 @@ import { useHistory } from 'react-router-dom'
 */
 
 function ChangePassword({error, dispatch}) {
-  const history = useHistory()
 
   return (
     <Container component="main" maxWidth="xs"> 
