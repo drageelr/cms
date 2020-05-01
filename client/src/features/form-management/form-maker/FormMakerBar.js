@@ -77,13 +77,7 @@ export default function FormMakerBar({title, isPublic, createMode}) {
             style={{marginLeft:10}}
             onClick={()=> {
               if (createMode){
-                dispatch(createForm()).then(()=> {
-                  if (!createMode){
-                    setTimeout(()=>{
-                      history.goBack()
-                    }, 3000)
-                  }
-                })
+                dispatch(createForm())
               }
               else {
                 dispatch(editForm())

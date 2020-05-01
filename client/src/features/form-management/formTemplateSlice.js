@@ -28,7 +28,7 @@ let iId = 0 //item Id max
 
 export const fetchForm = createAsyncThunk(
   'formTemplate/fetchForm',
-  async (formId, { getState, rejectWithValue}) => {
+  async (formId, { getState, rejectWithValue }) => {
     if (getState().formTemplate.isPending !== true) return
     
     return await apiCaller('/api/form/fetch', { formId: formId }, 200, 
@@ -45,11 +45,11 @@ export const fetchForm = createAsyncThunk(
 
 export const createForm = createAsyncThunk(
   'formTemplate/createForm',
-  async (_, {getState, rejectWithValue }) => {
+  async (_, { getState, rejectWithValue }) => {
     const {isPublic, title, sectionsOrder, sections, componentsOrder, components,
     itemsOrder, items, checklistItems} = getState().formTemplate
 
-    return await apiCaller('/api/form/create', convertToServerForm({
+    return await apiCaller('/api/form/create', {form: convertToServerForm({
       title,
       isPublic,
       sections,
@@ -59,7 +59,7 @@ export const createForm = createAsyncThunk(
       componentsOrder,
       itemsOrder,
       checklistItems
-    }), 201, 
+    })}, 201, 
     (data) => ({
         id: data.formId,
         checklistIds: data.checklistIds
@@ -94,61 +94,6 @@ export const editForm = createAsyncThunk(
   }
 )
 
-// export const editForm = createAsyncThunk(
-//   'formTemplate/editForm',
-//   async (_, {getState, rejectWithValue }) => {
-//     const {id, isPublic, title, sectionsOrder, sections, componentsOrder, components,
-//       itemsOrder, items, checklistItems} = getState().formTemplate
-
-//     try {
-//       const form = {formId: id,...convertToServerForm({
-//         title,
-//         isPublic,
-//         sections,
-//         components,
-//         items,
-//         sectionsOrder,
-//         componentsOrder,
-//         itemsOrder,
-//         checklistItems
-//       })}
-      
-//       console.log(form)
-
-//       const res = await fetch('/api/form/edit', {
-//         method: 'POST',
-//         headers: {
-//           'Accept': 'application/json',
-//           'Content-Type': 'application/json',
-//           'Authorization': `Bearer ${localStorage.token}`, 
-//         },
-//         body: JSON.stringify({
-//           form: form
-//         })
-//       })
-      
-//       if (res.ok) {
-//         const data = await res.json()
-        
-//         if (data.statusCode != 200) {
-//           //CHANGE 1
-//           throw new Error((data.error !== undefined) 
-//           ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-//           : `${data.statusCode}: ${data.message}`) 
-//         }
-//         return {
-//           id: data.formId,
-//           checklistIds: data.checklistIds
-//         }
-//       }
-//       //CHANGE 2
-//       throw new Error(`${res.status}, ${res.statusText}`) 
-//     }
-//     catch (err) {
-//       return rejectWithValue(err.toString())
-//     }    
-//   }
-// )
 
 function getMaxKey(object) {
   if (Object.keys(object).length === 0 && object.constructor === Object) return 0
@@ -341,7 +286,7 @@ const formTemplate = createSlice({
       }
     },
   },
-  
+
   extraReducers: {
     [fetchForm.pending]: (state, action) => {
       if (state.isPending === false) {
@@ -372,8 +317,10 @@ const formTemplate = createSlice({
       }
     },
     [createForm.fulfilled]: (state, action) => {
+      state.isPending = false
       state.error = 'Form Created'
       state.createMode = false
+      state.id = action.payload.id
     },
     [createForm.rejected]: (state, action) => {
       state.error = action.payload

@@ -117,9 +117,9 @@ export function convertToServerForm(clientForm) {
 
       clientForm.itemsOrder[componentId].forEach(itemId => {        
         let item = {...clientForm.items[itemId]}
-        console.log(item['options'])
+
         if ('options' in item){
-          item['options'] = item['options'].map((option,index) => ({'optionId': index,  'data': option}))
+          item['options'] = item['options'].map((option,index) => ({optionId: index,  data: option}))
         }
         items.push({ // items creation
           itemId,
@@ -146,7 +146,7 @@ export function convertToClientForm(serverForm) {
   let sectionsOrder = [], componentsOrder = {}, itemsOrder = {}, sections = {}, components = {}, items = {}
   
   // const {title, isPublic, sections, components, items } = serverForm
-  
+  console.log("SERVER FORM", serverForm)
   // sections, sectionsOrder, componentsOrder creation
   serverForm.sections.forEach(section=>{
     const sectionId = section.sectionId
@@ -164,6 +164,7 @@ export function convertToClientForm(serverForm) {
   // items, itemsOrder creation
   serverForm.items.forEach(item=>{
     let itemCopy = {...item}
+    console.log(item['options'])
     if ('options' in item){
       itemCopy['options'] = item['options'].map(option => option.data)
     }

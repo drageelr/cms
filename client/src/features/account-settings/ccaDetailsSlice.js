@@ -16,9 +16,7 @@ export const fetchCCAAccounts = createAsyncThunk(
     } 
 
     return await apiCaller('/api/account/cca/account-list', {}, 200,
-    (data) => {
-      return {isPending: false, error: '' , ccaList: data.userList}
-    },
+    (data) => ({isPending: false, error: '' , ccaList: data.userList}),
     rejectWithValue)
   }
 )
@@ -31,9 +29,7 @@ export const toggleActiveCCAAccount = createAsyncThunk(
       ccaId: ccaId,
       active: !active
     }, 203,
-    (data) => {
-      return {ccaId, active}
-    },
+    (data) => ({ccaId, active}),
     rejectWithValue)
   }
 )
@@ -46,9 +42,7 @@ export const editCCAPermissions = createAsyncThunk(
       ccaId: ccaId,
       permissions: permissions
     }, 203,
-    (data) => {
-      return {ccaId, permissions}
-    },
+    (data) => ({ccaId, permissions}),
     rejectWithValue)
   }
 )
@@ -70,9 +64,7 @@ export const editCCAAccount = createAsyncThunk(
     }
 
     return await apiCaller('/api/account/cca/edit-account', body, 203,
-    (data) => {
-      return {ccaId, ccaObject}
-    },
+    (data) => ({ccaId, ccaObject}),
     rejectWithValue)
   }
 )
@@ -91,9 +83,7 @@ export const addCCAAccount = createAsyncThunk(
       role: role,
       permissions: permissions
     }, 201,
-    (data) => {
-      return {ccaId: data.ccaId, ccaObject}
-    },
+    (data) => ({ccaId: data.ccaId, ccaObject}),
     rejectWithValue)
   }
 )
@@ -105,9 +95,7 @@ export const changeCCAPicture = createAsyncThunk(
     return await apiCaller('/api/account/cca/edit-account', {
       picture: url
     }, 203,
-    (data) => {
-      return {ccaId, url}
-    },
+    (data) => ({ccaId, url}),
     rejectWithValue)
     
   }
