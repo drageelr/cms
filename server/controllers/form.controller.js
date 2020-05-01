@@ -307,14 +307,14 @@ exports.fetchForm = async (req, res, next) => {
       for (let i = 0; i < reqForm.items.length; i++) {
         formObj.items[i] = helperFuncs.duplicateObject(reqForm.items[i], ["itemId", "type", "label", "requried", "defaultVisibility", "placeHolder", "maxLength", "fileTypes"], true);
       
-        if (reqForm.items[i].options) {
+        if (reqForm.items[i].options.length) {
           formObj.items[i].options = [];
           for (let s of reqForm.items[i].options) {
             formObj.items[i].options.push(helperFuncs.duplicateObject(s, ["optionId", "data"]));
           }
         }
 
-        if (reqForm.items[i].conditionalItems) {
+        if (reqForm.items[i].conditionalItems.length) {
           formObj.items[i].conditionalItems = [];
           for (let c of reqForm.items[i].conditionalItems) {
             formObj.items[i].conditionalItems.push(helperFuncs.duplicateObject(c, ["optionId", "itemId"]));
