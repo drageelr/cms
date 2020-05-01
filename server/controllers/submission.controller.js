@@ -10,10 +10,13 @@ var Society = require('../models/society.model');
 
 // Services:
 var httpStatus = require('../services/http-status');
+var jwt = require('../services/jwt');
+var nodemailer = require('../services/nodemailer');
 
 // Others:
 var customError = require('../errors/errors');
 var helperFuncs = require('../services/helper-funcs');
+var config = require('../config/config').variables;
 
 /*
   ------------------ CODE BODY --------------------
@@ -140,16 +143,24 @@ function validateStatus (statusList) {
 
 function autoStatusUpdate (currentStatus) {
   const nextStatus = {
-    "Issue(President)": {status: "Pending(President)", email: "presidentEmail"},
-    "Issue(Patron)": {status: "Pending(Patron)", email: "patronEmail"},
+    "Issue(President)": {status: "Pending(President)", email: "presidentEmail", type: "pres"},
+    "Issue(Patron)": {status: "Pending(Patron)", email: "patronEmail", type: "pat"},
   };
 
   return nextStatus[currentStatus];
 }
 
-function sendEmail (recipientEmail) {
+function sendReviewEmail (recipientEmail, accountType, societyInitials, submissionId, societyId) {
+  let token = jwt.signSubmission(societyId, submissionId, accountType);
+  let link = "" + config.serverURL + "review/" + accountType + "?token=" + token;
+  nodemailer.sendSubmissionReview(recipientEmail, link, societyInitials);
+}
 
-} 
+function sendIssueEmail (recipientEmail, issue, submissionIdNumeric, issuerType, issuerEmail) {
+  const issuerName = {pat: "Patron", pres: "President"}
+  let body = "An issue has been identified by the " + issuerName[issuerType] + " (email: " + issuerEmail + ") " + " of your society in Submission " + submissionIdNumeric + ". Kindly recitfy the issue by attaching notes to the submission or editing the fields previously unfilled!. <br /> <b>Issue:<b/>" + issue;
+  nodemailer.sendIssueEmail(recipientEmail, body);
+}
 
 /*
   <<<<< EXPORT FUNCTIONS >>>>>
@@ -194,7 +205,7 @@ exports.submitForm = async (req, res, next) => {
 
         let reqSociety = await Society.findById(params.userObj._id, statusToUpdateObj.email);
 
-        sendEmail(reqSociety[statusToUpdateObj.email]);
+        sendReviewEmail(reqSociety[statusToUpdateObj.email], reqSociety[statusToUpdateObj].type, reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
       
         res.json({
           status: 200,
@@ -223,9 +234,9 @@ exports.submitForm = async (req, res, next) => {
         });
         await newSubmission.save();
 
-        let reqSociety = await Society.findById(params.userObj._id, 'presidentEmail');
+        let reqSociety = await Society.findById(params.userObj._id, 'presidentEmail _id nameInitials');
 
-        sendEmail(reqSociety.presidentEmail);
+        sendReviewEmail(reqSociety.presidentEmail, "pres", reqSociety.nameInitials, newSubmission._id, reqSociety._id);
 
         res.json({
           status: 200,
@@ -298,7 +309,6 @@ exports.addSocietyNote = async (req, res, next) => {
   }
 }
 
-// Apply Filter!
 exports.getSubmissionList = async (req, res, next) => {
   let params = req.body;
 
@@ -358,7 +368,6 @@ exports.getSubmissionList = async (req, res, next) => {
   }
 }
 
-// Apply Resubmission or other things to cater
 exports.updateSubmissionStatus = async (req, res, next) => {
   let params = req.body;
 
@@ -371,7 +380,15 @@ exports.updateSubmissionStatus = async (req, res, next) => {
 
       // params.status contains the string "Issue"
       if (params.status.includes("Issue") && params.issue && params.userObj.type != "cca"){
-        // Email Issue
+        let reqSociety = await Society.findById(params.userObj._id, 'patronEmail presidentEmail email');
+        let emailAddr = reqSociety.presidentEmail;
+        if (params.userObj.type == "pat") {
+          emailAddr = reqSociety.patronEmail;
+        }
+        sendIssueEmail(reqSociety.email, params.issue, reqSubmission.submissionId, params.userObj.type, emailAddr);
+      } else if (params.status == "Pending(Patron)" && params.userObj.type != "cca") {
+        let reqSociety = await Society.findById(params.userObj._id, 'patronEmail _id nameInitials');
+        sendReviewEmail(reqSociety.patronEmail, "pat", reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
       }
       
       await reqSubmission.update({status: params.status});

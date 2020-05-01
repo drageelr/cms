@@ -71,11 +71,11 @@ exports.editFormValidation = {
       sections: Joi.array().items(sectionSchema).required(),
       components: Joi.array().items(componentSchema).required(),
       items: Joi.array().items(itemSchema).required(),
-      checklistItems: [{
+      checklistItems: Joi.array().items(Joi.object({
         checklistId: Joi.number(),
         sectionId: Joi.number().required(),
         description: Joi.string().required()
-      }]
+      }))
     }
   })
 }

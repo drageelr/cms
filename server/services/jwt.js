@@ -54,6 +54,10 @@ exports.signID = (id, type, expires = '12h') => {
   return jwt.sign({_id: id, type: type}, config.secretKey, {expiresIn: expires});
 }
 
+exports.signSubmission = (id, subId, type) => {
+  return jwt.sign({_id: id, type: type, sub_id: subId}, config.secretKey);
+}
+
 /**
  * Verifies JWT token in bearer token authorization header.
  * @param req - Request.
@@ -77,6 +81,9 @@ exports.verify = async (req, res, next) => {
         if (reqSociety) {
           if (reqSociety.active) {
             req.body.userObj = {_id: decodedObj._id, type: decodedObj.type};
+            if (decodedObj.sub_id) {
+              req.body.userObj.sub_id = decodedObj.sub_id;
+            }
             next();
           } else {
             // Raise user not active error

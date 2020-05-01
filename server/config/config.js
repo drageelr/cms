@@ -14,6 +14,7 @@ exports.variables = {
   port: '3030',
   db: 'cms-dev',
   mongoURI: 'mongodb://localhost:27017/',
+  serverURL: 'http://167.71.224.73/'
 }
 
 /*
