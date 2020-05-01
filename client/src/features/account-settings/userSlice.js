@@ -33,7 +33,7 @@ export const login = createAsyncThunk(
     if (isPending != true){
       return
     }
-
+    // console.log(user)
     const QUERY = (userType === "Society") ?  '/api/auth/society/login' : '/api/auth/cca/login'
 
     try {
@@ -55,6 +55,7 @@ export const login = createAsyncThunk(
           throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
         }
 
+        console.log(data)
         localStorage.setItem('token', data.token)
         localStorage.setItem('localUser', JSON.stringify({userType, ...data.user}))
 
