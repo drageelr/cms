@@ -27,19 +27,13 @@ auth: {
 */
 
 function sendEmail (mailOptions) {
-  try {
-
-    emailer.sendMail(mailOptions, function(err , info) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("Email sent to \"" + emailTarget + "\" " + info.response);
-      }
-    });
-
-  } catch (err) {
-    console.log(err);
-  }
+  emailer.sendMail(mailOptions, function(err , info) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Email sent to \"" + emailTarget + "\" " + info.response);
+    }
+  });
 }
 
 /*
@@ -47,37 +41,29 @@ function sendEmail (mailOptions) {
 */
 
 exports.sendSubmissionReview = (emailTarget, link, societyInitials) => {
-  try {
-    let title = "Review " + societyInitials + "'s Submission";
-    let body = "Kindly review " + societyInitials + "'s submission and mark it as APPROVED or ISSUE via the following link." ;
-    let linkText = "View Submission"
+  let title = "Review " + societyInitials + "'s Submission";
+  let body = "Kindly review " + societyInitials + "'s submission and mark it as APPROVED or ISSUE via the following link." ;
+  let linkText = "View Submission"
 
-    let mailOptions = {
-      from: 'CMS <cmslums@gmail.com>',
-      to: emailTarget,
-      subject: 'Review Submission',
-      html: emailTemplate.generatetemplateA(title, body, link, linkText)
-    };
+  let mailOptions = {
+    from: 'CMS <cmslums@gmail.com>',
+    to: emailTarget,
+    subject: 'Review Submission',
+    html: emailTemplate.generatetemplateA(title, body, link, linkText)
+  };
 
-    sendEmail(mailOptions);
-  } catch (err) {
-    console.log(err);
-  }
+  sendEmail(mailOptions);
 }
 
 exports.sendIssueEmail = (emailTarget, body) => {
-  try {
-    let title = "Submission Issue";
+  let title = "Submission Issue";
     
-    let mailOptions = {
-      from: 'CMS <cmslums@gmail.com>',
-      to: emailTarget,
-      subject: 'Submission Issue',
-      html: emailTemplate.generatetemplateA(title, body, "", "")
-    };
+  let mailOptions = {
+    from: 'CMS <cmslums@gmail.com>',
+    to: emailTarget,
+    subject: 'Submission Issue',
+    html: emailTemplate.generatetemplateA(title, body, "", "")
+  };
 
-    sendEmail(mailOptions);
-  } catch (err) {
-    console.log(err);
-  }
+  sendEmail(mailOptions);
 }
