@@ -234,7 +234,7 @@ exports.editForm = async (req, res, next) => {
             checklistIds.push(reqChecklist.checklistId);
           }
 
-          await Checklist.deleteMany({checklistId: {$in: checklistIds}});
+          await Checklist.deleteMany({checklistId: {$nin: checklistIds}, formId: reqForm._id});
         }
 
         // Delete sub docs from Form:

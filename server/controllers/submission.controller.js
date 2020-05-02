@@ -402,7 +402,6 @@ exports.updateSubmissionStatus = async (req, res, next) => {
       // raise submission not found error
       throw new customError.SubmissionNotFoundError("invalid submission id");
     }
-    
   } catch (err) {
     next(err);
   }
