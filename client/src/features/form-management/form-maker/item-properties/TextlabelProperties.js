@@ -56,7 +56,7 @@ export default function TextlabelProperties({propertyAddMode, propertyId, itemDa
           <Field component={CheckboxWithLabel} color='primary' name="defaultVisibility" type="checkbox" Label={{label: "Default Visibility"}}/>
 
           <br />
-          <Button variant="contained" color="primary" onClick={submitForm} style={{marginTop: 20}}>Save</Button>
+          <Button variant="contained" color="primary" type="submit" onClick={submitForm} style={{marginTop: 20}}>Save</Button>
           <Button onClick={closeProperties} variant="contained" style={{marginLeft: 10, marginTop: 20}}>Cancel</Button>
         </Form>
       )}

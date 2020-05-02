@@ -57,7 +57,7 @@ export default function ComponentProperties({propertyAddMode, propertyId, parent
           <Form>
             <Field component={TextField} name="label" required label="Component Title"/>
             <br />
-            <Button variant="contained" color="primary" onClick={submitForm} style={{marginTop: 20}}>Save</Button>
+            <Button variant="contained" color="primary" onClick={submitForm} type="submit" style={{marginTop: 20}}>Save</Button>
             <Button onClick={closeProperties} variant="contained" style={{marginLeft: 10, marginTop: 20}}>Cancel</Button>
           </Form>
         )}

@@ -40,7 +40,7 @@ export default function RadioProperties({propertyAddMode, propertyId, itemData, 
         const newItemData = {
           type: 'radio', 
           label: values.label,
-          options: values.options.split(','),
+          options: (typeof values.options === "string") ? values.options.split(',') : values.options,
           required: values.required, 
           defaultVisibility: values.defaultVisibility,
           conditionalItems: [{optionId: 0, itemId: 0}]

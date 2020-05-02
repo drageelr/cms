@@ -37,7 +37,7 @@ export default function FileProperties({propertyAddMode, propertyId, itemData, p
         const newItemData = {
           type: 'file', 
           label: values.label,
-          fileTypes: values.fileTypes.split(','),
+          fileTypes: values.fileTypes,
           required: values.required, 
           defaultVisibility: values.defaultVisibility
         }
@@ -63,7 +63,7 @@ export default function FileProperties({propertyAddMode, propertyId, itemData, p
           <Field component={CheckboxWithLabel} color='primary' name="defaultVisibility" type="checkbox" Label={{label: "Default Visibility"}}/>
 
           <br />
-          <Button variant="contained" color="primary" onClick={submitForm} style={{marginTop: 20}}>Save</Button>
+          <Button variant="contained" color="primary" type="submit" onClick={submitForm} style={{marginTop: 20}}>Save</Button>
           <Button onClick={closeProperties} variant="contained" style={{marginLeft: 10, marginTop: 20}}>Cancel</Button>
         </Form>
       )}

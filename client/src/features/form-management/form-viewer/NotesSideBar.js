@@ -42,7 +42,7 @@ export default function NotesSideBar({formId, drawerOpen, toggleDrawer, notesDat
         {({ submitForm}) => (
           <Form>
             <Field component={TextField} multiline rows={8} required variant="outlined" fullWidth name="ccaNote" label="CCA Note"/>
-            <Button variant="contained" color="primary" onClick={submitForm} style={{marginTop: 8}}>Save</Button>
+            <Button variant="contained" color="primary" onClick={submitForm} type="submit" style={{marginTop: 8}}>Save</Button>
             <Button variant="contained" onClick={toggleDrawer} style={{marginLeft: 10, marginTop: 8}}>Cancel</Button>
             <p>Last modified: {ccaNoteTimestampModified}</p>
             <h5>Society Notes</h5>

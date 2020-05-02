@@ -258,6 +258,10 @@ const formTemplate = createSlice({
               state.componentsOrder[id] = []
             }
           }
+
+          // must delete the corresponding checklist item as well, so just update it with a filtered list without that sectionId item
+          state.checklistItems = state.checklistItems.filter(
+            checklistItem => checklistItem.sectionId != id)
           break
         }
         case 'component':{

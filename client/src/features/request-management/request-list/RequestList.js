@@ -159,7 +159,7 @@ export function RequestList({requestListData, dispatch}) {
             </MuiPickersUtilsProvider>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleDateDialogClose} color="primary" autoFocus>
+            <Button onClick={handleDateDialogClose} color="primary" autoFocus type="submit">
               Save
             </Button>
           </DialogActions>

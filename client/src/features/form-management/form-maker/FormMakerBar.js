@@ -50,6 +50,11 @@ export default function FormMakerBar({title, isPublic, createMode}) {
     setLocalTitle(e.target.value)
   }
 
+  function handleSaveTitle(){
+    dispatch(setTitle(localTitle))
+    setTitleDialogOpen(false)
+  }
+
   return (
     <div className={classes.root}>
       <Paper square variant="outlined" className={classes.propertiesPaper}>
@@ -139,7 +144,7 @@ export default function FormMakerBar({title, isPublic, createMode}) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>dispatch(setTitle(localTitle))} color="primary">
+          <Button onClick={handleSaveTitle} type="submit" color="primary">
             Save
           </Button>
           <Button onClick={()=>setTitleDialogOpen(false)}>

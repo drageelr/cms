@@ -202,6 +202,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
                   onClick={submitForm} 
                   color="primary"
                   disabled={isSubmitting}
+                  type="submit"
                   >
                   Save
                 </Button>

@@ -178,7 +178,7 @@ function Properties({propertiesData, formTemplate, dispatch}) {
                   {({ submitForm }) => (
                     <Form>
                       <Field  component={TextField} name="subtask"/>
-                      <Button variant="contained" style={{marginTop: 10}} onClick={submitForm}>Save</Button>
+                      <Button variant="contained" style={{marginTop: 10}} type="submit" onClick={submitForm}>Save</Button>
                     </Form>
                   )}
                 </Formik>
