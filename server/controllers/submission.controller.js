@@ -342,6 +342,7 @@ exports.getSubmissionList = async (req, res, next) => {
         let reqForm = await Form.findById(s.formId, 'title formId');
         
         submissionsList.push({
+          submissionId: s.submissionId,
           societyId: s.societyId,
           status: s.status,
           formId: reqForm.formId,
