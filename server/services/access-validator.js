@@ -97,15 +97,17 @@ exports.validateUserAccess = (req, res, next) => {
 
 exports.validateCCAAccess = async (req, res, next) => {
   try {
-    if (req.body.userObj.type != "cca") next();
-    let reqCCA = await CCA.findById(req.body.userObj._id, 'role permissions');
-    if (reqCCA.role != "admin") {
-      let access = ccaAccess[req.originalUrl];
-    
-      if(reqCCA.permissions[access]) {
-        next();
+    if (req.body.userObj.type == "cca") {
+      let reqCCA = await CCA.findById(req.body.userObj._id, 'role permissions');
+      if (reqCCA.role != "admin") {
+        let access = ccaAccess[req.originalUrl];
+        if(reqCCA.permissions[access]) {
+          next();
+        } else {
+          throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
+        }
       } else {
-        throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
+        next();
       }
     } else {
       next();
