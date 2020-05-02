@@ -24,7 +24,7 @@ export async function apiCaller(api, body, successCode, dataReturner, rejectWith
             req_init['body'] = JSON.stringify(body)
         }
         
-        console.log(req_init.body)
+        // console.log(req_init.body)
         
         const res = await fetch(api, req_init)
         if (res.ok) {

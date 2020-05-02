@@ -1,26 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { apiCaller} from "../../helpers"
 
-/**
-A temporary initial state has been created to test with the components and render meaningful
-on the screen
-*/
-
 // const sampleState = {
-// formDataList : [
-// {
-// societyId: "1",
-// status: "Approved",
-// formId: "REQ-1",
-// formTitle: "Design Form",
-// societyName: "LUMUN",
-// societyNameInitials: "lumun",
-// timestampCreated: "30/05/2020",
-// timestampModified: "01/04/2020"
-// },
-// ],
-// isPending: true,
-// error: null
+//   formDataList: [
+//     {
+//       id: 1,
+//       title: "Aud Booking",
+//       date: "20/04/2020",
+//       society: "LUMUN",
+//       status: "Approved"
+//     },
+//   ],
+//   isPending: true,
+//   error: null
 // }
 
 const initialState = {
@@ -39,30 +31,21 @@ export const fetchCCARequestList = createAsyncThunk(
     } 
 
     return await apiCaller('/api/submission/fetch-list', {}, 200, 
-    (data) => {
-      return {isPending: false, error: '' , ccaList: data.submissions}
-    }, 
+    (data) => ({isPending: false, error: '' , ccaList: data.submissions}), 
     rejectWithValue)  
   }
 )
 
 export const changeFormStatus = createAsyncThunk(
   'requestListData/changeFormStatus',
-  async ({requestId, status}, { getState, rejectWithValue}) => {
-    const { isPending } = getState().requestListData
-
-    if (isPending != true) {
-      return
-    } 
+  async ({requestId, status}, {rejectWithValue}) => {
 
     return await apiCaller('/api/submission/update-status', {
       submissionId: requestId ,
       status: status,
-      issue: "hello world" // probably remove this at the end/ used for sending emails
+      // issue: "" // probably remove this at the end/ used for sending emails
     }, 203, 
-    (data) => {
-      return {isPending: false, error: '', requestId: requestId, status: status}
-    }, 
+    (data) => ({isPending: false, error: '', requestId: requestId, status: status}), 
     rejectWithValue)
   }
 )
@@ -70,9 +53,15 @@ export const changeFormStatus = createAsyncThunk(
 const requestListData = createSlice ({
   name:'requestListData',
   initialState: initialState,
-  
+
+  reducers: {
+    clearError: (state) => {
+      state.error = null
+    },
+  },
+
   extraReducers: {
-    [fetchCCARequestList.pending]: (state, action) => {
+    [fetchCCARequestList.pending]: (state) => {
       if (state.isPending === false) {
         state.isPending = true
       }
@@ -90,29 +79,20 @@ const requestListData = createSlice ({
       }
     },
 
-    [changeFormStatus.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [changeFormStatus.fulfilled]: (state, action) => {
       const {requestId, status} = action.payload
-      if (state.isPending === true) {
-        state.isPending = false
-        state.formDataList.map(request => {
-          if(request.formId === requestId) {
-            request.status = status
-          }
-        })
-      }
+      state.formDataList.map(request => {
+        if(request.formId === requestId) {
+          request.status = status
+        }
+      })
     },
     [changeFormStatus.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload
-      }
+      state.error = action.payload
     },
   }
 })
+
+export const { clearError } = requestListData.actions
 
 export default requestListData.reducer

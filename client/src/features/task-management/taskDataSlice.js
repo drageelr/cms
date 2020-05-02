@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
 /**
   A temporary initial state has been created to test with the components and render meaningful
@@ -7,174 +7,105 @@ import { createSlice } from "@reduxjs/toolkit"
 */
 
 const initialState = {
-  
-  userData:[
-    {
-      id: "column-1",
-      email: "",
-      password: "",
-      firstName: "Asher",
-      lastName: "Javaid",
-      picture: "",
-      role: "",
-      userType: "",
-      permissions: {
-        societyCRUD: true,
-        ccaCRUD: true,
-        accessFormMaker: true,
-        createReqTask: true,
-        createCustomTask: true,
-        createTaskStatus: true,
-        archiveTask: true,
-        unarchiveTask: true,
-        setFormStatus: true,
-        addCCANote: true
-      },
-      timeStampCreated: ""
-    },
-    {
-      id: "column-2",
-      email: "",
-      password: "",
-      firstName: "Farkhanda",
-      lastName: "Khan",
-      picture: "",
-      role: "",
-      userType: "CCA",
-      permissions: {
-        societyCRUD: true,
-        ccaCRUD: true,
-        accessFormMaker: true,
-        createReqTask: true,
-        createCustomTask: true,
-        createTaskStatus: true,
-        archiveTask: true,
-        unarchiveTask: true,
-        setFormStatus: true,
-        addCCANote: true
-      },
-      timeStampCreated: ""
-    },
-  ],
-  
-  users: ["Asher", "Farkhanda"],  
 
-  columnOrder: ['column-1','column-2'],
+  archiveList: [],// fetch this list when required
 
-  archiveList: [],
-  
-  taskStatuses : [
+  taskList : [ // fetch Task Manager
     {
-      id : 'ts-1',
-      name: "Backlog",
-      colorHex: '#808080',
-    },
-    {
-      id : 'ts-2',
-      name: "In Progress",
-      colorHex: '#FF6347',
-    },
-    {
-      id : 'ts-3',
-      name: "Done",
-      colorHex: '#00FF00',
-    },
-    {
-      id : 'ts-4',
-      name: "Urgent",
-      colorHex: '#FF0000',
-    },
-  ],
-
-  tasks: {
-    'r1': { // r stands for request task
-      id: 'r1', 
-      title: 'Group Logs', 
-      formDataId: "", // stores the ID of the request that is linked to it
-      description: "hello world", 
-      ownerId:'column-1', 
-      status: 'ts-1',
-      assigneeList: [],
-      subTasksList: [], // list that contains the subtasks linked with this task
-      logsList: [
+      taskId: 'r1',
+      title: "Fix TM",
+      description: "",
+      submissionId: -1,
+      ownerId: 1,
+      statusId: 1,
+      subTasks: [
         {
-          id: "log1",
-          taskId: "r1",
-          creatorId: "column-1",
-          description: "Hello WOrld",
-          timeStampCreated: "",
-          timeStampModified: ""
-        },
-      ] 
+          subTaskId: 1,
+          assigneeId: 1,
+          description: "",
+          check: false
+        }
+      ],
+      logs: [
+        {
+          logId: 1,
+          creatorId: 1,
+          description: "",
+          createdAt: "",
+          updatedAt: ""
+        }
+      ],
+      archive: false,
+      createdAt: "",
+      updatedAt: ""
     },
-    'c2': { // c stands for request task
-      id: 'c2', 
-      title: 'Documents', 
-      description: "world! good bye", 
-      ownerId:'column-2', 
-      status: 'ts-4',
-      assigneeList: [], // assignees list
-      logsList: []
-    },
-    'r2': { // r stands for request task
-      id: 'r2',  // request task ID
-      title: 'Something Something', // title of the task
-      formDataId: "", // stores the ID of the request that is linked to it
-      description: "bye world",  // description of the task
-      ownerId:'column-2', // the owner(column) in which this task will go
-      status: 'ts-1', // the color status id applied to this task
-      assigneeList: [], // the list of assignees assigned to this task
-      subTasksList: [], // list that contains the subtasks linked with this task
-      logsList: []
-    },
-  },
-
-  columns: {
-    'column-1': {
-      id: 'column-1',
-      title: 'Ashar Javaid',
-      taskIds: ['r1']
-    },
-    'column-2': {
-      id: 'column-2',
-      title: 'Farkhanda Khan',
-      taskIds: ['c2', 'r2']
+    {
+      taskId: 'c1',
+      title: "Bharwapa Laga Rakha hai",
+      description: "",
+      submissionId: 1,
+      ownerId: 2,
+      statusId: 2,
+      logs: [
+        {
+          logId: 1,
+          creatorId: 1,
+          description: "",
+          createdAt: "",
+          updatedAt: ""
+        }
+      ],
+      archive: false,
+      createdAt: "",
+      updatedAt: ""
     }
-  },
-  
-  checkListItems : [
-    // {
-    //   id:"checkItem-1",
-    //   formId: "R-ID-1",
-    //   title: "Make the Checklist by tonight asap.",
-    //   description: "I am trying my best.",
-    //   sectionIndex: "1.1",
-    //   isAssigned: false,
-    //   isChecked: false,
-    // },
-    // {
-    //   id:"checkItem-2",
-    //   formId: "R-ID-1",
-    //   title: "Complete UI tonight.",
-    //   description: "OK",
-    //   sectionIndex: "1.2",
-    //   isAssigned: false,
-    //   isChecked: false,
-    // },
-    // {
-    //   id:"checkItem-3",
-    //   formId: "R-ID-2",
-    //   title: "Material UI complete",
-    //   description: "Nothing",
-    //   sectionIndex: "1.3",
-    //   isAssigned: false,
-    //   isChecked: false,
-    // },
   ],
+
+  isPending: false,
+  error: null,
 }
 
-let cId = 1
-let tId = 2
+export const fetchTaskManager = createAsyncThunk(
+  'taskData/fetchTaskManager',
+  async (_, { getState, rejectWithValue }) => {
+    const { isPending } = getState().taskData
+    if (isPending != true) {
+      return
+    } 
+
+    return ''
+  }
+)
+
+export const createRequestTask = createAsyncThunk(
+  'taskData/createRequestTask',
+  async (reqTaskObject, { rejectWithValue }) => {
+    const { title, description, submissionId, ownerId, statusId } = reqTaskObject
+
+    const data = {
+      taskId: "rn",
+      subTaskIds: [],
+      newLogs: []
+    }
+
+    return {data, reqTaskObject}
+  }
+)
+
+export const createCustomTask = createAsyncThunk(
+  'taskData/createCustomTask',
+  async (cusTaskObject, { rejectWithValue }) => {
+    const { title, description, ownerId, statusId } = cusTaskObject
+
+    const data = {
+      taskId: "cn",
+      newLogs: []
+    }
+
+    return {data, cusTaskObject}
+  }
+)
+
 let sId = 0
 let lId = 1
 
@@ -182,51 +113,36 @@ const taskdata = createSlice({
   name: 'taskData',
   initialState: initialState,
   reducers: {
-    addTask: (state, action) => {
-      const {ownerId, text, taskType} = action.payload
-      
-      tId += 1
-      let typeInit = ""
-
-      taskType === "request" ? typeInit="r" : typeInit="c"
-      const taskId = `${typeInit}${tId}`
-
-      const newTask = { 
-        id: taskId, 
-        title: text, 
-        formDataId: "", // stores the ID of the request that is linked to it
-        description: "", 
-        ownerId: ownerId, 
-        status: '',
-        assigneeList: [],
-        subTasksList: [],
-        logsList:[]
-      }
-  
-      state.tasks[taskId] = newTask
-      state.columns[ownerId].taskIds.push(taskId)
-    },
-      
     moveTask: (state, action) => {
       const { srcColumnId, srcIndex, dstColumnId, dstIndex, taskId } = action.payload
-  
-      const srcColumn = state.columns[srcColumnId]
-      const dstColumn = state.columns[dstColumnId]
-  
-      srcColumn.taskIds.splice(srcIndex, 1) // delete the single task Id from src index from the source column
-      dstColumn.taskIds.splice(dstIndex, 0, taskId) //insert it at dst index in the dst column
+      
+      // probably call the edit API as we want to update the ownerID of the task
+
+      state.taskList.map(taskObj => {
+        if(taskObj.taskId === taskId) {
+          taskObj.ownerId = dstColumnId
+        }
+      })
+    },
+    
+    updateTitle: (state, action) => {
+      const {taskId, newTitle} = action.payload
+      
+      state.taskList.map(taskObj => {
+        if (taskObj.taskId === taskId) {
+          taskObj.title = newTitle
+        }
+      })
     },
 
     updateDescription: (state, action) => {
       const {taskId, description} = action.payload
       
-      state.tasks[taskId].description = description
-    },
-
-    updateTitle: (state, action) => {
-      const {taskId, newTitle} = action.payload
-      
-      state.tasks[taskId].title = newTitle
+      state.taskList.map(taskObj => {
+        if (taskObj.taskId === taskId) {
+          taskObj.description = description 
+        }
+      })
     },
 
     archiveTask: (state, action) => { // send the task id to the server and create an archive of it
@@ -253,25 +169,39 @@ const taskdata = createSlice({
     },
 
     taskOwner: (state, action) => {
-      const {taskId, owner} = action.payload
+      const {taskId, ownerId} = action.payload
       
-      state.tasks[taskId].ownerId = owner
+      state.taskList.map(taskObj => {
+        if (taskObj.taskId === taskId) {
+          taskObj.ownerId = ownerId
+        }
+      })
+    },
+
+    changeTaskStatus: (state, action) => {
+      const { taskId, statusId} = action.payload
+
+      state.taskList.map(taskObj => {
+        if(taskObj.taskId === taskId) {
+          taskObj.statusId = statusId
+        }
+      })
+    },
+
+    linkFormToTask : (state, action) => {
+      const {taskId, requestId} = action.payload
+      
+      state.taskList.map(taskObj => {
+        if (taskObj.taskId === taskId) {
+          taskObj.submissionId = requestId
+        }
+      })
     },
 
     addTaskAssignees: (state, action) => {
       const {taskId, value} = action.payload
       
       state.tasks[taskId].assigneeList.push(value)
-    },
-
-    changeTaskStatus: (state, action) => {
-      const { taskId, status} = action.payload
-      
-      state.taskStatuses.map(statObj => {
-        if(statObj.name === status) {
-          state.tasks[taskId].status = statObj.id
-        }
-      })
     },
     
     deleteTaskAssignee: (state, action) => {
@@ -283,12 +213,6 @@ const taskdata = createSlice({
           state.tasks[taskId].assigneeList = filteredAry
         }
       })
-    },
-
-    linkFormToTask : (state, action) => {
-      const {taskId, requestId} = action.payload
-      
-      state.tasks[taskId].formDataId = requestId
     },
 
     changeCheckStatus: (state, action) => {
@@ -342,11 +266,58 @@ const taskdata = createSlice({
 
       state.tasks[taskId].logsList.push(newLog)
     }
+  },
+  extraReducers: {
+    [fetchTaskManager.pending]: (state, action) => {
+      if (state.isPending === false) {
+        state.isPending = true
+      }
+    },
+    [fetchTaskManager.fulfilled]: (state, action) => {
+      // set state.taskList = list received from backend
+      
+      // if we wish to store the columnOrder in the redux else, frontend storage is fine
+      // let tempColumnOrder = []
+      // state.taskList.map(taskObj => {
+      //   tempColumnOrder.push(taskObj.ownerId) // this will give me an array with all the columns associated to tasks with duplications
+      // })
+      // state.columnOrder = Array.from(new Set(tempColumnOrder)) // this sets the columnOrder === to an array with unique columnIds
+    },
+    [fetchTaskManager.rejected]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = action.payload
+      }
+    },
+
+    [createRequestTask.fulfilled]: (state, action) => {
+      state.taskList.push({
+        taskId: action.payload.data.taskId,
+        logs: action.payload.data.newLogs,
+        subTasks: action.payload.data.subTaskIds,
+        ...action.payload.reqTaskObject
+      })
+      state.error = 'Request Task Created'
+    },
+    [createRequestTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [createCustomTask.fulfilled]: (state, action) => {
+      state.taskList.push({
+        taskId: action.payload.data.taskId,
+        logs: action.payload.data.newLogs,
+        ...action.payload.cusTaskObject
+      })
+      state.error = 'Custom Task Created'
+    },
+    [createCustomTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
   }
 })
     
-export const { 
-  addTask, 
+export const {  
   updateTitle,
   updateDescription, 
   moveTask, 

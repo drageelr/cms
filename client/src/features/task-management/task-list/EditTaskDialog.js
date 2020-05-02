@@ -1,5 +1,5 @@
-import React, {useState} from 'react'
-import { connect, useStore } from 'react-redux'
+import React, {useState, useEffect} from 'react'
+import { connect } from 'react-redux'
 import AttachRequestForm from './AttachRequestForm'
 import TaskStatus from './TaskStatus'
 import SubTask from "./SubTaskCheckList"
@@ -9,7 +9,7 @@ import { archiveTask, taskOwner, updateTitle, updateDescription } from "../taskD
 import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, TextareaAutosize, Button } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import SubjectIcon from '@material-ui/icons/Subject'
-
+import { fetchCCARequestList } from '../../request-management/requestListSlice'
 /**
   The task edit dialog is handled by this component. It navigates between sub components of the task
   editor dialog. The data to the child components e.g AddAssignee, SubTaskChecklist components is 
@@ -26,10 +26,20 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {  
+export function EditTaskDialog({taskId, taskData, ccaDetails, dispatch, open, setOpen}) {  
+  
+  let defaultDesc = ""
+  let defaultTitle = ""
+  taskData.map(taskObj => {
+    if (taskObj.taskId === taskId) {
+      defaultDesc = taskObj.description
+      defaultTitle = taskObj.title
+    }
+  })
+
   const [selectOpen, setSelectOpen] = useState(false)
-  const [text, setText] = useState(taskData.tasks[taskId].description)
-  const [taskTitle, setTaskTitle] = useState(taskData.tasks[taskId].title)
+  const [text, setText] = useState(defaultDesc)
+  const [taskTitle, setTaskTitle] = useState(defaultTitle)
   const [owner, setOwner] = useState("")
 
   function handleSelectOpen(){
@@ -39,37 +49,111 @@ export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {
   function handleSelectClose() {
     setSelectOpen(false)
   }
-
-  function handleOwnerSet(event) {
-    const owner = event.target.value
-    dispatch(taskOwner({taskId, owner}))
-    setOwner(event.target.value)
-  }
-
+  
   function handleClickClose() {
     setOpen(false)
-    // setText(""s)
-  }
-
-  function handleTitleChange (event) {
-    let newTitle = event.target.value
-    dispatch(updateTitle({taskId, newTitle}))
-    setTaskTitle(event.target.value)
-  }
-
-  function handleDescChange(event) {
-    const description = event.target.value
-    dispatch(updateDescription({taskId, description}))
-    setText(event.target.value)
   }
 
   function handleCloseDialog(){
     setOpen(false)
   }
 
-  function handleDelete() {
-    const ownerId = taskData.tasks[taskId].ownerId
+  function handleOwnerSet(event) { // CALL EDIT TASK API
+    const ownerId = event.target.value
+    dispatch(taskOwner({taskId, ownerId}))
+    setOwner(event.target.value)
+  }
+
+  function handleTitleChange (event) { // CALL EDIT TASK API
+    let newTitle = event.target.value
+    dispatch(updateTitle({taskId, newTitle}))
+    setTaskTitle(event.target.value)
+  }
+
+  function handleDescChange(event) { // CALL EDIT TASK API
+    const description = event.target.value
+    dispatch(updateDescription({taskId, description}))
+    setText(event.target.value)
+  }
+
+  function handleDelete() { // CALL EDIT TASK API/ARCHIVE TASK API
+    let ownerId = -1
+    taskData.map(taskObj => {
+      if (taskObj.taskId === taskId) {
+        ownerId = taskObj.ownerId
+      }
+    })
     dispatch(archiveTask({taskId, ownerId}))
+  }
+
+  function RequestVSCustom() { // conditionally render "CHecklist" and Request Form Button
+    return (
+      <Grid container direction="row" justify="space-between" alignItems="flex-start" style={{padding: "0px 17px 0px 17px"}}>
+        <Grid item> {/*Checklist text*/}
+          { taskId[0] === 'r' &&  
+            <Typography gutterBottom variant="h5" color="inherit">
+              Checklist:
+            </Typography> 
+          }
+        </Grid>
+        <Grid item> {/*REQUEST-FORM*/}
+          {(() => {
+            let submissionId = -1
+            taskData.map(taskObj => {
+              if (taskObj.taskId === taskId) {
+                submissionId = taskObj.submissionId
+              }
+            })
+
+            if (taskId[0] === 'r' && submissionId === -1) {
+              return (
+                <AttachRequestForm taskId={taskId}/>
+              )
+            } else {
+              return (
+                <Typography variant="h5">
+                  Linked Request ID: {submissionId}
+                </Typography> 
+              )
+            }
+          })()}
+        </Grid>
+      </Grid>
+    )
+  }
+
+  function AssignTaskOwner() { // Give Select Option to Add Task Assignee
+    return (
+      <Grid container direction="row" justify='flex-start' alignItems="flex-start">
+        <Typography style={{marginRight: 5}} gutterBottom variant="h6" color="inherit">
+          Task Owner:    
+        </Typography>
+        <FormControl>
+          <Select
+            labelId = "select-label"
+            id="label"
+            open={selectOpen}
+            onClose={handleSelectClose}
+            onOpen={handleSelectOpen}
+            value={owner}
+            onChange={handleOwnerSet}
+            variant = "outlined"
+            style={{height: 30, width: "170%",  marginTop: 3}}
+          >
+            <MenuItem value={""}>
+              <em>None</em>
+            </MenuItem>
+            {
+              ccaDetails.map((ccaUser, index) => {
+                return (
+                  <MenuItem key={index} value={ccaUser.ccaId}>{ccaUser.firstName}</MenuItem> 
+                ) 
+              })
+            }
+          </Select>
+        </FormControl>
+      </Grid>
+    )
   }
 
   function renderDialogBox() {
@@ -92,7 +176,7 @@ export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {
                       autoFocus
                       variant="outlined"
                       value={taskTitle}
-                      defaultValue={"hell"}
+                      defaultValue={taskTitle}
                       onChange={handleTitleChange}
                       style={{
                         resize: "none",
@@ -100,14 +184,13 @@ export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {
                         marginLeft: 4,  
                         size:"small",
                         value:{taskTitle},
-                        overflow: "hidden",
                         outline: "none"
                       }}
                     />
                   </Grid>
                 </Grid>
-                  <Typography gutterBottom variant="subtitle1" color="textPrimary">
-                    task id: {taskId}
+                  <Typography gutterBottom variant="h6" color="textPrimary">
+                    Task id: {taskId}
                   </Typography>
               </Typography>
           </Grid>
@@ -117,30 +200,21 @@ export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {
         </Grid>
 
         {/*Description Box*/}
-        <Box padding= {2}>
-          <Typography 
-            gutterBottom 
-            variant="h6" 
-            color="inherit"
-            style={{marginLeft:27, marginTop:0}}
-          >
+        <Box padding= {2} marginTop={-2}>
+          <Typography gutterBottom variant="h6" color="inherit" style={{marginLeft:27}}>
             <Typography style={{marginLeft: -30, marginBottom: -36}}>
               <SubjectIcon fontSize={"large"}/>
             </Typography>
             Description
           </Typography>
-          <Card style={{
-            minHeight: 100,
-            minWidth: 0,
-            background: "#ebecf0",
-          }}>
+          <Card style={{minHeight: 100, minWidth: 0, background: "#ebecf0"}}>
             <TextField 
               placeholder={"Add description here..."}
               autoFocus
               multiline
               rows="6"
               value={text}
-              defaultValue={taskData.tasks[taskId].description}
+              defaultValue={text}
               onChange={handleDescChange}
               style={{
                 resize: "none",
@@ -154,76 +228,33 @@ export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {
             />
           </Card>
         </Box>
-            
-        <Grid 
-          container 
-          direction="row" 
-          justify="space-between" 
-          alignItems="flex-start"
-          style={{padding: "0px 17px 0px 17px"}}
-        >
-          <Grid item> {/*Checklist text*/}
-            { taskId[0] === 'r' &&  
-              <Typography gutterBottom variant="h6" color="inherit">
-                Checklist:
-              </Typography> 
-            }
-          </Grid>
-          <Grid item> {/*REQUEST-FORM*/}
-            {taskId[0] === 'r' && taskData.tasks[taskId].formDataId === "" ? <AttachRequestForm taskId={taskId}/> :
-              taskData.tasks[taskId].formDataId} 
-          </Grid>
-        </Grid>
-
-        <Grid 
-          container 
-          direction="row" 
-          justify="space-between" 
-          alignItems="flex-start"
-          style={{padding: "0px 17px 0px 17px"}}
-        >
-          <Grid item style={{marginBottom: 20}}> {/*CHECKLIST-SUBTASK*/}
-            { taskId[0] === 'r' && <SubTask taskId={taskId}/> }
+        
+        <Grid container direction="row" justify="space-between" alignItems="flex-start" style={{padding: "0px 17px 0px 17px"}}>
+          <Grid item style={{marginBottom: 20}}> {/*Assign Task Owner*/}
+            {AssignTaskOwner()}
           </Grid>
           <Grid item style={{marginTop: 5}}> {/*Task Status Colors*/}
             <TaskStatus taskId={taskId}/>
           </Grid>
         </Grid>
-
-        {/* Assign Task Owner */}
-        <Grid container direction="row" justify='flex-start' alignItems="flex-start">
-          <Grid item>
-              <Typography style={{marginLeft: 17, marginRight: 5}} gutterBottom variant="h6" color="inherit">
-                Task Owner:    
-              </Typography>
-          </Grid>
-          <Grid item>
-            <FormControl>
-              <Select
-                labelId = "select-label"
-                id="label"
-                open={selectOpen}
-                onClose={handleSelectClose}
-                onOpen={handleSelectOpen}
-                value={owner}
-                defaultValue={taskData.tasks[taskId].ownerId}
-                onChange={handleOwnerSet}
-                variant = "outlined"
-                style={{height: 30, padding: "0px 0px 0px 0px", marginTop: 3}}
-              >
-                <MenuItem value={""} disabled>
-                  <em>None</em>
-                </MenuItem>
-                {taskData.users.map((person, index) => {
-                  return <MenuItem key={index} value={person}>{person}</MenuItem>  
-                })}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
       
+        {/*CheckList Text (and checklist) and Request Task Button conditionally rendered*/}
+        {(() =>{
+          if (taskId[0] === 'r') {
+            return (
+              <div>
+                {RequestVSCustom()}
+                <Grid item style={{padding: "0px 17px 0px 17px", marginTop: -20}}>
+                  <h6>Link Request Checklist</h6>
+                  {/* <SubTask taskId={taskId}/> */}
+                </Grid>
+              </div>
+            )
+          }
+        })()}
+
         {/* Task Assignees */}
-        <AddAssignee taskId={taskId}/>
+        {/* <AddAssignee taskId={taskId}/> */}
 
         {/* Logs */}
         <LogEditor taskId={taskId}/>
@@ -248,7 +279,8 @@ export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {
 }
 
 const mapStateToProps = (state) => ({
-  taskData: state.taskData,
+  taskData: state.taskData.taskList,
+  ccaDetails: state.ccaDetails.ccaList
 })
 
 export default connect(mapStateToProps)(EditTaskDialog)

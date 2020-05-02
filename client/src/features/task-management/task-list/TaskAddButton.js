@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { addTask } from '../taskDataSlice'
-import TextareaAutosize from 'react-textarea-autosize'
 import Icon from '@material-ui/core/Icon'
 import Card from '@material-ui/core/Card'
 import Button from '@material-ui/core/Button'
 import { TextField } from '@material-ui/core'
+import { createRequestTask, createCustomTask } from '../taskDataSlice'
 
 /**
   This component renders the "Add a Task" icon which allows the user to add custom tasks to the
@@ -14,9 +13,11 @@ import { TextField } from '@material-ui/core'
   @param {string} ownerId used to add the Add button in each column 
 */
 
-export default function TaskAddButton({ownerId}) {
+export default function TaskAddButton({ ownerId }) {
+
   const [formOpen, setFormOpen] = useState(false)
   const [text, setText] = useState("")
+
   const reqButtonText = "Add Request Task"
   const cusButtonText = "Add Custom Task"
 
@@ -31,9 +32,30 @@ export default function TaskAddButton({ownerId}) {
     setText("")
   }
 
-  function handleEditTaskTitle(taskType) {
-    if (text) {
-      dispatch(addTask({ownerId, text, taskType}))
+  function handleCreateTask(taskType) {
+    if (taskType === "request") {
+      if(text) {
+        const reqTaskObject = { 
+          title: text, 
+          description: "", 
+          submissionId: -1,
+          ownerId: ownerId, 
+          statusId: -1,
+          //checklists: [] ---> optional if want to send, but essentially will be sent in edit task
+        }
+        dispatch(createRequestTask(reqTaskObject))
+      }
+    } else if (taskType === "custom") {
+      if(text) {
+        const cusTaskObject = { 
+          title: text, 
+          description: "",
+          ownerId: ownerId, 
+          statusId: -1,
+        }
+
+        dispatch(createCustomTask(cusTaskObject))
+      }
     }
   }
 
@@ -73,7 +95,6 @@ export default function TaskAddButton({ownerId}) {
             autoFocus
             multiline
             rows="3"
-            // variant="filled"
             label="Required"
             onBlur={closeForm}
             value={text}
@@ -87,22 +108,22 @@ export default function TaskAddButton({ownerId}) {
               border: "none",
             }}
           />
-
         </Card>
+
         <div style={{marginTop: 8, marginLeft: 12, display: "flex", alignItems: "center"}}>
             <Button 
               size="small" 
-              onMouseDown={() => {handleEditTaskTitle("request")}} 
+              onMouseDown={() => {handleCreateTask("request")}} 
               variant="contained" 
               style={{ color: "white", backgroundColor: "green"}}
             >
               {reqButtonText}
             </Button>
 
-            <div style={{marginLeft: 4, display: "flex", aligntItems: "center"}}>
+            <div style={{marginLeft: 4, display: "flex", alignItems: "center"}}>
               <Button 
                 size="small" 
-                onMouseDown={() => {handleEditTaskTitle("custom")}} 
+                onMouseDown={() => {handleCreateTask("custom")}} 
                 variant="contained" 
                 style={{ color: "white", backgroundColor: "green"}}
               >

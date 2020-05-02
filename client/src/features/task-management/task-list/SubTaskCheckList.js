@@ -22,7 +22,7 @@ export function SubTask({taskId, taskData, dispatch}) {
   function handleCheckedBox({event, checkListObj}) {
     setCheck(event.target.checked)  
     var status = event.target.checked
-    dispatch(changeCheckStatus({taskId, checkListObj, status}))
+    dispatch(changeCheckStatus({taskId, checkListObj, status})) // CALL EDIT API
   }
 
   return (

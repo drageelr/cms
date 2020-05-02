@@ -17,18 +17,24 @@ import EditIcon from '@material-ui/icons/Edit'
   the a particular task and use it to populate the card 
 */
 
-export function TaskCard({taskId, index, taskData}) {
+export function TaskCard({taskId, index, taskData, taskStatusDetails}) {
 
   const [open, setOpen] = useState(false)
 
-  const statusId = taskData.tasks[taskId].status
+  var statusId = -1
+  taskData.taskList.map(taskObj => {
+    if (taskId === taskObj.taskId) {
+      statusId = taskObj.statusId
+    }
+  })
+
   let taskStatusName = ""
   let taskStatusColor = ""
 
-  taskData.taskStatuses.map(statObj => {
-    if(statObj.id === statusId) {
-      taskStatusName = statObj.name
-      taskStatusColor = statObj.colorHex
+  taskStatusDetails.map(statusObj => {
+    if(statusObj.statusId === statusId) {
+      taskStatusName = statusObj.name
+      taskStatusColor = statusObj.color
     }
   })
 
@@ -49,11 +55,19 @@ export function TaskCard({taskId, index, taskData}) {
               <CardContent>
                 <Grid item xs container direction="row" spacing={0}>
                   <Grid item xs>
-                    <Typography gutterBottom variant="h6">
-                      {taskData.tasks[taskId].title} 
-                    </Typography>
+                    {
+                      taskData.taskList.map(taskObj => {
+                        if (taskObj.taskId === taskId) {
+                          return (
+                            <Typography gutterBottom variant="h6">
+                              {taskObj.title}
+                            </Typography>
+                          )
+                        }
+                      })
+                    }
                   </Grid>  
-                  {taskId[0] === 's' ? null : 
+                  {taskId[0] === 's' ? null :
                   <Grid item> 
                     <EditIcon 
                       onClick={() => setOpen(true)} 
@@ -68,7 +82,7 @@ export function TaskCard({taskId, index, taskData}) {
                 <Grid container direction="row" justify='space-between' alignItems="flex-end">
                   <Grid item>
                     <MenuItem>
-                      <StopIcon fontSize="small" style={{fill: taskStatusColor, marginLeft:"-22%"}} />
+                      <StopIcon fontSize="small" style={{fill: taskStatusColor, marginLeft:"-22%"}} /> {/*if condition if no task status*/}
                       {taskStatusName} 
                     </MenuItem>
                   </Grid>
@@ -89,6 +103,7 @@ export function TaskCard({taskId, index, taskData}) {
 
 const mapStateToProps = (state) => ({
   taskData: state.taskData,
+  taskStatusDetails: state.taskStatusDetails.taskList
 })
 
 export default connect(mapStateToProps) (TaskCard)
