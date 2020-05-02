@@ -88,7 +88,7 @@ exports.validateUserAccess = (req, res, next) => {
         throw new customError.ForbiddenAccessError("forbidden access to resource", "RouteError");
       }
     } else {
-      next(err);
+      next();
     }
   } catch (err) {
     next(err)
