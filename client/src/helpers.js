@@ -32,7 +32,7 @@ export async function apiCaller(api, body, successCode, dataReturner, rejectWith
             console.log(data)
             if (data.statusCode != successCode) {
                 throw new Error((data.error !== undefined) 
-                ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
+                ? `${data.statusCode}: ${data.message} - ${JSON.stringify(data.error.details).replace(/[\[\]\{\}"'\\]+/g, '').split(':').pop()}`
                 : `${data.statusCode}: ${data.message}`) 
             }
             return dataReturner(data)

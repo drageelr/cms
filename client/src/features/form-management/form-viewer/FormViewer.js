@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function FormViewer({formTemplate, formData, dispatch, userType, match}) {
-  const { title, sections, sectionsOrder, componentsOrder, itemsOrder, items } = formTemplate
+  const { title, sectionTitles, sectionsOrder, componentsOrder, itemsOrder, items } = formTemplate
   const { formId, createMode, ccaNote, ccaNoteTimestampModified, societyNotes, isPending } = formData
   const classes = useStyles()
   const formDataId = match.params.id
@@ -47,7 +47,7 @@ function FormViewer({formTemplate, formData, dispatch, userType, match}) {
       { //Container to center align the View, also sections and items rendered only (components are only logical)
         sectionsOrder.map(sectionId => (
           <Paper elevation={4} className={classes.sectionPaper}>
-            <h3 style={{color: 'white', marginLeft: 10}}>{sections[sectionId]}</h3>
+            <h3 style={{color: 'white', marginLeft: 10}}>{sectionTitles[sectionId]}</h3>
             <List>
               { (sectionId in componentsOrder) ? // does the section has components?
                 componentsOrder[sectionId].map(componentId => {
