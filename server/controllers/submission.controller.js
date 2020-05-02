@@ -180,6 +180,7 @@ exports.submitForm = async (req, res, next) => {
 
       if (reqSubmission) {
         // existing submission -> different validation
+        let submissionValidationError = false;
 
         // 1) Check item ids are correct or not! (Match itemIds in form + Check for duplicate ids)
         submissionValidationError = itemIdValidation(reqForm.items, itemsData);
@@ -203,21 +204,23 @@ exports.submitForm = async (req, res, next) => {
         
         await reqSubmission.update(resubmissionQuery);
 
-        let reqSociety = await Society.findById(params.userObj._id, statusToUpdateObj.email);
+        if (statusToUpdateObj) {
+          let reqSociety = await Society.findById(params.userObj._id, statusToUpdateObj.email);
+          sendReviewEmail(reqSociety[statusToUpdateObj.email], reqSociety[statusToUpdateObj].type, reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
+        }
 
-        sendReviewEmail(reqSociety[statusToUpdateObj.email], reqSociety[statusToUpdateObj].type, reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
       
         res.json({
           status: httpStatus.getName(200),
           statusCode: 200,
           message: "Submission Successful!",
-          timestampCreated: newSubmission.createdAt,
-          timestampModified: newSubmission.updatedAt
+          timestampCreated: reqSubmission.createdAt,
+          timestampModified: reqSubmission.updatedAt
         });
       } else if (!submissionId) {
         // new submission -> Normal validation
         let submissionValidationError = false;
-
+        
         // 1) Check item ids are correct or not! (Match itemIds in form + Check for duplicate ids) + 3) Check All required are given in this or not
         submissionValidationError = itemIdValidation(reqForm.items, itemsData, true);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
