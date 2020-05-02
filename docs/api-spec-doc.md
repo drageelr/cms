@@ -84,18 +84,31 @@
 *Note: Will contain APIs actions related to creating /editing / delete tasks, archiving / unarchiving task archives and creating / editing / deleting task statuses.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Fetch Task|Gets details of a created task from database|`/api/task-manager-window/task-editor/task-details`|`{id*: Number}`|GET|`{formDataID: Number, title: "String", description: "String", ownerID: Number, statusID: Number, logIDs: List<Number>, assigneeList: List<Number>, subtaskList: List<JSON>}`|
-|2|Create Task|Creates a Custom/Request task| `/api/task-manager-window/task-editor`|`{id*: Number, formDataID*: Number, title*: "String", description*: "String", ownerID*: Number, statusID*: Number, logIDs: List<Number>, assigneeList: List<Number>}`|POST|`{}`|CCA|TBD|
-|3|Create Subtask|Creates a subtask for an existing task|`/api/task-manager-window/task-editor`|`{id*: Number, taskID*: Number, statusID*: Number, assigneeID*: Number, title*: "String", description: "String", sectionIndex: "String"}`|POST|`{}`|CCA|TBD|
-|4|Edit Task|Edits a Custom/Request task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number, formDataID*: Number, title: "String", description: "String", ownerID*: Number, statusID: Number, logIDs: List<Number>, assigneeList: List<Number>}`|PUT|`{}`|CCA|TBD|
-|5|Edit Subtask|Edits a subtask of an existing task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number, taskID*: Number, statusID: Number, assigneeID: Number, title: "String", description: "String", sectionIndex: "String"}`|PUT|`{}`|CCA|TBD|
-|6|Delete Task|Deletes a Custom/Request task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
-|7|Delete Subtask|Deletes a subtask of an existing task|`/api/task-manager-window/task-editor/task-details`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
-|8|Create Task Status|Creates a task status for assigning|`/api/task-status-manager`|`{name*: "String", colorHex*: "String"}`|POST|`{id: Number}`|CCA|TBD|
-|9|Edit Task Status|Edits a task status being assigned|`/api/task-status-manager/task-status-details`|`{id*: Number, name: "String", colorHex: "String"}`|PUT|`{}`|CCA|TBD|
-|10|Delete Task Status|Deletes a task status being assigned|`/api/task-status-manager/task-status-details`|`{id*: Number}`|DELETE|`{}`|CCA|TBD|
-|11|Archive Task|Archives a task and its related components|`/api/task-manager-window/task-editor/task-archiver`|`{formDataID*: Number, title: "String", description: "String", ownerID*: Number, statusID*: Number, logIDs*: List<Number>, assigneeList*: List<Number>}`|POST|`{id: Number}`|CCA|TBD|
-|12|Unarchive Task|Unarchives a task and its related components|`/api/task-manager-window/task-editor/task-archiver`|`{id*: Number}`|POST|`{formDataID: Number, title: "String", description: "String", ownerID: Number, statusID: Number, logIDs: List<Number>, assigneeList: List<Number>}`|CCA|TBD|
+|1|Create Request Task|Creates a request task linked with a form submission. Can't send logs.|`/api/task-manager/task/req/create`|`{task*: reqTaskObj}`|`POST`|`{taskId: "String", subTaskIds: [Number], newLogs: [logObj]}`|`CCA`|`TBD`|
+|2|Create Custom Task|Creates a custom task. Can't send logs.|`/api/task-manager/task/cus/create`|`{task*: cusTaskObj}`|`POST`|`{taskId: "String", newLogs: [logObj]}`|`CCA`|`TBD`|
+|3|Edit Request Task|Edits a request task linked with a form submission. Can't edit logs, subissionId.|`/api/task-manager/task/req/edit`|`{task*: editReqTaskObj}`|`POST`|`{newLogs: [logObj], subTaskIds**: [Number]}`|`CCA`|`TBD`|
+|4|Edit Custom Task|Edits a custom task. Can't edit logs.|`/api/task-manager/task/cus/edit`|`{task*: editCusTaskObj}`|`POST`|`{newLogs: [logObj]}`|`CCA`|`TBD`|
+|5|Add Log|Adds a log to task|`/api/task-manager/log/add`|`{taskId*: "String", description*: "String"}`|`POST`|`{logId: Number}`|`CCA`|`TBD`|
+|6|Fetch Task Manager|Returns all tasks in the task manager|`/api/task-manager/fetch`|`{}`|`POST`|`{taskList: [reqTaskObjFull/cusTaskObjFull]}`|`CCA`|`TBD`|
+|7|Fetch Archive Manager|Returns all archived tasks based on a filter|`/api/task-manager/fetch-archive`|`TBD`|`POST`|`{taskList: [reqTaskObjFull/cusTaskObjFull]}`|`CCA`|`TBD`|
+
+- **Note: * means the field mentioned is required. (For `Request Object` OR `Object Schema` referenced in it)**
+- **Note: ** means the field mentioned might not always be there. (For `Response Object` OR `Object Schema` referenced in this and `Request Object`)**
+
+#### Object Schema
+|#|Name|Object|
+|-|----|------|
+|1|`reqTaskObj`|`{title*: "String", description*: "String", submissionId*: Number, ownerId*: Number, statusId*: Number, checklists**: [checklistObj]}`|
+|2|`checklistObj`|`{checklistId*: Number, assigneeId*: Number}`|
+|3|`cusTaskObj`|`{title*: "String", description*: "String", ownerId*: Number, statusId*: Number}`|
+|4|`editReqTaskObj`|`{taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, subtasks**: [subtaskObj]}, archive**: Boolean`|
+|5|`subtaskObj`|`{subtaskId*: Number, assigneeId**: Number, description**: "String", check**: Boolean}`|
+|6|`editCusTaskObj`|`{taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, archive**: Boolean}`|
+|7|`reqTaskObjFull`|`{title: "String", description: "String", submissionId: Number, ownerId: Number, statusId: Number, subtasks:**: [subtaskObj2]}, logs: [logObj], archive: Boolean, createdAt: Date, updatedAt: Date`|
+|8|`subtaskObj2`|`{subtaskId: Number, assigneeId: Number, description: "String", check: Boolean, createdAt: Date, updatedAt: Date}`|
+|9|`cusTaskObjFull`|`{taskId: "String", title: "String", description: "String", ownerId: Number, statusId: Number, archive: Boolean, createdAt: Date, updatedAt: Date}`|
+|10|`logObj`|`{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}`|
+
 
 **Note: * means the field mentioned is required**
 
