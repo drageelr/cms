@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/styles'
 import { Paper, List, Typography, Button } from '@material-ui/core'
 import { useHistory } from 'react-router-dom'
-import { fetchFormList } from '../formListSlice'
+import { fetchFormList, clearError } from '../formListSlice'
+import ErrorSnackbar from '../../../ui/ErrorSnackbar'
 
 const useStyles = makeStyles((theme) => ({
   formListPaper: {
@@ -31,7 +32,7 @@ function SocietyFormList({formList, dispatch}) {
               return (
                 form.isPublic ?  //display public forms only to societies
                 <Paper key={index} style={{borderRadius: 3, margin: 10, backgroundColor: 'white'}} >
-                  <Button onClick={()=>history.push(`/form-viewer/${form.formId}`)}>
+                  <Button onClick={()=>history.push(`/form-viewer/create/${form.formId}`)}>
                     <Typography style={{margin: 5}}>
                     {form.title}
                     </Typography>
@@ -43,6 +44,7 @@ function SocietyFormList({formList, dispatch}) {
             })
           }
         </List>
+        <ErrorSnackbar stateError={formList.error} clearError={clearError} />
     </Paper>
   )
 }

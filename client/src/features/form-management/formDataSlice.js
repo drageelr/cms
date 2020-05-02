@@ -1,33 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { apiCaller } from "../../helpers" 
+import { useDispatch } from 'react-redux'
+import { fetchForm } from './formTemplateSlice'
 
-const sampleState = {
-  id: 0, //form data id
-  formId: 0, //form Id
-  userId: 0, //user id of the user that submitted
-  formStatus: 'Pending',
-  ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!1. Please do not worry if',
-  ccaNoteTimestampModified: '03/13/2009 21:31:30',
-  societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
-  itemsData: { //itemId : itemData
-    4: true, //checkbox
-    2: 'Small', //dropdown
-    3: 'Vice President', //radio
-    5: "../../../public/logo192.png", //file
-    0: "lumun@lums.edu.pk", //textbox
-    1: "" //textlabel
-  },
-  timestampCreated: '02/13/2009 21:31:30',
-  timestampModified: '02/13/2009 21:31:31',
-}
 
 const initialState = {
   id: 0, //form data id
   formId: 0, //form Id
   userId: 0, //user id of the user that submitted
   formStatus: '',
-  ccaNote: '',
-  ccaNoteTimestampModified: '',
+  ccaNotes: [],
   societyNotes: [],
   itemsData: {},
   timestampCreated: '',
@@ -44,23 +26,66 @@ export const fetchFormData = createAsyncThunk(
     if (isPending != true) {
       return
     }
+    const submissionId = Number(formDataId)
 
-    return await apiCaller('/api/form/fetch', {formId: formDataId}, 200, 
+    return await apiCaller('/api/submission/fetch', {submissionId}, 200, 
     (data) => {
-      return data.form
+      let itemsData = {}
+      data.itemsData.forEach(itemData => {
+        itemsData[itemData.itemId] = itemData.data
+      })
+      
+      return {
+        id: submissionId,
+        formId: data.formId,
+        ccaNotes: data.ccaNotes,
+        societyNotes: data.societyNotes,
+        itemsData
+      }
     }, 
+    rejectWithValue)
+  }
+)
+
+
+export const createFormData = createAsyncThunk(
+  'formData/createFormData',
+  async (_, {getState, rejectWithValue }) => {
+    const formId = getState().formTemplate.id
+    const itemsData = getState().formData.itemsData
+    
+    let serverItemsData = []
+    for (let [itemId, data] of Object.entries(itemsData)) {
+      serverItemsData.push({itemId, data})
+    }
+
+    // only required to send form Id and items Data when creating a form
+    return await apiCaller('/api/submission/submit', {formId, itemsData: serverItemsData}, 200, 
+    (data) => ({
+      id: data.submissionId,
+      timestampCreated: data.timestampCreated,
+      timestampModified: data.timestampModified
+    }), 
     rejectWithValue)
   }
 )
 
 export const editFormData = createAsyncThunk(
   'formData/editFormData',
-  async (_, {rejectWithValue }) => {
-    
-    return await apiCaller('/api/form/edit', {}, 203, 
-    (data) => {
-      return data.description
-    }, 
+  async (_, {getState, rejectWithValue }) => {
+    const formId = getState().formTemplate.id
+    const submissionId = getState().formData.id
+    const itemsData = getState().formData.itemsData
+
+    let serverItemsData = []
+    for (let [itemId, data] of Object.entries(itemsData)) {
+      serverItemsData.push({itemId, data})
+    }
+
+    console.log("EDIT SEND", {formId, submissionId, itemsData: serverItemsData})
+
+    return await apiCaller('/api/submission/submit', {formId, submissionId, itemsData: serverItemsData}, 200, 
+    (data) => ({}), 
     rejectWithValue)
 
   }
@@ -78,20 +103,9 @@ export const deleteFormData = createAsyncThunk(
   }
 )
 
-export const createFormData = createAsyncThunk(
-  'formData/createFormData',
-  async (formData, {rejectWithValue }) => {
-    
-    return await apiCaller('/api/form/create', {form: formData}, 203, 
-    (data) => {
-      return ''
-    }, 
-    rejectWithValue)
-  }
-)
 
-export const updateCcaNote = createAsyncThunk(
-  'formData/updateCcaNote',
+export const addCcaNote = createAsyncThunk(
+  'formData/addCcaNote',
   async ({formId, note}, {rejectWithValue }) => {
 
     console.log(formId, note)
@@ -148,8 +162,13 @@ const formData = createSlice({
     },
     [fetchFormData.fulfilled]: (state, action) => {
       if (state.isPending === true) {
+      
         return {
-          ...action.payload,
+          id: action.payload.id,
+          formId: action.payload.formId,
+          ccaNotes: action.payload.ccaNotes,
+          societyNotes: action.payload.societyNotes,
+          itemsData: action.payload.itemsData,
           createMode: false,
           isPending: false,
           error: null,
@@ -175,16 +194,18 @@ const formData = createSlice({
       state.error = action.payload
     },
     [createFormData.fulfilled]: (state, action) => {
-      state.error = 'Created Form Data' 
+      state.error = 'Created Form Data'
+      state.id = action.payload.id 
+      state.createMode = false
     },
     [createFormData.rejected]: (state, action) => {
       state.error = action.payload
     },
 
-    [updateCcaNote.fulfilled]: (state, action) => {
+    [addCcaNote.fulfilled]: (state, action) => {
       state.ccaNote = action.payload.note
     },
-    [updateCcaNote.rejected]: (state, action) => {
+    [addCcaNote.rejected]: (state, action) => {
       state.error = action.payload
     },
 

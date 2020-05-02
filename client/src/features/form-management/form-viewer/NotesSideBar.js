@@ -4,64 +4,68 @@ import {Drawer, Button, Paper, List, Typography} from '@material-ui/core'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
 import { useDispatch } from 'react-redux'
-import { updateCcaNote, addSocietyNote } from '../formDataSlice'
+import { addCcaNote, addSocietyNote } from '../formDataSlice'
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
     padding: theme.spacing(2),
     width: '22vw',
   },
-  societyNotesPaper: {
+  notesPaper: {
     overflow:'auto',
-    height: '40vh',
-    backgroundColor: 'darkgray'
+    height: '30vh',
+    backgroundColor: theme.palette.primary.main
   }
 }))
 
 export default function NotesSideBar({formId, drawerOpen, toggleDrawer, notesData, isCCA}) {
-  const {ccaNote, ccaNoteTimestampModified, societyNotes } = notesData
+  const {ccaNotes, societyNotes } = notesData
   const classes = useStyles()
   const dispatch = useDispatch()
+
+  function NotesList({notes}) {
+    return <Paper className={classes.notesPaper}>
+      <List>
+        {
+          notes.map((note, index) => {
+            return (
+            <Paper key={index} style={{borderRadius: 3, margin: 10, width: '20vw', backgroundColor: 'white'}} >
+              <Typography style={{margin: 5}}>
+                {note}
+              </Typography>
+              <br/>
+            </Paper>
+            )
+          })
+        }
+      </List>
+    </Paper>
+  }
 
   function CCANotesSideBar() {
     return (
       <Formik
         validateOnChange={false} validateOnBlur={true}
-        initialValues={{ccaNote: ccaNote}}
+        initialValues={{newCCANote: ''}}
         validate={values => {
           const errors = {}
-          if (values.ccaNote.length > 300) {
-            errors.ccaNote = 'Please do not exceed 300 characters.'
+          if (values.newCCANote.length > 100) {
+            errors.newCCANote = 'Please do not exceed 100 characters.'
           }
           return errors
         }}
         onSubmit={(values) => {
-          dispatch(updateCcaNote({formId: formId, ccaNote: values.ccaNote}))
+          dispatch(addCcaNote({formId: formId, ccaNote: values.newCCANote}))
         }}
       >
         {({ submitForm}) => (
           <Form>
-            <Field component={TextField} multiline rows={8} required variant="outlined" fullWidth name="ccaNote" label="CCA Note"/>
-            <Button variant="contained" color="primary" onClick={submitForm} type="submit" style={{marginTop: 8}}>Save</Button>
+            <NotesList notes={ccaNotes}/>
+            <Field component={TextField} multiline rows={2} required variant="filled" fullWidth name="newCCANote" label="Add CCA Note"/>
+            <Button variant="contained" color="primary" onClick={submitForm} type="submit" style={{marginTop: 8}}>Add CCA Note</Button>
             <Button variant="contained" onClick={toggleDrawer} style={{marginLeft: 10, marginTop: 8}}>Cancel</Button>
-            <p>Last modified: {ccaNoteTimestampModified}</p>
             <h5>Society Notes</h5>
-            <Paper className={classes.societyNotesPaper}>
-              <List>
-                {
-                  societyNotes.map((societyNote, index) => {
-                    return (
-                    <Paper key={index} style={{borderRadius: 3, margin: 10, width: '20vw', backgroundColor: 'white'}} >
-                      <Typography style={{margin: 5}}>
-                        {societyNote}
-                      </Typography>
-                      <br/>
-                    </Paper>
-                    )
-                  })
-                }
-              </List>
-            </Paper>
+            <NotesList notes={societyNotes}/>
           </Form>
         )}
       </Formik>
@@ -73,16 +77,39 @@ export default function NotesSideBar({formId, drawerOpen, toggleDrawer, notesDat
       <Formik
         validateOnChange={false} validateOnBlur={true}
         initialValues={{newSocietyNote: ''}}
+        validate={values => {
+          const errors = {}
+          if (values.newSocietyNote.length > 100) {
+            errors.newSocietyNote = 'Please do not exceed 100 characters.'
+          }
+          return errors
+        }}
         onSubmit={(values) => {
           dispatch(addSocietyNote({formId: formId, newSocietyNote: values.newSocietyNote}))
         }}
       >
         {({ submitForm}) => (
           <Form>
-            <h5>Notes from CCA</h5>
-            <p>{ccaNote}</p>
+            <h5 style={{marginTop: 5}}>Notes from CCA</h5>
+            <Paper className={classes.notesPaper}>
+              <List>
+                {
+                  ccaNotes.map((ccaNote, index) => {
+                    return (
+                    <Paper key={index} style={{borderRadius: 3, margin: 10, width: '20vw', backgroundColor: 'white'}} >
+                      <Typography style={{margin: 5}}>
+                        {ccaNote}
+                      </Typography>
+                      <br/>
+                    </Paper>
+                    )
+                  })
+                }
+              </List>
+            </Paper>
+
             <h5>Society Notes</h5>
-            <Paper className={classes.societyNotesPaper}>
+            <Paper className={classes.notesPaper}>
               <List>
                 {
                   societyNotes.map((societyNote, index) => {

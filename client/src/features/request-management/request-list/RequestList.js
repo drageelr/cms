@@ -112,7 +112,7 @@ export function RequestList({requestListData, dispatch}) {
   }
   
   function handleClick(reqId) {
-    history.push(`/form-viewer/${reqId}`)
+    history.push(`/form-viewer/review/${reqId}`)
   }
 
   function CustomFilterBar() {

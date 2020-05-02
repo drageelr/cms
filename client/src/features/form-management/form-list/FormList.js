@@ -60,7 +60,7 @@ function FormList({formList, dispatch}) {
         formList.isPending ? <CircularProgress style={{marginLeft: '49vw', marginTop: '40vh'}}/> :  
         <MUIDataTable
         title={<CreateNewFormButton/>} //Button inserted instead of title for form creation
-        data={formList.list.map((form, index) => [
+        data={formList.list.map((form, index) => form.isPublic && [ //only fetch public forms for society
           form.title, 
           form.creatorName, 
           form.timestampModified,

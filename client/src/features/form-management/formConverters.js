@@ -171,9 +171,9 @@ export function convertToClientForm(serverForm) {
     items[item.itemId] = {...itemCopy}
     delete items[item.itemId]["itemId"]
   })
-  
-  const checklistItems = serverForm.checklist.map(checklistItem => 
-    ({sectionId: checklistItem.sectionId, description: checklistItem.description}))
+  const checklistItems = ('checklist' in serverForm) 
+  ? serverForm.checklist.map(checklistItem => ({sectionId: checklistItem.sectionId, description: checklistItem.description}))
+  : []
   // everything else will be directly copied
   return {
     isPublic: serverForm.isPublic,

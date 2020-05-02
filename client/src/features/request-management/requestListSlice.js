@@ -24,17 +24,12 @@ export const fetchCCARequestList = createAsyncThunk(
 
 export const changeFormStatus = createAsyncThunk(
   'requestListData/changeFormStatus',
-  async ({requestId, status}, { getState, rejectWithValue}) => {
-    const { isPending } = getState().requestListData
-
-    if (isPending != true) {
-      return
-    } 
+  async ({requestId, status}, {rejectWithValue}) => {
 
     return await apiCaller('/api/submission/update-status', {
       submissionId: requestId ,
       status: status,
-      issue: "hello world" // probably remove this at the end/ used for sending emails
+      // issue: "" // probably remove this at the end/ used for sending emails
     }, 203, 
     (data) => ({isPending: false, error: '', requestId: requestId, status: status}), 
     rejectWithValue)
@@ -70,27 +65,16 @@ const requestListData = createSlice ({
       }
     },
 
-    [changeFormStatus.pending]: (state) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [changeFormStatus.fulfilled]: (state, action) => {
       const {requestId, status} = action.payload
-      if (state.isPending === true) {
-        state.isPending = false
-        state.formDataList.map(request => {
-          if(request.formId === requestId) {
-            request.status = status
-          }
-        })
-      }
+      state.formDataList.map(request => {
+        if(request.formId === requestId) {
+          request.status = status
+        }
+      })
     },
     [changeFormStatus.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload
-      }
+      state.error = action.payload
     },
   }
 })
