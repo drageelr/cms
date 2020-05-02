@@ -208,8 +208,8 @@ exports.submitForm = async (req, res, next) => {
         sendReviewEmail(reqSociety[statusToUpdateObj.email], reqSociety[statusToUpdateObj].type, reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
       
         res.json({
-          status: 200,
-          statusCode: httpStatus.getName(200),
+          status: httpStatus.getName(200),
+          statusCode: 200,
           message: "Submission Successful!",
           timestampCreated: newSubmission.createdAt,
           timestampModified: newSubmission.updatedAt
