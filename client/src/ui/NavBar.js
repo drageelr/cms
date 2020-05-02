@@ -20,6 +20,10 @@ const useStyles = makeStyles((theme) => ({
     padding: 18,
     margin: 10,
   },
+  blue: {
+    color: theme.palette.getContrastText(theme.palette.primary.main),
+    backgroundColor: theme.palette.primary.main,
+  },
 }))
 
 export default function NavBar({name, userType, picture}) {
@@ -86,6 +90,7 @@ export default function NavBar({name, userType, picture}) {
                 style={{margin: 5, width: 35, height: 35}} 
                 alt={name} 
                 src={picture}
+                className={classes.blue}
               />
               <Typography>
                 <Box color="black" fontWeight={600} m={1}>

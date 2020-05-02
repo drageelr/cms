@@ -1,28 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { apiCaller} from "../../helpers"
 
-/**
-A temporary initial state has been created to test with the components and render meaningful
-on the screen
-*/
-
-// const sampleState = {
-// formDataList : [
-// {
-// societyId: "1",
-// status: "Approved",
-// formId: "REQ-1",
-// formTitle: "Design Form",
-// societyName: "LUMUN",
-// societyNameInitials: "lumun",
-// timestampCreated: "30/05/2020",
-// timestampModified: "01/04/2020"
-// },
-// ],
-// isPending: true,
-// error: null
-// }
-
 const initialState = {
   formDataList: [],
   isPending: true,
@@ -39,9 +17,7 @@ export const fetchCCARequestList = createAsyncThunk(
     } 
 
     return await apiCaller('/api/submission/fetch-list', {}, 200, 
-    (data) => {
-      return {isPending: false, error: '' , ccaList: data.submissions}
-    }, 
+    (data) => ({isPending: false, error: '' , ccaList: data.submissions}), 
     rejectWithValue)  
   }
 )
@@ -60,9 +36,7 @@ export const changeFormStatus = createAsyncThunk(
       status: status,
       issue: "hello world" // probably remove this at the end/ used for sending emails
     }, 203, 
-    (data) => {
-      return {isPending: false, error: '', requestId: requestId, status: status}
-    }, 
+    (data) => ({isPending: false, error: '', requestId: requestId, status: status}), 
     rejectWithValue)
   }
 )
@@ -70,9 +44,15 @@ export const changeFormStatus = createAsyncThunk(
 const requestListData = createSlice ({
   name:'requestListData',
   initialState: initialState,
-  
+
+  reducers: {
+    clearError: (state) => {
+      state.error = null
+    },
+  },
+
   extraReducers: {
-    [fetchCCARequestList.pending]: (state, action) => {
+    [fetchCCARequestList.pending]: (state) => {
       if (state.isPending === false) {
         state.isPending = true
       }
@@ -90,7 +70,7 @@ const requestListData = createSlice ({
       }
     },
 
-    [changeFormStatus.pending]: (state, action) => {
+    [changeFormStatus.pending]: (state) => {
       if (state.isPending === false) {
         state.isPending = true
       }
@@ -114,5 +94,7 @@ const requestListData = createSlice ({
     },
   }
 })
+
+export const { clearError } = requestListData.actions
 
 export default requestListData.reducer
