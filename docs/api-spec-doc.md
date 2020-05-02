@@ -90,8 +90,16 @@
 |4|Edit Custom Task|Edits a custom task. Can't edit logs.|`/api/task-manager/task/cus/edit`|`{task*: editCusTaskObj}`|`POST`|`{newLogs: [logObj]}`|`CCA`|`TBD`|
 |5|Add Log|Adds a log to task|`/api/task-manager/log/add`|`{taskId*: "String", description*: "String"}`|`POST`|`{logId: Number}`|`CCA`|`TBD`|
 |6|Fetch Task Manager|Returns all tasks in the task manager|`/api/task-manager/fetch`|`{}`|`POST`|`{taskList: [reqTaskObjFull/cusTaskObjFull]}`|`CCA`|`TBD`|
-|7|Fetch Archive Manager|Returns all archived tasks based on a filter|`/api/task-manager/fetch-archive`|`TBD`|`POST`|`{taskList: [reqTaskObjFull/cusTaskObjFull]}`|`CCA`|`TBD`|
+|7|Fetch Archive Manager|Returns all archived tasks based on a filter|`/api/task-manager/fetch-archive`|`TBD`|`POST`|`{taskList: [taskDetailsObj]}`|`CCA`|`TBD`|
+|8|Fetch Task|Returns complete details of a task|`/api/task-manager/task/fetch`|`{taskId: "String"}`|`POST`|`{task: reqTaskObjFull/cusTaskObjFull}`|`CCA`|`TBD`|
+|9|Create Task Status|Creates a new task status|`/api/task-manager/task-status/create`|`{name*: "String", color*: "String"}`|`POST`|`{statusId: Number}`|`CCA`|`TBD`|
+|10|Edit Task Status|Edits an existing task status|`/api/task-manager/task-status/edit`|`{statusId*: Number, name**: "String", color**: "String"}`|`POST`|`{}`|`CCA`|`TBD`|
+|11|Delete Task Status|Deletes an existing task status|`/api/task-manager/task-status/delete`|`{statusId*: Number}`|`POST`|`{}`|`CCA`|`TBD`|
+|12|Fetch Task Statuses|Fetches all task statuses|`/api/task-manager/task-status/fetch-all`|`{}`|`POST`|`{statuses: [statusId: Number, name: "String", color: "String"]}`|`CCA`|`TBD`|
 
+- **Note for `API 5.3` and `API 5.4`: Only send optional parameters denoted by ** in `Object Schema` if they have to be updated.**
+- **Note for `API 5.7`: Just fetches the basic details to be shown in the Archive Manager.**
+- **Note for `API 5.8`: Will be used to fetch details of a task in Archive Manager when clicked on them for details, however can also fetch details of unarchived tasks as well.**
 - **Note: * means the field mentioned is required. (For `Request Object` OR `Object Schema` referenced in it)**
 - **Note: ** means the field mentioned might not always be there. (For `Response Object` OR `Object Schema` referenced in this and `Request Object`)**
 
@@ -108,6 +116,7 @@
 |8|`subtaskObj2`|`{subtaskId: Number, assigneeId: Number, description: "String", check: Boolean, createdAt: Date, updatedAt: Date}`|
 |9|`cusTaskObjFull`|`{taskId: "String", title: "String", description: "String", ownerId: Number, statusId: Number, archive: Boolean, createdAt: Date, updatedAt: Date}`|
 |10|`logObj`|`{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}`|
+|11|`taskDetailsObj`|`{taskId: "String", ownerId: Number, createdAt: Date, updatedAt: Date}`|
 
 
 **Note: * means the field mentioned is required**
