@@ -20,10 +20,9 @@ const conditionalItemSchema = new Schema({
     type: Number,
     required: true
   },
-  itemId: {
+  itemIds: [{
     type: Number,
-    required: true
-  }
+  }]
 });
 
 // Option Schema:
