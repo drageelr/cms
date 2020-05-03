@@ -65,6 +65,7 @@ export default function ComponentProperties({propertyAddMode, propertyId, parent
       
       <Button onClick={toggleDialogOpen} variant="contained" style={{marginTop: 20, marginBottom: 10, padding: 10}} startIcon={<Icon>add</Icon>}>Add Conditional Item</Button>
       {
+        propertyId in itemsOrder &&
         itemsOrder[propertyId].map((itemId, index) => 
           ('conditionalItems' in items[itemId] && items[itemId].conditionalItems !== {optionId: -1, itemIds: []}) &&
           <Paper key={index} style={{marginBottom: 5, padding: 5, fontSize: 12}} >
