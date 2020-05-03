@@ -68,7 +68,6 @@ function ChangePassword({error, dispatch}) {
                 name="currentPassword"
                 type="password"
                 fullWidth
-                autoFocus
               ></Field>
               <br/>
               <br/>
@@ -81,7 +80,6 @@ function ChangePassword({error, dispatch}) {
                 fullWidth
                 label="New Password"
                 name="newPassword"
-                autoFocus
                 type="password"
               ></Field>
 
@@ -96,14 +94,13 @@ function ChangePassword({error, dispatch}) {
                 fullWidth
                 label="Confirm Password"
                 name="confirmPassword"
-                autoFocus
                 type="password"
               ></Field>
               <br/>
               <br/>
               {isSubmitting && <LinearProgress />}
               <Button type="submit" variant="contained" color="primary" spacing= '10' onClick={onSubmit} >Change my Password</Button>
-              <Button type="submit" variant="contained" color="primary" spacing= '10' style = {{marginLeft: 30}}>Cancel</Button>
+              <Button variant="contained" color="primary" spacing= '10' style = {{marginLeft: 30}}>Cancel</Button>
             
             </Form>
           )

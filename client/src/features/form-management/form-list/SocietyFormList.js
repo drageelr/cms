@@ -30,7 +30,7 @@ function SocietyFormList({formList, dispatch}) {
           {
             formList.list.map((form, index) => (
                 form.isPublic &&  //display public forms only to societies
-                <Paper key={index} style={{borderRadius: 3, background: 'white'}} >
+                <Paper key={index} style={{borderRadius: 3, background: 'white', marginBottom: 10}} >
                   <Button onClick={()=>history.push(`/form-viewer/create/${form.formId}`)}>
                     <Typography style={{margin: 5, fontSize: 14, fontWeight: 500}}>
                     {form.title}

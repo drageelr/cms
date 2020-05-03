@@ -169,6 +169,10 @@ const formTemplate = createSlice({
       state.items[action.payload.id] = action.payload.newItemData
     },
 
+    setItemConditionals: (state, action) => {
+      state.items[action.payload.itemId].conditionalItems = action.payload.conditionalItems
+    },
+
     moveFormPart: (state, action) => {
       const {type, id, offset, parentId} = action.payload
       
@@ -345,7 +349,7 @@ const formTemplate = createSlice({
 })
 
 
-export const { addSection, editSection, addItem, editItem, addComponent, editComponent, setFormId,
+export const { addSection, editSection, addItem, editItem, addComponent, editComponent, setFormId, setItemConditionals,
   editChecklistSubtask, deleteFormPart, toggleIsPublic, moveFormPart, clearError, setCreateMode, setTitle, resetState} = formTemplate.actions
 
 export default formTemplate.reducer

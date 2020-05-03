@@ -327,7 +327,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
             <DialogActions>
               {isSubmitting && <CircularProgress/>}
 
-              <Button type="submit" onClick={submitForm} color="primary">
+              <Button onClick={submitForm} color="primary">
                 Save
               </Button>
 

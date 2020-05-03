@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 function Properties({propertiesData, formTemplate, dispatch}) {
   const classes = useStyles()
   const { propertyType, propertyAddMode, propertyId, parentId } = propertiesData
-  const { sectionTitles, checklistItems, componentTitles, items } = formTemplate
+  const { sectionTitles, checklistItems, componentTitles, items, itemsOrder } = formTemplate
   const itemProperties = { propertyAddMode, propertyId, parentId, itemData: propertyAddMode ?  null : items[propertyId] }
 
   let title = ""
@@ -82,7 +82,8 @@ function Properties({propertiesData, formTemplate, dispatch}) {
       break
     case "component":
       title = "Component"
-      renderProperties = <ComponentProperties propertyAddMode={propertyAddMode} propertyId={propertyId} parentId={parentId} componentTitle={componentTitles[propertyId]}/>
+      renderProperties = <ComponentProperties itemsOrder={itemsOrder} items={items} propertyAddMode={propertyAddMode} 
+        propertyId={propertyId} parentId={parentId} componentTitle={componentTitles[propertyId]}/>
       break
     case "section":
       title = "Section"
@@ -178,7 +179,7 @@ function Properties({propertiesData, formTemplate, dispatch}) {
                   {({ submitForm }) => (
                     <Form>
                       <Field  component={TextField} name="subtask"/>
-                      <Button variant="contained" style={{marginTop: 10}} type="submit" onClick={submitForm}>Save</Button>
+                      <Button variant="contained" style={{marginTop: 10}} onClick={submitForm}>Save</Button>
                     </Form>
                   )}
                 </Formik>

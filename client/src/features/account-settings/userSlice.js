@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { apiCaller } from '../../helpers'
 
 const initialState = {
   id: -1,
@@ -36,40 +37,18 @@ export const login = createAsyncThunk(
 
     const QUERY = (userType === "Society") ?  '/api/auth/society/login' : '/api/auth/cca/login'
 
-    try {
-      const res = await fetch(QUERY, {
-        method: 'POST',
-        headers: { 
-          'Accept': 'application/json',
-          'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password
-        })
-      })
+    return await apiCaller(QUERY, {email, password}, 200,
+    (data)=> {
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('localUser', JSON.stringify({userType, ...data.user}))
 
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 200) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
-        }
-
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('localUser', JSON.stringify({userType, ...data.user}))
-
-        if (userType==="CCA"){
-          return {token: data.token, user: {email, userType, password, name: (data.user.firstName + ' ' + data.user.lastName),...data.user},}
-        }
-        else {
-          return {token: data.token, user: {email, userType, password, ...data.user},}
-        }
+      if (userType==="CCA"){
+        return {token: data.token, user: {email, userType, password, name: (data.user.firstName + ' ' + data.user.lastName),...data.user},}
       }
-      throw new Error(`${res.status}, ${res.statusText}`)
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+      else {
+        return {token: data.token, user: {email, userType, password, ...data.user},}
+      }
+    },rejectWithValue)
   }
 )
 
