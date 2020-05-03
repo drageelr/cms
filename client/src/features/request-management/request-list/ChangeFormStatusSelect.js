@@ -11,27 +11,16 @@ import { useDispatch } from 'react-redux'
   dispatched the store   
 */
 
-export default function ChangeFormStatusSelect({requestId, requestStatus}) {
+export default function ChangeFormStatusSelect({submissionId, status}) {
   const dispatch = useDispatch()
-
   const [open, setOpen] = React.useState(false)
-  const [status, setStatus] = React.useState(requestStatus)
 
   function handleChange(e) {
-    setStatus(e.target.value)
-    var status= e.target.value
-    dispatch(changeFormStatus({requestId, status}))
-  }
-  
-  function handleOpen() {
-    setOpen(true)
+    dispatch(changeFormStatus({submissionId, status: e.target.value}))
   }
 
-  function handleClose() {
-    setOpen(false)
-  }
-
-  const options = ["Pending", "Issue", "Approved", "Rejected"]
+  const disabledOptions = ["Pending(President)","Issue(President)", "Pending(Patron)", "Issue(Patron)", "Approved(Patron)"]
+  const options = ["Pending(CCA)", "Issue(CCA)", "Approved(CCA)",  "Write-Up",  "Completed"]
 
   return (
     <div>
@@ -40,19 +29,18 @@ export default function ChangeFormStatusSelect({requestId, requestStatus}) {
           labelId = "status-label"
           id="label"
           open = {open}
-          onClose={handleClose}
+          onClose={()=>setOpen(false)}
           value={status}
-          onOpen={handleOpen}
-          style={{height: 30, width: 150}}
+          onOpen={()=>setOpen(true)}
+          style={{height: 30, width: 200}}
           variant = "outlined"
           onChange={handleChange}
         >
           {
-            options.map((option, index) => {
-              return (
-                <MenuItem value={option}>{option}</MenuItem>
-              )
-            })
+            options.map((option, index) => <MenuItem key={index} value={option}>{option}</MenuItem>)
+          }
+          {
+            disabledOptions.map((option, index) => <MenuItem key={index} disabled={true} value={option}>{option}</MenuItem>)
           }
         </Select>
       </FormControl>

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import { apiCaller} from "../../helpers"
+import { apiCaller } from "../../helpers"
 
 const initialState = {
   formDataList: [],
@@ -24,14 +24,17 @@ export const fetchCCARequestList = createAsyncThunk(
 
 export const changeFormStatus = createAsyncThunk(
   'requestListData/changeFormStatus',
-  async ({requestId, status}, {rejectWithValue}) => {
+  async ({submissionId, status}, {rejectWithValue}) => {
+
+
+    console.log(submissionId, status)
 
     return await apiCaller('/api/submission/update-status', {
-      submissionId: requestId ,
-      status: status,
-      // issue: "" // probably remove this at the end/ used for sending emails
+      submissionId,
+      status,
+      // issue: "" // used for sending emails
     }, 203, 
-    (data) => ({isPending: false, error: '', requestId: requestId, status: status}), 
+    (data) => ({submissionId, status}), 
     rejectWithValue)
   }
 )
@@ -66,10 +69,10 @@ const requestListData = createSlice ({
     },
 
     [changeFormStatus.fulfilled]: (state, action) => {
-      const {requestId, status} = action.payload
-      state.formDataList.map(request => {
-        if(request.formId === requestId) {
-          request.status = status
+      const {submissionId, status} = action.payload
+      state.formDataList.map(submission => {
+        if(submission.formId === submissionId) {
+          submission.status = status
         }
       })
     },

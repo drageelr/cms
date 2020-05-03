@@ -4,7 +4,6 @@ import { Button, IconButton } from '@material-ui/core'
 import MUIDataTable from "mui-datatables"
 import LinearProgress from '@material-ui/core/LinearProgress'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { deleteFormSubmission } from './requestListSlice'
 import { makeStyles } from '@material-ui/core/styles'
 import { fetchSocietyList, deleteSubmission, clearError } from './submissionListSlice'
 import { useHistory } from 'react-router-dom'
