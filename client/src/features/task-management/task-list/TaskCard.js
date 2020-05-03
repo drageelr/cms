@@ -38,62 +38,76 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails}) {
     }
   })
 
+  function renderSubTask() {
+    return <Card style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" variant="outlined">
+      <CardContent>
+        <Grid item xs container direction="row" spacing={0}>
+          <Grid item xs>
+            {
+              taskData.taskList.map(taskObj => {
+                if (taskObj.taskId === taskId) {
+                  return <Typography gutterBottom variant="h6"> {taskObj.description} </Typography>
+                }
+              })
+            }
+          </Grid>  
+          <Grid>
+            <Typography variant='body2'>
+              {taskId}
+            </Typography>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
+  }
+
+  function renderMainTask() {
+    return <Card style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" variant="outlined">
+      <CardContent>
+        <Grid item xs container direction="row" spacing={0}>
+          <Grid item xs>
+            {
+              taskData.taskList.map(taskObj => {
+                if (taskObj.taskId === taskId) {
+                  return (
+                    <Typography gutterBottom variant="h6"> {taskObj.title} </Typography>
+                  )
+                }
+              })
+            }
+          </Grid>  
+
+          <Grid item> 
+            <EditIcon onClick={() => setOpen(true)} fontSize="small" color="action" cursor="pointer"/>
+            <EditTaskDialog open={open} setOpen = {setOpen} taskId={taskId}/>
+          </Grid>
+        </Grid>
+
+        <Grid container direction="row" justify='space-between' alignItems="flex-end">
+          <Grid item>
+            <MenuItem>
+              <StopIcon fontSize="small" style={{fill: taskStatusColor, marginLeft:"-22%"}} /> {/*if condition if no task status*/}
+              {taskStatusName} 
+            </MenuItem>
+          </Grid>
+          <Grid>
+            <Typography variant='body2'>
+              {taskId}
+            </Typography>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
+  }
+
   return (
     <Draggable draggableId={taskId} index={index}>
       {
         (provided) => (
           <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-            <Card 
-              style={{
-                minHeight: 85,
-                minWidth: 0,
-                marginBottom: 10,
-              }}
-              cursor="pointer"
-              variant="outlined"
-            >
-              <CardContent>
-                <Grid item xs container direction="row" spacing={0}>
-                  <Grid item xs>
-                    {
-                      taskData.taskList.map(taskObj => {
-                        if (taskObj.taskId === taskId) {
-                          return (
-                            <Typography gutterBottom variant="h6">
-                              {taskObj.title}
-                            </Typography>
-                          )
-                        }
-                      })
-                    }
-                  </Grid>  
-                  {taskId[0] === 's' ? null :
-                  <Grid item> 
-                    <EditIcon 
-                      onClick={() => setOpen(true)} 
-                      fontSize="small" 
-                      color="action" 
-                      cursor="pointer"
-                    />
-                    <EditTaskDialog open={open} setOpen = {setOpen} taskId={taskId}/>
-                  </Grid>}
-                </Grid>
-
-                <Grid container direction="row" justify='space-between' alignItems="flex-end">
-                  <Grid item>
-                    <MenuItem>
-                      <StopIcon fontSize="small" style={{fill: taskStatusColor, marginLeft:"-22%"}} /> {/*if condition if no task status*/}
-                      {taskStatusName} 
-                    </MenuItem>
-                  </Grid>
-                  <Grid>
-                    <Typography variant='body2'>
-                      {taskId}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
+            {(()=>{
+              return taskId[0] === 's' ? renderSubTask() : renderMainTask()
+            })()}
           </div>
         )
       }

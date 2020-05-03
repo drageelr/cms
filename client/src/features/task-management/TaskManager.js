@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {connect} from 'react-redux'
 import TaskColumn from './task-list/TaskColumn'
 import { moveTask } from './taskDataSlice'
-import TaskArchive from './task-archive/TaskArchiveList'
+import TaskArchive from './task-archive/TaskArchive'
 import { DragDropContext } from 'react-beautiful-dnd'
 import { Fab, Dialog, AppBar, Toolbar, Typography, Slide, IconButton, makeStyles, Box } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
@@ -79,11 +79,11 @@ function TaskManager({ ccaDetails, dispatch }) {
     }
     
     dispatch(moveTask({  // probably call the edit API as we want to update the ownerID of the task
-      srcColumnId: source.droppableId,
-      srcIndex: source.index,
-      dstColumnId: destination.droppableId,
-      dstIndex:  destination.index,
       taskId: draggableId,
+      srcColumnId: source.droppableId,
+      // srcIndex: source.index,
+      dstColumnId: destination.droppableId,
+      // dstIndex:  destination.index,
     }))
   }
 

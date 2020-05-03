@@ -14,10 +14,23 @@ import StopIcon from '@material-ui/icons/Stop'
   @param {function} dispatch dispatch the change Task Status
 */
 
-export function TaskStatus({taskId, taskStatusDetails, dispatch}) {
+export function TaskStatus({taskId, taskData, taskStatusDetails, dispatch}) {
 
-  const [statusCode, setStatusCode] = useState('')
-  const [statusId, setStatusId] = useState()
+  let defaultStatusId = -1
+  let defaultStatusName = ""
+  taskData.map(taskObj => {
+    if (taskObj.taskId === taskId) {
+      defaultStatusId = taskObj.statusId
+    }
+  })
+  
+  taskStatusDetails.map(statObj =>{
+    if (statObj.statusId === defaultStatusId) {
+      defaultStatusName = statObj.name
+    }
+  })
+
+  const [statusCode, setStatusCode] = useState(defaultStatusName)
   const [open, setOpen] = useState(false)
 
   function handleChange(event) {
@@ -59,7 +72,7 @@ export function TaskStatus({taskId, taskStatusDetails, dispatch}) {
           style={{height: 30, width: "100%"}}
           variant = "outlined"
         >
-          <MenuItem value="">
+          <MenuItem value={defaultStatusName}>
             <em>None</em>
           </MenuItem>
           {
@@ -86,7 +99,7 @@ export function TaskStatus({taskId, taskStatusDetails, dispatch}) {
 }
 
 const mapStateToProps = (state) => ({
-  taskData: state.taskData,
+  taskData: state.taskData.taskList,
   taskStatusDetails: state.taskStatusDetails.taskList
 })
 

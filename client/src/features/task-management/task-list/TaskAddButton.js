@@ -87,7 +87,7 @@ export default function TaskAddButton({ ownerId }) {
       <div>
         <Card style={{
           minHeight: 80,
-          minWidth: 272,
+          width: 180,
           padding: "6px 8px 2px"
         }}>
           <TextField
@@ -110,12 +110,12 @@ export default function TaskAddButton({ ownerId }) {
           />
         </Card>
 
-        <div style={{marginTop: 8, marginLeft: 12, display: "flex", alignItems: "center"}}>
+        <div style={{marginTop: 8, display: "flex", alignItems: "center"}}>
             <Button 
               size="small" 
               onMouseDown={() => {handleCreateTask("request")}} 
               variant="contained" 
-              style={{ color: "white", backgroundColor: "green"}}
+              style={{ color: "white", backgroundColor: "green", fontSize: 10}}
             >
               {reqButtonText}
             </Button>
@@ -125,7 +125,7 @@ export default function TaskAddButton({ ownerId }) {
                 size="small" 
                 onMouseDown={() => {handleCreateTask("custom")}} 
                 variant="contained" 
-                style={{ color: "white", backgroundColor: "green"}}
+                style={{ color: "white", backgroundColor: "green", fontSize: 10}}
               >
                 {cusButtonText}
               </Button>

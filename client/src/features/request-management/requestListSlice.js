@@ -1,19 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { apiCaller} from "../../helpers"
 
-// const sampleState = {
-//   formDataList: [
-//     {
-//       id: 1,
-//       title: "Aud Booking",
-//       date: "20/04/2020",
-//       society: "LUMUN",
-//       status: "Approved"
-//     },
-//   ],
-//   isPending: true,
-//   error: null
-// }
+const sampleState = {
+  formDataList: [
+    {
+      id: 1,
+      title: "Aud Booking",
+      date: "20/04/2020",
+      society: "LUMUN",
+      status: "Approved"
+    },
+  ],
+  isPending: true,
+  error: null
+}
 
 const initialState = {
   formDataList: [],
@@ -52,7 +52,7 @@ export const changeFormStatus = createAsyncThunk(
 
 const requestListData = createSlice ({
   name:'requestListData',
-  initialState: initialState,
+  initialState: sampleState,
 
   reducers: {
     clearError: (state) => {

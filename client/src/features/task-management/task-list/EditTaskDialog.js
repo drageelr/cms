@@ -1,18 +1,18 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import { connect } from 'react-redux'
 import AttachRequestForm from './AttachRequestForm'
 import TaskStatus from './TaskStatus'
-import SubTask from "./SubTaskCheckList"
+import CheckList from "./CheckList"
 import AddAssignee from "./AddAssignee"
 import LogEditor from "../logs/LogEditor"
-import { archiveTask, taskOwner, updateTitle, updateDescription } from "../taskDataSlice"
-import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, TextareaAutosize, Button } from '@material-ui/core'
+import { archiveTask, taskOwnerChange, updateTitle, updateDescription } from "../taskDataSlice"
+import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, Button } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import SubjectIcon from '@material-ui/icons/Subject'
-import { fetchCCARequestList } from '../../request-management/requestListSlice'
+
 /**
   The task edit dialog is handled by this component. It navigates between sub components of the task
-  editor dialog. The data to the child components e.g AddAssignee, SubTaskChecklist components is 
+  editor dialog. The data to the child components e.g AddAssignee, Checklist components is 
   passed via this component.    
 
   @param {string} taskId this id is used to navigate between sub components of the task editor dialog  
@@ -30,17 +30,19 @@ export function EditTaskDialog({taskId, taskData, ccaDetails, dispatch, open, se
   
   let defaultDesc = ""
   let defaultTitle = ""
+  let defaultOwner = -1
   taskData.map(taskObj => {
     if (taskObj.taskId === taskId) {
       defaultDesc = taskObj.description
       defaultTitle = taskObj.title
+      defaultOwner = taskObj.ownerId
     }
   })
 
   const [selectOpen, setSelectOpen] = useState(false)
   const [text, setText] = useState(defaultDesc)
   const [taskTitle, setTaskTitle] = useState(defaultTitle)
-  const [owner, setOwner] = useState("")
+  const [owner, setOwner] = useState(defaultOwner)
 
   function handleSelectOpen(){
     setSelectOpen(true)
@@ -55,22 +57,23 @@ export function EditTaskDialog({taskId, taskData, ccaDetails, dispatch, open, se
   }
 
   function handleCloseDialog(){
+    console.log(owner)
+    dispatch(taskOwnerChange({taskId, owner}))
     setOpen(false)
   }
 
-  function handleOwnerSet(event) { // CALL EDIT TASK API
-    const ownerId = event.target.value
-    dispatch(taskOwner({taskId, ownerId}))
+  function handleOwnerSet(event) {
+    // const ownerId = event.target.value
     setOwner(event.target.value)
   }
 
-  function handleTitleChange (event) { // CALL EDIT TASK API
+  function handleTitleChange (event) {
     let newTitle = event.target.value
     dispatch(updateTitle({taskId, newTitle}))
     setTaskTitle(event.target.value)
   }
 
-  function handleDescChange(event) { // CALL EDIT TASK API
+  function handleDescChange(event) {
     const description = event.target.value
     dispatch(updateDescription({taskId, description}))
     setText(event.target.value)
@@ -138,9 +141,9 @@ export function EditTaskDialog({taskId, taskData, ccaDetails, dispatch, open, se
             value={owner}
             onChange={handleOwnerSet}
             variant = "outlined"
-            style={{height: 30, width: "170%",  marginTop: 3}}
+            style={{height: 30, width: "100%",  marginTop: 3}}
           >
-            <MenuItem value={""}>
+            <MenuItem value={owner}>
               <em>None</em>
             </MenuItem>
             {
@@ -158,13 +161,7 @@ export function EditTaskDialog({taskId, taskData, ccaDetails, dispatch, open, se
 
   function renderDialogBox() {
     return (
-      <Dialog 
-        fullWidth
-        maxWidth="md"
-        open={open} 
-        onClose={handleClickClose} 
-        TransitionComponent={Transition}
-      >
+      <Dialog fullWidth maxWidth="md" open={open} onClose={handleClickClose} TransitionComponent={Transition}>
         {/*TaskName----TaskID----TaskArchiveButton*/}
         <Grid style={{padding: "15px"}} item container direction="row" justify="space-between" alignItems="flex-start">
           <Grid>
@@ -244,10 +241,21 @@ export function EditTaskDialog({taskId, taskData, ccaDetails, dispatch, open, se
             return (
               <div>
                 {RequestVSCustom()}
-                <Grid item style={{padding: "0px 17px 0px 17px", marginTop: -20}}>
-                  <h6>Link Request Checklist</h6>
-                  {/* <SubTask taskId={taskId}/> */}
-                </Grid>
+                {
+                  taskData.map(taskObj => {
+                    if (taskObj.taskId === taskId) {
+                      if (taskObj.submissionId !== -1) {
+                        return <Grid item style={{padding: "0px 17px 0px 17px", marginTop: -10}}>
+                          {<CheckList taskId={taskId}/>}
+                        </Grid>
+                      } else {
+                        return (
+                          <h6 style={{marginTop: -1, marginLeft: 17}}>No Request Attached</h6>
+                        )
+                      }
+                    }
+                  })
+                }
               </div>
             )
           }

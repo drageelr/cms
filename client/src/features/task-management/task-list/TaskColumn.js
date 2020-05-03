@@ -17,7 +17,7 @@ const columnStyle = {
   backgroundColor: '#dfe3e6',
   padding: 8,
   borderRadius: 3,
-  width: 300,
+  width: 200,
   height: '100%',
   marginRight: 8,
   marginLeft: 3
@@ -45,7 +45,6 @@ export function TaskColumn({ownerId, taskData, ccaDetails}) {
               taskData.taskList.map((taskObj, index) => {
                 if (ownerId === taskObj.ownerId) {
                   return (
-                    // <h1>hello</h1>
                     <TaskCard taskId={taskObj.taskId} index={index} key={taskObj.taskId}/>
                   )
                 }
