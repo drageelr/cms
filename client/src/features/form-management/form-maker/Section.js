@@ -29,7 +29,7 @@ export default function Section({id, title, data}) {
   const { componentsOrder, componentTitles, itemsOrder, items } = data
   
   return (
-    <Paper elevation={4} className={classes.sectionPaper}>
+    <Paper elevation={6} className={classes.sectionPaper}>
       <EditDeleteBar 
         renderTitle={()=><h3 style={{marginLeft: 10}}>{title}</h3>}
         type={'section'}

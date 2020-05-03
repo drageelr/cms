@@ -4,12 +4,13 @@ import MUIDataTable from "mui-datatables"
 import { Button, Typography, Box, CircularProgress} from '@material-ui/core'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import { useHistory } from 'react-router-dom'
-import { deleteForm, toggleStatus, duplicateForm, fetchFormList, clearError } from '../formListSlice'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
 import ToggleOnIcon from '@material-ui/icons/ToggleOn'
 import EditIcon from '@material-ui/icons/Edit'
 import MoreButton from '../../../ui/MoreButton'
 import ErrorSnackbar from '../../../ui/ErrorSnackbar'
+import { deleteForm, changeFormStatus, fetchFormList, clearError } from '../formListSlice'
+import { fetchForm, createForm } from '../formTemplateSlice'
 
 function FormList({formList, dispatch}) {
   const history = useHistory()
@@ -17,6 +18,12 @@ function FormList({formList, dispatch}) {
   useEffect(() => {
     dispatch(fetchFormList())
   }, [])
+
+  async function duplicateForm(formId) {
+    await dispatch(fetchForm(formId))
+    dispatch(createForm()) //the form has been loaded to state of the formTemplate, so createForm works with that
+    dispatch(fetchFormList())
+  }
 
   function MoreFormOptionsButton({index}) {
     const menusList=[
@@ -28,12 +35,12 @@ function FormList({formList, dispatch}) {
       {
         text: 'Duplicate',
         icon: <FileCopyIcon/>,
-        onClick: ()=>dispatch(duplicateForm(index)),
+        onClick: ()=> duplicateForm(formList.list[index].formId),
       },
       {
         text: 'Toggle Status',
         icon: <ToggleOnIcon/>,
-        onClick: ()=>dispatch(toggleStatus(index)),
+        onClick: ()=>dispatch(changeFormStatus({formId: formList.list[index].formId, isPublic: !formList.list[index].isPublic, index})),
       }
     ]
     return <MoreButton menusList={menusList}/>
@@ -60,7 +67,7 @@ function FormList({formList, dispatch}) {
         formList.isPending ? <CircularProgress style={{marginLeft: '49vw', marginTop: '40vh'}}/> :  
         <MUIDataTable
         title={<CreateNewFormButton/>} //Button inserted instead of title for form creation
-        data={formList.list.map((form, index) => form.isPublic && [ //only fetch public forms for society
+        data={formList.list.map((form, index) => [ //only fetch public forms for society
           form.title, 
           form.creatorName, 
           form.timestampModified,
@@ -87,7 +94,7 @@ function FormList({formList, dispatch}) {
 }
 
 const mapStateToProps = (state) => ({
-  formList: state.formList,
+  formList: state.formList
 })
 
 export default connect(mapStateToProps)(FormList)

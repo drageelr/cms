@@ -48,7 +48,7 @@ export const createFormData = createAsyncThunk(
     const itemsData = getState().formData.itemsData
     
     // only required to send form Id and items Data when creating a form
-    return await apiCaller('/api/submission/submit', {formId, itemsData}, "OK", 
+    return await apiCaller('/api/submission/submit', {formId, itemsData}, 200, 
     (data) => ({
       id: data.submissionId,
       timestampCreated: data.timestampCreated,

@@ -62,7 +62,7 @@ export default function FormMakerBar({title, isPublic, createMode}) {
 
           <Grid item>
             <Typography variant="h5">
-              <Box marginLeft={30} fontWeight={600} m={1}>
+              <Box marginLeft={30} fontWeight={600}>
                 {title}
                 <IconButton onClick={()=>setTitleDialogOpen(true)}><EditIcon fontSize="small"/></IconButton>
               </Box>
@@ -78,6 +78,7 @@ export default function FormMakerBar({title, isPublic, createMode}) {
             
             <Button
             variant="contained"
+            color="primary"
             startIcon={<SaveIcon />}
             style={{marginLeft:10}}
             onClick={()=> {

@@ -14,11 +14,11 @@ const useStyles = makeStyles((theme) => ({
 function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, setDialogOpen }) {
   const classes = useStyles()
   const [ currentCItemId, setCurrentCItemId ] = React.useState(-1) // store conditional item id and label selected in local state
-  
   function toggleDialogOpen() {
     setDialogOpen(! dialogOpen)
     setCurrentCItemId(-1)
   }
+  
 
   function OptionEffects() {
     return (
@@ -29,15 +29,19 @@ function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, set
             <FormGroup key={option_index}>
               <FormLabel component="legend">If option {option} is selected, show</FormLabel>
               {
-                itemsOrder[componentId].map((itemId, index) => {
-                  const itemData = items[itemId]
-            
-                  // only show conditional items (radio / dropdowns)
-                  return (itemId != currentCItemId) 
-                    && <FormControlLabel
-                      control={<Checkbox checked={false} onChange={toggleDialogOpen} name={itemId} />}
-                      label={itemData.label}/>
-                })
+                itemsOrder[componentId].map((itemId, index) => { 
+                  
+                  return (
+                    (itemId != currentCItemId) && // only show conditional items (radio / dropdowns) 
+                    <FormControlLabel
+                      key={index}
+                      control={<Checkbox checked={false} 
+                      onChange={toggleDialogOpen} 
+                      name={itemId} />}
+                      label={items[itemId].label}
+                    />
+                  )
+              })
               }
             </FormGroup>
           ))
@@ -83,8 +87,8 @@ function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, set
     <Button onClick={toggleDialogOpen} color="primary">
       Save
     </Button>
-    <Button onClick={toggleDialogOpen} color="primary">
-      Cancel
+    <Button onClick={toggleDialogOpen}>
+      Close
     </Button>
     </DialogActions>
   </Dialog>

@@ -6,13 +6,14 @@ import EditDeleteBar from './EditDeleteBar'
 
 const useStyles = makeStyles((theme) => ({
   componentsPaper: {
-    backgroundColor: 'lightgray',
     padding: theme.spacing(1),
     paddingTop: 0.3,
     paddingLeft: 10,
     width: '98%',
     height: '98%',
+    backgroundColor: 'lightgray',
     marginBottom: 10,
+    border: 1,
   }
 }))
 
@@ -30,7 +31,7 @@ export default function Component({id, title, data, parentId}) {
   const classes = useStyles()
   const {itemsOrder, items} = data
   return (
-    <Paper square elevation={0} className={classes.componentsPaper}>
+    <Paper elevation={0} className={classes.componentsPaper}>
       <EditDeleteBar 
       renderTitle={()=>
         <h6 style={{marginBottom: 0, marginTop: 6, color: 'darkgray'}}>

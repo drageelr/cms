@@ -28,9 +28,8 @@ function SocietyFormList({formList, dispatch}) {
         <Container>
           <h4 style={{color: 'white', textAlign: 'center'}}>Forms</h4>
           {
-            formList.list.map((form, index) => {
-              return (
-                form.isPublic ?  //display public forms only to societies
+            formList.list.map((form, index) => (
+                form.isPublic &&  //display public forms only to societies
                 <Paper key={index} style={{borderRadius: 3, background: 'white'}} >
                   <Button onClick={()=>history.push(`/form-viewer/create/${form.formId}`)}>
                     <Typography style={{margin: 5, fontSize: 14, fontWeight: 500}}>
@@ -39,9 +38,7 @@ function SocietyFormList({formList, dispatch}) {
                   </Button>
                   <br/>
                 </Paper>
-                : null
-              )
-            })
+            ))
           }
         </Container>
         <ErrorSnackbar stateError={formList.error} clearError={clearError} />
