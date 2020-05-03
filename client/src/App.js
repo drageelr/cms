@@ -45,10 +45,8 @@ const appTheme = createMuiTheme({
 
 function App({ user }) {
   const { isLoggedIn, userType, name, picture } = user
-
   var userDetails = JSON.parse(localStorage.getItem("localUser"))
-  console.log(userDetails)
-  
+
   return (
     <Router>
       <ThemeProvider theme={appTheme}>

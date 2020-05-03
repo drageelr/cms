@@ -1,6 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import {Drawer, Button, Paper, List, Typography} from '@material-ui/core'
+import {Drawer, Button, Paper, List, Typography, Box} from '@material-ui/core'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
 import { useDispatch } from 'react-redux'
@@ -13,33 +13,34 @@ const useStyles = makeStyles((theme) => ({
   },
   notesPaper: {
     overflow:'auto',
-    height: '30vh',
-    backgroundColor: theme.palette.primary.main
+    height: '34vh',
   }
 }))
 
-export default function NotesSideBar({formId, drawerOpen, toggleDrawer, notesData, isCCA}) {
-  const {ccaNotes, societyNotes } = notesData
+export default function NotesSideBar({submissionId, drawerOpen, toggleDrawer, notesData, isCCA}) {
+  const { ccaNotes, societyNotes } = notesData
   const classes = useStyles()
   const dispatch = useDispatch()
 
   function NotesList({notes}) {
-    return <Paper className={classes.notesPaper}>
+    return <Box borderRadius={8} border={1} borderColor="grey.400" className={classes.notesPaper}>
       <List>
         {
           notes.map((note, index) => {
             return (
-            <Paper key={index} style={{borderRadius: 3, margin: 10, width: '20vw', backgroundColor: 'white'}} >
-              <Typography style={{margin: 5}}>
-                {note}
+            <Paper key={index} style={{padding: 2, borderRadius: 3, margin: 8, width: '20vw', backgroundColor: 'blue', color: 'white'}} >
+              <Typography style={{margin: 5, fontWeight: 500}}>
+                {note.note}
               </Typography>
-              <br/>
+              <Typography style={{margin: 4, marginLeft: 5, fontSize: 10}}>
+                {note.timestampCreated}
+              </Typography>
             </Paper>
             )
           })
         }
       </List>
-    </Paper>
+    </Box>
   }
 
   function CCANotesSideBar() {
@@ -55,15 +56,15 @@ export default function NotesSideBar({formId, drawerOpen, toggleDrawer, notesDat
           return errors
         }}
         onSubmit={(values) => {
-          dispatch(addCcaNote({formId: formId, ccaNote: values.newCCANote}))
+          dispatch(addCcaNote({submissionId, note: values.newCCANote}))
         }}
       >
         {({ submitForm}) => (
           <Form>
             <NotesList notes={ccaNotes}/>
-            <Field component={TextField} multiline rows={2} required variant="filled" fullWidth name="newCCANote" label="Add CCA Note"/>
-            <Button variant="contained" color="primary" onClick={submitForm} type="submit" style={{marginTop: 8}}>Add CCA Note</Button>
-            <Button variant="contained" onClick={toggleDrawer} style={{marginLeft: 10, marginTop: 8}}>Cancel</Button>
+            <Field component={TextField} multiline rows={2} required variant="outlined" fullWidth name="newCCANote" label="Add CCA Note"/>
+            <Button variant="contained" color="primary" onClick={submitForm} style={{marginTop: 8}}>Add CCA Note</Button>
+            <Button variant="contained" onClick={toggleDrawer} style={{marginLeft: 10, marginTop: 8}}>Close</Button>
             <h5>Society Notes</h5>
             <NotesList notes={societyNotes}/>
           </Form>
@@ -85,46 +86,15 @@ export default function NotesSideBar({formId, drawerOpen, toggleDrawer, notesDat
           return errors
         }}
         onSubmit={(values) => {
-          dispatch(addSocietyNote({formId: formId, newSocietyNote: values.newSocietyNote}))
+          dispatch(addSocietyNote({submissionId, note: values.newSocietyNote}))
         }}
       >
         {({ submitForm}) => (
           <Form>
             <h5 style={{marginTop: 5}}>Notes from CCA</h5>
-            <Paper className={classes.notesPaper}>
-              <List>
-                {
-                  ccaNotes.map((ccaNote, index) => {
-                    return (
-                    <Paper key={index} style={{borderRadius: 3, margin: 10, width: '20vw', backgroundColor: 'white'}} >
-                      <Typography style={{margin: 5}}>
-                        {ccaNote}
-                      </Typography>
-                      <br/>
-                    </Paper>
-                    )
-                  })
-                }
-              </List>
-            </Paper>
-
+            <NotesList notes={ccaNotes}/>
             <h5>Society Notes</h5>
-            <Paper className={classes.notesPaper}>
-              <List>
-                {
-                  societyNotes.map((societyNote, index) => {
-                    return (
-                    <Paper key={index} style={{borderRadius: 3, margin: 10, width: '20vw', backgroundColor: 'white'}} >
-                      <Typography style={{margin: 5}}>
-                        {societyNote}
-                      </Typography>
-                      <br/>
-                    </Paper>
-                    )
-                  })
-                }
-              </List>
-            </Paper>
+            <NotesList notes={societyNotes}/>
             <Field component={TextField} multiline rows={2} required variant="filled" fullWidth name="newSocietyNote" label="Add Society Note"/>
             <Button variant="contained" color="primary" onClick={submitForm} style={{marginTop: 5}}>Add Note</Button>
             <Button variant="contained" onClick={toggleDrawer} style={{marginLeft: 10, marginTop: 5}}>Cancel</Button>

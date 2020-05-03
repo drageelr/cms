@@ -36,8 +36,8 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
   const statusTypes = ["Approved", "Pending", "Issue"]
   const classes = useStyles()
 
-  function handleDelete(reqId) {
-    dispatch(deleteSubmission({reqId}))
+  function handleDelete(submissionId) {
+    dispatch(deleteSubmission(submissionId))
   }
   
   function selectValue(formStatus) {

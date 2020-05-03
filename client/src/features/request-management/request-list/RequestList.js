@@ -209,15 +209,16 @@ export function RequestList({requestListData, dispatch}) {
           </Typography>}
           data={
             requestListData.formDataList.map((request, index) => [
-              request.id,
-              request.title,
-              request.date,
-              request.society,
-              <ChangeFormStatusSelect requestId={request.id} requestStatus={request.formStatus} />,
+              request.submissionId,
+              request.formTitle,
+              request.timestampModified,
+              request.societyNameInitials,
+              <ChangeFormStatusSelect requestId={request.submissionId} requestStatus={request.status} />,
               <Button 
-                value={request.id}
+                value={request.submissionId}
+                color="primary" 
                 type = "button" 
-                onClick={() => {handleClick(request.id)}}
+                onClick={() => {handleClick(request.submissionId)}}
                 variant="outlined"
               >
                 view submission

@@ -87,8 +87,7 @@ export const editForm = createAsyncThunk(
       checklistItems
     })}
 
-    console.log("SENDING", form)
-
+    
     return await apiCaller('/api/form/edit', {form: form}, 200, 
     (data) => ({
       id: data.formId,

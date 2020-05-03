@@ -3,7 +3,7 @@ import FormViewerBar from './FormViewerBar'
 import {makeStyles, List, Paper, Container, CircularProgress, Button } from '@material-ui/core'
 import { connect } from 'react-redux'
 import ItemView from './ItemView'
-import { fetchFormData, clearError } from '../formDataSlice'
+import { fetchFormData, clearError, setCreateMode } from '../formDataSlice'
 import { fetchForm, clearError as clearErrorFormTemplate } from '../formTemplateSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
 import ErrorSnackbar from '../../../ui/ErrorSnackbar'
@@ -13,13 +13,14 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     height: '100%',
     marginBottom: 20,
-    backgroundColor: theme.palette.primary.main,
+    background: 'linear-gradient(to right bottom, #3274f3, #82b4ff)'
+    // backgroundColor: theme.palette.primary.main,
   }
 }))
 
 function FormViewer({formTemplate, formData, dispatch, userType, match}) {
   const { title, sectionTitles, sectionsOrder, componentsOrder, itemsOrder, items } = formTemplate
-  const { formId, createMode, ccaNotes, societyNotes, isPending } = formData
+  const { formId, createMode, ccaNotes, societyNotes } = formData
   const [ sectionIndex, setSectionIndex ] = useState(0)
   const classes = useStyles()
   const viewerId = match.params.id // formId when in create mode, formDataId when in edit/review mode
@@ -44,11 +45,13 @@ function FormViewer({formTemplate, formData, dispatch, userType, match}) {
 
   return (
     <div>
-      <FormViewerBar formId={formId} title={title} notesData={{ccaNotes, societyNotes}} isCCA={userType==="CCA"} createMode={createMode}/>
+      <FormViewerBar submissionId={viewerId} title={title} notesData={{ccaNotes, societyNotes}} 
+        inReview={mode == "review"} isCCA={userType=="CCA"} createMode={createMode}/>
       <br/>
       {
-      (!createMode && isPending) ? <CircularProgress style={{marginLeft: '50vw', marginTop: '30vh'}}/> :  
-      <Container>
+      (mode == "create" ?  (formTemplate.isPending) : (formTemplate.isPending || formData.isPending)) 
+      ? <CircularProgress style={{marginLeft: '50vw', marginTop: '30vh'}}/>
+      : <Container>
         {/* //Container to center align the View, also sections and items rendered only (components are only logical) */}
         <Paper elevation={4} className={classes.sectionPaper}>
           <h3 style={{color: 'white', marginLeft: 10}}>{sectionTitles[sectionId]}</h3>
