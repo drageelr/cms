@@ -86,3 +86,11 @@ exports.fetchFormValidation = {
     formId: Joi.number().required(),
   })
 }
+
+// Export API 3.6 Validation Object:
+exports.changeFormStatusValidation = {
+  body: Joi.object({
+    formId: Joi.number().required(),
+    isPublic: Joi.bool().required()
+  })
+}

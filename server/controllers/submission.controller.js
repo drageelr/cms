@@ -242,8 +242,8 @@ exports.submitForm = async (req, res, next) => {
         sendReviewEmail(reqSociety.presidentEmail, "pres", reqSociety.nameInitials, newSubmission._id, reqSociety._id);
 
         res.json({
-          status: 200,
-          statusCode: httpStatus.getName(200),
+          status: httpStatus.getName(200),
+          statusCode: 200,
           message: "Submission Successful!",
           submissionId: newSubmission.submissionId,
           timestampCreated: newSubmission.createdAt,
@@ -380,8 +380,9 @@ exports.updateSubmissionStatus = async (req, res, next) => {
     
     if (reqSubmission) {
       let statusAvailable = submissionStatus[params.userObj.type];
-      if (!(params.status in statusAvailable)) throw new customError.SubmissionValidationError("invalid status or status not allowed, allowed statuses are: ", JSON.stringify(statusAvailable));
-
+      if (!(statusAvailable.includes(params.status))) {
+        throw new customError.SubmissionValidationError("invalid status or status not allowed, allowed statuses are: " + JSON.stringify(statusAvailable));
+      }
       // params.status contains the string "Issue"
       if (params.status.includes("Issue") && params.issue && params.userObj.type != "cca"){
         let reqSociety = await Society.findById(params.userObj._id, 'patronEmail presidentEmail email');

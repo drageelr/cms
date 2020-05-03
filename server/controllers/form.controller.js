@@ -305,7 +305,7 @@ exports.fetchForm = async (req, res, next) => {
       }
 
       for (let i = 0; i < reqForm.items.length; i++) {
-        formObj.items[i] = helperFuncs.duplicateObject(reqForm.items[i], ["itemId", "type", "label", "requried", "defaultVisibility", "placeHolder", "maxLength", "fileTypes"], true);
+        formObj.items[i] = helperFuncs.duplicateObject(reqForm.items[i], ["itemId", "type", "label", "required", "defaultVisibility", "placeHolder", "maxLength", "fileTypes"], true);
       
         if (reqForm.items[i].options.length) {
           formObj.items[i].options = [];
@@ -387,6 +387,31 @@ exports.fetchFormList = async (req, res, next) => {
     } else {
       throw new customError.FormNotFoundError("no forms exist");
     }
+  } catch (err) {
+    next(err);
+  }
+}
+
+// API 3.6 Controller, to change Form Public/Private Status
+exports.changeFormStatus = async (req, res, next) => {
+  let params = req.body;
+
+  try {
+    let reqForm = await Form.findOne({formId: params.formId});
+    
+    if (reqForm) {
+      await reqForm.update({isPublic: params.isPublic});
+
+      res.json({
+        statusCode: 203,
+        statusName: httpStatus.getName(203),
+        message: "Status Change Successful!",
+      })
+    } else {
+      // raise form not found error
+      throw new customError.FormNotFoundError("invalid form id");
+    }
+    
   } catch (err) {
     next(err);
   }

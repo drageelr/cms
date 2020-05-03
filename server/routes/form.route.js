@@ -64,5 +64,16 @@ router.post(
   formController.fetchFormList
 );
 
+// API 3.6: Change Form Status
+router.post(
+  '/change-status',
+  validate(formValidation.changeFormStatusValidation, { keyByField: true }),
+  jwt.verify,
+  validateUserAccess,
+  // validateCCAAccess,
+  formController.changeFormStatus
+);
+
+
 // Export router
 module.exports = router;
