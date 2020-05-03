@@ -45,69 +45,69 @@ const appTheme = createMuiTheme({
 
 function App({ user }) {
   const { isLoggedIn, userType, name, picture } = user
-
-  var userDetails = JSON.parse(localStorage.getItem("localUser"))
-  console.log(userDetails)
+  // console.log("User: ", user)
+  // var userDetails = JSON.parse(localStorage.getItem('localuser'))
+  // console.log("hello: ",user)
   
   return (
     <Router>
       <ThemeProvider theme={appTheme}>
         { isLoggedIn ?
         <div>
-          <NavBar name={name} userType={userDetails.userType} picture={picture}/>
+          <NavBar name={name} userType={user.userType} picture={picture}/>
           <Switch>
-            <Route path="/" exact component={userDetails.userType === "CCA" ? TaskManager : SocietyDashboard}/>
+            <Route path="/" exact component={user.userType === "CCA" ? TaskManager : SocietyDashboard}/>
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/settings" exact component={CCASettingsHome}/>
                 ) : (
                   <Route path="/" exact component={SocietyDashboard}/>
                 )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/request-list" exact component={RequestList}/>
                 ) : (
                   <Route path="/" component={SocietyDashboard}/>
                 )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/task-status-panel" exact component={TaskStatusPanel}/>
                 ) : (
                   <Route path="/" component={SocietyDashboard}/>
                 )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/cca-panel" exact component={CCAAccountsPanel}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/society-panel" exact exact component={SocietyAccountsPanel}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/form-maker" exact component={FormMaker}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/form-maker/:id" exact component={FormMaker}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/forms" exact component={FormList}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>

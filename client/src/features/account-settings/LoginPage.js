@@ -13,7 +13,7 @@ import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import landingBG from './landingBG.svg'
 
 // card styling
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme=>({
   root: {
     position: 'absolute',
     maxWidth: '32vw',
@@ -21,12 +21,12 @@ const useStyles = makeStyles({
     marginTop: 0,
     height: '100%',
     backgroundColor: "#3578fa",
-    color: 'white'
+    color: theme.palette.secondary.main
   },
   input: {
     color: 'black',
   }
-})
+}))
 
 /**
   The LoginPage constitutes a toggle button to switch between a CCA or Society

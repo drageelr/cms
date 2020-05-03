@@ -68,7 +68,7 @@ function ChangePassword({error, dispatch}) {
                 name="currentPassword"
                 type="password"
                 fullWidth
-                autoFocus
+                // autoFocus
               ></Field>
               <br/>
               <br/>
@@ -81,7 +81,7 @@ function ChangePassword({error, dispatch}) {
                 fullWidth
                 label="New Password"
                 name="newPassword"
-                autoFocus
+                // autoFocus
                 type="password"
               ></Field>
 
@@ -96,7 +96,7 @@ function ChangePassword({error, dispatch}) {
                 fullWidth
                 label="Confirm Password"
                 name="confirmPassword"
-                autoFocus
+                // autoFocus
                 type="password"
               ></Field>
               <br/>

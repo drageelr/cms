@@ -1,11 +1,11 @@
 import React from 'react'
 import { Link, Redirect } from 'react-router-dom'
-import { Grid, Button} from '@material-ui/core'
+import { Grid, Button, Box, Typography} from '@material-ui/core'
 import LockIcon from '@material-ui/icons/Lock'
 import PersonIcon from '@material-ui/icons/Person'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted'
-
+import bubbles from "./bubbles.png"
 /**
   The CCASettingsHome constitutes buttons for the following: Change Password, CCA Accounts,
   Society Accounts, and Task Status Panel.
@@ -13,35 +13,95 @@ import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted'
 
 export default function CCASettingsHome() {
   return (
-    <Grid container direction="column" justify = "space-between" alignItems="center" style = {{fontSize: 20}}>
-      <h1>CCA Settings</h1>
-      <Grid item style={{marginTop: 30}}>
+    <div>
+    <h1>CCA Settings</h1>
+    <Grid container spacing={3}>
+      <Grid item sm={3} style = {{marginLeft: 300}}>
         <Link to={"/change-password"} style={{ textDecoration: 'none' }}>
-          <Button size="large" variant = "contained" startIcon={<LockIcon/>}
-          style = {{marginLeft: 10}}> Change Password </Button>
+          <Box style = {{
+            width: 170,
+            height: 100,
+            backgroundColor: '#EEEEEE',
+            border: 30,
+            padding: 50,
+            margin: 20,
+            boxShadow: '100%',
+            borderRadius: '10%',
+            // backgroundImage: <img src={bubbles}/>,
+            backgroundImage: `linear-gradient(to right bottom, #3274f3, #82b4ff70), url(${bubbles})`,
+            backgroundPosition:'50%',
+            marginRight: 900,
+          }}
+          > 
+          <Typography style = {{color: "#FFFFFF"}} align = "center" variant = 'title'>Change Password</Typography>
+          
+          </Box>
         </Link>  
       </Grid>
-
-      <Grid item style = {{marginTop: 30}}>
+      
+      <Grid item sm={3}> 
           <Link to={"/cca-panel"} style={{ textDecoration: 'none' }}>
-            <Button size = "large" variant = "contained" startIcon={<PersonIcon/>}
-            style = {{marginLeft: 10}}> CCA Accounts </Button>
+          <Box style = {{
+            width: 170,
+            height: 100,
+            backgroundColor: '#EEEEEE',
+            border: 30,
+            padding: 50,
+            margin: 20,
+            boxShadow: '100%',
+            borderRadius: '10%',
+            backgroundImage: `linear-gradient(to right bottom,#FFC55E, #82b4ff60),url(${bubbles})`,
+            marginRight: 900,
+            
+          }}
+          > 
+          <Typography style = {{color: "#FFFFFF"}} align = "center" variant = 'title'>CCA Accounts</Typography>
+          </Box>
           </Link>
       </Grid>
 
-      <Grid item style = {{marginTop: 30}}>
+      <Grid item md={3} style = {{marginLeft: 300}}>
           <Link to={"/society-panel"} style={{ textDecoration: 'none' }}>
-            <Button size = "large" variant = "contained" startIcon={<PeopleAltIcon/>}
-            style = {{marginLeft: 10}}> Society Accounts </Button>
+          <Box style = {{
+            width: 170,
+            height: 100,
+            backgroundColor: '#EEEEEE',
+            border: 30,
+            padding: 50,
+            margin: 20,
+            boxShadow: '100%',
+            borderRadius: '10%',
+            backgroundImage: `linear-gradient(to right bottom, #D669E1, #8C9CEE60),url(${bubbles})`,
+            marginRight: 900,
+          }}
+          >
+            <Typography style = {{color: "#FFFFFF"}} align = "center" variant = 'title'>Society Accounts</Typography>
+          
+          </Box>
+          
           </Link>
       </Grid>
 
-      <Grid item style = {{marginTop: 30}}>
+      <Grid item md={3}> 
           <Link to={"/task-status-panel"} style={{ textDecoration: 'none' }}>
-            <Button size = "large" variant = "contained" startIcon={<FormatListBulletedIcon/>}
-            style = {{marginLeft: 10}}> Task Status Panel </Button>
+          <Box style = {{
+            width: 170,
+            height: 100,
+            backgroundColor: '#EEEEEE',
+            border: 30,
+            padding: 50,
+            margin: 20,
+            boxShadow: '100%',
+            borderRadius: '10%',
+            backgroundImage: `linear-gradient(to right bottom, #BD4693, #C3BB4D60),url(${bubbles})`,
+            marginRight: 900,
+          }}
+          > <Typography style = {{color: "#FFFFFF"}} align = "center" variant = 'title'>Task Status Panel</Typography>
+          </Box>
+          
           </Link>
       </Grid>
     </Grid>
+    </div>
   )
 }
