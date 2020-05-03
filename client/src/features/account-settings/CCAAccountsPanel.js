@@ -15,6 +15,8 @@ import AccessibilityIcon from '@material-ui/icons/Accessibility'
 
 import { addCCAAccount, toggleActiveCCAAccount, editCCAAccount, fetchCCAAccounts, clearError, editCCAPermissions } from './ccaDetailsSlice'
 
+var Base64 = require('js-base64').Base64;
+
 function CCAAccountPanel({ccaDetails,dispatch}) {
 
   useEffect(() => {
@@ -28,10 +30,13 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
   const [permissionMode, setPermissionsMode] = useState(false)
   const [permissions, setPermissions] = useState({})
   
+  
 
   function handleImageUpload(event, ccaId) {
     const url = URL.createObjectURL(event.target.files[0])
-    setPicture(url)
+    var encoded = Base64.encode(url)
+    console.log(encoded) 
+    setPicture(encoded)
   }
 
   function handlePermissionsChange(event){
