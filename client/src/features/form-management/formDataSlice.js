@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { apiCaller } from "../../helpers" 
-import { useDispatch } from 'react-redux'
-import { fetchForm } from './formTemplateSlice'
 
 
 const initialState = {
@@ -30,11 +28,11 @@ export const fetchFormData = createAsyncThunk(
 
     return await apiCaller('/api/submission/fetch', {submissionId}, 200, 
     (data) => ({
-        id: submissionId,
-        formId: data.formId,
-        ccaNotes: data.ccaNotes,
-        societyNotes: data.societyNotes,
-        itemsData: data.itemsData
+      id: submissionId,
+      formId: data.formId,
+      ccaNotes: data.ccaNotes,
+      societyNotes: data.societyNotes,
+      itemsData: data.itemsData
     }), 
     rejectWithValue)
   }
@@ -187,7 +185,7 @@ const formData = createSlice({
     },
     [fetchFormData.fulfilled]: (state, action) => {
       if (state.isPending === true) {
-      
+        
         return {
           id: action.payload.id,
           formId: action.payload.formId,

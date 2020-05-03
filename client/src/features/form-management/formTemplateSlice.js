@@ -35,7 +35,7 @@ export const fetchForm = createAsyncThunk(
     (data) => {
       const id = data.form.formId
       delete data.form['formId']
-  
+
       return {
         id,
         ...convertToClientForm(data.form)  
