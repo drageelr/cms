@@ -60,15 +60,14 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskId, initia
           ownerId: ownerId, 
           statusId: statusId,
         }
-
         dispatch(createCustomTask(cusTaskObject))
       }
     }
     setOpen(false)
   }
-
+  
   function handleOwnerSet(event) {
-    // const ownerId = event.target.value
+    dispatch(taskOwnerChange({taskId, owner}))
     setOwner(event.target.value)
     if (editMode) {
       dispatch(taskOwnerChange({taskId, owner}))

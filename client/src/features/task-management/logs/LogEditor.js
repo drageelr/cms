@@ -12,6 +12,7 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
   function handleUpdateLogs() {
     if (logText) {
       let creatorId = user.id
+      console.log(logText)
       dispatch(createNewLog({taskId, creatorId, logText}))
     }
   }
@@ -40,6 +41,7 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
             </Grid>
         </Grid>
       </Grid>
+
       {taskData.map(taskObj => {
         if (taskObj.taskId === taskId) {
           if(taskObj.logs.length === 0) {
