@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { apiCaller } from '../../helpers'
 
 /**
   A temporary initial state has been created to test with the components and render meaningful
@@ -9,7 +10,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 const task = { //sample input for fetch task API
   taskId: 'c3',
   title: "Hello World",
-  description: "Main hoon jian, main hoon bara",
+  description: "OK",
   ownerId: 1,
   statusId: 3,
   logs: [],
@@ -68,7 +69,7 @@ const sampleState = {
     },
     {
       taskId: 'c1',
-      title: "Bharwapa Laga Rakha hai",
+      title: "Code",
       description: "",
       ownerId: 2,
       statusId: 2,
@@ -101,6 +102,18 @@ export const fetchTaskManager = createAsyncThunk(
     } 
 
     return sampleState.taskList
+    //{}
+    return await apiCaller('/api/task-manager/fetch', {}, 200, 
+    (data) => {
+      
+    }, rejectWithValue)  
+    //	{taskList: [reqTaskObjFull/cusTaskObjFull]}
+    /*
+    {taskId: "String", title: "String", description: "String", submissionId: Number, ownerId: Number, 
+    statusId: Number, subtasks:**: [subtaskObj2]}, logs: [logObj], archive: Boolean, createdAt: Date, updatedAt: Date}
+    
+    {title*: "String", description*: "String", ownerId*: Number, statusId*: Number}
+    */
   }
 )
 
@@ -108,13 +121,25 @@ export const fetchTask = createAsyncThunk(
   'taskData/fetchTask',
   async (archiveObj, { getState, rejectWithValue }) => {
     const {taskId, ownerId} = archiveObj
-    
     const { isPending } = getState().taskData
     if (isPending != true) {
       return
     } 
-    console.log(task, archiveObj)
+
     return {task, archiveObj}
+    //{taskId: "String"}
+    return await apiCaller('/api/task-manager/task/fetch', {taskId}, 200, 
+    (data) => {
+      
+    }, 
+    rejectWithValue)  
+    //{task: reqTaskObjFull/cusTaskObjFull}
+    /*
+    {taskId: "String", title: "String", description: "String", submissionId: Number, ownerId: Number, 
+    statusId: Number, subtasks:**: [subtaskObj2]}, logs: [logObj], archive: Boolean, createdAt: Date, updatedAt: Date}
+    
+    {title*: "String", description*: "String", ownerId*: Number, statusId*: Number}
+    */
   }
 )
 
@@ -125,10 +150,15 @@ export const fetchCheckList = createAsyncThunk(
     if (isPending != true) {
       return
     } 
-
+    
     const data = sampleCheckList
 
     return {IdObj, data}
+
+    return await apiCaller('/api/submission/fetch-list', {}, 200, 
+    (data) => {
+      
+    }, rejectWithValue)    
   }
 )
 
@@ -139,8 +169,15 @@ export const fetchArchiveList = createAsyncThunk(
     if (isPending != true) {
       return
     } 
-
     return sampleState.archiveList
+
+    //TBD
+    return await apiCaller('/api/task-manager/fetch-archive', {}, 200, 
+    (data) => {
+      
+    }, rejectWithValue)  
+    //{taskList: [taskDetailsObj]}
+    //{taskId: "String", ownerId: Number, createdAt: Date, updatedAt: Date}
   }
 )
 
@@ -154,8 +191,16 @@ export const createRequestTask = createAsyncThunk(
       subTaskIds: [],
       newLogs: []
     }
-
+    // {task*: reqTaskObj}
+    // {title*: "String", description*: "String", submissionId*: Number, ownerId*: Number, statusId*: Number, checklists**: [checklistObj]}
     return {data, reqTaskObject}
+    return await apiCaller('/api/task-manager/task/req/create', {}, 201, 
+    (data) => {
+      
+    }, rejectWithValue)  
+    //{taskId: "String", subtasks: [subtaskObj2**], newLogs: [logObj]}
+    //{subtaskId: Number, assigneeId: Number, description: "String", check: Boolean, createdAt: Date, updatedAt: Date}
+    //{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}
   }
 )
 
@@ -168,8 +213,16 @@ export const createCustomTask = createAsyncThunk(
       taskId: "cn",
       newLogs: []
     }
-
+    
     return {data, cusTaskObject}
+    //{task*: cusTaskObj}
+    //{title*: "String", description*: "String", ownerId*: Number, statusId*: Number}
+    return await apiCaller('/api/task-manager/task/cus/create', {}, 201, 
+    (data) => {
+      
+    }, rejectWithValue)  
+    //{taskId: "String", newLogs: [logObj]}
+    //{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}
   }
 )
 
@@ -185,6 +238,13 @@ export const createNewLog = createAsyncThunk(
     }
 
     return {data, logObj}
+    //{taskId*: "String", description*: "String"}
+    return await apiCaller('/api/task-manager/log/add', {}, 201, 
+    (data) => {
+      
+    }, rejectWithValue)  
+    
+    //{logId: Number, createdAt: Date, updatedAt: Date}
   }
 )
 
@@ -209,9 +269,27 @@ export const moveTask = createAsyncThunk(
     //   data = {
     //     newLogs: [],
     //   }
-    // } else { //if subtask then dont do anything here but in the edit request task API
+    // } else { //if subtask then don't do anything here but in the edit request task API
     // }
+
     return {data, editTaskObject}
+    //{task*: editReqTaskObj}
+    //{task*: editCusTaskObj}
+    /*
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, 
+    subtasks**: [subtaskObj]}, archive**: Boolean}
+    subtaskObj == {subtaskId*: Number, assigneeId**: Number, description**: "String", check**: Boolean}
+
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, archive**: Boolean}
+    */
+    return await apiCaller('/api/task-manager/task/req/edit', {}, 200, 
+    (data) => {
+      
+    }, rejectWithValue)  
+    
+    //{newLog: logObj, subTaskIds**: [Number]}
+    //{newLog: logObj}
+    //{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}
   }
 )
 
@@ -237,7 +315,25 @@ export const taskOwnerChange = createAsyncThunk(
     //     newLogs: [],
     //   }
     // }
+
     return {data, ownerChangeObj}
+    //{task*: editReqTaskObj}
+    //{task*: editCusTaskObj}
+    /*
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, 
+    subtasks**: [subtaskObj]}, archive**: Boolean}
+    subtaskObj == {subtaskId*: Number, assigneeId**: Number, description**: "String", check**: Boolean}
+
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, archive**: Boolean}
+    */
+    return await apiCaller('/api/task-manager/task/req/edit', {}, 200, 
+    (data) => {
+      
+    }, rejectWithValue)  
+    
+    //{newLog: logObj, subTaskIds**: [Number]}
+    //{newLog: logObj}
+    //{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}
   }
 )
 
@@ -263,7 +359,25 @@ export const updateTitle = createAsyncThunk(
     //     newLogs: [],
     //   }
     // }
-    return {data, titleObj}
+    
+    //{task*: editReqTaskObj}
+    //{task*: editCusTaskObj}
+    /*
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, 
+    subtasks**: [subtaskObj]}, archive**: Boolean}
+    subtaskObj == {subtaskId*: Number, assigneeId**: Number, description**: "String", check**: Boolean}
+
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, archive**: Boolean}
+    */
+    return
+    return await apiCaller('/api/task-manager/task/req/edit', {}, 200, 
+    (data) => {
+      
+    }, rejectWithValue)  
+
+    //{newLog: logObj, subTaskIds**: [Number]}
+    //{newLog: logObj}
+    //{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}
   }
 )
 
@@ -289,7 +403,26 @@ export const updateDescription = createAsyncThunk(
     //     newLogs: [],
     //   }
     // }
+    
     return {data, descObj}
+
+    //{task*: editReqTaskObj}
+    //{task*: editCusTaskObj}
+    /*
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, 
+    subtasks**: [subtaskObj]}, archive**: Boolean}
+    subtaskObj == {subtaskId*: Number, assigneeId**: Number, description**: "String", check**: Boolean}
+
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, archive**: Boolean}
+    */
+    return await apiCaller('/api/task-manager/task/req/edit', {}, 200, 
+    (data) => {
+      
+    }, rejectWithValue)  
+    
+    //{newLog: logObj, subTaskIds**: [Number]}
+    //{newLog: logObj}
+    //{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}
   }
 )
 
@@ -316,6 +449,25 @@ export const changeTaskStatus = createAsyncThunk(
     //   }
     // }
     return {data, statusObj}
+    
+    //{task*: editReqTaskObj}
+    //{task*: editCusTaskObj}
+    /*
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, 
+    subtasks**: [subtaskObj]}, archive**: Boolean}
+    subtaskObj == {subtaskId*: Number, assigneeId**: Number, description**: "String", check**: Boolean}
+
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, archive**: Boolean}
+    */
+    return await apiCaller('/api/task-manager/task/req/edit', {}, 200, 
+    (data) => {
+      
+    }, rejectWithValue)  
+    
+    //{newLog: logObj, subTaskIds**: [Number]}
+    //{newLog: logObj}
+    //{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}
+    
   }
 )
 
@@ -335,7 +487,26 @@ export const linkFormToTask = createAsyncThunk( // only for request task
     // data = {
     // newLogs: [],
     // }
+
     return {data, submissionObj}
+
+    //{task*: editReqTaskObj}
+    //{task*: editCusTaskObj}
+    /*
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, 
+    subtasks**: [subtaskObj]}, archive**: Boolean}
+    subtaskObj == {subtaskId*: Number, assigneeId**: Number, description**: "String", check**: Boolean}
+
+    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, archive**: Boolean}
+    */
+    return await apiCaller('/api/task-manager/task/req/edit', {}, 200, 
+    (data) => {
+      
+    }, rejectWithValue)  
+    
+    //{newLog: logObj, subTaskIds**: [Number]}
+    //{newLog: logObj}
+    //{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}
   }
 )
 
@@ -356,7 +527,8 @@ const taskdata = createSlice({
       })
     },
 
-    unArchiveTask: (state, action) => { // when i get the archive tasks from server, i will also get the taskOwner id with it so then adding task back to column is simple, for now hardcoding the column
+    unArchiveTask: (state, action) => { // on getting the archive tasks from server,
+      // also get the taskOwner id with it so then adding task back to column is simple, for now hard-coding the column
       const {taskId,ownerId} = action.payload 
 
       state.columns[ownerId].taskIds.push(taskId) // put the task back in owners list
