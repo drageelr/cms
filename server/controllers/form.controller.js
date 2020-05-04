@@ -35,17 +35,17 @@ const itemTypes = {
 
 function validateItemType (item) {
   let itemKeys = Object.keys(item);
-  if (itemKeys !== itemTypes[item.type]) {
-    return "item with id " + item.itemId + " should have only these key in the defined order: " + JSON.stringify(itemTypes[item.type]);
+  if (!helperFuncs.compareLists(itemKeys, itemTypes[item.type])) {
+    return "item with id " + item.itemId + " should have only these keys: " + JSON.stringify(itemTypes[item.type]);
   }
   
   // Check For Duplicate Option Ids:
   if (item.options) {
     let options = item.options;
     let optionIds = [];
-    for (let o in options) {
+    for (let o of options) {
       let oIdIndex = optionIds.indexOf(o.optionId);
-      if (oIdIndex > -1) {
+      if (oIdIndex < 0) {
         optionIds.push(o.optionId);
       } else {
         return "item with id " + item.itemId + " has non unqiue option ids";
@@ -307,14 +307,14 @@ exports.fetchForm = async (req, res, next) => {
       for (let i = 0; i < reqForm.items.length; i++) {
         formObj.items[i] = helperFuncs.duplicateObject(reqForm.items[i], ["itemId", "type", "label", "requried", "defaultVisibility", "placeHolder", "maxLength", "fileTypes"], true);
       
-        if (reqForm.items[i].options) {
+        if (reqForm.items[i].options.length) {
           formObj.items[i].options = [];
           for (let s of reqForm.items[i].options) {
             formObj.items[i].options.push(helperFuncs.duplicateObject(s, ["optionId", "data"]));
           }
         }
 
-        if (reqForm.items[i].conditionalItems) {
+        if (reqForm.items[i].conditionalItems.length) {
           formObj.items[i].conditionalItems = [];
           for (let c of reqForm.items[i].conditionalItems) {
             formObj.items[i].conditionalItems.push(helperFuncs.duplicateObject(c, ["optionId", "itemId"]));

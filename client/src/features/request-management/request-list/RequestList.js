@@ -28,7 +28,7 @@ export function RequestList({requestListData, dispatch}) {
     dispatch(fetchCCARequestList()) // by default requests are fetched for the last 1 month only 
   }, [])
   
-  const filters = ["1 month", "3 months", "1 year", "Specific Duration"]
+  const filters = ["1 month", "3 months", "1 year", "Specific duration"]
 
   let history = useHistory()
   const [state, setState] = useState({
@@ -60,7 +60,6 @@ export function RequestList({requestListData, dispatch}) {
 
   function handleDateDialogOpen(){
     setOpenDateDialog(true)
-    CustomDatePicker()
   }
 
   function handleDateDialogClose() {
@@ -78,18 +77,16 @@ export function RequestList({requestListData, dispatch}) {
   function handleAddChip(chip) {
     var newList = statusFilter.push(chip)
     setState(newList)
-    console.log(statusFilter)
   }
 
   function handleDeleteChip(chip,index) {
     var newList = statusFilter.filter(function(obj) {return obj != chip})
     setStatusFilter(newList)
-    console.log(statusFilter)
   }
 
   function handleMonthChange(e) {
     setMonthFilter(e.target.value)
-    if(e.target.value === "Specific Duration") {
+    if(e.target.value == "Specific duration") {
       handleDateDialogOpen()
     }
   }
@@ -117,6 +114,7 @@ export function RequestList({requestListData, dispatch}) {
   function CustomFilterBar() {
     return (
       <Grid container direction= "row" justify="space-evenly" style={{marginRight: 0, marginLeft: '10%'}}>
+        <CustomDatePicker />
         <Grid item>
           <FormControlLabel // ONLY COMPLETED REQUESTS
             control={<Switch color="primary" size="small" checked={state.completed} onChange={handleChange} name="completed"/>}
@@ -128,7 +126,6 @@ export function RequestList({requestListData, dispatch}) {
           <FormControl variant="outlined" > {/*FILTER BY MONTHS*/}
             <Select labelId = "filter-month" id="label" open = {open} onClose={handleClose} onOpen={handleOpen} 
               value={monthFilter} style={{height: 30, width: 130}} variant = "outlined" onChange={handleMonthChange}>
-              <MenuItem value="None">None</MenuItem>
               {
                 filters.map((filterType, index) => <MenuItem key={index} value={filterType}>{filterType}</MenuItem>)
               }
@@ -155,7 +152,7 @@ export function RequestList({requestListData, dispatch}) {
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleDialogClose} color="primary" autoFocus type="submit">
+              <Button onClick={handleDialogClose} color="primary">
                 Save
               </Button>
             </DialogActions>
@@ -167,31 +164,29 @@ export function RequestList({requestListData, dispatch}) {
   
   function CustomDatePicker() {
     return (
-      <div>
-        <Dialog
-          open={openDateDialog}
-          onClose={handleDateDialogClose}
-          aria-labelledby="status-dialog"
-          aria-describedby="status-dialog-desc"
-        >
-          <DialogTitle id="status-dialog">{"Choose Custom Dates"}</DialogTitle>
-          <DialogContent>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <Grid container direction="column" justify="center" alignItems="center">
-                <KeyboardDatePicker disableToolbar variant="inline" format="MM/dd/yyyy" margin="normal" id="date-picker-inline" 
-                label="From:" value={selectedDateFrom} onChange={handleDateChangeFrom} KeyboardButtonProps={{'aria-label': 'change date',}}/>
-                <KeyboardDatePicker disableToolbar variant="inline" format="MM/dd/yyyy" margin="normal" id="date-picker-inline" 
-                label="To:" value={selectedDateTo} onChange={handleDateChangeTo} KeyboardButtonProps={{'aria-label': 'change date',}}/>
-              </Grid>
-            </MuiPickersUtilsProvider>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleDateDialogClose} color="primary" autoFocus type="submit">
-              Save
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
+      <Dialog
+        open={openDateDialog}
+        onClose={handleDateDialogClose}
+        aria-labelledby="status-dialog"
+        aria-describedby="status-dialog-desc"
+      >
+        <DialogTitle id="status-dialog">{"Choose Custom Dates"}</DialogTitle>
+        <DialogContent>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container direction="column" justify="center" alignItems="center">
+              <KeyboardDatePicker disableToolbar variant="inline" format="MM/dd/yyyy" margin="normal" id="date-picker-inline" 
+              label="From:" value={selectedDateFrom} onChange={handleDateChangeFrom} KeyboardButtonProps={{'aria-label': 'change date',}}/>
+              <KeyboardDatePicker disableToolbar variant="inline" format="MM/dd/yyyy" margin="normal" id="date-picker-inline" 
+              label="To:" value={selectedDateTo} onChange={handleDateChangeTo} KeyboardButtonProps={{'aria-label': 'change date',}}/>
+            </Grid>
+          </MuiPickersUtilsProvider>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDateDialogClose} color="primary" autoFocus type="submit">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     )
   }
 
@@ -203,20 +198,21 @@ export function RequestList({requestListData, dispatch}) {
           title={
           <Typography variant="h5">
             <Box fontWeight={600}>
-              <ListAltIcon color="primary"/>  Request List
+              Request List
             </Box>
           </Typography>}
           data={
             requestListData.formDataList.map((request, index) => [
-              request.id,
-              request.title,
-              request.date,
-              request.society,
-              <ChangeFormStatusSelect requestId={request.id} requestStatus={request.formStatus} />,
+              request.submissionId,
+              request.formTitle,
+              request.timestampModified,
+              request.societyNameInitials,
+              <ChangeFormStatusSelect submissionId={request.submissionId} status={request.status} />,
               <Button 
-                value={request.id}
+                value={request.submissionId}
+                color="primary" 
                 type = "button" 
-                onClick={() => {handleClick(request.id)}}
+                onClick={() => handleClick(request.submissionId)}
                 variant="outlined"
               >
                 view submission

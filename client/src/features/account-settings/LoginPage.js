@@ -35,19 +35,21 @@ const useStyles = makeStyles({
 
 function LoginPage({error, dispatch}) {
   const classes = useStyles()
+
   const [userType, setUserType] = React.useState("CCA")
 
-    React.useEffect(() => {
-      dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
-    }, [])
+//     React.useEffect(() => {
+//       dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
+//     }, [])
   
   const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
   const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
+  const [userType, setUserType] = React.useState("CCA")
 
   React.useEffect(() => {
-    dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
+    dispatch(login({email: "ieee@lums.edu.pk", password: "zedix123", userType: "Society"}))
+    // dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
   }, [])
-  
 
   return (
     <Container component="main" className={classes.root}>
@@ -57,8 +59,8 @@ function LoginPage({error, dispatch}) {
       <Formik
         validateOnChange={false} validateOnBlur={true}
         initialValues = {{
-            email: '',
-            password: '',
+            email: 'developer@lums.edu.pk',
+            password: 'Test12345',
         }}
         validationSchema={Yup.object({
             email: Yup.string()
@@ -71,7 +73,7 @@ function LoginPage({error, dispatch}) {
             dispatch(login({email: values.email, password: values.password, userType: userType}))
             .then(() => {
               setSubmitting(false)
-            })  
+            }) 
           }
         }
         >

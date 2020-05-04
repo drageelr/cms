@@ -23,14 +23,16 @@ export const fetchSocietyList = createAsyncThunk(
 
 export const deleteSubmission = createAsyncThunk(
   'submissionListData/deleteSubmission',
-  async (reqId, { getState, rejectWithValue}) => {
+  async (submissionId, { getState, rejectWithValue}) => {
     const { isPending } = getState().submissionListData
 
     if (isPending != true) {
       return
     }
     
-    return reqId
+    return await apiCaller('/api/submission/delete', {submissionId}, 200, 
+    (data) => ({submissionId}), 
+    rejectWithValue)
   }
 )
 
@@ -67,12 +69,11 @@ const submissionListData = createSlice ({
         state.isPending = true
       }
     },
-    [deleteSubmission.fulfilled]: (state, action) => {
-      const {reqId} = action.payload
+    [deleteSubmission.fulfilled]: (state, action) => { 
       if (state.isPending === true) {
         state.isPending = false
         state.formDataList.map((formObj, index) => {
-          if (formObj.id === reqId) {
+          if (formObj.id === action.payload.submissionId) {
             state.formDataList.splice(index, 1)
           }
         })

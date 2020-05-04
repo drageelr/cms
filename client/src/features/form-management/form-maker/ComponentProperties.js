@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { Button, Icon } from '@material-ui/core'
+import { Button, Icon, Paper } from '@material-ui/core'
 import { useDispatch } from 'react-redux'
 import { closePropertiesWindow } from '../propertiesDataSlice'
 import { Formik, Form, Field } from 'formik'
@@ -19,7 +19,7 @@ import ConditionalItemDialog from './ConditionalItemDialog'
   @state dialogOpen (local)
 */
 
-export default function ComponentProperties({propertyAddMode, propertyId, parentId, componentTitle}){
+export default function ComponentProperties({propertyAddMode, propertyId, parentId, componentTitle, itemsOrder, items}){
   const [dialogOpen, setDialogOpen] = useState(false)
   const dispatch = useDispatch()
   
@@ -62,8 +62,17 @@ export default function ComponentProperties({propertyAddMode, propertyId, parent
           </Form>
         )}
       </Formik>
-
-      <Button onClick={toggleDialogOpen} variant="contained" style={{marginTop: 20, padding: 10}} startIcon={<Icon>add</Icon>}>Add Conditional Item</Button>
+      
+      <Button onClick={toggleDialogOpen} variant="contained" style={{marginTop: 20, marginBottom: 10, padding: 10}} startIcon={<Icon>add</Icon>}>Add Conditional Item</Button>
+      {
+        propertyId in itemsOrder &&
+        itemsOrder[propertyId].map((itemId, index) => 
+          ('conditionalItems' in items[itemId] && items[itemId].conditionalItems !== {optionId: -1, itemIds: []}) &&
+          <Paper key={index} style={{marginBottom: 5, padding: 5, fontSize: 12}} >
+            {items[itemId].label} ({items[itemId].type})
+          </Paper>
+        )
+      }
       <ConditionalItemDialog componentId={propertyId} setDialogOpen={setDialogOpen} dialogOpen={dialogOpen} />
     </div>
   )

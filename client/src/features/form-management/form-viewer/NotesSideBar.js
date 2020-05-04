@@ -1,67 +1,72 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import {Drawer, Button, Paper, List, Typography} from '@material-ui/core'
+import {Drawer, Button, Paper, List, Typography, Box} from '@material-ui/core'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
 import { useDispatch } from 'react-redux'
-import { updateCcaNote, addSocietyNote } from '../formDataSlice'
+import { addCcaNote, addSocietyNote } from '../formDataSlice'
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
     padding: theme.spacing(2),
     width: '22vw',
   },
-  societyNotesPaper: {
+  notesPaper: {
     overflow:'auto',
-    height: '40vh',
-    backgroundColor: 'darkgray'
+    height: '34vh',
   }
 }))
 
-export default function NotesSideBar({formId, drawerOpen, toggleDrawer, notesData, isCCA}) {
-  const {ccaNote, ccaNoteTimestampModified, societyNotes } = notesData
+export default function NotesSideBar({submissionId, drawerOpen, toggleDrawer, notesData, isCCA}) {
+  const { ccaNotes, societyNotes } = notesData
   const classes = useStyles()
   const dispatch = useDispatch()
+
+  function NotesList({notes}) {
+    return <Box borderRadius={8} border={1} borderColor="grey.400" className={classes.notesPaper}>
+      <List>
+        {
+          notes.map((note, index) => {
+            return (
+            <Paper key={index} style={{padding: 2, borderRadius: 3, margin: 8, width: '20vw', backgroundColor: 'blue', color: 'white'}} >
+              <Typography style={{margin: 5, fontWeight: 500}}>
+                {note.note}
+              </Typography>
+              <Typography style={{margin: 4, marginLeft: 5, fontSize: 10}}>
+                {note.timestampCreated}
+              </Typography>
+            </Paper>
+            )
+          })
+        }
+      </List>
+    </Box>
+  }
 
   function CCANotesSideBar() {
     return (
       <Formik
         validateOnChange={false} validateOnBlur={true}
-        initialValues={{ccaNote: ccaNote}}
+        initialValues={{newCCANote: ''}}
         validate={values => {
           const errors = {}
-          if (values.ccaNote.length > 300) {
-            errors.ccaNote = 'Please do not exceed 300 characters.'
+          if (values.newCCANote.length > 100) {
+            errors.newCCANote = 'Please do not exceed 100 characters.'
           }
           return errors
         }}
         onSubmit={(values) => {
-          dispatch(updateCcaNote({formId: formId, ccaNote: values.ccaNote}))
+          dispatch(addCcaNote({submissionId, note: values.newCCANote}))
         }}
       >
         {({ submitForm}) => (
           <Form>
-            <Field component={TextField} multiline rows={8} required variant="outlined" fullWidth name="ccaNote" label="CCA Note"/>
-            <Button variant="contained" color="primary" onClick={submitForm} style={{marginTop: 8}}>Save</Button>
-            <Button variant="contained" onClick={toggleDrawer} style={{marginLeft: 10, marginTop: 8}}>Cancel</Button>
-            <p>Last modified: {ccaNoteTimestampModified}</p>
+            <NotesList notes={ccaNotes}/>
+            <Field component={TextField} multiline rows={2} required variant="outlined" fullWidth name="newCCANote" label="Add CCA Note"/>
+            <Button variant="contained" color="primary" onClick={submitForm} style={{marginTop: 8}}>Add CCA Note</Button>
+            <Button variant="contained" onClick={toggleDrawer} style={{marginLeft: 10, marginTop: 8}}>Close</Button>
             <h5>Society Notes</h5>
-            <Paper className={classes.societyNotesPaper}>
-              <List>
-                {
-                  societyNotes.map((societyNote, index) => {
-                    return (
-                    <Paper key={index} style={{borderRadius: 3, margin: 10, width: '20vw', backgroundColor: 'white'}} >
-                      <Typography style={{margin: 5}}>
-                        {societyNote}
-                      </Typography>
-                      <br/>
-                    </Paper>
-                    )
-                  })
-                }
-              </List>
-            </Paper>
+            <NotesList notes={societyNotes}/>
           </Form>
         )}
       </Formik>
@@ -73,31 +78,23 @@ export default function NotesSideBar({formId, drawerOpen, toggleDrawer, notesDat
       <Formik
         validateOnChange={false} validateOnBlur={true}
         initialValues={{newSocietyNote: ''}}
+        validate={values => {
+          const errors = {}
+          if (values.newSocietyNote.length > 100) {
+            errors.newSocietyNote = 'Please do not exceed 100 characters.'
+          }
+          return errors
+        }}
         onSubmit={(values) => {
-          dispatch(addSocietyNote({formId: formId, newSocietyNote: values.newSocietyNote}))
+          dispatch(addSocietyNote({submissionId, note: values.newSocietyNote}))
         }}
       >
         {({ submitForm}) => (
           <Form>
-            <h5>Notes from CCA</h5>
-            <p>{ccaNote}</p>
+            <h5 style={{marginTop: 5}}>Notes from CCA</h5>
+            <NotesList notes={ccaNotes}/>
             <h5>Society Notes</h5>
-            <Paper className={classes.societyNotesPaper}>
-              <List>
-                {
-                  societyNotes.map((societyNote, index) => {
-                    return (
-                    <Paper key={index} style={{borderRadius: 3, margin: 10, width: '20vw', backgroundColor: 'white'}} >
-                      <Typography style={{margin: 5}}>
-                        {societyNote}
-                      </Typography>
-                      <br/>
-                    </Paper>
-                    )
-                  })
-                }
-              </List>
-            </Paper>
+            <NotesList notes={societyNotes}/>
             <Field component={TextField} multiline rows={2} required variant="filled" fullWidth name="newSocietyNote" label="Add Society Note"/>
             <Button variant="contained" color="primary" onClick={submitForm} style={{marginTop: 5}}>Add Note</Button>
             <Button variant="contained" onClick={toggleDrawer} style={{marginLeft: 10, marginTop: 5}}>Cancel</Button>

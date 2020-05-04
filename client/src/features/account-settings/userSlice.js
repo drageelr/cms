@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { apiCaller } from "../../helpers"
 
 const initialState = {
   id: -1,
@@ -6,7 +7,7 @@ const initialState = {
   password: "",
   name: "",
   nameInitials: "CD",
-  role: "admin",
+  role: "",
   userType: "CCA",
   isLoggedIn: false,
   picture: "",
@@ -33,43 +34,20 @@ export const login = createAsyncThunk(
     if (isPending != true){
       return
     }
-
+    // console.log(user)
     const QUERY = (userType === "Society") ?  '/api/auth/society/login' : '/api/auth/cca/login'
 
-    try {
-      const res = await fetch(QUERY, {
-        method: 'POST',
-        headers: { 
-          'Accept': 'application/json',
-          'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password
-        })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 200) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
-        }
-
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('localUser', JSON.stringify({userType, ...data.user}))
-
-        if (userType==="CCA"){
-          return {token: data.token, user: {email, userType, password, name: (data.user.firstName + ' ' + data.user.lastName),...data.user},}
-        }
-        else {
-          return {token: data.token, user: {email, userType, password, ...data.user},}
-        }
+    return await apiCaller(QUERY, {email, password}, 200,
+    (data)=> {
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('localUser', JSON.stringify({userType, ...data.user}))
+      if (userType==="CCA"){
+        return {token: data.token, user: {email, userType, password, name: (data.user.firstName + ' ' + data.user.lastName),...data.user},}
       }
-      throw new Error(`${res.status}, ${res.statusText}`)
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+      else {
+        return {token: data.token, user: {email, userType, password, ...data.user},}
+      }
+    },rejectWithValue)
   }
 )
 
@@ -83,34 +61,15 @@ export const changePassword = createAsyncThunk(
 
     const QUERY = (userType === "Society") ? '/api/account/society/change-password' : '/api/account/cca/change-password'
 
-    try {
-      const res = await fetch(QUERY, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          passwordCurrent: currentPassword,
-          passwordNew: newPassword,
-        })
-      })
 
-      if (res.ok) {
-        const data = await res.json()
-        
-        if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
-        }
-
-        return newPassword
-      }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller(QUERY, {
+      passwordCurrent: currentPassword,
+      passwordNew: newPassword,
+    }, 203,
+    (data) => {
+      return {newPassword}
+    },
+    rejectWithValue)
   }
 )
 

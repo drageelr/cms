@@ -41,7 +41,11 @@ exports.addSocietyNoteValidation = {
 // Export API 4.4 Validation Object:
 exports.getSubmissionListValidation = {
   body: Joi.object({
-    showCompleted: Joi.boolean(),
+    statusList: Joi.array().items(Joi.string()),
+    timeObj: Joi.object({
+      dateStart: Joi.date().required(),
+      dateEnd: Joi.date().required()
+    })
   })
 }
 

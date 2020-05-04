@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { Button, IconButton } from '@material-ui/core'
+import { Button, IconButton, Box } from '@material-ui/core'
 import MUIDataTable from "mui-datatables"
 import LinearProgress from '@material-ui/core/LinearProgress'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { deleteFormSubmission } from './requestListSlice'
+import DateRangeIcon from '@material-ui/icons/DateRange'
 import { makeStyles } from '@material-ui/core/styles'
 import { fetchSocietyList, deleteSubmission, clearError } from './submissionListSlice'
 import { useHistory } from 'react-router-dom'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
+import { simplifyTimestamp } from '../../helpers'
 
 /**
   The component displays a table of all the forms submitted by the society. The society can view
@@ -31,12 +32,11 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
     dispatch(fetchSocietyList())
   }, [])
   
-  const columns = ["Submitted Forms", "Last edited", "Progress Bar", "Form Status", " ", " "]
   const statusTypes = ["Approved", "Pending", "Issue"]
   const classes = useStyles()
 
-  function handleDelete(reqId) {
-    dispatch(deleteSubmission({reqId}))
+  function handleDelete(submissionId) {
+    dispatch(deleteSubmission(submissionId))
   }
   
   function selectValue(formStatus) {
@@ -67,9 +67,9 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
       <MUIDataTable
         title={"Event Form Requests"} 
         data={
-          submissionListData.formDataList.map((submission, index) => [
-            submission.formTitle,
-            submission.timestampModified,
+          submissionListData.formDataList.map((submission, _) => [
+            <h4>{submission.formTitle}</h4>,
+            <Box color="slategray" ><DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>{simplifyTimestamp(submission.timestampModified)}</Box>,
             <LinearProgress 
             value={selectValue(submission.status)}
             thickness={15}  
@@ -89,7 +89,7 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
             </IconButton>
           ])
         } 
-        columns={columns} 
+        columns={["Submitted Forms", "Last edited", "Progress", "Form Status", "", ""]} 
         options={options}
       />
       <ErrorSnackbar stateError={ submissionListData.error } clearError={clearError}/>
