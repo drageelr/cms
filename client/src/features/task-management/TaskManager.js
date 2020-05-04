@@ -9,6 +9,8 @@ import CloseIcon from '@material-ui/icons/Close'
 import ArchiveIcon from '@material-ui/icons/Archive'
 import { fetchCCAAccounts } from '../account-settings/ccaDetailsSlice'
 import { fetchTaskStatus } from '../account-settings/taskStatusDetailsSlice'
+import { fetchCCARequestList } from '../request-management/requestListSlice'
+
 /**
   The parent component that initiates the Task Manager. 
 
@@ -38,6 +40,7 @@ function TaskManager({ ccaDetails, dispatch }) {
   // the task status as they are to be used for task cards
   useEffect(() => { 
     dispatch(fetchCCAAccounts())
+    dispatch(fetchCCARequestList())
     dispatch(fetchTaskStatus())
   }, [])
 
@@ -83,9 +86,9 @@ function TaskManager({ ccaDetails, dispatch }) {
     
     dispatch(moveTask({  // probably call the edit API as we want to update the ownerID of the task
       taskId: draggableId,
-      srcColumnId: source.droppableId,
+      srcColumnId: Number(source.droppableId),
       // srcIndex: source.index,
-      dstColumnId: destination.droppableId,
+      dstColumnId: Number(destination.droppableId),
       // dstIndex:  destination.index,
     }))
   }

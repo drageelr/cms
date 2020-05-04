@@ -369,7 +369,7 @@ export const updateTitle = createAsyncThunk(
 
     {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, archive**: Boolean}
     */
-    return
+    return { data, titleObj }
     return await apiCaller('/api/task-manager/task/req/edit', {}, 200, 
     (data) => {
       

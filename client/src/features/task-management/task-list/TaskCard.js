@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import { connect } from 'react-redux'
 import EditTaskDialog from './EditTaskDialog'
 import { Draggable } from "react-beautiful-dnd"
-import { Card, CardContent, Typography, Grid, MenuItem } from '@material-ui/core'
+import { Card, CardContent, Typography, Grid, MenuItem, Box } from '@material-ui/core'
 import StopIcon from '@material-ui/icons/Stop'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
@@ -20,21 +20,20 @@ import { subTaskDisplay } from '../taskDataSlice'
 */
 
 export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch}) {
-
   const [open, setOpen] = useState(false)
-
-  var statusId = -1
-  taskData.taskList.map(taskObj => {
-    if (taskId === taskObj.taskId) {
-      statusId = taskObj.statusId
-    }
-  })
-
   let taskStatusName = ""
   let taskStatusColor = ""
+  let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1 }
+  
+  //get defaultDesc, defaultTitle, defaultOwner, submissionId from taskData
+  const taskObj = taskData.taskList.find(taskObj => taskObj.taskId === taskId)
+  if (taskObj !== undefined) { // if found
+    const { description, title, ownerId, submissionId, statusId } = taskObj
+    initialState = { description, title, ownerId, submissionId, statusId }
+  }
 
-  taskStatusDetails.map(statusObj => {
-    if(statusObj.statusId === statusId) {
+  taskStatusDetails.forEach(statusObj => {
+    if(statusObj.statusId === initialState.statusId) {
       taskStatusName = statusObj.name
       taskStatusColor = statusObj.color
     }
@@ -44,65 +43,58 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
     dispatch(subTaskDisplay({taskId}))
   }
 
-  function renderSubTask() {
-    return taskData.taskList.map(taskObj => {
-      if (taskObj.taskId === taskId && taskObj.check === true) {
-        console.log("here", taskObj.taskId, taskId, taskObj.check )
-        return <Card style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" variant="outlined">
-          <CardContent>
-            <Grid item xs container direction="row" spacing={0}>
-              <Grid item xs>
-                {
-                  taskData.taskList.map(taskObj => {
-                    if (taskObj.taskId === taskId) {
-                      return <Typography gutterBottom variant="h6"> {taskObj.description} </Typography>
-                    }
-                  })
-                }
-              </Grid> 
-              <Grid>
-                <DeleteOutlineIcon onClick={handleSubTaskDisplay} cursor="pointer"/>
-              </Grid>
+  function SubTask() {
+    return (
+      (taskObj !== undefined && taskObj.check === true) &&
+      <Card key={index} style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" variant="outlined">
+        <CardContent>
+          <Grid item xs container direction="row" spacing={0}>
+            <Grid item xs>
+              <Typography key={index} gutterBottom variant="h6"> {taskObj.description} </Typography>
+            </Grid> 
+            <Grid>
+              <DeleteOutlineIcon onClick={handleSubTaskDisplay} cursor="pointer"/>
             </Grid>
-            <Grid direction="row-reverse">
-              <Typography variant='body2'>
-                {taskId}
-              </Typography>
-            </Grid>
-          </CardContent>
-        </Card>
-      }
-    })
+          </Grid>
+          <Grid direction="row-reverse">
+            <Typography variant='body2'>
+              {taskId}
+            </Typography>
+          </Grid>
+        </CardContent>
+      </Card>
+    )
   }
 
-  function renderMainTask() {
-    return <Card style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" variant="outlined">
+  function MainTask() {
+    return taskObj !== undefined &&
+    <Card style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" variant="outlined">
       <CardContent>
         <Grid item xs container direction="row" spacing={0}>
           <Grid item xs>
             {
-              taskData.taskList.map(taskObj => {
-                if (taskObj.taskId === taskId) {
-                  return (
-                    <Typography gutterBottom variant="h6"> {taskObj.title} </Typography>
-                  )
-                }
-              })
+              <Typography key={index} gutterBottom variant="h6"> {taskObj.title} </Typography>
             }
           </Grid>  
 
           <Grid item> 
             <EditIcon onClick={() => setOpen(true)} fontSize="small" color="action" cursor="pointer"/>
-            <EditTaskDialog open={open} setOpen = {setOpen} taskId={taskId}/>
+            <EditTaskDialog 
+              editMode={true}
+              initialState={initialState} 
+              open={open}
+              setOpen={setOpen}
+              isRequestTask={taskId[0]==="r"}
+              taskId={taskId}/>
           </Grid>
         </Grid>
 
         <Grid container direction="row" justify='space-between' alignItems="flex-end">
           <Grid item>
-            <MenuItem>
-              <StopIcon fontSize="small" style={{fill: taskStatusColor, marginLeft:"-22%"}} /> {/*if condition if no task status*/}
+            <Box fontSize={12}>
+              <StopIcon fontSize="small" style={{fill: taskStatusColor, marginBottom: -4}} /> {/*if condition if no task status*/}
               {taskStatusName} 
-            </MenuItem>
+            </Box>
           </Grid>
           <Grid>
             <Typography variant='body2'>
@@ -119,9 +111,11 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
       {
         (provided) => (
           <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-            {(()=>{
-              return taskId[0] === 's' ? renderSubTask() : renderMainTask()
-            })()}
+            {
+              taskId[0] === 's' 
+              ? <SubTask/> 
+              : <MainTask/>
+            }
           </div>
         )
       }
