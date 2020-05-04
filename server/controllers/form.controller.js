@@ -7,6 +7,7 @@
 var CCA = require('../models/cca.model');
 var Form = require('../models/form.model');
 var Checklist = require('../models/checklist.model');
+var Submission = require('../models/submission.model');
 
 // Services:
 var httpStatus = require('../services/http-status');
@@ -409,6 +410,35 @@ exports.changeFormStatus = async (req, res, next) => {
       throw new customError.FormNotFoundError("invalid form id");
     }
     
+  } catch (err) {
+    next(err);
+  }
+}
+
+exports.fetchChecklist = async (req, res, next) => {
+  let params = req.body;
+
+  try {
+    let reqSubmission = await Submission.findOne({submissionId: params.submissionId}, 'formId');
+    if (!reqSubmission) throw new customError.SubmissionNotFoundError("invalid submissionId");
+
+    let reqChecklists = await Checklist.find({formId: reqSubmission.formId}, 'checklistId sectionId description');
+    let reqForm = await Form.findById(reqSubmission.formId, 'formId');
+
+    let checklistList = [];
+
+    for (let c of reqChecklists) {
+      let checklistObj = helperFuncs.duplicateObject(reqChecklists, ["checklistId", "sectionId", "description"]);
+      checklistList.push(checklistObj);
+    }
+
+    res.json({
+      statusCode: 200,
+      statusName: httpStatus.getName(200),
+      message: "Checklist Sucessfully Fetched!",
+      formId: reqForm.formId,
+      checklists: checklistList
+    })
   } catch (err) {
     next(err);
   }

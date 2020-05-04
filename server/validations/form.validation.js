@@ -94,3 +94,10 @@ exports.changeFormStatusValidation = {
     isPublic: Joi.bool().required()
   })
 }
+
+// Export API 3.7 Validation Object:
+exports.fetchChecklistValidation = {
+  body: Joi.object({
+    submissionId: Joi.number().required()
+  })
+}

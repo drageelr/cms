@@ -45,10 +45,12 @@
 |3|Delete Form|Delete an existing Form|`/api/form/delete`|`{formId*: Number}`|`POST`|`{}`|CCA|`8.1`|
 |4|Fetch Form|Fetches complete details of Form|`/api/form/fetch`|`{formId*: Number}`|`POST`|`{form: formObjC}`|CCA + Society|`8.1`|
 |5|Fetch Form List|Fetches list of available Forms|`/api/form/fetch-list`|`{}`|`POST`|`{formList: [formListObj]}`|CCA + Society|`8.1`|
+|6|Fetch Checklist|Fetches all checklists for a submission|`/api/form/fetch-checklist`|`{submissionId*: Number}`|`POST`|`{formId: Number, checklists: [checklistObj**]}`|CCA|TBD|
 
-- **Note for `API 2`: 1) Send the complete form again - not only the edited portions. 2) In case of checklists, new ones should be given without their `checklistId` where as existing ones (either to alter or not) should be sent with it, otherwise new checklist item will be created. 3) Always returns the checklistIds in the order they are placed in the request array.**
-- **Note for `API 4`: In case of Society user checklist won't be sent.**
-- **Note for `API 5`: In case of Society user ** fields won't be sent.**
+- **Note for `API 3.2`: 1) Send the complete form again - not only the edited portions. 2) In case of checklists, new ones should be given without their `checklistId` where as existing ones (either to alter or not) should be sent with it, otherwise new checklist item will be created. 3) Always returns the checklistIds in the order they are placed in the request array.**
+- **Note for `API 3.4`: In case of Society user checklist won't be sent.**
+- **Note for `API 3.5`: In case of Society user ** fields won't be sent.**
+- **Note for `API 3.6`: If there is no checklist available for the submission, empty array for `checklists` will be returned.**
 - **Note: * means the field mentioned is required. (For `Request Object` OR `Object Schema` referenced in it)**
 - **Note: ** means the field mentioned might not always be there. (For `Response Object` OR `Object Schema` referenced in this and `Request Object`)**
 
@@ -65,6 +67,7 @@
 |5|`optionObj`|`{optionId*: Number, data*: "String"}`|
 |6|`conItemObj`|`{optionId*: Number, itemId*: Number}`|
 |7|`formListObj`|`{formId: Number, title: "String", isPublic: Bool, timestampModified**: "DateString", creatorName**: "String"}`|
+|8|`checklistObj`|`{checklistId: Number, sectionId: Number, description: "String"}`|
 
 ### 4. Request Management
 *Note: Will contain APIs for submitting / editing forms / viewing (CCA + Society), getting request list, updating request status (CCA) etc*

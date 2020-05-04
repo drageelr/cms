@@ -36,6 +36,7 @@ const userAccess = {
   "/api/form/delete": ["cca"],
   "/api/form/fetch": ["cca", "soc"],
   "/api/form/fetch-list": ["cca", "soc"],
+  "/api/form/fetch-checklist": ["cca"],
   
   // 4. Request Management API "submission.route.js":
   "/api/submission/submit": ["soc"],
@@ -73,6 +74,7 @@ const ccaAccess = {
   "/api/form/create": "accessFormMaker",
   "/api/form/edit": "accessFormMaker",
   "/api/form/delete": "accessFormMaker",
+  "/api/form/fetch-checklist": "createReqTask",
 
   // 4. Request Management API "submission.route.js":
   "/api/submission/cca/add-note": "addCCANote",
