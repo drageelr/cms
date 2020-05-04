@@ -57,25 +57,25 @@ export function EditTaskDialog({taskId, taskData, ccaDetails, dispatch, open, se
   }
 
   function handleCloseDialog(){
-    console.log(owner)
-    dispatch(taskOwnerChange({taskId, owner}))
+    dispatch(updateTitle({taskId, taskTitle}))
+    dispatch(updateDescription({taskId, text}))
     setOpen(false)
   }
-
+  
   function handleOwnerSet(event) {
-    // const ownerId = event.target.value
+    dispatch(taskOwnerChange({taskId, owner}))
     setOwner(event.target.value)
   }
 
   function handleTitleChange (event) {
-    let newTitle = event.target.value
-    dispatch(updateTitle({taskId, newTitle}))
+    // let newTitle = event.target.value
+    // dispatch(updateTitle({taskId, newTitle}))
     setTaskTitle(event.target.value)
   }
 
   function handleDescChange(event) {
-    const description = event.target.value
-    dispatch(updateDescription({taskId, description}))
+    // const description = event.target.value
+    // dispatch(updateDescription({taskId, description}))
     setText(event.target.value)
   }
 

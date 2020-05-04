@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {connect} from 'react-redux'
 import TaskColumn from './task-list/TaskColumn'
-import { moveTask, fetchTaskManager } from './taskDataSlice'
+import { moveTask, fetchTaskManager, editSubTask, moveSubTask } from './taskDataSlice'
 import TaskArchive from './task-archive/TaskArchive'
 import { DragDropContext } from 'react-beautiful-dnd'
 import { Fab, Dialog, AppBar, Toolbar, Typography, Slide, IconButton, makeStyles, Box } from '@material-ui/core'
@@ -31,7 +31,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-function TaskManager({ ccaDetails, dispatch }) {
+function TaskManager({ ccaDetails, taskData, dispatch }) {
 
   // fetch the CCAAccountsList(before fetching the Task Manager) and save it in the ccaList Initial state in 
   // ccaDetailsSlice and then that slice will be used to extract CCA account details for Task Manager, also fetch
@@ -81,13 +81,34 @@ function TaskManager({ ccaDetails, dispatch }) {
       return
     }
     
-    dispatch(moveTask({  // probably call the edit API as we want to update the ownerID of the task
-      taskId: draggableId,
-      srcColumnId: source.droppableId,
-      // srcIndex: source.index,
-      dstColumnId: destination.droppableId,
-      // dstIndex:  destination.index,
-    }))
+    if (draggableId[0] === 's') {
+      let mainTaskId = -1
+      dispatch(editSubTask({
+        taskId: draggableId,
+        srcColumnId: source.droppableId,
+        dstColumnId: destination.droppableId,
+      }))
+      taskData.map(taskObj => {
+        if (taskObj.taskId === draggableId) {
+          mainTaskId = taskObj.assTaskId
+        }
+      })
+      taskData.map(taskObj => {
+        if (taskObj.taskId === mainTaskId) {
+          var subTaskList = taskObj.subTasks
+          dispatch(moveSubTask({mainTaskId, subTaskList}))
+        }
+      })
+
+    } else {
+      dispatch(moveTask({  // probably call the edit API as we want to update the ownerID of the task
+        taskId: draggableId,
+        srcColumnId: source.droppableId,
+        // srcIndex: source.index,
+        dstColumnId: destination.droppableId,
+        // dstIndex:  destination.index,
+      }))
+    }
   }
 
   return (
@@ -129,7 +150,8 @@ function TaskManager({ ccaDetails, dispatch }) {
 }
 
 const mapStateToProps = (state) => ({
-  ccaDetails: state.ccaDetails.ccaList
+  ccaDetails: state.ccaDetails.ccaList,
+  taskData: state.taskData.taskList
 })
 
 export default connect(mapStateToProps) (TaskManager)

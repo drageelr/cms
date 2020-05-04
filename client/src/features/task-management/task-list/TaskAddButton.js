@@ -37,7 +37,7 @@ export default function TaskAddButton({ ownerId }) {
       if(text) {
         const reqTaskObject = { 
           title: text, 
-          description: "", 
+          description: "halo", 
           submissionId: -1,
           ownerId: ownerId, 
           statusId: -1,
@@ -49,7 +49,7 @@ export default function TaskAddButton({ ownerId }) {
       if(text) {
         const cusTaskObject = { 
           title: text, 
-          description: "",
+          description: "world",
           ownerId: ownerId, 
           statusId: -1,
         }
