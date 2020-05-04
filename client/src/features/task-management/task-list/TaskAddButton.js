@@ -1,10 +1,7 @@
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
 import Icon from '@material-ui/core/Icon'
-import Card from '@material-ui/core/Card'
 import Button from '@material-ui/core/Button'
-import { TextField } from '@material-ui/core'
-import { createRequestTask, createCustomTask } from '../taskDataSlice'
+import EditTaskDialog from './EditTaskDialog'
 
 /**
   This component renders the "Add a Task" icon which allows the user to add custom tasks to the
@@ -14,126 +11,78 @@ import { createRequestTask, createCustomTask } from '../taskDataSlice'
 */
 
 export default function TaskAddButton({ ownerId }) {
+  const [open, setOpen] = useState(false)
+  const [buttonsOpen, setButtonsOpen] = useState(false)
+  const [isRequestTask, setIsRequestTask] = useState("")
 
-  const [formOpen, setFormOpen] = useState(false)
-  const [text, setText] = useState("")
-
-  const reqButtonText = "Add Request Task"
-  const cusButtonText = "Add Custom Task"
-
-  const dispatch = useDispatch()
-
-  function handleChange(event) {
-    setText(event.target.value)
+  const commonStyle = {
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
+    height: 36,
+    width: 272,
   }
 
-  function closeForm() {
-    setFormOpen(false)
-    setText("")
+  const buttonStyle = {
+    ...commonStyle,
+    paddingLeft: 10,
+    opacity: 0.5,
+    color: "inherit",
+    backgroundColor: "inherit"
   }
+
+  const buttonGroupStyle = {...commonStyle, marginTop: 8}
 
   function handleCreateTask(taskType) {
-    if (taskType === "request") {
-      if(text) {
-        const reqTaskObject = { 
-          title: text, 
-          description: "halo", 
-          submissionId: -1,
-          ownerId: ownerId, 
-          statusId: -1,
-          //checklists: [] ---> optional if want to send, but essentially will be sent in edit task
-        }
-        dispatch(createRequestTask(reqTaskObject))
-      }
-    } else if (taskType === "custom") {
-      if(text) {
-        const cusTaskObject = { 
-          title: text, 
-          description: "world",
-          ownerId: ownerId, 
-          statusId: -1,
-        }
-
-        dispatch(createCustomTask(cusTaskObject))
-      }
-    }
+    setIsRequestTask(taskType === "request")
+    setOpen(true)
   }
 
-  function renderActionButton () {
-    const buttonStyle = {
-      display: "flex",
-      alignItems: "center",
-      cursor: "pointer",
-      borderRadius: 3,
-      height: 36,
-      width: 272,
-      paddingLeft: 10,
-      opacity: 0.5,
-      color: "inherit",
-      backgroundColor: "inherit"
-    }
-
-    return(
-      <div style={buttonStyle} onClick={() => setFormOpen(true)}>
-        <Icon > add </Icon>
-        <p> {"Add a Task"} </p>
-      </div>
-    )
-  }
-
-  function renderForm () {
-    const placeholder = "Enter task title"
+  function SelectTaskType () {
     return (
-      <div>
-        <Card style={{
-          minHeight: 80,
-          width: 180,
-          padding: "6px 8px 2px"
-        }}>
-          <TextField
-            placeholder={placeholder}
-            autoFocus
-            multiline
-            rows="3"
-            label="Required"
-            onBlur={closeForm}
-            value={text}
-            onChange={handleChange}
-            style={{
-              resize: "none",
-              width: "100%",
-              height: "10%",
-              overflow: "hidden",
-              outline: "none",
-              border: "none",
-            }}
-          />
-        </Card>
+      <div style={buttonGroupStyle}>
+          <Button 
+            size="small" 
+            onMouseDown={() => {handleCreateTask("request")}} 
+            variant="contained" 
+            style={{ color: "white", backgroundColor: "#009D5E", fontSize: 10}}
+          >
+            {"Request Task"}
+          </Button>
 
-        <div style={{marginTop: 8, display: "flex", alignItems: "center"}}>
+          <div style={{marginLeft: 4, display: "flex", alignItems: "center"}}>
             <Button 
               size="small" 
-              onMouseDown={() => {handleCreateTask("request")}} 
+              onMouseDown={() => {handleCreateTask("custom")}} 
               variant="contained" 
-              style={{ color: "white", backgroundColor: "green", fontSize: 10}}
+              style={{ color: "white", backgroundColor: "#E24A00", fontSize: 10}}
             >
-              {reqButtonText}
+              {"Custom Task"}
             </Button>
-
-            <div style={{marginLeft: 4, display: "flex", alignItems: "center"}}>
-              <Button 
-                size="small" 
-                onMouseDown={() => {handleCreateTask("custom")}} 
-                variant="contained" 
-                style={{ color: "white", backgroundColor: "green", fontSize: 10}}
-              >
-                {cusButtonText}
-              </Button>
-          </div>
         </div>
       </div>
     )
   }
 
-  return formOpen ? renderForm() : renderActionButton()
+  return(
+    <div>
+      <div onMouseEnter={() => setButtonsOpen(true)} onMouseLeave={() => setButtonsOpen(false)}>
+      {    
+        buttonsOpen ?
+        <SelectTaskType/> : 
+        <div style={buttonStyle}>
+          <Icon>add</Icon>
+          <p> {"Add a Task"} </p>
+        </div>
+      }
+      </div>
+      <EditTaskDialog
+        editMode={false}
+        ownerId={ownerId}
+        open={open}
+        setOpen={setOpen}
+        initialState = {{ description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1 }}
+        isRequestTask={isRequestTask}/>
+    </div>
+  )
 }

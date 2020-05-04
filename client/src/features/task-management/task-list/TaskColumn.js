@@ -27,17 +27,17 @@ export function TaskColumn({ownerId, taskData, ccaDetails}) {
   return (
     <div style={columnStyle}>
       {
-        ccaDetails.map(ccaUserObj => {
+        ccaDetails.map((ccaUserObj, index) => {
           if (ownerId === ccaUserObj.ccaId) { // if the ownerId matches a ccaUserObj Id then print the ccaUser name for TM column header
             return (
-              <h4 style={{textAlign: 'left'}}>
+              <h4 key={index} style={{textAlign: 'left'}}>
                 {ccaUserObj.firstName + " " + ccaUserObj.lastName}
               </h4>
             )
           }
         })
       } 
-      <Droppable droppableId={ownerId}>
+      <Droppable droppableId={String(ownerId)}>
       {
         (provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>

@@ -46,8 +46,8 @@ export function simplifyTimestamp(ts, dateOnly=true) {
   "09":"Sep", "10":"Oct", "11":"Nov", "12":"Dec"}
   const dateTime = ts.split('T')
   const YYMMDD = dateTime[0].split('-')
+  const HHMMSS = dateTime[1].split(':')
   
-  if (dateOnly) {
-    return (`${YYMMDD[2]} ${monthAbbrev[YYMMDD[1]]} ${YYMMDD[0]}`)
-  }
+  const dateOnlyString = `${YYMMDD[2]} ${monthAbbrev[YYMMDD[1]]} ${YYMMDD[0]}`
+  return dateOnly ? dateOnlyString : `${HHMMSS[0]}:${HHMMSS[1]} - ${dateOnlyString}`
 } 

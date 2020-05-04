@@ -7,13 +7,13 @@ import { Box, Button, LinearProgress, FormControlLabel, Grid, Typography, FormCo
 import { fetchCCARequestList, clearError } from '../requestListSlice'
 import ErrorSnackBar from "../../../ui/ErrorSnackbar"
 import { useHistory } from "react-router-dom"
-import ListAltIcon from '@material-ui/icons/ListAlt'
+import DateRangeIcon from '@material-ui/icons/DateRange'
 import Switch from '@material-ui/core/Switch'
 import ChipInput from 'material-ui-chip-input'
 import 'date-fns'
 import DateFnsUtils from '@date-io/date-fns'
 import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers'
-
+import { simplifyTimestamp } from '../../../helpers'
 /**
   The component displays a table of all the requests provided to the CCA. THe CCA admin can view 
   the submission as well as change the status of the form.
@@ -202,10 +202,10 @@ export function RequestList({requestListData, dispatch}) {
             </Box>
           </Typography>}
           data={
-            requestListData.formDataList.map((request, index) => [
+            requestListData.formDataList.map((request, _) => [
               request.submissionId,
               request.formTitle,
-              request.timestampModified,
+              <Box color="slategray" >{simplifyTimestamp(request.timestampModified)}</Box>, //<DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
               request.societyNameInitials,
               <ChangeFormStatusSelect submissionId={request.submissionId} status={request.status} />,
               <Button 
