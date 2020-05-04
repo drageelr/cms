@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 function Properties({propertiesData, formTemplate, dispatch}) {
   const classes = useStyles()
   const { propertyType, propertyAddMode, propertyId, parentId } = propertiesData
-  const { sections, checklistItems, components, items } = formTemplate
+  const { sectionTitles, checklistItems, componentTitles, items, itemsOrder } = formTemplate
   const itemProperties = { propertyAddMode, propertyId, parentId, itemData: propertyAddMode ?  null : items[propertyId] }
 
   let title = ""
@@ -82,11 +82,12 @@ function Properties({propertiesData, formTemplate, dispatch}) {
       break
     case "component":
       title = "Component"
-      renderProperties = <ComponentProperties propertyAddMode={propertyAddMode} propertyId={propertyId} parentId={parentId} componentTitle={components[propertyId]}/>
+      renderProperties = <ComponentProperties itemsOrder={itemsOrder} items={items} propertyAddMode={propertyAddMode} 
+        propertyId={propertyId} parentId={parentId} componentTitle={componentTitles[propertyId]}/>
       break
     case "section":
       title = "Section"
-      renderProperties = <SectionProperties propertyAddMode={propertyAddMode} propertyId={propertyId} sectionTitle={propertyAddMode ? '' : sections[propertyId]}/>
+      renderProperties = <SectionProperties propertyAddMode={propertyAddMode} propertyId={propertyId} sectionTitle={propertyAddMode ? '' : sectionTitles[propertyId]}/>
       break    
     case "checklist":
       title = "Checklist"
@@ -164,7 +165,7 @@ function Properties({propertiesData, formTemplate, dispatch}) {
         {
           checklistItems.map(checklistItem => {
             const sectionId = checklistItem.sectionId
-            const sectionTitle = sections[sectionId]
+            const sectionTitle = sectionTitles[sectionId]
             const subtask = checklistItem.description
             return (
               <Paper key={sectionId} className={classes.subtaskPaper}>

@@ -2,7 +2,7 @@ const sampleClientForm = { // Sample form currently
   isPublic: false,
   title: "Test Form",
   sectionsOrder: [1, 2], //ordered list of section Ids (any Ids are not unique to any other forms)
-  sections: {
+  sectionTitles: {
     1:"Section A", 
     2:"Section B"
   },
@@ -10,7 +10,7 @@ const sampleClientForm = { // Sample form currently
     1: [1, 2], // sectionId:  list of component Ids in order
     2: [1] 
   },
-  components: {
+  componentTitles: {
     1:"Component A", //componentId: componentTitle
     2:"Component B"
   },
@@ -104,14 +104,14 @@ export function convertToServerForm(clientForm) {
   clientForm.sectionsOrder.forEach(sectionId=>{
     sections.push({ // sections creation
       sectionId,
-      title: clientForm.sections[sectionId],
+      title: clientForm.sectionTitles[sectionId],
       componentsOrder: clientForm.componentsOrder[sectionId]
     })
 
     clientForm.componentsOrder[sectionId].forEach(componentId=> {
       components.push({ // components creation
         componentId,
-        title: clientForm.components[componentId],
+        title: clientForm.componentTitles[componentId],
         itemsOrder: clientForm.itemsOrder[componentId]
       })
 
@@ -143,21 +143,21 @@ export function convertToServerForm(clientForm) {
 export function convertToClientForm(serverForm) {
   // for use in Fetch Form to convert the form before pushing it to state
   // creating the uniquely defined objects that the client form template requires
-  let sectionsOrder = [], componentsOrder = {}, itemsOrder = {}, sections = {}, components = {}, items = {}
+  let sectionsOrder = [], componentsOrder = {}, itemsOrder = {}, sectionTitles = {}, componentTitles = {}, items = {}
   
   // const {title, isPublic, sections, components, items } = serverForm
-  // sections, sectionsOrder, componentsOrder creation
+  // sectionTitles, sectionsOrder, componentsOrder creation
   serverForm.sections.forEach(section=>{
     const sectionId = section.sectionId
     sectionsOrder.push(sectionId)
     componentsOrder[sectionId] = section.componentsOrder
-    sections[sectionId] = section.title
+    sectionTitles[sectionId] = section.title
   })
   
-  // components creation
+  // componentTitles, itemsOrder creation
   serverForm.components.forEach(component=>{
     itemsOrder[component.componentId] = component.itemsOrder
-    components[component.componentId] = component.title
+    componentTitles[component.componentId] = component.title
   })
   
   // items, itemsOrder creation
@@ -171,19 +171,19 @@ export function convertToClientForm(serverForm) {
     items[item.itemId] = {...itemCopy}
     delete items[item.itemId]["itemId"]
   })
-  
-  // const checklistItems = serverForm.checklist.map(checklistItem => 
-  //   ({sectionId: checklistItem.sectionId, description: checklistItem.description}))
+  const checklistItems = ('checklist' in serverForm) 
+  ? serverForm.checklist.map(checklistItem => ({sectionId: checklistItem.sectionId, description: checklistItem.description}))
+  : []
   // everything else will be directly copied
   return {
     isPublic: serverForm.isPublic,
     title: serverForm.title,
     sectionsOrder,
-    checklistItems: [],
+    checklistItems: checklistItems,
     componentsOrder,
     itemsOrder,
-    sections,
-    components,
+    sectionTitles,
+    componentTitles,
     items
   } //converted form
 }

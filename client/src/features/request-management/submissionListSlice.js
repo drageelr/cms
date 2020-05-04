@@ -1,27 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-
-// send the userId to the server and it will return me the list of forms corresponding to that id
-
-const sampleState = {
-  formDataList : [
-    {
-      id: "R-ID-1",
-      title: "Design Form",
-      date: "15/02/2019",
-      society: "LUMUN",
-      formStatus: 'Approved',
-    },
-    {
-      id: "R-ID-2",
-      society: "LUMUN",
-      date: "12/01/2020",
-      title: "Auditorium Booking",
-      formStatus: 'Unassigned',
-    }
-  ],
-  isPending: true,
-  error: null
-}
+import { apiCaller } from '../../helpers'
 
 const initialState = {
   formDataList: [],
@@ -33,40 +11,39 @@ export const fetchSocietyList = createAsyncThunk(
   'submissionListData/fetchSocietyList',
   async (_, { getState, rejectWithValue}) => {
     const { isPending } = getState().submissionListData
-
     if (isPending != true) {
       return
     } 
     
-    const fetchCall = () => {
-      var promise = new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(sampleState)
-        }, 5000)
-      })
-      return promise
-    }
-    
-    return sampleState
+    return await apiCaller('/api/submission/fetch-list', {}, 200, 
+    (data) => ({formDataList: data.submissions}), 
+    rejectWithValue)
   }
 )
 
 export const deleteSubmission = createAsyncThunk(
   'submissionListData/deleteSubmission',
-  async (reqId, { getState, rejectWithValue}) => {
+  async (submissionId, { getState, rejectWithValue}) => {
     const { isPending } = getState().submissionListData
 
     if (isPending != true) {
       return
     }
     
-    return reqId
+    return await apiCaller('/api/submission/delete', {submissionId}, 200, 
+    (data) => ({submissionId}), 
+    rejectWithValue)
   }
 )
 
 const submissionListData = createSlice ({
   name:'submissionListData',
   initialState: initialState,
+  reducers: {
+    clearError: (state) => {
+      state.error = null
+    }
+  },
   extraReducers: {
     [fetchSocietyList.pending]: (state, action) => {
       if (state.isPending === false) {
@@ -76,6 +53,7 @@ const submissionListData = createSlice ({
     [fetchSocietyList.fulfilled]: (state, action) => {      
       if (state.isPending === true) {
         state.isPending = false
+        state.error = null
         state.formDataList = action.payload.formDataList
       }
     },
@@ -91,12 +69,11 @@ const submissionListData = createSlice ({
         state.isPending = true
       }
     },
-    [deleteSubmission.fulfilled]: (state, action) => {
-      const {reqId} = action.payload
+    [deleteSubmission.fulfilled]: (state, action) => { 
       if (state.isPending === true) {
         state.isPending = false
         state.formDataList.map((formObj, index) => {
-          if (formObj.id === reqId) {
+          if (formObj.id === action.payload.submissionId) {
             state.formDataList.splice(index, 1)
           }
         })
@@ -110,5 +87,7 @@ const submissionListData = createSlice ({
     },
   }
 })
+
+export const { clearError } = submissionListData.actions
 
 export default submissionListData.reducer

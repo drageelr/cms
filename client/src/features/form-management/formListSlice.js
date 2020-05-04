@@ -32,21 +32,12 @@ export const deleteForm = createAsyncThunk(
 )
 
 
-export const toggleStatus = createAsyncThunk(
+export const changeFormStatus = createAsyncThunk(
   'formList/changeFormStatus',
-  async (index, {rejectWithValue}) => {
-    // return await apiCaller('/api/form/delete', {},
-    // 200, (data)=>data.index, rejectWithValue)
-    return index
-  }
-)
-
-export const duplicateForm = createAsyncThunk(
-  'formList/duplicateForm',
-  async (index, {rejectWithValue}) => {
-    // return await apiCaller('/api/form/delete', {},
-    // 200, (data)=>data.index, rejectWithValue)
-    return index
+  async ({formId, isPublic, index}, {rejectWithValue}) => {
+    
+    return await apiCaller('/api/form/change-status', {formId, isPublic},
+    203, (data)=>({index}), rejectWithValue)
   }
 )
 
@@ -91,21 +82,12 @@ const formList = createSlice({
       state.error = action.payload
     },
 
-    [duplicateForm.fulfilled]: (state, action) => {
-      const idx = action.payload
-      state.list.splice(idx,0,{...state.list[idx]})
-      state.error = ("API to be created. Duplicating locally.")
-    },
-    [duplicateForm.rejected]: (state, action) => {
-      state.error = action.payload
+    [changeFormStatus.fulfilled]: (state, action) => {
+      const idx = action.payload.index
+      state.list[idx].isPublic = !state.list[idx].isPublic
     },
 
-    [toggleStatus.fulfilled]: (state, action) => {
-      const idx = action.payload
-      state.list[idx].isPublic = !state.list[idx].isPublic
-      state.error = ("API to be created. Changing status locally.")
-    },
-    [toggleStatus.rejected]: (state, action) => {
+    [changeFormStatus.rejected]: (state, action) => {
       state.error = action.payload
     },
   }

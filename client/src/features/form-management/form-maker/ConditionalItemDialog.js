@@ -2,6 +2,8 @@ import React from 'react'
 import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, List, MenuItem, Select, 
     InputLabel, makeStyles, FormControl, FormLabel, FormGroup, FormControlLabel, Checkbox} from '@material-ui/core'
 import { connect } from 'react-redux'
+import { addConditionalItemOption, toggleOptionItem } from '../propertiesDataSlice'
+import { setItemConditionals } from '../formTemplateSlice'
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -11,15 +13,32 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 
-function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, setDialogOpen }) {
+function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, setDialogOpen, conditionalItems, dispatch }) {
   const classes = useStyles()
   const [ currentCItemId, setCurrentCItemId ] = React.useState(-1) // store conditional item id and label selected in local state
-  
+
   function toggleDialogOpen() {
     setDialogOpen(! dialogOpen)
     setCurrentCItemId(-1)
   }
+  
+  function handleConditionalItemChange(e){
+    const cId = e.target.value
+    setCurrentCItemId(cId)
 
+    if (cId != -1 && items[cId] !== undefined){
+      items[cId].options.map((_, option_index) => {
+        let optionItems = [] //store option items along the way as well
+        itemsOrder[componentId].forEach(itemId => {
+          if (itemId != cId) {
+            optionItems.push(itemId)
+          }
+        })
+        dispatch(addConditionalItemOption({optionId: option_index, itemIds: optionItems}))
+      })
+    }
+  }
+  
   function OptionEffects() {
     return (
       <FormControl component="fieldset">
@@ -29,15 +48,20 @@ function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, set
             <FormGroup key={option_index}>
               <FormLabel component="legend">If option {option} is selected, show</FormLabel>
               {
-                itemsOrder[componentId].map((itemId, index) => {
-                  const itemData = items[itemId]
-            
-                  // only show conditional items (radio / dropdowns)
-                  return (itemId != currentCItemId) 
-                    && <FormControlLabel
-                      control={<Checkbox checked={false} onChange={toggleDialogOpen} name={itemId} />}
-                      label={itemData.label}/>
-                })
+                itemsOrder[componentId].map((itemId, index) => (itemId != currentCItemId) && // only show conditional items (radio / dropdowns)
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox
+                        color="primary"
+                        checked={ option_index in conditionalItems ? conditionalItems[option_index].includes(itemId) : false } 
+                        onChange={() => dispatch(toggleOptionItem({optionId: option_index, itemId}))} 
+                        name={itemId} 
+                      />
+                    }
+                    label={items[itemId].label}
+                  />  
+                )
               }
             </FormGroup>
           ))
@@ -60,7 +84,7 @@ function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, set
       labelId="select-conditional-item-label"
       id="select-conditional-item"
       value={currentCItemId}
-      onChange={e => setCurrentCItemId(e.target.value)}
+      onChange={handleConditionalItemChange}
       > 
       {   
         // if the component has items (key componentId in itemsOrder)
@@ -80,11 +104,18 @@ function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, set
     </List>
     </DialogContent>
     <DialogActions>
-    <Button onClick={toggleDialogOpen} color="primary">
+    <Button onClick={()=> {
+      let convertedConditionalItems = []
+      for (let [optionId, itemIds] of Object.entries(conditionalItems)) {
+        convertedConditionalItems.push({optionId: Number(optionId), itemIds})
+      }
+      dispatch(setItemConditionals({itemId: currentCItemId, conditionalItems: convertedConditionalItems}))
+      toggleDialogOpen()
+    }} color="primary">
       Save
     </Button>
-    <Button onClick={toggleDialogOpen} color="primary">
-      Cancel
+    <Button onClick={toggleDialogOpen}>
+      Close
     </Button>
     </DialogActions>
   </Dialog>
@@ -95,6 +126,7 @@ function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, set
 const mapStateToProps = (state) => ({
   itemsOrder: state.formTemplate.itemsOrder,
   items: state.formTemplate.items,
+  conditionalItems: state.propertiesData.conditionalItems
 })
 
 export default connect(mapStateToProps) (ConditionalItemDialog)
