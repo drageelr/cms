@@ -8,7 +8,7 @@ var router = require('express').Router();
 var validate = require('express-validation').validate;
 var jwt = require('../services/jwt');
 var taskValidation = require('../validations/task.validation');
-var taskController = require('../controllers/submission.controller');
+var taskController = require('../controllers/task.controller');
 var { validateUserAccess, validateCCAAccess } = require('../services/access-validator');
 
 /*
@@ -22,7 +22,7 @@ router.post(
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
+  taskController.createReqTask
 );
 
 // API 5.2: Create Custom Task
@@ -32,7 +32,7 @@ router.post(
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
+  taskController.createCusTask
 );
 
 // API 5.3: Edit Request Task
@@ -42,7 +42,7 @@ router.post(
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
+  taskController.editReqTask
 );
 
 // API 5.4: Edit Custom Task
@@ -52,7 +52,7 @@ router.post(
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
+  taskController.editCusTask
 );
 
 // API 5.5: Add Log
@@ -62,7 +62,7 @@ router.post(
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
+  taskController.addLog
 );
 
 // API 5.6: Fetch Task Manager
@@ -71,7 +71,7 @@ router.post(
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
+  taskController.fetchTaskManager
 );
 
 // API 5.7: Fetch Archive Manager
@@ -81,7 +81,7 @@ router.post(
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
+  taskController.fetchArchiveManager
 );
 
 // API 5.8: Fetch Task
@@ -91,8 +91,8 @@ router.post(
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
-);
+  taskController.fetchTask
+)
 
 // API 5.9: Create Task Status
 router.post(
@@ -101,7 +101,7 @@ router.post(
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
+  taskController.createTaskStatus
 );
 
 // API 5.10: Edit Task Status
@@ -111,7 +111,7 @@ router.post(
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
+  taskController.editTaskStatus
 );
 
 // API 5.11: Delete Task Status
@@ -121,14 +121,17 @@ router.post(
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
+  taskController.deleteTaskStatus
 );
 
-// API 5.12: Create Task Status
+// API 5.12: Fetch Task Statuses
 router.post(
   '/task-status/fetch-all',
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,
-  // Controller Missing!
+  taskController.fetchTaskStatuses
 );
+
+// Export router
+module.exports = router;

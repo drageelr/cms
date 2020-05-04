@@ -44,6 +44,20 @@ const userAccess = {
   "/api/submission/fetch-list": ["cca", "soc"],
   "/api/submission/cca/update-status": ["cca", "pres", "pat"],
   "/api/submission/cca/fetch": ["cca", "soc", "pres", "pat"],
+
+  // 5. Task Management API "task.route.js"
+  "/api/task-manager/task/req/create": ["cca"],
+  "/api/task-manager/task/cus/create": ["cca"],
+  "/api/task-manager/task/req/edit": ["cca"],
+  "/api/task-manager/task/cus/edit": ["cca"],
+  "/api/task-manager/log/add": ["cca"],
+  "/api/task-manager/fetch": ["cca"],
+  "/api/task-manager/fetch-archive": ["cca"],
+  "/api/task-manager/task-fetch": ["cca"],
+  "/api/task-manager/task-status/create": ["cca"],
+  "/api/task-manager/task-status/edit": ["cca"],
+  "/api/task-manager/task-status/delete": ["cca"],
+  "/api/task-manager/task-status/fetch-all": ["cca"],
 };
 
 const ccaAccess = {
@@ -63,6 +77,14 @@ const ccaAccess = {
   // 4. Request Management API "submission.route.js":
   "/api/submission/cca/add-note": "addCCANote",
   "/api/submission/cca/update-status": "setFormStatus",
+
+  // 5. Task Management API "task.route.js"
+  "/api/task-manager/task/req/create": "createReqTask",
+  "/api/task-manager/task/cus/create": "createCustomTask",
+  "/api/task-manager/fetch-archive": "archiveTask",
+  "/api/task-manager/task-status/create": "createTaskStatus",
+  "/api/task-manager/task-status/edit": "createTaskStatus",
+  "/api/task-manager/task-status/delete": "createTaskStatus",
 };
 
 /*

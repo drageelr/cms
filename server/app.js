@@ -17,6 +17,7 @@ var authRouter = require('./routes/auth.route')
 var accountRouter = require('./routes/account.route');
 var formRouter = require('./routes/form.route');
 var submissionRouter = require('./routes/submission.route');
+var taskRouter = require('./routes/task.route');
 
 // Others:
 var { errorHandler } = require('./errors/errorhandler');
@@ -46,6 +47,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/account', accountRouter);
 app.use('/api/form', formRouter);
 app.use('/api/submission', submissionRouter);
+app.use('/api/task-manager', taskRouter);
 
 // Add Error Handler
 app.use(errorHandler);

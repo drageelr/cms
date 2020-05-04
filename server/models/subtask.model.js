@@ -20,6 +20,10 @@ const subTaskSchema = new Schema({
     type: Number,
     required: true
   },
+  taskId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "ReqTask"
+  },
   assigneeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "CCA"

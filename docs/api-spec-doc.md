@@ -84,11 +84,11 @@
 *Note: Will contain APIs actions related to creating /editing / delete tasks, archiving / unarchiving task archives and creating / editing / deleting task statuses.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Create Request Task|Creates a request task linked with a form submission. Can't send logs.|`/api/task-manager/task/req/create`|`{task*: reqTaskObj}`|`POST`|`{taskId: "String", subTaskIds: [Number], newLogs: [logObj]}`|`CCA`|`TBD`|
+|1|Create Request Task|Creates a request task linked with a form submission. Can't send logs.|`/api/task-manager/task/req/create`|`{task*: reqTaskObj}`|`POST`|`{taskId: "String", subtasks: [subtaskObj2**], newLogs: [logObj]}`|`CCA`|`TBD`|
 |2|Create Custom Task|Creates a custom task. Can't send logs.|`/api/task-manager/task/cus/create`|`{task*: cusTaskObj}`|`POST`|`{taskId: "String", newLogs: [logObj]}`|`CCA`|`TBD`|
-|3|Edit Request Task|Edits a request task linked with a form submission. Can't edit logs, subissionId.|`/api/task-manager/task/req/edit`|`{task*: editReqTaskObj}`|`POST`|`{newLogs: [logObj], subTaskIds**: [Number]}`|`CCA`|`TBD`|
-|4|Edit Custom Task|Edits a custom task. Can't edit logs.|`/api/task-manager/task/cus/edit`|`{task*: editCusTaskObj}`|`POST`|`{newLogs: [logObj]}`|`CCA`|`TBD`|
-|5|Add Log|Adds a log to task|`/api/task-manager/log/add`|`{taskId*: "String", description*: "String"}`|`POST`|`{logId: Number}`|`CCA`|`TBD`|
+|3|Edit Request Task|Edits a request task linked with a form submission. Can't edit logs, subissionId.|`/api/task-manager/task/req/edit`|`{task*: editReqTaskObj}`|`POST`|`{newLog: logObj, subTaskIds**: [Number]}`|`CCA`|`TBD`|
+|4|Edit Custom Task|Edits a custom task. Can't edit logs.|`/api/task-manager/task/cus/edit`|`{task*: editCusTaskObj}`|`POST`|`{newLog: logObj}`|`CCA`|`TBD`|
+|5|Add Log|Adds a log to task|`/api/task-manager/log/add`|`{taskId*: "String", description*: "String"}`|`POST`|`{logId: Number, createdAt: Date, updatedAt: Date}`|`CCA`|`TBD`|
 |6|Fetch Task Manager|Returns all tasks in the task manager|`/api/task-manager/fetch`|`{}`|`POST`|`{taskList: [reqTaskObjFull/cusTaskObjFull]}`|`CCA`|`TBD`|
 |7|Fetch Archive Manager|Returns all archived tasks based on a filter|`/api/task-manager/fetch-archive`|`TBD`|`POST`|`{taskList: [taskDetailsObj]}`|`CCA`|`TBD`|
 |8|Fetch Task|Returns complete details of a task|`/api/task-manager/task/fetch`|`{taskId: "String"}`|`POST`|`{task: reqTaskObjFull/cusTaskObjFull}`|`CCA`|`TBD`|
@@ -100,6 +100,7 @@
 - **Note for `API 5.3` and `API 5.4`: Only send optional parameters denoted by ** in `Object Schema` if they have to be updated.**
 - **Note for `API 5.7`: Just fetches the basic details to be shown in the Archive Manager.**
 - **Note for `API 5.8`: Will be used to fetch details of a task in Archive Manager when clicked on them for details, however can also fetch details of unarchived tasks as well.**
+- **Note for `Object Schema 5.8`: `subtaskId` will be returned as `-1` if the log is created by the server itself.**
 - **Note: * means the field mentioned is required. (For `Request Object` OR `Object Schema` referenced in it)**
 - **Note: ** means the field mentioned might not always be there. (For `Response Object` OR `Object Schema` referenced in this and `Request Object`)**
 
@@ -112,9 +113,9 @@
 |4|`editReqTaskObj`|`{taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, subtasks**: [subtaskObj]}, archive**: Boolean`|
 |5|`subtaskObj`|`{subtaskId*: Number, assigneeId**: Number, description**: "String", check**: Boolean}`|
 |6|`editCusTaskObj`|`{taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, archive**: Boolean}`|
-|7|`reqTaskObjFull`|`{title: "String", description: "String", submissionId: Number, ownerId: Number, statusId: Number, subtasks:**: [subtaskObj2]}, logs: [logObj], archive: Boolean, createdAt: Date, updatedAt: Date`|
+|7|`reqTaskObjFull`|`{taskId: "String", title: "String", description: "String", submissionId: Number, ownerId: Number, statusId: Number, subtasks:**: [subtaskObj2]}, logs: [logObj], archive: Boolean, createdAt: Date, updatedAt: Date`|
 |8|`subtaskObj2`|`{subtaskId: Number, assigneeId: Number, description: "String", check: Boolean, createdAt: Date, updatedAt: Date}`|
-|9|`cusTaskObjFull`|`{taskId: "String", title: "String", description: "String", ownerId: Number, statusId: Number, archive: Boolean, createdAt: Date, updatedAt: Date}`|
+|9|`cusTaskObjFull`|`{taskId: "String", title: "String", description: "String", ownerId: Number, statusId: Number, logs: [logObj], archive: Boolean, createdAt: Date, updatedAt: Date}`|
 |10|`logObj`|`{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}`|
 |11|`taskDetailsObj`|`{taskId: "String", ownerId: Number, createdAt: Date, updatedAt: Date}`|
 

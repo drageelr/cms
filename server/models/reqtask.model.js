@@ -41,7 +41,7 @@ const reqTaskSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Status"
   },
-  subTaskIds: [{
+  subtaskIds: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "SubTask"
   }],

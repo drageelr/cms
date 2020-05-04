@@ -43,7 +43,7 @@ exports.createCusTaskValidation = {
 exports.editReqTaskValidation = {
   body: Joi.object({
     task: Joi.object({
-      taskId: Joi.string().required(),
+      taskId: Joi.string().min(2).required(),
       title: Joi.string(),
       description: Joi.string(),
       ownerId: Joi.number(),
@@ -62,7 +62,7 @@ exports.editReqTaskValidation = {
 exports.editCusTaskValidation = {
   body: Joi.object({
     task: Joi.object({
-      taskId: Joi.string().required(),
+      taskId: Joi.string().min(2).required(),
       title: Joi.string(),
       description: Joi.string(),
       ownerId: Joi.number(),
@@ -74,7 +74,7 @@ exports.editCusTaskValidation = {
 // Export API 5.5 Validation Object:
 exports.addLogValidation = {
   body: Joi.object({
-    taskId: Joi.string().required(),
+    taskId: Joi.string().min(2).required(),
     description: Joi.string().required()
   })
 }
@@ -85,7 +85,7 @@ exports.addLogValidation = {
 // Export API 5.8 Validation Object:
 exports.fetchTaskValidation = {
   body: Joi.object({
-    taskId: Joi.string().required()
+    taskId: Joi.string().min(2).required()
   })
 }
 
