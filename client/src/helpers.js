@@ -18,7 +18,6 @@ export async function apiCaller(api, body, successCode, dataReturner, rejectWith
         'Authorization': `Bearer ${localStorage.token}`, 
       },
     }
-
     // if body is an empty object, do not include it
     if (!(Object.keys(body).length === 0 && body.constructor === Object)){
       req_init['body'] = JSON.stringify(body)

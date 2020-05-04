@@ -17,23 +17,39 @@ const columnStyle = {
   backgroundColor: '#dfe3e6',
   padding: 8,
   borderRadius: 3,
-  width: 300,
+  width: 200,
   height: '100%',
   marginRight: 8,
   marginLeft: 3
 }
 
-export function TaskColumn({ownerId, taskData}) {
+export function TaskColumn({ownerId, taskData, ccaDetails}) {
   return (
     <div style={columnStyle}>
-      <h4 style={{textAlign: 'left'}}> {taskData.columns[ownerId].title} </h4>
+      {
+        ccaDetails.map(ccaUserObj => {
+          if (ownerId === ccaUserObj.ccaId) { // if the ownerId matches a ccaUserObj Id then print the ccaUser name for TM column header
+            return (
+              <h4 style={{textAlign: 'left'}}>
+                {ccaUserObj.firstName + " " + ccaUserObj.lastName}
+              </h4>
+            )
+          }
+        })
+      } 
       <Droppable droppableId={ownerId}>
       {
         (provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
-            { taskData.columns[ownerId].taskIds.map((taskId, index) => 
-              <TaskCard taskId={taskData.tasks[taskId].id} index={index} key={taskData.tasks[taskId]}/>
-            )}
+            {
+              taskData.taskList.map((taskObj, index) => {
+                if (ownerId === taskObj.ownerId) {
+                  return (
+                    <TaskCard taskId={taskObj.taskId} index={index} key={taskObj.taskId}/>
+                  )
+                }
+              })
+            }
             {provided.placeholder}
             <TaskAddButton ownerId={ownerId} isColumn={false}/>
           </div>
@@ -46,6 +62,7 @@ export function TaskColumn({ownerId, taskData}) {
 
 const mapStateToProps = (state) => ({
   taskData: state.taskData,
+  ccaDetails: state.ccaDetails.ccaList,
 })
 
 export default connect(mapStateToProps) (TaskColumn)

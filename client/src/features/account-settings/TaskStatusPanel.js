@@ -54,17 +54,17 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
   const [editMode,setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
 
-  function EditDeleteMoreButton({id}) {
+  function EditDeleteMoreButton({statusId}) {
     const menusList=[
       {
         text: 'Edit',
         icon: <EditIcon/>,
-        onClick: ()=>handleEdit(id)
+        onClick: ()=>handleEdit(statusId)
       },
       {
         text: 'Delete',
         icon: <DeleteIcon/>,
-        onClick: ()=>dispatch(deleteTaskStatus({id})),
+        onClick: ()=>dispatch(deleteTaskStatus({statusId})),
       },
     ]
     return <MoreButton menusList={menusList}/>
@@ -75,8 +75,8 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
     setIsOpen (true)
   }
 
-  function handleEdit(id){
-    setEditId(id)
+  function handleEdit(statusId){
+    setEditId(statusId)
     setEditMode(true)  
     setIsOpen (true)
   }
@@ -84,15 +84,15 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
   function TaskStatusDialog(){
     let initialValues = {
       name: '',
-      colorHex: ''
+      color: ''
     }
 
     if (editMode){
       const taskDetail = taskStatusDetails.taskList.find((task,index) =>{
-        return task.id === editId
+        return task.statusId === editId
       })
       if (taskDetail != undefined){
-        initialValues = {name:taskDetail.name,colorHex: taskDetail.colorHex}
+        initialValues = {name:taskDetail.name,color: taskDetail.color}
       }  
     }
 
@@ -121,8 +121,8 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
           onSubmit={(values,{setSubmitting}) => {
             // (taskStatusDetails.isPending) ? <CircularProgress/>
             dispatch(editMode 
-              ?editTaskStatus(({id: editId, name: values.name, colorHex: values.colorHex}))
-              :addTaskStatus({name: values.name, colorHex: values.colorHex}))
+              ?editTaskStatus(({statusId: editId, name: values.name, color: values.color}))
+              :addTaskStatus({name: values.name, color: values.color}))
               .then(()=>{
                 setSubmitting(false)
               })
@@ -138,7 +138,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
                   </Grid>
                   
                   <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="colorHex" required label="Color" helperText = "Enter Hex Value for Color (#000000)"/>    
+                    <Field component={TextField} name="color" required label="Color" helperText = "Enter Hex Value for Color (#000000)"/>    
                   </Grid>
                 </Grid>
               </DialogContent>
@@ -185,12 +185,12 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
                 {taskStatusDetail.name}
               </StyledTableCell>
               <StyledTableCell align="center">
-                <Button variant="contained" style={{backgroundColor:taskStatusDetail.colorHex}}/>
+                <Button variant="contained" style={{backgroundColor:taskStatusDetail.color}}/>
 
               </StyledTableCell>
 
               <StyledTableCell align="right">
-                <EditDeleteMoreButton id={taskStatusDetail.id}/>
+                <EditDeleteMoreButton id={taskStatusDetail.statusId}/>
               </StyledTableCell>
             </StyledTableRow>
           ))}

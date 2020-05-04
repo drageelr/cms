@@ -7,6 +7,7 @@ import { Box, Button, LinearProgress, FormControlLabel, Grid, Typography, FormCo
 import { fetchCCARequestList, clearError } from '../requestListSlice'
 import ErrorSnackBar from "../../../ui/ErrorSnackbar"
 import { useHistory } from "react-router-dom"
+import ListAltIcon from '@material-ui/icons/ListAlt'
 import Switch from '@material-ui/core/Switch'
 import ChipInput from 'material-ui-chip-input'
 import 'date-fns'
@@ -16,7 +17,6 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers
 /**
   The component displays a table of all the requests provided to the CCA. THe CCA admin can view 
   the submission as well as change the status of the form.
-
   @param {object} requestListData corresponding slice from redux, used to fetch the request data  
 */
 
@@ -115,7 +115,6 @@ export function RequestList({requestListData, dispatch}) {
     return (
       <Grid container direction= "row" justify="space-evenly" style={{marginRight: 0, marginLeft: '10%'}}>
         <CustomDatePicker />
-
         <Grid item>
           <FormControlLabel // ONLY COMPLETED REQUESTS
             control={<Switch color="primary" size="small" checked={state.completed} onChange={handleChange} name="completed"/>}

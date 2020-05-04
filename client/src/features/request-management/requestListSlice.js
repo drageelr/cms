@@ -26,9 +26,6 @@ export const changeFormStatus = createAsyncThunk(
   'requestListData/changeFormStatus',
   async ({submissionId, status}, {rejectWithValue}) => {
 
-
-    console.log(submissionId, status)
-
     return await apiCaller('/api/submission/update-status', {
       submissionId,
       status,
@@ -42,7 +39,6 @@ export const changeFormStatus = createAsyncThunk(
 const requestListData = createSlice ({
   name:'requestListData',
   initialState: initialState,
-
   reducers: {
     clearError: (state) => {
       state.error = null
@@ -83,5 +79,6 @@ const requestListData = createSlice ({
 })
 
 export const { clearError } = requestListData.actions
+
 
 export default requestListData.reducer

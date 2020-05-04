@@ -3,24 +3,24 @@ import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
 const sampleState = {
   taskList: [
     {
-      id : 'ts-1',
+      statusId : 1,
       name: "Backlog",
-      colorHex: '#808080',
+      color: '#808080',
     },
     {
-      id : 'ts-2',
+      statusId : 2,
       name: "In Progress",
-      colorHex: '#FF6347',
+      color: '#FF6347',
     },
     {
-      id : 'ts-3',
+      statusId : 3,
       name: "Done",
-      colorHex: '#00FF00',
+      color: '#00FF00',
     },
     {
-      id : 'ts-4',
+      statusId : 4,
       name: "Urgent",
-      colorHex: '#FF0000',
+      color: '#FF0000',
     },
   ],
   isPending: true,
@@ -41,6 +41,7 @@ export const fetchTaskStatus = createAsyncThunk(
       return
     }
     
+    console.log("here")
     const fetchCall = () => {
       var promise = new Promise((resolve) => {
         setTimeout(() => {
@@ -171,12 +172,14 @@ const taskStatusDetails = createSlice({
         state.error = action.payload
       }
     },
+
     [fetchTaskStatus.pending]: (state, action) => {
       if (state.isPending === false) {
         state.isPending = true
       }
     },
     [fetchTaskStatus.fulfilled]: (state, action) => {
+      // console.log(action.payload.taskList)
       if(state.isPending === true){
         state.isPending = false
         state.taskList = action.payload.taskList

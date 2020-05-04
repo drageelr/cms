@@ -184,7 +184,6 @@ const ccaDetails = createSlice({
       })
       state.error = 'CCA Account Permissions Edited'
     },
-
     [editCCAPermissions.rejected]: (state, action) => {
         state.error = action.payload
     },

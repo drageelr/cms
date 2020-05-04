@@ -14,7 +14,6 @@ import { simplifyTimestamp } from '../../helpers'
 /**
   The component displays a table of all the forms submitted by the society. The society can view
   the submission, as well as delete ir from their screen.
-
   @param {object} user use is the society object. the Id from it is used to fetch all forms submitted by user
   @param {object} submissionListData corresponding slice from redux, used to fetch the forms data  
   @param {function} dispatch redux function which dispatches the delete form action to the reducer  
