@@ -52,5 +52,3 @@ export function simplifyTimestamp(ts, dateOnly=true) {
     return (`${YYMMDD[2]} ${monthAbbrev[YYMMDD[1]]} ${YYMMDD[0]}`)
   }
 } 
-
-simplifyTimestamp("2020-05-02T20:57:09.891Z")

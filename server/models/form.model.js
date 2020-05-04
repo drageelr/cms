@@ -72,12 +72,12 @@ const itemSchema = new Schema({
   maxLength: {
     type: Number
   },
-  options: [{
+  options: [
     optionSchema
-  }],
-  conditionalItems: [{
+  ],
+  conditionalItems: [
     conditionalItemSchema
-  }],
+  ],
   fileTypes: {
     type: String
   }

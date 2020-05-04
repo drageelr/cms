@@ -52,8 +52,8 @@ function LoginPage({error, dispatch}) {
       <Formik
         validateOnChange={false} validateOnBlur={true}
         initialValues = {{
-            email: '',
-            password: '',
+            email: 'developer@lums.edu.pk',
+            password: 'Test12345',
         }}
         validationSchema={Yup.object({
             email: Yup.string()
@@ -66,7 +66,7 @@ function LoginPage({error, dispatch}) {
             dispatch(login({email: values.email, password: values.password, userType: userType}))
             .then(() => {
               setSubmitting(false)
-            })  
+            }) 
           }
         }
         >

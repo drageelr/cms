@@ -11,6 +11,9 @@ import { makeStyles } from '@material-ui/core/styles'
 import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Box, Grid} from '@material-ui/core'
 import { useDispatch } from 'react-redux'
 import { logout } from '../features/account-settings/userSlice'
+import {Button} from '@material-ui/core'
+import LockIcon from '@material-ui/icons/Lock'
+
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
@@ -97,13 +100,20 @@ export default function NavBar({name, userType, picture}) {
                   {name}
                 </Box>
               </Typography>
-              {
-              userType==="CCA" && 
-              <Link to='/settings'>
+              {      
+              userType==="CCA" ? 
+              <Link to='settings'>
                 <IconButton edge="end" style={{padding: 10, marginRight: 5}}>
                   <SettingsIcon/>
                 </IconButton>
               </Link>
+              : <Grid item style={{marginTop: 30}}>
+                  <Link to={"/change-password"} style={{ textDecoration: 'none' }}>
+                    <IconButton edge="end" style={{padding: 10, marginRight: 5, marginTop: -35}}>
+                      <SettingsIcon/>
+                    </IconButton>
+                  </Link>  
+                </Grid>
               }
               <br/>
               <Link to='/'>

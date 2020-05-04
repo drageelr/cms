@@ -102,7 +102,7 @@ exports.compareLists = (list1, list2) => {
       count++;
     }
   }
-
+  
   console.log(count);
   console.log(list2.length);
   return (count == list2.length) && (count == list1.length);
