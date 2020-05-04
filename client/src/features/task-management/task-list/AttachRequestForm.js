@@ -48,8 +48,9 @@ export function AttachRequestForm({taskId, requestListData, dispatch}) {
     disableToolbarSelect: true,
     selectableRows:false,
     onRowClick : (rowData, rowMeta, dataIndex) => {
-      var requestId = rowData[0]
-      dispatch(linkFormToTask({taskId, requestId})) // CALL EDIT TASK API
+      var submissionId = rowData[0]
+      console.log(submissionId)
+      dispatch(linkFormToTask({taskId, submissionId}))
     }
   }
 

@@ -5,6 +5,8 @@ import { Draggable } from "react-beautiful-dnd"
 import { Card, CardContent, Typography, Grid, MenuItem } from '@material-ui/core'
 import StopIcon from '@material-ui/icons/Stop'
 import EditIcon from '@material-ui/icons/Edit'
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import { subTaskDisplay } from '../taskDataSlice'
 
 /**
   This component renders the cards in each column. Each Card displays some details about a task. 
@@ -17,7 +19,7 @@ import EditIcon from '@material-ui/icons/Edit'
   the a particular task and use it to populate the card 
 */
 
-export function TaskCard({taskId, index, taskData, taskStatusDetails}) {
+export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch}) {
 
   const [open, setOpen] = useState(false)
 
@@ -38,27 +40,39 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails}) {
     }
   })
 
+  function handleSubTaskDisplay() {
+    dispatch(subTaskDisplay({taskId}))
+  }
+
   function renderSubTask() {
-    return <Card style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" variant="outlined">
-      <CardContent>
-        <Grid item xs container direction="row" spacing={0}>
-          <Grid item xs>
-            {
-              taskData.taskList.map(taskObj => {
-                if (taskObj.taskId === taskId) {
-                  return <Typography gutterBottom variant="h6"> {taskObj.description} </Typography>
+    return taskData.taskList.map(taskObj => {
+      if (taskObj.taskId === taskId && taskObj.check === true) {
+        console.log("here", taskObj.taskId, taskId, taskObj.check )
+        return <Card style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" variant="outlined">
+          <CardContent>
+            <Grid item xs container direction="row" spacing={0}>
+              <Grid item xs>
+                {
+                  taskData.taskList.map(taskObj => {
+                    if (taskObj.taskId === taskId) {
+                      return <Typography gutterBottom variant="h6"> {taskObj.description} </Typography>
+                    }
+                  })
                 }
-              })
-            }
-          </Grid>  
-          <Grid>
-            <Typography variant='body2'>
-              {taskId}
-            </Typography>
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
+              </Grid> 
+              <Grid>
+                <DeleteOutlineIcon onClick={handleSubTaskDisplay} cursor="pointer"/>
+              </Grid>
+            </Grid>
+            <Grid direction="row-reverse">
+              <Typography variant='body2'>
+                {taskId}
+              </Typography>
+            </Grid>
+          </CardContent>
+        </Card>
+      }
+    })
   }
 
   function renderMainTask() {

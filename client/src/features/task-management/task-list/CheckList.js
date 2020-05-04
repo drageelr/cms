@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
-import { changeCheckStatus, createSubTask, fetchCheckList } from '../taskDataSlice'
+import { createSubTask, fetchCheckList } from '../taskDataSlice'
 import { Checkbox, FormControlLabel } from '@material-ui/core'
-import SelectAssigneeButton from "./SelectAssigneeButton"
 
 /**
   Displays a checklistItems of items that it receives in case a Form has been linked with this Task. 
@@ -17,10 +16,6 @@ import SelectAssigneeButton from "./SelectAssigneeButton"
 
 export function CheckList({taskId, taskData, dispatch}) {
 
-  // useEffect(() => { 
-  //   dispatch(fetchCheckList())
-  // }, [])
-
   const [check, setCheck] = useState(false)
 
   let submissionId = -1
@@ -30,13 +25,18 @@ export function CheckList({taskId, taskData, dispatch}) {
     }
   })
 
-  function handleCheckedBox({event, checkListObj}) {
-    setCheck(event.target.checked)
-    var status = event.target.checked
-    var subTaskDesc = checkListObj.description
-    dispatch(changeCheckStatus({taskId, checkListObj, submissionId, status})) // CALL EDIT API
-    dispatch(createSubTask({taskId, subTaskDesc}))
-  }
+  useEffect(() => { 
+    dispatch(fetchCheckList({taskId, submissionId}))
+  }, [])
+
+  // useEffect(() => { 
+  //   dispatch(createSubTask({taskId}))
+  // }, [])
+
+  // taskData.checkList.map(checkObj => {
+  //   var subTaskDesc = checkObj.description
+  //   dispatch(createSubTask({taskId, subTaskDesc}))
+  // })
 
   return (
     <div>
@@ -45,20 +45,18 @@ export function CheckList({taskId, taskData, dispatch}) {
           <div>
             <FormControlLabel
               control={
-                <Checkbox 
+                <Checkbox
+                  disabled
+                  checked
                   color='primary'
-                  checked={checkListObj.isChecked} 
-                  value = {check}
-                  onChange={(event) => {handleCheckedBox({event, checkListObj})}}
                 />
               }
               label={checkListObj.description}
             />
-            {/* {createSubTask()} */}
           </div>
         )
       })}
-    </div> 
+    </div>
   )
 }
 

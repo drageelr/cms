@@ -6,22 +6,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
   that the user makes when editing the task.
 */
 
-const archiveList = [
-  {
-    taskId: "r2",
-    ownerId: 1,
-    createdAt: "",
-    updatedAt: "20/10/2020",
-  },
-  {
-    taskId: "c2",
-    ownerId: 2,
-    createdAt: "",
-    updatedAt: "17/03/2019",
-  }
-]
-
-const task = {
+const task = { //sample input for fetch task API
   taskId: 'c3',
   title: "Hello World",
   description: "Main hoon jian, main hoon bara",
@@ -33,15 +18,37 @@ const task = {
   updatedAt: ""
 }
 
-const sampleState = {
-  archiveList: [],
+const sampleCheckList = [
+  {
+    checklistId: 1,
+    description: "Finish Me",
+    sectionIndex: "",
+  },
+  {
+    checklistId: 2,
+    description: "Hello World",
+    sectionIndex: "",
+  },
+  {
+    checklistId: 3,
+    description: "What scene",
+    sectionIndex: "",
+  }
+]
 
-  checkList: [
+const sampleState = {
+  archiveList: [
     {
-      checklistId: 1,
-      description: "Finish Me",
-      sectionIndex: "",
-      isChecked: false, // this attribute is added to each checklist object when fetched from an API CALL
+      taskId: "r2",
+      ownerId: 1,
+      createdAt: "",
+      updatedAt: "20/10/2020",
+    },
+    {
+      taskId: "c2",
+      ownerId: 2,
+      createdAt: "",
+      updatedAt: "17/03/2019",
     }
   ],
 
@@ -76,6 +83,15 @@ const sampleState = {
   error: null,
 }
 
+const initialState = {
+  archiveList: [],
+  checkList: [],
+  taskList: [],
+  subTaskIds: [],
+  isPending: false,
+  error: null
+}
+
 export const fetchTaskManager = createAsyncThunk(
   'taskData/fetchTaskManager',
   async (_, { getState, rejectWithValue }) => {
@@ -84,7 +100,7 @@ export const fetchTaskManager = createAsyncThunk(
       return
     } 
 
-    return ''
+    return sampleState.taskList
   }
 )
 
@@ -104,13 +120,15 @@ export const fetchTask = createAsyncThunk(
 
 export const fetchCheckList = createAsyncThunk(
   'taskData/fetchCheckList',
-  async (submissionId, { getState, rejectWithValue }) => {
+  async (IdObj, { getState, rejectWithValue }) => {
     const { isPending } = getState().taskData
     if (isPending != true) {
       return
     } 
 
-    return ''
+    const data = sampleCheckList
+
+    return {IdObj, data}
   }
 )
 
@@ -122,7 +140,7 @@ export const fetchArchiveList = createAsyncThunk(
       return
     } 
 
-    return archiveList
+    return sampleState.archiveList
   }
 )
 
@@ -191,6 +209,7 @@ export const moveTask = createAsyncThunk(
     //   data = {
     //     newLogs: [],
     //   }
+    // } else { //if subtask then dont do anything here but in the edit request task API
     // }
     return {data, editTaskObject}
   }
@@ -302,11 +321,13 @@ export const changeTaskStatus = createAsyncThunk(
 
 export const linkFormToTask = createAsyncThunk( // only for request task
   'taskData/linkFormToTask',
+  // if submission passed to the edit request task API, then get response main subTaskIds and store them
   async (submissionObj, { rejectWithValue }) => {
     const { taskId, submissionId } = submissionObj
     
     const data = {
       newLogs: [],
+      subTaskIds: [1,2,3,4]
     }
     
     // call the "/api/task-manager/task/req/edit" API
@@ -318,29 +339,9 @@ export const linkFormToTask = createAsyncThunk( // only for request task
   }
 )
 
-export const changeCheckStatus = createAsyncThunk( // only for request task
-  'taskData/changeCheckStatus',
-  async (checkItemObj, { rejectWithValue }) => {
-    const { taskId, checkListObj, submissionId, status } = checkItemObj
-    
-    const data = {
-      newLogs: [],
-    }
-    
-      // call the "/api/task-manager/task/req/edit" API
-      // send the taskId and the submissionId to backend in either case
-      // data = {
-      // newLogs: [],
-  
-    return {data, checkItemObj}
-  }
-)
-
-let sId = 0
-
 const taskdata = createSlice({
   name: 'taskData',
-  initialState: sampleState,
+  initialState: initialState,
   reducers: {
     archiveTask: (state, action) => { // send the task id to the server and create an archive of it
       const {taskId, ownerId} = action.payload
@@ -382,27 +383,24 @@ const taskdata = createSlice({
       })
     },
 
-    createSubTask : (state, action) => {
-      const {taskId, subTaskDesc} = action.payload
+    subTaskDisplay: (state, action) => {
+      const {taskId} = action.payload
 
-      let subTaskObj = {}
-
-      sId +=1
-      state.taskList.map(taskObj => {
-        if (taskObj.taskId === taskId) {
-          subTaskObj = {
-            taskId: `s${sId}`,
-            ownerId: taskObj.ownerId,
-            assigneeId: taskObj.ownerId,
-            description: subTaskDesc,
-            check: false
-          }
-          taskObj.subTasks.push(subTaskObj)
+      state.taskList.map(subtaskObj => {
+        if (subtaskObj.taskId === taskId) { // get the subtask Obj from the task list
+          state.taskList.map(taskObj => {
+            if (taskObj.taskId === subtaskObj.assTaskId) { // get the task obj from task list to which the sub task is associated
+              taskObj.subTasks.map(assSubTask => {
+                if (assSubTask.taskId === taskId) { // get the subtask form the task that is same as the current subtask
+                  assSubTask.check = false
+                  subtaskObj.check = false
+                }
+              })
+            }
+          })
         }
       })
-      console.log(subTaskObj)
-      state.taskList.push(subTaskObj)
-    },
+    }
   },
 
   extraReducers: {
@@ -412,7 +410,15 @@ const taskdata = createSlice({
       }
     },
     [fetchTaskManager.fulfilled]: (state, action) => {
-      // set state.taskList = list received from backend
+      state.taskList = action.payload
+      
+      state.taskList.map(taskObj => {
+        if (taskObj.taskId[0] === 'r' && taskObj.subTasks.length !== 0) {
+          taskObj.subTasks.map(subObj => {
+            state.taskList.push(subObj)
+          })
+        }
+      })
       
       // if we wish to store the columnOrder in the redux else, frontend storage is fine
       // let tempColumnOrder = []
@@ -434,8 +440,30 @@ const taskdata = createSlice({
       }
     },
     [fetchCheckList.fulfilled]: (state, action) => {
-      // set state.checkList = list received from backend
-      // add an additional field for checklist, isChecked (boolean)
+      const {IdObj, data} = action.payload
+      state.checkList = data
+
+      let subTaskObj = {}
+      
+      state.checkList.map(checkObj => {
+        var subTaskId = state.subTaskIds.splice(0, 1) // get the every first id in the array
+        console.log(checkObj)
+        var subTaskDesc = checkObj.description
+        state.taskList.map(taskObj => {
+          if (taskObj.taskId === IdObj.taskId) {
+            subTaskObj = {
+              taskId: `s${subTaskId}`,
+              assTaskId: IdObj.taskId, //associated taskId (task to which this subtask is associated with)
+              ownerId: taskObj.ownerId,
+              assigneeId: taskObj.ownerId,
+              description: subTaskDesc,
+              check: true
+            }
+            taskObj.subTasks.push(subTaskObj)
+          }
+        })
+        state.taskList.push(subTaskObj)
+      })
     },
     [fetchCheckList.rejected]: (state, action) => {
       if (state.isPending === true) {
@@ -531,13 +559,30 @@ const taskdata = createSlice({
     [moveTask.fulfilled]: (state, action) => {
       const { data, editTaskObject } = action.payload
       
-      console.log(data, editTaskObject)
-      state.taskList.map(taskObj => {
-        if(taskObj.taskId === editTaskObject.taskId) {
-          taskObj.ownerId = editTaskObject.dstColumnId
-          taskObj.logs = data.newLogs
-        }
-      })
+      if (editTaskObject.taskId[0] === 's') {
+        state.taskList.map(taskObj => {
+          if (taskObj.taskId === editTaskObject.taskId) {
+            state.taskList.map(assTaskObj => {
+              if(assTaskObj.taskId === taskObj.assTaskId) {
+                assTaskObj.subTasks.map(assSubTask => {
+                  if (assSubTask.taskId === editTaskObject.taskId) {
+                    assSubTask.ownerId = editTaskObject.dstColumnId
+                    assSubTask.assigneeId = editTaskObject.dstColumnId
+                    taskObj.ownerId = editTaskObject.dstColumnId
+                  }
+                })
+              }
+            })
+          }
+        })
+      } else {
+        state.taskList.map(taskObj => {
+          if(taskObj.taskId === editTaskObject.taskId) {
+            taskObj.ownerId = editTaskObject.dstColumnId
+            taskObj.logs = data.newLogs
+          }
+        })
+      }
     },
     [moveTask.rejected]: (state, action) => {
       state.error = action.payload
@@ -606,30 +651,14 @@ const taskdata = createSlice({
         if (taskObj.taskId === submissionObj.taskId) {
           taskObj.submissionId = submissionObj.submissionId
           taskObj.logs = data.newLogs
+          state.subTaskIds = data.subTaskIds
         }
       })
+      console.log(state.subTaskIds)
     },
     [linkFormToTask.rejected]: (state, action) => {
       state.error = action.payload
     },
-
-    [changeCheckStatus.fulfilled]: (state, action) => {
-      const { data, checkItemObj} = action.payload
-      
-      state.checkList.map(objCheck => {
-        if (checkItemObj.checkListObj.checklistId === objCheck.checklistId) {
-          objCheck.isChecked = checkItemObj.status
-          state.taskList.map(taskObj => {
-            if(taskObj.taskId === checkItemObj.taskId) {
-              taskObj.logs = data.newLogs
-            }
-          })
-        }
-      })
-    },
-    [changeCheckStatus.rejected]: (state, action) => {
-      state.error = action.payload
-    }
   }
 })
 
@@ -638,7 +667,7 @@ export const {
   unArchiveTask,
   addTaskAssignees,
   deleteTaskAssignee,
-  createSubTask,
+  subTaskDisplay
 } = taskdata.actions
 
 export default taskdata.reducer

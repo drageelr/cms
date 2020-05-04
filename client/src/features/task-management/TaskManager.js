@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {connect} from 'react-redux'
 import TaskColumn from './task-list/TaskColumn'
-import { moveTask } from './taskDataSlice'
+import { moveTask, fetchTaskManager } from './taskDataSlice'
 import TaskArchive from './task-archive/TaskArchive'
 import { DragDropContext } from 'react-beautiful-dnd'
 import { Fab, Dialog, AppBar, Toolbar, Typography, Slide, IconButton, makeStyles, Box } from '@material-ui/core'
@@ -54,6 +54,9 @@ function TaskManager({ ccaDetails, dispatch }) {
   all the columns, by going through each task and adding each unique ownerId to an array called columnOrder
   (will do this in the backend when the fetch task is fulfilled and in the fetchtaskfulfilled extraReducer)
   */
+  useEffect(() => { 
+    dispatch(fetchTaskManager())
+  }, [])
 
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
