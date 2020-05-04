@@ -28,7 +28,7 @@ const logSchema = new Schema({
     type: String,
     required: true
   },
-}, { timestamps });
+}, { timestamps: true });
 
 // Attach autoIncrement Plugin
 logSchema.plugin(autoIncrement, {model: 'Log', field: 'logId', startAt: 1, incrementBy: 1});

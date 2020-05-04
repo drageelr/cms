@@ -44,7 +44,7 @@ const cusTaskSchema = new Schema({
     type: Boolean,
     required: true
   }
-}, { timestamps });
+}, { timestamps: true });
 
 // Attach autoIncrement Plugin
 cusTaskSchema.plugin(autoIncrement, {model: 'CusTask', field: 'taskId', startAt: 1, incrementBy: 1});

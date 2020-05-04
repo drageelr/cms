@@ -393,7 +393,7 @@ exports.addLog = async (req, res, next) => {
   }
 }
 
-exports.fetchTaskManager = (req, res, next) => {
+exports.fetchTaskManager = async (req, res, next) => {
   try {
     let taskList = [];
     
@@ -412,7 +412,7 @@ exports.fetchTaskManager = (req, res, next) => {
       taskObj.subtasks = [];
       for (let sId of r.subtaskIds) {
         let reqSubTask = await SubTask.findById(sId, 'subtaskId assigneeId description check');
-        let subtaskObj = helperFuncs.duplicateObject(reqSubTask, ["subtaksId", "description", "check"]);
+        let subtaskObj = helperFuncs.duplicateObject(reqSubTask, ["subtaskId", "description", "check"]);
 
         let subtaskCCA = await CCA.findById(reqSubTask.assigneeId, 'ccaId');
         subtaskObj.assigneeId = subtaskCCA.ccaId;

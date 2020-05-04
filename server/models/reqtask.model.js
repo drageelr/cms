@@ -53,7 +53,7 @@ const reqTaskSchema = new Schema({
     type: Boolean,
     required: true
   }
-}, { timestamps });
+}, { timestamps: true });
 
 // Attach autoIncrement Plugin
 reqTaskSchema.plugin(autoIncrement, {model: 'ReqTask', field: 'taskId', startAt: 1, incrementBy: 1});

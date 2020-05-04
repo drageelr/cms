@@ -93,7 +93,7 @@ exports.fetchTaskValidation = {
 exports.createTaskStatusValidation = {
   body: Joi.object({
     name: Joi.string().required(),
-    color: Joi.color().required()
+    color: Joi.string().required()
   })
 }
 
@@ -102,7 +102,7 @@ exports.editTaskStatusValidation = {
   body: Joi.object({
     statusId: Joi.number().required(),
     name: Joi.string(),
-    color: Joi.color()
+    color: Joi.string()
   })
 }
 
