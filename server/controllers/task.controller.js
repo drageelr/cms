@@ -221,7 +221,7 @@ exports.editReqTask = async (req, res, next) => {
     let reqTask = await RTask.findOne({taskId: parseInt(task.taskId.slice(1))}, '_id');
     if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId"); // raise task not found error
 
-    let reqCCA = CCA.findById(params.userObj._id, 'ccaId firstName lastName permissions');
+    let reqCCA = await CCA.findById(params.userObj._id, 'ccaId firstName lastName permissions');
 
     let updateObj = helperFuncs.duplicateObject(task, ['title', 'description'], true);
     let logDesc = createLogText("rt", task.taskId) + " edited by " + createLogText("u", reqCCA.ccaId, reqCCA.firstName + " " + reqCCA.lastName) + ".\nEdits:";
@@ -305,7 +305,7 @@ exports.editCusTask = async (req, res, next) => {
     let reqTask = await CTask.findOne({taskId: parseInt(task.taskId.slice(1))}, '_id');
     if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId"); // raise task not found error
 
-    let reqCCA = CCA.findById(params.userObj._id, 'ccaId firstName lastName permissions');
+    let reqCCA = await CCA.findById(params.userObj._id, 'ccaId firstName lastName permissions');
 
     let updateObj = helperFuncs.duplicateObject(task, ['title', 'description'], true);
     let logDesc = createLogText("ct", task.taskId) + " edited by " + createLogText("u", reqCCA.ccaId, reqCCA.firstName + " " + reqCCA.lastName) + ".\nEdits:";
@@ -455,9 +455,13 @@ exports.fetchTaskManager = async (req, res, next) => {
         let reqLog = await Log.findById(lId, 'logId creatorId description createdAt updatedAt');
         let logObj = helperFuncs.duplicateObject(reqLog, ["logId", "description", "createdAt", "updatedAt"]);
 
-        let logCCA = await CCA.findById(reqLog.creatorId, 'ccaId');
-        logObj.creatorId = logCCA.ccaId;
-
+        if (reqLog.creatorId){
+          let logCCA = await CCA.findById(reqLog.creatorId, 'ccaId');
+          logObj.creatorId = logCCA.ccaId;
+        } else {
+          logObj.creatorId = -1;
+        } 
+        
         taskObj.logs.push(logObj);
       }
 
