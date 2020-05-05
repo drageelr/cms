@@ -24,24 +24,26 @@
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of CCA User (Admin/Member) and Society accounts.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Create CCA Account|Creates an account for a CCA Member|`/api/cca/create-account`|`{email*: "String allow: ['lums.edu.pk'], password*: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName*: "String-min(1)-max(30)", lastName*: "String-min(1)-max(30)", picture*: "String", permissions*: permissionsObj}`|POST|`{ccaId: Number}`|CCA|`4.1`|
-|2|Create Society Account|Creates an account for a Society|`/api/society/create-account`|`{email*: "String allow: ['lums.edu.pk']", password*: "String-min(8)-max(30)-[a-zA-Z0-9]", name*: "String-min(1)-max(100)", nameInitials*: "String-min(1)-max(10)", presidentEmail*: "String allow: ['lums.edu.pk']", patronEmail*: "String allow: ['lums.edu.pk']"}`|POST|`{societyId: Number}`|CCA|`4.1`|
-|3|Edit CCA Account|Edits an account of a CCA Member|`/api/cca/edit-account`|`{email: "String allow: ['lums.edu.pk'], password: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName: "String-min(1)-max(30)", lastName: "String-min(1)-max(30)", picture: "String", permissions: permissionsObj} "At least one field is required"`|POST|`{}`|CCA|`5.1`|
-|4|Edit Society Account|Edits an account of a Society|`/api/society/edit-account`|`{email: "String allow: ['lums.edu.pk]", password: "String-min(8)-max(30)-[a-zA-Z0-9]", name: "String-min(1)-max(30)", nameInitials*: "String-min(1)-max(10)", presidentEmail: "String allow: ['lums.edu.pk]", patronEmail: "String allow: ['lums.edu.pk']" "At least one field is required"}`|POST|`{}`|CCA|`5.1`|
-|5|Get CCA Account List|Fetches the list of all existing CCA Member Accounts|`/api/cca/account-list`|`{}`|POST|`{userList: userListCCA}`|CCA|`5.1`|
-|6|Get Society Account List|Fetches the list of all existing Society Accounts|`/api/society/account-list`|`{}`|POST|`{userList: userListSociety}`|CCA|`5.1`|
-|7|Change Password (CCA)|Changes the password of a CCA Member|`/api/cca/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|CCA|`2.1`|
-|8|Change Password (Society)|Changes the password of a Society Account|`/api/society/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|Society|`2.1`|
-|9|Change Picture (CCA)|Changes the picture of a CCA Member Account|`/api/cca/change-picture`|`{picture*: "String"}`|POST|`{}`|CCA|`2.1`|
+|1|Create CCA Account|Creates an account for a CCA Member|`/api/account-manager/cca/create-account`|`{ccaAccount*: ccaAccountObj}`|POST|`{ccaId: Number}`|CCA|`4.1`|
+|2|Create Society Account|Creates an account for a Society|`/api/account-manager/society/create-account`|`{societyAccount*: societyAccountObj}`|POST|`{societyId: Number}`|CCA|`4.1`|
+|3|Edit CCA Account|Edits an account of a CCA Member|`/api/account-manager/cca/edit-account`|`ccaAccount: ccaAccountObj "At least one field is required" "At least one field is required"`|POST|`{}`|CCA|`5.1`|
+|4|Edit Society Account|Edits an account of a Society|`/api/account-manager/society/edit-account`|`{societyAccount: societyAccountObj "At least one field is required"}`|POST|`{}`|CCA|`5.1`|
+|5|Get CCA Account List|Fetches the list of all existing CCA Member Accounts|`/api/account-manager/cca/account-list`|`{}`|POST|`{userList: userListCCA}`|CCA|`5.1`|
+|6|Get Society Account List|Fetches the list of all existing Society Accounts|`/api/account-manager/society/account-list`|`{}`|POST|`{userList: userListSociety}`|CCA|`5.1`|
+|7|Change Password (CCA)|Changes the password of a CCA Member|`/api/account-manager/cca/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|CCA|`2.1`|
+|8|Change Password (Society)|Changes the password of a Society Account|`/api/account-manager/society/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|Society|`2.1`|
+|9|Change Picture (CCA)|Changes the picture of a CCA Member Account|`/api/account-manager/cca/change-picture`|`{picture*: "String"}`|POST|`{}`|CCA|`2.1`|
 
 - **Note: * means the field mentioned is required (For `Request Object`)**
 
 #### Object Schema
 |#|Name|Object|
 |-|----|------|
-|1|`permissionsObj`|`{societyCRUD: Boolean, ccaCRUD: Boolean, accessFormMaker: Boolean, createReqTask: Boolean, createCustomTask: Boolean, createTaskStatus: Boolean, archiveTask: Boolean, unarchiveTask: Boolean, setFormStatus: Boolean, addCCANote: Boolean}`|
-|2|`userListCCA`|`[{ccaId: Number, email: "String", role: "String", firstName: "String", lastName: "String", picture: "String", active: Boolean, permissions: permissionsObj}]`|
-|3|`userListSociety`|`[{societyId: Number, email: "String", name: "String", nameInitials: "String", presidentEmail: "String", patronEmail: "String", active: Boolean}]`|
+|1|`ccaAccountObj`|`{email: "String allow: ['lums.edu.pk], password: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName: "String-min(1)-max(30)", lastName: "String-min(1)-max(30)", picture: "String", permissions: permissionsObj}`|
+|2|`societyAccountObj`|`{email: "String" allow: ['lums.edu.pk'], password: "String-min(8)-max(30)-[a-zA-Z0-9]", name: "String-min(1)-max(100)", nameInitials: "String-min(1)-max(10)", presidentEmail: "String allow: ['lums.edu.pk']", patronEmail: "String allow: ['lums.edu.pk']"}`|
+|3|`permissionsObj`|`{societyCRUD: Boolean, ccaCRUD: Boolean, accessFormMaker: Boolean, createReqTask: Boolean, createCustomTask: Boolean, createTaskStatus: Boolean, archiveTask: Boolean, unarchiveTask: Boolean, setFormStatus: Boolean, addCCANote: Boolean}`|
+|4|`userListCCA`|`[{ccaId: Number, email: "String", role: "String", firstName: "String", lastName: "String", picture: "String", active: Boolean, permissions: permissionsObj}]`|
+|5|`userListSociety`|`[{societyId: Number, email: "String", name: "String", nameInitials: "String", presidentEmail: "String", patronEmail: "String", active: Boolean}]`|
 
 
 ### 3. Form Management
@@ -99,18 +101,18 @@
 *Note: Will contain APIs actions related to creating /editing / delete tasks, archiving / unarchiving task archives and creating / editing / deleting task statuses.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Create Request Task|Creates a request task linked with a form submission. Can't send logs.|`/api/task-manager/task/req/create`|`{task*: reqTaskObj}`|`POST`|`{taskId: "String", subtasks: [subtaskObj2**], newLogs: [logObj]}`|`CCA`|`TBD`|
-|2|Create Custom Task|Creates a custom task. Can't send logs.|`/api/task-manager/task/cus/create`|`{task*: cusTaskObj}`|`POST`|`{taskId: "String", newLogs: [logObj]}`|`CCA`|`TBD`|
-|3|Edit Request Task|Edits a request task linked with a form submission. Can't edit logs, subissionId.|`/api/task-manager/task/req/edit`|`{task*: editReqTaskObj}`|`POST`|`{newLog: logObj, subTaskIds**: [Number]}`|`CCA`|`TBD`|
-|4|Edit Custom Task|Edits a custom task. Can't edit logs.|`/api/task-manager/task/cus/edit`|`{task*: editCusTaskObj}`|`POST`|`{newLog: logObj}`|`CCA`|`TBD`|
-|5|Add Log|Adds a log to task|`/api/task-manager/log/add`|`{taskId*: "String", description*: "String"}`|`POST`|`{logId: Number, createdAt: Date, updatedAt: Date}`|`CCA`|`TBD`|
-|6|Fetch Task Manager|Returns all tasks in the task manager|`/api/task-manager/fetch`|`{}`|`POST`|`{taskList: [reqTaskObjFull/cusTaskObjFull]}`|`CCA`|`TBD`|
-|7|Fetch Archive Manager|Returns all archived tasks based on a filter|`/api/task-manager/fetch-archive`|`{}`|`POST`|`{taskList: [taskDetailsObj]}`|`CCA`|`TBD`|
-|8|Fetch Task|Returns complete details of a task|`/api/task-manager/task/fetch`|`{taskId: "String"}`|`POST`|`{task: reqTaskObjFull/cusTaskObjFull}`|`CCA`|`TBD`|
-|9|Create Task Status|Creates a new task status|`/api/task-manager/task-status/create`|`{name*: "String", color*: "String"}`|`POST`|`{statusId: Number}`|`CCA`|`TBD`|
-|10|Edit Task Status|Edits an existing task status|`/api/task-manager/task-status/edit`|`{statusId*: Number, name**: "String", color**: "String"}`|`POST`|`{}`|`CCA`|`TBD`|
-|11|Delete Task Status|Deletes an existing task status|`/api/task-manager/task-status/delete`|`{statusId*: Number}`|`POST`|`{}`|`CCA`|`TBD`|
-|12|Fetch Task Statuses|Fetches all task statuses|`/api/task-manager/task-status/fetch-all`|`{}`|`POST`|`{statuses: [statusId: Number, name: "String", color: "String"]}`|`CCA`|`TBD`|
+|1|Create Request Task|Creates a request task linked with a form submission. Can't send logs.|`/api/task-manager/task/req/create`|`{task*: reqTaskObj}`|`POST`|`{taskId: "String", subtasks: [subtaskObj2**], newLogs: [logObj]}`|`CCA`|`5.1, 9.1, 10.1, 11.1`|
+|2|Create Custom Task|Creates a custom task. Can't send logs.|`/api/task-manager/task/cus/create`|`{task*: cusTaskObj}`|`POST`|`{taskId: "String", newLogs: [logObj]}`|`CCA`|`5.1, 10.1`|
+|3|Edit Request Task|Edits a request task linked with a form submission. Can't edit logs, subissionId.|`/api/task-manager/task/req/edit`|`{task*: editReqTaskObj}`|`POST`|`{newLog: logObj, subTaskIds**: [Number]}`|`CCA`|`3.1, 5.1, 10.1, 12.1, 13.1`|
+|4|Edit Custom Task|Edits a custom task. Can't edit logs.|`/api/task-manager/task/cus/edit`|`{task*: editCusTaskObj}`|`POST`|`{newLog: logObj}`|`CCA`|`3.1, 5.1, 10.1, 12.1`|
+|5|Add Log|Adds a log to task|`/api/task-manager/log/add`|`{taskId*: "String", description*: "String"}`|`POST`|`{logId: Number, createdAt: Date, updatedAt: Date}`|`CCA`|`12.1`|
+|6|Fetch Task Manager|Returns all tasks in the task manager|`/api/task-manager/fetch`|`{}`|`POST`|`{taskList: [reqTaskObjFull/cusTaskObjFull]}`|`CCA`|`12.1`|
+|7|Fetch Archive Manager|Returns all archived tasks based on a filter|`/api/task-manager/fetch-archive`|`{}`|`POST`|`{taskList: [taskDetailsObj]}`|`CCA`|`12.1`|
+|8|Fetch Task|Returns complete details of a task|`/api/task-manager/task/fetch`|`{taskId: "String"}`|`POST`|`{task: reqTaskObjFull/cusTaskObjFull}`|`CCA`|`12.1`|
+|9|Create Task Status|Creates a new task status|`/api/task-manager/task-status/create`|`{name*: "String", color*: "String"}`|`POST`|`{statusId: Number}`|`CCA`|` `|
+|10|Edit Task Status|Edits an existing task status|`/api/task-manager/task-status/edit`|`{statusId*: Number, name**: "String", color**: "String"}`|`POST`|`{}`|`CCA`|`10.1`|
+|11|Delete Task Status|Deletes an existing task status|`/api/task-manager/task-status/delete`|`{statusId*: Number}`|`POST`|`{}`|`CCA`|`10.1`|
+|12|Fetch Task Statuses|Fetches all task statuses|`/api/task-manager/task-status/fetch-all`|`{}`|`POST`|`{statuses: [statusId: Number, name: "String", color: "String"]}`|`CCA`|`10.1`|
 
 - **Note for `API 5.3` and `API 5.4`: Only send optional parameters denoted by ** in `Object Schema` if they have to be updated.**
 - **Note for `API 5.7`: Just fetches the basic details to be shown in the Archive Manager.**
