@@ -71,6 +71,14 @@ router.post('/start', (req, res, next) => {
                   exec_mode : 'fork',
                   name: 'cms-server'
                 }, function(err, apps) {
+                  if (err) throw err
+                });
+
+                pm2.start({
+                  script    : '/root/CMS/server/cleaner/cleaner.js',
+                  exec_mode : 'fork',
+                  name: 'cms-cleaner'
+                }, function(err, apps) {
                   pm2.disconnect();
                   if (err) throw err
                 });
