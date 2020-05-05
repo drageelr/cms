@@ -37,7 +37,7 @@ export default function PanelBar({handleAdd, title, buttonText}){
             variant="contained" 
             color="primary" 
             // spacing= '10' 
-            // startIcon={<AddCircleIcon/>}
+            startIcon={<AddCircleIcon/>}
             className={classes.margin}
             onClick = {handleAdd}
           > <AddCircleIcon className={classes.extendedIcon}/> <subtitle1 style={{textSize: 10}}>{buttonText}</subtitle1>
