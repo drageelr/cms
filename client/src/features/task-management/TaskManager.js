@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import {connect} from 'react-redux'
 import TaskColumn from './task-list/TaskColumn'
-import { moveTask, fetchTaskManager, editSubTask, moveSubTask } from './taskDataSlice'
 import TaskArchive from './task-archive/TaskArchive'
 import { DragDropContext } from 'react-beautiful-dnd'
 import { Fab, Dialog, AppBar, Toolbar, Typography, Slide, IconButton, makeStyles, Box } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import ArchiveIcon from '@material-ui/icons/Archive'
+import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import { fetchCCAAccounts } from '../account-settings/ccaDetailsSlice'
 import { fetchTaskStatus } from '../account-settings/taskStatusDetailsSlice'
 import { fetchCCARequestList } from '../request-management/requestListSlice'
+import { moveTask, fetchTaskManager, editSubTask, moveSubTask, moveTaskSync, clearError } from './taskDataSlice'
+
 
 /**
   The parent component that initiates the Task Manager. 
@@ -42,6 +44,13 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
     dispatch(fetchCCAAccounts())
     dispatch(fetchCCARequestList())
     dispatch(fetchTaskStatus())
+    /*
+    A fetch call to the backend to FETCH the TASK MANAGER, once I get the taskList, I'll have to make a list of 
+    all the columns, by going through each task and adding each unique ownerId to an array called columnOrder
+    (will do this in the backend when the fetch task is fulfilled and in the fetchtaskfulfilled extraReducer)
+    */
+    dispatch(fetchTaskManager())
+
   }, [])
 
   // we will decide and make columns based on the CCA Accounts List, the order in which the CCA Accounts List is
@@ -52,14 +61,7 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
   })
   columnOrder = Array.from(new Set(columnOrder))
 
-  /*
-  A fetch call to the backend to FETCH the TASK MANAGER, once I get the taskList, I'll have to make a list of 
-  all the columns, by going through each task and adding each unique ownerId to an array called columnOrder
-  (will do this in the backend when the fetch task is fulfilled and in the fetchtaskfulfilled extraReducer)
-  */
-  useEffect(() => { 
-    dispatch(fetchTaskManager())
-  }, [])
+  
 
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
@@ -91,12 +93,12 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
         srcColumnId: source.droppableId,
         dstColumnId: destination.droppableId,
       }))
-      taskData.map(taskObj => {
+      taskData.taskList.map(taskObj => {
         if (taskObj.taskId === draggableId) {
           mainTaskId = taskObj.assTaskId
         }
       })
-      taskData.map(taskObj => {
+      taskData.taskList.map(taskObj => {
         if (taskObj.taskId === mainTaskId) {
           var subTaskList = taskObj.subTasks
           dispatch(moveSubTask({mainTaskId, subTaskList}))
@@ -104,12 +106,13 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
       })
 
     } else {
+      dispatch(moveTaskSync({taskId: draggableId, dstColumnId: destination.droppableId, dstIndex:  destination.index}))
       dispatch(moveTask({  // probably call the edit API as we want to update the ownerID of the task
         taskId: draggableId,
         srcColumnId: source.droppableId,
         // srcIndex: source.index,
         dstColumnId: destination.droppableId,
-        // dstIndex:  destination.index,
+        dstIndex:  destination.index
       }))
     }
   }
@@ -120,10 +123,7 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
       <Box display="flex" flex-direction="row" marginLeft={2}>
         { 
           columnOrder.map(ownerId => { // each ownerId is unique here 
-          return <TaskColumn 
-                key={ ownerId }
-                ownerId={ ownerId }                
-              />
+            return <TaskColumn key={ ownerId } ownerId={ ownerId } />
           })
         }
       </Box>
@@ -148,13 +148,14 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
           <TaskArchive />
         </Dialog>
       </div>
+      <ErrorSnackbar stateError={taskData.error} clearError={clearError} />
     </DragDropContext>
   )
 }
 
 const mapStateToProps = (state) => ({
   ccaDetails: state.ccaDetails.ccaList,
-  taskData: state.taskData.taskList
+  taskData: state.taskData
 })
 
 export default connect(mapStateToProps) (TaskManager)

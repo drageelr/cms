@@ -25,10 +25,6 @@ export function CheckList({taskId, taskData, dispatch}) {
     }
   })
 
-  useEffect(() => { 
-    dispatch(fetchCheckList({taskId, submissionId}))
-  }, [])
-
   // useEffect(() => { 
   //   dispatch(createSubTask({taskId}))
   // }, [])
@@ -40,22 +36,24 @@ export function CheckList({taskId, taskData, dispatch}) {
 
   return (
     <div>
-      {taskData.checkList.map(checkListObj => {
-        return (
-          <div>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  disabled
-                  checked
-                  color='primary'
-                />
-              }
-              label={checkListObj.description}
-            />
-          </div>
-        )
-      })}
+      {
+        taskData.checkList.map(checkListObj => {
+          return (
+            <div>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    disabled
+                    checked
+                    color='primary'
+                  />
+                }
+                label={checkListObj.description}
+              />
+            </div>
+          )
+        })
+      }
     </div>
   )
 }

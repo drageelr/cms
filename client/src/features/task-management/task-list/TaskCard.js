@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import { connect } from 'react-redux'
 import EditTaskDialog from './EditTaskDialog'
 import { Draggable } from "react-beautiful-dnd"
-import { Card, CardContent, Typography, Grid, MenuItem, Box } from '@material-ui/core'
+import { Card, CardContent, Typography, Grid, Box } from '@material-ui/core'
 import StopIcon from '@material-ui/icons/Stop'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
@@ -23,17 +23,15 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
   const [open, setOpen] = useState(false)
   let taskStatusName = ""
   let taskStatusColor = ""
-  let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1 }
-  
+  let statusId = -1
   //get defaultDesc, defaultTitle, defaultOwner, submissionId from taskData
   const taskObj = taskData.taskList.find(taskObj => taskObj.taskId === taskId)
   if (taskObj !== undefined) { // if found
-    const { description, title, ownerId, submissionId, statusId } = taskObj
-    initialState = { description, title, ownerId, submissionId, statusId }
+    statusId = taskObj.statusId
   }
 
   taskStatusDetails.forEach(statusObj => {
-    if(statusObj.statusId === initialState.statusId) {
+    if(statusObj.statusId === statusId) {
       taskStatusName = statusObj.name
       taskStatusColor = statusObj.color
     }
@@ -67,8 +65,7 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
   }
 
   function MainTask() {
-    return taskObj !== undefined &&
-    <Card style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" variant="outlined">
+    return <Card elevation={3} style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" >
       <CardContent>
         <Grid item xs container direction="row" spacing={0}>
           <Grid item xs>
@@ -81,7 +78,6 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
             <EditIcon onClick={() => setOpen(true)} fontSize="small" color="action" cursor="pointer"/>
             <EditTaskDialog 
               editMode={true}
-              initialState={initialState} 
               open={open}
               setOpen={setOpen}
               isRequestTask={taskId[0]==="r"}

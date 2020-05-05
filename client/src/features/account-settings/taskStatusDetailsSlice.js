@@ -3,22 +3,22 @@ import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
 const sampleState = {
   taskList: [
     {
-      statusId : 1,
+      statusId : 2,
       name: "Backlog",
       color: '#808080',
     },
     {
-      statusId : 2,
+      statusId : 3,
       name: "In Progress",
       color: '#FF6347',
     },
     {
-      statusId : 3,
+      statusId : 4,
       name: "Done",
       color: '#00FF00',
     },
     {
-      statusId : 4,
+      statusId : 5,
       name: "Urgent",
       color: '#FF0000',
     },
@@ -41,7 +41,6 @@ export const fetchTaskStatus = createAsyncThunk(
       return
     }
     
-    console.log("here")
     const fetchCall = () => {
       var promise = new Promise((resolve) => {
         setTimeout(() => {

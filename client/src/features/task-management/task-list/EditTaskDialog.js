@@ -28,7 +28,16 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-export function EditTaskDialog({editMode, ownerId, isRequestTask, taskId, initialState, ccaDetails, dispatch, open, setOpen}) {  
+export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, taskId, ccaDetails, dispatch, open, setOpen}) {  
+  let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1 }
+
+  //get defaultDesc, defaultTitle, defaultOwner, submissionId from taskData
+  const taskObj = taskList.find(taskObj => taskObj.taskId === taskId)
+  if (taskObj !== undefined) { // if found
+    const { description, title, ownerId, submissionId, statusId } = taskObj
+    initialState = { description, title, ownerId, submissionId, statusId }
+  }
+
   const [selectOpen, setSelectOpen] = useState(false)  
   const [desc, setDesc] = useState(initialState.description)
   const [taskTitle, setTaskTitle] = useState(initialState.title)
@@ -36,41 +45,34 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskId, initia
   const [statusId, setStatusId] = useState(initialState.statusId)
   const [localSubmissionId, setSubmissionId] = useState(initialState.submissionId)
 
-  
+
   function handleCreateComplete(){
-    if (editMode){
-      // edit task details
-    }
-    else {
-      if (isRequestTask) {
-        const reqTaskObject = { 
-          title: taskTitle, 
-          description: desc, 
-          submissionId: localSubmissionId,
-          ownerId: ownerId, 
-          statusId: statusId,
-          //checklists: [] ---> optional if want to send, but essentially will be sent in edit task
-        }
-        dispatch(createRequestTask(reqTaskObject))
-      } 
-      else {
-        const cusTaskObject = { 
-          title: taskTitle, 
-          description: desc, 
-          ownerId: ownerId, 
-          statusId: statusId,
-        }
-        dispatch(createCustomTask(cusTaskObject))
+    if (isRequestTask) {      
+      const reqTaskObject = { 
+        title: taskTitle, 
+        description: desc, 
+        submissionId: localSubmissionId,
+        ownerId: ownerId, 
+        statusId: statusId
       }
+      dispatch(createRequestTask(reqTaskObject))
+    } 
+    else {
+      const cusTaskObject = { 
+        title: taskTitle, 
+        description: desc, 
+        ownerId: ownerId, 
+        statusId: statusId,
+      }
+      dispatch(createCustomTask(cusTaskObject))
     }
     setOpen(false)
   }
   
-  function handleOwnerSet(event) {
-    dispatch(taskOwnerChange({taskId, owner}))
+  async function handleOwnerSet(event) {
     setOwner(event.target.value)
     if (editMode) {
-      dispatch(taskOwnerChange({taskId, owner}))
+      dispatch(taskOwnerChange({taskId, owner: event.target.value}))
     }
   }
 
@@ -82,7 +84,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskId, initia
 
   function handleDescChange(event) {
     if (editMode) {
-      dispatch(updateDescription({taskId, description: event.target.value}))
+      dispatch(updateDescription({taskId, desc: event.target.value}))
     }
   }
 
@@ -102,8 +104,8 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskId, initia
         </Grid>
         <Grid item>
           { // Request Form
-            (localSubmissionId === -1)
-            ? <AttachRequestForm editMode={editMode} taskId={taskId} setSubmissionId={setSubmissionId}/>
+            (localSubmissionId === -1 && !editMode)
+            ? <AttachRequestForm taskId={taskId} setSubmissionId={setSubmissionId}/>
             : <Typography variant="h5">
                 Linked Request ID: {localSubmissionId}
               </Typography> 
@@ -149,25 +151,22 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskId, initia
   <Dialog fullWidth maxWidth="md" open={open} onClose={()=>setOpen(false)} TransitionComponent={Transition}>
     {/*TaskName----TaskID----TaskArchiveButton*/}
     <Grid style={{padding: "15px"}} item container direction="row" justify="space-between" alignItems="flex-start">
-      <Grid>
-          <Typography gutterBottom variant="h5" color="inherit">
-            <Grid container direction="row"> 
-              <Grid item>
-                Task Name:
-                <TextField 
-                  variant="outlined"
-                  value={taskTitle}
-                  onChange={(e)=> setTaskTitle(e.target.value)}
-                  inputProps={{onBlur: handleTitleChange}}
-                  style={{resize: "none", marginTop: -8, marginLeft: 4, size:"small", outline: "none"}}
-                />
-              </Grid>
-            </Grid>
-              <Typography gutterBottom variant="h6" color="textPrimary">
-                ID: {taskId}
-              </Typography>
-          </Typography>
-      </Grid>
+      <Typography gutterBottom variant="h5" color="inherit">
+        <Grid container direction="row"> 
+          Task Name:
+          <TextField 
+            id="task-title"
+            variant="outlined"
+            value={taskTitle}
+            onChange={(e)=>{setTaskTitle(e.target.value)}}
+            inputProps={{onBlur: handleTitleChange}}
+            style={{resize: "none", marginTop: -8, marginLeft: 4, size:"small", outline: "none"}}
+          />
+        </Grid>
+          <Typography gutterBottom variant="h6" color="textPrimary">
+            ID: {taskId}
+        </Typography>
+      </Typography>
       <Grid>
         {
           editMode
@@ -237,13 +236,16 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskId, initia
     {/*Complete Task Button*/}
     <DialogActions>
       <div style={{marginRight: 10}}>
-        <Button 
-          variant="contained" 
-          color="inherit"
-          onClick={handleCreateComplete}
-        >
-          {editMode ? "Complete Task" : "Create Task"}
-        </Button>
+        {
+          (!editMode) &&
+          <Button 
+            variant="contained" 
+            color="inherit"
+            onClick={handleCreateComplete}
+          >
+            Create Task
+          </Button>
+        }
       </div>
     </DialogActions>
   </Dialog>
@@ -251,7 +253,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskId, initia
 }
 
 const mapStateToProps = (state) => ({
-  taskData: state.taskData.taskList,
+  taskList: state.taskData.taskList,
   ccaDetails: state.ccaDetails.ccaList,
   taskView: state.taskView
 })

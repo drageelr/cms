@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
-import { linkFormToTask } from '../taskDataSlice'
 import MUIDataTable from "mui-datatables"
 import { Grid, AppBar, Toolbar, IconButton, Typography, Button, Dialog, Slide, Box } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
+import { fetchCheckList } from '../taskDataSlice'
 /**
   When in a Request Task Edit Dialog, user can link a form to the task, if not already linked.
   Opens a full page dialog with all the latest Requests submitted for the CCA.  
@@ -20,7 +20,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-export function AttachRequestForm({taskId, formDataList, setSubmissionId, editMode, dispatch}) {
+export function AttachRequestForm({taskId, formDataList, setSubmissionId, dispatch}) {
 
   // fetch the CCA REQUEST LIST SO THAT IT CAN BE USED TO ATTACH A REQUEST TO A REQUEST TASK
 
@@ -46,7 +46,9 @@ export function AttachRequestForm({taskId, formDataList, setSubmissionId, editMo
     onRowClick : (rowData, rowMeta, dataIndex) => {
       const submissionId = rowData[0]
       setSubmissionId(submissionId)
-      // if (editMode) dispatch(linkFormToTask({taskId, submissionId}))
+      dispatch(fetchCheckList({taskId, submissionId}))
+      // const fetchChecklists = await
+      // const checklist = unwrapResult(fetchChecklists)
     }
   }
 

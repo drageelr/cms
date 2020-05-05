@@ -72,7 +72,7 @@ export default function TaskAddButton({ ownerId }) {
         <SelectTaskType/> : 
         <div style={buttonStyle}>
           <Icon>add</Icon>
-          <p> {"Add a Task"} </p>
+          <p> Add a Task </p>
         </div>
       }
       </div>
@@ -81,7 +81,6 @@ export default function TaskAddButton({ ownerId }) {
         ownerId={ownerId}
         open={open}
         setOpen={setOpen}
-        initialState = {{ description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1 }}
         isRequestTask={isRequestTask}/>
     </div>
   )

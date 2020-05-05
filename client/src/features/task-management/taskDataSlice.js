@@ -7,80 +7,12 @@ import { apiCaller } from '../../helpers'
   that the user makes when editing the task.
 */
 
-const sampleCheckList = [
-  {
-    checklistId: 1,
-    description: "Finish Me",
-    sectionIndex: "",
-  },
-  {
-    checklistId: 2,
-    description: "Hello World",
-    sectionIndex: "",
-  },
-  {
-    checklistId: 3,
-    description: "What scene",
-    sectionIndex: "",
-  }
-]
-
-const sampleState = {
-  archiveList: [],
-
-  taskList : [ // fetch Task Manager
-    {
-      taskId: 'r1',
-      title: "Fix TM",
-      description: "",
-      submissionId: -1,
-      ownerId: 1,
-      statusId: 1,
-      subTasks: [
-        {
-          taskId: "s1",
-          assTaskId: 'r1', //associated taskId (task to which this subtask is associated with)
-          ownerId: 2,
-          assigneeId: 2,
-          description: "hello world",
-          check: true
-        }
-      ],
-      logs: [
-        {
-          logId: 1,
-          creatorId: 1,
-          description: "hello",
-          createdAt: "2020/01/10",
-          updatedAt: "2020/02/19"
-        }
-      ],
-      archive: false,
-      createdAt: "",
-      updatedAt: ""
-    },
-    {
-      taskId: 'c1',
-      title: "Code",
-      description: "",
-      ownerId: 2,
-      statusId: 2,
-      logs: [],
-      archive: false,
-      createdAt: "",
-      updatedAt: ""
-    }
-  ],
-
-  isPending: false,
-  error: null,
-}
-
 const initialState = {
   archiveList: [],
   checkList: [],
   taskList: [],
   subTaskIds: [],
+  checklistAssignees: [],
   isPending: false,
   error: null
 }
@@ -92,12 +24,6 @@ export const fetchTaskManager = createAsyncThunk(
     if (isPending != true) {
       return
     } 
-
-    // const data = {
-    //   taskList: sampleState.taskList
-    // }
-
-    // return data
 
     return await apiCaller('/api/task-manager/fetch', {}, 200, 
     (data) =>(data), 
@@ -123,20 +49,15 @@ export const fetchTask = createAsyncThunk(
 
 export const fetchCheckList = createAsyncThunk(
   'taskData/fetchCheckList',
-  async (IdObj, { getState, rejectWithValue }) => {
+  async (idObj, { getState, rejectWithValue }) => {
     const { isPending } = getState().taskData
     if (isPending != true) {
       return
     } 
+    const { taskId, submissionId } = idObj
     
-    const data = sampleCheckList
-
-    return {IdObj, data}
-
-    return await apiCaller('/api/submission/fetch-list', {}, 200, 
-    (data) => {
-      
-    }, rejectWithValue)    
+    return await apiCaller('/api/form/fetch-checklist', { submissionId }, 200, 
+    (data) => ({data, idObj}), rejectWithValue)    
   }
 )
 
@@ -147,7 +68,7 @@ export const fetchArchiveList = createAsyncThunk(
     if (isPending != true) {
       return
     } 
-    return sampleState.archiveList
+    return {}
 
     //TBD
     return await apiCaller('/api/task-manager/fetch-archive', {}, 200, 
@@ -161,16 +82,18 @@ export const fetchArchiveList = createAsyncThunk(
 
 export const createRequestTask = createAsyncThunk( // GIVES INTERNAL SERVER ERROR
   'taskData/createRequestTask',
-  async (reqTaskObject, { rejectWithValue }) => {
+  async (reqTaskObject, { getState, rejectWithValue }) => {
     const { title, description, submissionId, ownerId, statusId } = reqTaskObject
+    const checklists = getState().taskData.checklistAssignees
 
     return await apiCaller('/api/task-manager/task/req/create', {
       task: {
-        title: title,
-        description: "description",
-        submissionId: 1,
-        ownerId: 1,
-        statusId: 1
+        title,
+        description,
+        submissionId,
+        ownerId,
+        statusId,
+        checklists
       }
     }, 201, 
     (data) => ({data, reqTaskObject}), 
@@ -212,35 +135,22 @@ export const createNewLog = createAsyncThunk(
 
 export const moveTask = createAsyncThunk(
   'taskData/moveTask',
-  async (editTaskObject, { getState, rejectWithValue }) => {
+  async (editTaskObject, { rejectWithValue }) => {
     const { taskId, srcColumnId, dstColumnId } = editTaskObject
 
-    if (taskId[0] === 'r') {
-      return await apiCaller('/api/task-manager/task/req/edit', {
-        task: {
-          taskId: taskId,
-          ownerId: dstColumnId
-        }
-      }, 200, 
-      (data) => ({data, editTaskObject}), 
-      rejectWithValue)
-    } else if (taskId[0] === 'c') {
-      return await apiCaller('/api/task-manager/task/cus/edit', {
-        task: {
-          taskId: taskId,
-          ownerId: dstColumnId
-        }
-      }, 200, 
-      (data) => ({data, editTaskObject}), 
-      rejectWithValue)
-    }
-    //else { //if subtask then don't do anything here but in the edit request task API
-    // }
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        ownerId: Number(dstColumnId)
+      }
+    }, 200, 
+    (data) => ({data, editTaskObject}), 
+    rejectWithValue)
   }
 )
 
 export const moveSubTask = createAsyncThunk(
-  'taskData/moveTask',
+  'taskData/moveSubTask',
   async (subTaskObject, { getState, rejectWithValue }) => {
     const { mainTaskId, subTaskList } = subTaskObject
 
@@ -259,80 +169,48 @@ export const taskOwnerChange = createAsyncThunk(
   'taskData/taskOwnerChange',
   async (ownerChangeObj, { rejectWithValue }) => {
     const { taskId, owner } = ownerChangeObj
-    
-    if (taskId[0] === 'r') {
-      return await apiCaller('/api/task-manager/task/req/edit', {
-        task: {
-          taskId: taskId,
-          ownerId: owner
-        }
-      }, 200, 
-      (data) => ({data, ownerChangeObj}), 
-      rejectWithValue)
-    } else if (taskId[0] === 'c') {
-      return await apiCaller('/api/task-manager/task/cus/edit', {
-        task: {
-          taskId: taskId,
-          ownerId: owner
-        }
-      }, 200, 
-      (data) => ({data, ownerChangeObj}), 
-      rejectWithValue)
-    }
+    console.log(ownerChangeObj) 
+
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        ownerId: Number(owner)
+      }
+    }, 200, 
+    (data) => ({data, ownerChangeObj}), 
+    rejectWithValue)
   }
 )
 
 export const updateTitle = createAsyncThunk(
   'taskData/updateTitle',
   async (titleObj, { rejectWithValue }) => {
-    const { taskId, taskTitle } = titleObj
+    const { taskId, newTitle } = titleObj
 
-    if (taskId[0] === 'r') {
-      return await apiCaller('/api/task-manager/task/req/edit', {
-        task: {
-          taskId: taskId,
-          title: taskTitle
-        }
-      }, 200, 
-      (data) => ({data, titleObj}), 
-      rejectWithValue)
-    } else if (taskId[0] === 'c') {
-      return await apiCaller('/api/task-manager/task/cus/edit', {
-        task: {
-          taskId: taskId,
-          title: taskTitle
-        }
-      }, 200, 
-      (data) => ({data, titleObj}), 
-      rejectWithValue)
-    }
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        title: newTitle
+      }
+    }, 200, 
+    (data) => ({data, titleObj}), 
+    rejectWithValue)
   }
 )
 
 export const updateDescription = createAsyncThunk(
   'taskData/updateDescription',
   async (descObj, { rejectWithValue }) => {
-    const { taskId, text } = descObj
+    const { taskId, desc } = descObj
     
-    if (taskId[0] === 'r') {
-      return await apiCaller('/api/task-manager/task/req/edit', {
-        task: {
-          taskId: taskId,
-          description: text
-        }
-      }, 200, 
-      (data) => ({data, descObj}), 
-      rejectWithValue)
-    } else if (taskId[0] === 'c') {
-      return await apiCaller('/api/task-manager/task/cus/edit', {
-        task: {
-          taskId: taskId,
-          description: text
-        }
-      }, 200, 
-      (data) => ({data, descObj}), 
-      rejectWithValue)
-    }
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        description: desc
+      }
+    }, 200, 
+    (data) => ({data, descObj}), 
+    rejectWithValue)
   }
 )
 
@@ -341,64 +219,14 @@ export const changeTaskStatus = createAsyncThunk(
   async (statusObj, { rejectWithValue }) => {
     const { taskId, statusId } = statusObj
     
-    if (taskId[0] === 'r') {
-      return await apiCaller('/api/task-manager/task/req/edit', {
-        task: {
-          taskId: taskId,
-          statusId: statusId
-        }
-      }, 200, 
-      (data) => ({data, statusObj}), 
-      rejectWithValue)
-    } else if (taskId[0] === 'c') {
-      return await apiCaller('/api/task-manager/task/cus/edit', {
-        task: {
-          taskId: taskId,
-          statusId: statusId
-        }
-      }, 200, 
-      (data) => ({data, statusObj}), 
-      rejectWithValue)
-    }    
-  }
-)
-
-export const linkFormToTask = createAsyncThunk( // only for request task
-  'taskData/linkFormToTask',
-  // if submission passed to the edit request task API, then get response main subTaskIds and store them
-  async (submissionObj, { rejectWithValue }) => {
-    const { taskId, submissionId } = submissionObj
-    
-    const data = {
-      newLogs: [],
-      subTaskIds: [1,2,3,4]
-    }
-    
-    // call the "/api/task-manager/task/req/edit" API
-    // send the taskId and the submissionId to backend in either case
-    // data = {
-    // newLogs: [],
-    // }
-
-    return {data, submissionObj}
-
-    //{task*: editReqTaskObj}
-    //{task*: editCusTaskObj}
-    /*
-    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, 
-    subtasks**: [subtaskObj]}, archive**: Boolean}
-    subtaskObj == {subtaskId*: Number, assigneeId**: Number, description**: "String", check**: Boolean}
-
-    {taskId: "String", title**: "String", description**: "String", ownerId**: Number, statusId**: Number, archive**: Boolean}
-    */
-    return await apiCaller('/api/task-manager/task/req/edit', {}, 200, 
-    (data) => {
-      
-    }, rejectWithValue)  
-    
-    //{newLog: logObj, subTaskIds**: [Number]}
-    //{newLog: logObj}
-    //{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        statusId: statusId
+      }
+    }, 200, 
+    (data) => ({data, statusObj}), 
+    rejectWithValue)   
   }
 )
 
@@ -484,6 +312,20 @@ const taskdata = createSlice({
           })
         }
       })
+    },
+
+    moveTaskSync: (state, action) => {
+      const editTaskObject = action.payload
+
+      state.taskList.forEach(taskObj => {
+        if(taskObj.taskId === editTaskObject.taskId) {
+          taskObj.ownerId = Number(action.payload.dstColumnId)
+        }
+      })
+    },
+
+    clearError: (state, action) => {
+      state.error = null
     }
   },
 
@@ -494,15 +336,18 @@ const taskdata = createSlice({
       }
     },
     [fetchTaskManager.fulfilled]: (state, action) => {
-      state.taskList = action.payload.taskList
-      
-      state.taskList.map(taskObj => {
-        if (taskObj.taskId[0] === 'r' && taskObj.subTasks.length !== 0) {
-          taskObj.subTasks.map(subObj => {
-            state.taskList.push(subObj)
-          })
-        }
-      })
+      if (state.isPending === true) {
+        state.isPending = false
+        state.taskList = action.payload.taskList
+        
+        state.taskList.map(taskObj => {
+          if (taskObj.taskId[0] === 'r' && taskObj.subTasks.length !== 0) {
+            taskObj.subTasks.map(subObj => {
+              state.taskList.push(subObj)
+            })
+          }
+        })
+      }
     },
     [fetchTaskManager.rejected]: (state, action) => {
       if (state.isPending === true) {
@@ -516,32 +361,26 @@ const taskdata = createSlice({
         state.isPending = true
       }
     },
-    [fetchCheckList.fulfilled]: (state, action) => {
-      const {IdObj, data} = action.payload
-      state.checkList = data
 
-      let subTaskObj = {}
-      
-      state.checkList.map(checkObj => {
-        var subTaskId = state.subTaskIds.splice(0, 1) // get the every first id in the array
-        var subTaskDesc = checkObj.description
-        state.taskList.map(taskObj => {
-          if (taskObj.taskId === IdObj.taskId) {
-            subTaskObj = {
-              taskId: `s${subTaskId}`,
-              subtaskId: subTaskId,
-              assTaskId: IdObj.taskId, //associated taskId (task to which this subtask is associated with)
-              ownerId: taskObj.ownerId,
-              assigneeId: taskObj.ownerId,
-              description: subTaskDesc,
-              check: true
-            }
-            taskObj.subTasks.push(subTaskObj)
+    [fetchCheckList.fulfilled]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        const {idObj, data} = action.payload
+        state.checkList = data.checklists
+
+        state.taskList.forEach(taskObj => {
+          if (taskObj.taskId === idObj.taskId){
+            
+            state.checklistAssignees = data.checklists.map(checklistItem => ({
+                checklistId: checklistItem.checklistId, 
+                assigneeId: taskObj.ownerId
+              })
+            )            
           }
         })
-        state.taskList.push(subTaskObj)
-      })
+      }
     },
+    
     [fetchCheckList.rejected]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
@@ -592,6 +431,28 @@ const taskdata = createSlice({
 
     [createRequestTask.fulfilled]: (state, action) => {
       console.log(action.payload)
+      // let subTaskObj = {}
+      
+      // state.checkList.map(checkObj => {
+      //   var subTaskId = state.subTaskIds.splice(0, 1) // get the every first id in the array
+      //   var subTaskDesc = checkObj.description
+      //   state.taskList.map(taskObj => {
+      //     if (taskObj.taskId === IdObj.taskId) {
+      //       subTaskObj = {
+      //         taskId: `s${subTaskId}`,
+      //         subtaskId: subTaskId,
+      //         assTaskId: IdObj.taskId, //associated taskId (task to which this subtask is associated with)
+      //         ownerId: taskObj.ownerId,
+      //         assigneeId: taskObj.ownerId,
+      //         description: subTaskDesc,
+      //         check: true
+      //       }
+      //       taskObj.subTasks.push(subTaskObj)
+      //     }
+      //   })
+      //   state.taskList.push(subTaskObj)
+      // })
+
       state.taskList.push({
         taskId: action.payload.data.taskId,
         logs: action.payload.data.logs,
@@ -605,7 +466,6 @@ const taskdata = createSlice({
     },
 
     [createCustomTask.fulfilled]: (state, action) => {
-      console.log("here")
       state.taskList.push({
         taskId: action.payload.data.taskId,
         logs: action.payload.data.logs,
@@ -632,38 +492,21 @@ const taskdata = createSlice({
         }
       })
     },
+
     [createNewLog.rejected]: (state, action) => {
       state.error = action.payload
     },
 
     [moveTask.fulfilled]: (state, action) => {
-      const { data, editTaskObject } = action.payload
-      
-      // if (editTaskObject.taskId[0] === 's') {
-      //   state.taskList.map(taskObj => {
-      //     if (taskObj.taskId === editTaskObject.taskId) {
-      //       state.taskList.map(assTaskObj => {
-      //         if(assTaskObj.taskId === taskObj.assTaskId) {
-      //           assTaskObj.subTasks.map(assSubTask => {
-      //             if (assSubTask.taskId === editTaskObject.taskId) {
-      //               assSubTask.ownerId = editTaskObject.dstColumnId
-      //               assSubTask.assigneeId = editTaskObject.dstColumnId
-      //               taskObj.ownerId = editTaskObject.dstColumnId
-      //             }
-      //           })
-      //         }
-      //       })
-      //     }
-      //   })
-      // } else {
-        state.taskList.map(taskObj => {
-          if(taskObj.taskId === editTaskObject.taskId) {
-            taskObj.ownerId = editTaskObject.dstColumnId
-            taskObj.logs.push(data.newLog)
-          }
-        })
-      //}
+      const {data, editTaskObject} = action.payload
+
+      state.taskList.forEach(taskObj => {
+        if(taskObj.taskId === editTaskObject.taskId) {
+          taskObj.logs.push(data.newLog)
+        }
+      })
     },
+
     [moveTask.rejected]: (state, action) => {
       state.error = action.payload
     },
@@ -700,7 +543,7 @@ const taskdata = createSlice({
       
       state.taskList.map(taskObj => {
         if (taskObj.taskId === titleObj.taskId) {
-          taskObj.title = titleObj.taskTitle
+          taskObj.title = titleObj.newTitle
           taskObj.logs.push(data.newLog)
         }
       })
@@ -714,7 +557,7 @@ const taskdata = createSlice({
 
       state.taskList.map(taskObj => {
         if (taskObj.taskId === descObj.taskId) {
-          taskObj.description = descObj.text
+          taskObj.description = descObj.desc
           taskObj.logs.push(data.newLog)
         }
       })
@@ -737,21 +580,6 @@ const taskdata = createSlice({
       state.error = action.payload
     },
 
-    [linkFormToTask.fulfilled]: (state, action) => {
-      const {data, submissionObj} = action.payload
-
-      state.taskList.map(taskObj => {
-        if (taskObj.taskId === submissionObj.taskId) {
-          taskObj.submissionId = submissionObj.submissionId
-          taskObj.logs.push(data.newLog)
-          state.subTaskIds = data.subTaskIds
-        }
-      })
-      console.log(state.subTaskIds)
-    },
-    [linkFormToTask.rejected]: (state, action) => {
-      state.error = action.payload
-    },
   }
 })
 
@@ -761,7 +589,9 @@ export const {
   addTaskAssignees,
   deleteTaskAssignee,
   subTaskDisplay, 
-  editSubTask
+  editSubTask,
+  moveTaskSync,
+  clearError
 } = taskdata.actions
 
 export default taskdata.reducer
