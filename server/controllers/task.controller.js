@@ -84,6 +84,7 @@ exports.createReqTask = async (req, res, next) => {
       submissionId: reqSubmission._id,
       ownerId: reqCCA._id,
       statusId: reqStatus._id,
+      archive: false
     });
 
     await reqRTask.save();
@@ -96,7 +97,7 @@ exports.createReqTask = async (req, res, next) => {
     })
 
     await reqTaskLog.save();
-    reqRTask.logs.push(reqTaskLog._id);
+    reqRTask.logIds.push(reqTaskLog._id);
     
     let logsToSend = [];
     let subTasksToSend = [];
@@ -159,7 +160,7 @@ exports.createReqTask = async (req, res, next) => {
 }
 
 exports.createCusTask = async (req, res, next) => {
-  let params = req.params;
+  let params = req.body;
   let task = params.task;
 
   try {
@@ -174,19 +175,22 @@ exports.createCusTask = async (req, res, next) => {
       description: task.description,
       ownerId: reqCCA._id,
       statusId: reqStatus._id,
+      archive: false
     });
 
     await reqCTask.save();
 
+    //create log
     let creatorCCA = await CCA.findById(params.userObj._id, 'ccaId firstName lastName');
-
     let creationText = " created by " + createLogText("u", creatorCCA.ccaId, creatorCCA.firstName + " " + creatorCCA.lastName) + ". ";
     let reqTaskLog = new Log({
       description: createLogText("rt", "r" + reqCTask.taskId) + creationText + "Ownership set to " + createLogText("u", task.ownerId, reqCCA.firstName + " " + reqCCA.lastName)
     })
 
     await reqTaskLog.save();
-    reqCTask.logs.push(reqTaskLog._id);
+
+    // add log to custom task as well
+    reqCTask.logIds.push(reqTaskLog._id);
     
     let logsToSend = [];
 
@@ -404,7 +408,7 @@ exports.fetchTaskManager = async (req, res, next) => {
       taskObj.taskId = "r" + taskObj.taskId;
 
       let reqCCA = await CCA.findById(r.ownerId, 'ccaId');
-      taskObj.ownerId = reqCCA.ownerId;
+      taskObj.ownerId = reqCCA.ccaId;
 
       let reqStatus = await Status.findById(r.statusId, 'statusId');
       taskObj.statusId = reqStatus.statusId;
@@ -441,7 +445,7 @@ exports.fetchTaskManager = async (req, res, next) => {
       taskObj.taskId = "c" + taskObj.taskId;
 
       let reqCCA = await CCA.findById(c.ownerId, 'ccaId');
-      taskObj.ownerId = reqCCA.ownerId;
+      taskObj.ownerId = reqCCA.ccaId;
 
       let reqStatus = await Status.findById(c.statusId, 'statusId');
       taskObj.statusId = reqStatus.statusId;
