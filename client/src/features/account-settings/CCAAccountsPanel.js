@@ -12,16 +12,26 @@ import * as Yup from 'yup'
 import ErrorSnackbar from "../../ui/ErrorSnackbar"
 import PanelBar from './PanelBar'
 import AccessibilityIcon from '@material-ui/icons/Accessibility'
-
+import Pagination from '@material-ui/lab/Pagination';
 import { addCCAAccount, toggleActiveCCAAccount, editCCAAccount, fetchCCAAccounts, clearError, editCCAPermissions } from './ccaDetailsSlice'
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
 
 var Base64 = require('js-base64').Base64;
-
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+  },
+  paper: {
+    width: '100%',
+    height: '90%',
+    marginBottom: theme.spacing(5),
+  },
+}))
 function CCAAccountPanel({ccaDetails,dispatch}) {
-
+  const classes = useStyles()
   useEffect(() => {
-    dispatch(fetchCCAAccounts())
-  }, [])
+    dispatch(fetchCCAAccounts())}, [])
   
   const [isOpen, setIsOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
@@ -29,14 +39,21 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
   const [picture, setPicture] = useState("https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-6.png")
   const [permissionMode, setPermissionsMode] = useState(false)
   const [permissions, setPermissions] = useState({})
+  const [page, setPage] = React.useState(0);
   
   
+  function handleChangePage(event, newPage){
+    setPage(newPage);
+  }
 
   function handleImageUpload(event, ccaId) {
     const url = URL.createObjectURL(event.target.files[0])
-    var encoded = Base64.encode(url)
-    console.log(encoded) 
-    setPicture(encoded)
+    var b64 = Base64.encode(event.target.files[0])
+    // var encoded = Base64.encodeURI(event.target.files[0])
+    console.log(b64)
+    // var unicode = atob(b64)
+    // console.log(unicode)
+    setPicture(b64)
   }
 
   function handlePermissionsChange(event){
@@ -352,38 +369,51 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     <div>
       {ccaDetails.isPending ? <LinearProgress /> :
         <div>
-          <PanelBar handleAdd={handleAdd} title="CCA Accounts" buttonText="Add CCA Account"/>
+          <PanelBar style = {{fontWeight: 'bold'}} handleAdd={handleAdd} title="CCA Accounts" buttonText="Add CCA Account"/>
           {permissionMode ? <PermissionsDialog/> : <CCADialog />}
           <br/>
-          <Container style={{color: "gray"}} >
-          <Grid container spacing={3}>
+          <Container style={{color: "gray", overflowX: 'auto'}} >
+          <Paper className={classes.paper}>
+          <Grid container spacing={3}  style = {{zIndex:-5}}>
           {
             ccaDetails.ccaList.map((ccaDetail,index) => (
               <Grid item xs={3}> 
-                <Card variant="outlined" style = {{marginLeft: 10, maxWidth: 300, background: ccaDetail.active ? "whitesmoke" : "darkgray"}}>
+                <Card elevation = {200} variant="outlined" style = {{marginLeft: 10, maxWidth: 275, background: ccaDetail.active ? "##F6F6F6" : "darkgray"}}>
                   <CardHeader
                     avatar={
-                      <Avatar style = {{width:150, height:150}} src = {ccaDetail.picture}/>
+                      <Avatar style = {{width:100, height:100}} src = {Base64.decode(ccaDetail.picture)}/>
                     }
                     action={
+                      
                       <EditDeleteMoreButton ccaId={ccaDetail.ccaId} active={ccaDetail.active}/>
                     }
                   />
                   <CardContent>
-                    <Typography style = {{textAlign: 'left', fontSize: 20}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
-                    <Typography>{ccaDetail.role}</Typography>
-                    <Typography>{ccaDetail.email}</Typography>
+                    <Typography style = {{textAlign: 'left', fontSize: 20, fontWeight: 'bold', fontColor:'black'}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
+                    <Typography style = {{fontColor: 'gray'}}>{ccaDetail.role}</Typography>
+                    <br/>
+                    <Typography style = {{fontColor: 'gray'}}>{ccaDetail.email}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
             ))
           }
           </Grid>
+          </Paper>
+          
+          <Pagination 
+            count={ccaDetails.ccaList.Length} 
+            color="primary" 
+            page={page}
+            onChangePage={handleChangePage}
+          />
           </Container>
         </div>
+        
       }
       <ErrorSnackbar stateError={ccaDetails.error} clearError={clearError}/>
     </div>
+    
   )
 }
 

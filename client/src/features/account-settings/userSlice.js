@@ -34,25 +34,23 @@ export const login = createAsyncThunk(
     if (isPending != true){
       return
     }
-    // console.log(user)
+
     const QUERY = (userType === "Society") ?  '/api/auth/society/login' : '/api/auth/cca/login'
 
-    return await apiCaller(QUERY, {
-      email: email,
-      password: password
-    }, 200,
-    (data) => {
+    return await apiCaller(QUERY, {email, password}, 200,
+    (data)=> {
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('localUser', JSON.stringify({userType, ...data.user}))
+
       if (userType==="CCA"){
         return {token: data.token, user: {email, userType, password, name: (data.user.firstName + ' ' + data.user.lastName),...data.user},}
       }
       else {
         return {token: data.token, user: {email, userType, password, ...data.user},}
       }
-    },
-    rejectWithValue)
+    },rejectWithValue)
   }
 )
-
 export const changePassword = createAsyncThunk(
   'user/changePassword',
   async({currentPassword, newPassword}, {getState, rejectWithValue}) => {

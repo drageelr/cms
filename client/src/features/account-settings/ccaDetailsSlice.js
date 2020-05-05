@@ -134,7 +134,7 @@ const ccaDetails = createSlice({
     [editCCAAccount.rejected]: (state, action) => {
       state.error = action.payload
     },
-
+    
     [addCCAAccount.fulfilled]: (state, action) => {
       state.ccaList.push({
         ccaId: action.payload.ccaId, 

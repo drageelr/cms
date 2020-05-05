@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme)=>({
  */
 
 function TaskStatusPanel({taskStatusDetails,dispatch}){
-
+  
   useEffect(() => {dispatch(fetchTaskStatus())},[])
 
   const classes = useStyles()
@@ -58,6 +58,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
   const [editId, setEditId] = useState(-1)
 
   function EditDeleteMoreButton({id}) {
+    console.log("sending id: ", id)
     const menusList=[
       {
         text: 'Edit',
@@ -67,7 +68,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
       {
         text: 'Delete',
         icon: <DeleteIcon/>,
-        onClick: ()=>dispatch(deleteTaskStatus({id})),
+        onClick: ()=>dispatch(deleteTaskStatus(id)),
       },
     ]
     return <MoreButton menusList={menusList}/>
@@ -92,10 +93,10 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
 
     if (editMode){
       const taskDetail = taskStatusDetails.taskList.find((task,index) =>{
-        return task.id === editId
+        return task.statusId === editId
       })
       if (taskDetail != undefined){
-        initialValues = {name:taskDetail.name,colorHex: taskDetail.colorHex}
+        initialValues = {name:taskDetail.name,color: taskDetail.color}
       }  
     }
 
@@ -181,18 +182,21 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
           </TableRow>
         </TableHead>
         <TableBody>
-          {taskStatusDetails.taskList.map((taskStatusDetail,index) => (
+        
+          {taskStatusDetails.taskList !== undefined &&
+          taskStatusDetails.taskList.map((taskStatusDetail,index) => (
             <StyledTableRow key={index}>
               <StyledTableCell component="th" scope="row">
                 {taskStatusDetail.name}
               </StyledTableCell>
               <StyledTableCell align="center">
-                <Button variant="contained" style={{backgroundColor:taskStatusDetail.colorHex}}/>
+                <Button variant="contained" style={{backgroundColor:taskStatusDetail.color}}/>
 
               </StyledTableCell>
 
               <StyledTableCell align="right">
-                <EditDeleteMoreButton id={taskStatusDetail.id}/>
+                {/* {console.log("id pressed: ", taskStatusDetail.statusId)} */}
+                <EditDeleteMoreButton id={taskStatusDetail.statusId}/>
               </StyledTableCell>
             </StyledTableRow>
           ))}

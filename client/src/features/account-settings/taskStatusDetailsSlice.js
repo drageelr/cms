@@ -1,31 +1,5 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
-
-const sampleState = {
-  taskList: [
-    {
-      id : 'ts-1',
-      name: "Backlog",
-      colorHex: '#808080',
-    },
-    {
-      id : 'ts-2',
-      name: "In Progress",
-      colorHex: '#FF6347',
-    },
-    {
-      id : 'ts-3',
-      name: "Done",
-      colorHex: '#00FF00',
-    },
-    {
-      id : 'ts-4',
-      name: "Urgent",
-      colorHex: '#FF0000',
-    },
-  ],
-  isPending: true,
-  error:'', 
-}
+import { apiCaller } from "../../helpers"
 
 const initialState = {
   taskList: [],
@@ -41,50 +15,50 @@ export const fetchTaskStatus = createAsyncThunk(
       return
     }
     
-    const fetchCall = () => {
-      var promise = new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(sampleState)
-        }, 1000)
-      })
-      return promise
-    }
-
-    const result = await fetchCall()
-    return result
+    return await apiCaller('/api/task-manager/task-status/fetch-all', {}, 200,
+    (data) => {
+      console.log("Returning data")
+      return {taskList: data.statuses}
+    },
+    rejectWithValue)
   }
 )
 
 export const deleteTaskStatus = createAsyncThunk(
   'taskStatusDetails/deleteTaskStatus',
-  async(id, { getState, rejectWithValue}) => {
-    const { isPending } = getState().taskStatusDetails
-    if (isPending != true) {
-      return
-    }
-    return id
+  async(statusId, { getState, rejectWithValue}) => {
+    console.log("deleted to be : , ", statusId)
+    return await apiCaller('/api/task-manager/task-status/delete', {statusId: statusId}, 203,
+    (data) => {
+      return {statusId}
+    },
+    rejectWithValue)
   }
 )
 
 export const addTaskStatus = createAsyncThunk(
   'taskStatusDetails/addTaskStatus',
   async (taskStatusObject, { getState, rejectWithValue}) => {
-    const { isPending } = getState().taskStatusDetails
-    if (isPending != true) {
-      return
-    }
-    return {id: 'ts-3',taskStatusObject : taskStatusObject}
+    const {name,color} = taskStatusObject
+    return await apiCaller('/api/task-manager/task-status/create', {name: name, color: color}, 201,
+    (data) => {
+      return {statusId: data.statusId,taskStatusObject}
+    },
+    rejectWithValue)
   }
 )
 
 export const editTaskStatus = createAsyncThunk(
   'taskStatusDetails/editTaskStatus',
   async (taskStatusObject, { getState, rejectWithValue}) => {
-    const { isPending } = getState().taskStatusDetails
-    if (isPending != true) {
-      return
-    }
-    return taskStatusObject
+    const {id,name,colorHex} = taskStatusObject
+    console.log(taskStatusObject)
+    
+    return await apiCaller('api/task-manager/task-status/edit',{statusId: id,name: name,color: colorHex}, 203,
+    (data) => {
+      return {taskStatusObject}
+    },
+    rejectWithValue)
   }
 )
 
@@ -99,77 +73,50 @@ const taskStatusDetails = createSlice({
   },
   
   extraReducers: {
-    [deleteTaskStatus.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [deleteTaskStatus.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        let i = 0
-        state.taskList.map((obj,index) => {
-          if (obj.id === action.payload.id){
-            i = index
-          }  
-        })  
-        state.taskList.splice(i,1)
-        state.error = 'Task Status Deleted'
-      }
+      let i = 0
+      state.taskList.map((obj,index) => {
+        if (obj.statusId === action.payload.statusId){
+          i = index
+        }  
+      })  
+      state.taskList.splice(i,1)
+      state.error = 'Task Status Deleted'
     },
     [deleteTaskStatus.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload
-      }
+      state.error = action.payload
     },
 
-    [addTaskStatus.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [addTaskStatus.fulfilled]: (state, action) => {
-      if (state.isPending === true){
-        state.isPending = false
-        state.taskList.push({
-        id : action.payload.id, 
-        name: action.payload.taskStatusObject.name,
-        colorHex: action.payload.taskStatusObject.colorHex,
-      })
-      state.error = 'Task Status Added'
-      } 
-    },
-    [addTaskStatus.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.error = action.payload
-      }
-    },
-
-    [editTaskStatus.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
-    [editTaskStatus.fulfilled]: (state, action) => {
+      
+      console.log("das: ", action.payload)
       if(state.isPending === true){
         state.isPending = false
-        let i = 0
-        state.taskList.find((obj,index) => {
-          if (obj.id === action.payload.id){
-            i = index
-          }
+      
+        state.taskList.push({
+          id: action.payload.id,
+          ...action.payload.taskStatusObject
         })
-        state.taskList[i] = action.payload
-        state.error = 'Task Status Added'
+        state.error = 'Task Status Added' 
       }
+      },
+    [addTaskStatus.rejected]: (state, action) => {
+        state.error = action.payload
+    },
+
+    [editTaskStatus.fulfilled]: (state, action) => {
+      let i = 0
+      state.taskList.find((obj,index) => {
+        if (obj.statusId === action.payload.statusId){
+          i = index
+        }
+      })
+      state.taskList[i] = action.payload
+      state.error = 'Task Status Edited'
     },
     [editTaskStatus.rejected]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
         state.error = action.payload
-      }
+
     },
     [fetchTaskStatus.pending]: (state, action) => {
       if (state.isPending === false) {
@@ -177,15 +124,17 @@ const taskStatusDetails = createSlice({
       }
     },
     [fetchTaskStatus.fulfilled]: (state, action) => {
+      console.log("fetchTaskStatus.fulfilled")
       if(state.isPending === true){
         state.isPending = false
+        console.log(action.payload)
         state.taskList = action.payload.taskList
         state.error = 'Task Status Panel Loaded'
       }
     },
     [fetchTaskStatus.rejected]: (state, action) => {
       if (state.isPending === true) {
-        // state.isPending = false
+        state.isPending = false
         state.error = action.payload
       }
     } 
