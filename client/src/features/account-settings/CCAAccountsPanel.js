@@ -17,6 +17,7 @@ import { addCCAAccount, toggleActiveCCAAccount, editCCAAccount, fetchCCAAccounts
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
+
 var Base64 = require('js-base64').Base64;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,11 +49,10 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
 
   function handleImageUpload(event, ccaId) {
     const url = URL.createObjectURL(event.target.files[0])
-    var b64 = Base64.encode(event.target.files[0])
-    // var encoded = Base64.encodeURI(event.target.files[0])
-    console.log(b64)
-    // var unicode = atob(b64)
-    // console.log(unicode)
+    var b64 = Base64.btoa(event.target.files[0])
+    console.log("starting: , ", event.target.files[0])
+    console.log("base 64: , ", b64)
+    console.log("decode: ", Base64.atob(b64))
     setPicture(b64)
   }
 
@@ -376,12 +376,13 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
           <Paper className={classes.paper}>
           <Grid container spacing={3}  style = {{zIndex:-5}}>
           {
+            ccaDetails.ccaList !== undefined &&
             ccaDetails.ccaList.map((ccaDetail,index) => (
               <Grid item xs={3}> 
                 <Card elevation = {200} variant="outlined" style = {{marginLeft: 10, maxWidth: 275, background: ccaDetail.active ? "##F6F6F6" : "darkgray"}}>
                   <CardHeader
                     avatar={
-                      <Avatar style = {{width:100, height:100}} src = {Base64.decode(ccaDetail.picture)}/>
+                      <Avatar style = {{width:100, height:100}} src = {Base64.atob(ccaDetail.picture)}/>
                     }
                     action={
                       
