@@ -5,8 +5,8 @@ import LockIcon from '@material-ui/icons/Lock'
 import PersonIcon from '@material-ui/icons/Person'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted'
-import bubbles from "./bubbles.png"
-import { Paper, makeStyles, Fab} from '@material-ui/core'
+import image from "./bg.jpg"
+import { Paper, makeStyles, Fab, Container, Card } from '@material-ui/core'
 import { Spring } from 'react-spring/renderprops';
 /**
   The CCASettingsHome constitutes buttons for the following: Change Password, CCA Accounts,
@@ -16,134 +16,93 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
-  margin: {
-    margin: theme.spacing(1),
-  },
-  propertiesPaper: {
+  ccaSettingsTitle: {
     padding: theme.spacing(2),
+    marginTop: 10,
   },
-  extendedIcon: {
-    marginRight: theme.spacing(1),
-  },
+  settingsBoxText: {
+    color: theme.palette.secondary.main,
+    fontWeight: 500
+  }
 }))
+
 
 export default function CCASettingsHome() {
   const classes = useStyles()
-  return (
-    <div>
-      
-      <div className={classes.root}>
-        <Paper elevation={3} square variant="outlined" className={classes.propertiesPaper} zIndex={10}>
-          <Grid container elevation={3} direction="row" justify="space-between"alignItems="center">
-            <Grid item elevation={3}>
-              <Typography variant="h4" elevation={3}>
-                <Box fontWeight={700}>
-                  CCA Settings
-                </Box>
-              </Typography>
-            </Grid>
-          </Grid>
-        </Paper>
-      </div>
-
-      
-    <Grid container spacing={3}>
-    <Spring 
-      form = {{opacity: 0, marginTop:-500}}
-      to = {{opacity: 1, marginTop: 0}}
-      config = {{delay: 1000, duration:1000}}
-    >
-      {props =>(
-          <Grid item sm={3} style = {{marginLeft: 300, props}}>
-          <Link to={"/change-password"} style={{ textDecoration: 'none' }}>
-            <Box style = {{
-              width: 170,
+  const image = 'https://images.vexels.com/media/users/3/148166/isolated/preview/488f0787445ac3d5e112561829ec5467-abstract-orange-square-background-by-vexels.png'
+  // const image = 'https://img.freepik.com/free-vector/abstract-colorful-transparent-polygonal-background_1055-5149.jpg?size=338&ext=jpg'
+  function SettingsLinkBox({text, bgImage, link, icon}){
+    return(
+      <Grid item>
+          <Link to={link} style={{ textDecoration: 'none' }}>
+            <Card elevation={3} style={{
+              width: 150,
               height: 100,
-              backgroundColor: '#EEEEEE',
               border: 30,
-              padding: 50,
+              padding: 40,
               margin: 20,
-              boxShadow: '100%',
               borderRadius: '10%',
-              // backgroundImage: <img src={bubbles}/>,
-              backgroundImage: `linear-gradient(to right bottom, #1c67d960, #1c67d9), url(${bubbles})`,
+              backgroundImage:bgImage,
               backgroundPosition:'50%',
-              marginRight: 900,
             }}
             > 
-            <Typography style = {{color: "#FFFFFF"}} align = "center" variant = 'title'>Change Password</Typography>
-            
+            <Box color="secondary.main" style={{ fontSize: 34 }} clone>
+              {icon}
             </Box>
-          </Link>  
-        </Grid>
-      )}
-
-    </Spring>
-              
-      <Grid item sm={3}> 
-          <Link to={"/cca-panel"} style={{ textDecoration: 'none' }}>
-          <Box style = {{
-            width: 170,
-            height: 100,
-            backgroundColor: '#EEEEEE',
-            border: 30,
-            padding: 50,
-            margin: 20,
-            boxShadow: '100%',
-            borderRadius: '10%',
-            backgroundImage: `linear-gradient(to right bottom, #d3279260, #d32792),url(${bubbles})`,
-            marginRight: 900,
             
-          }}
-          > 
-          {/* <LockIcon style = {{transform: 1.8}}/> */}
-          <Typography style = {{color: "#FFFFFF"}} align = "center" variant = 'title'>CCA Accounts</Typography>
-          </Box>
+            <Typography variant='h5' className={classes.settingsBoxText}>
+              {text}
+            </Typography>
+            </Card>
           </Link>
+      </Grid>
+    )    
+  }
+
+  return (
+    <Container >
+      <Typography variant="h4" className={classes.ccaSettingsTitle}>
+        <Box fontWeight={700} textAlign="center">
+          CCA Settings
+        </Box>
+      </Typography>
+      
+      <Grid container direction="row" justify="center" alignItems="center">
+
+        <SettingsLinkBox 
+        text="CCA Accounts" 
+        bgImage={`linear-gradient(to bottom, #FF6BAF70, #FF917C), url(${image})`}
+        link="/cca-panel"
+        icon={<PersonIcon/>}
+        />
+
+        <SettingsLinkBox 
+        text="Society Accounts" 
+        link="/society-panel"
+        bgImage={`linear-gradient(to bottom, #FFA40080, #FFC65F),url(${image})`}
+
+        icon={<PeopleAltIcon/>}
+        />
       </Grid>
 
-      <Grid item md={3} style = {{marginLeft: 300}}>
-          <Link to={"/society-panel"} style={{ textDecoration: 'none' }}>
-          <Box style = {{
-            width: 170,
-            height: 100,
-            backgroundColor: '#EEEEEE',
-            border: 30,
-            padding: 50,
-            margin: 20,
-            boxShadow: '100%',
-            borderRadius: '10%',
-            backgroundImage: `linear-gradient(to right bottom, #df555599, #df5555),url(${bubbles})`,
-            marginRight: 900,
-          }}
-          >
-            <Typography style = {{color: "#FFFFFF"}} align = "center" variant = 'title'>Society Accounts</Typography>
-          
-          </Box>
-          
-          </Link>
+      <Grid container direction="row" justify="center" alignItems="center">
+        
+        <SettingsLinkBox 
+        text="Change Password" 
+        link="/change-password"
+        bgImage={`linear-gradient(to bottom, #3578FA70, #736BE8),url(${image})`}
+        icon={<LockIcon/>}
+        />
+        
+        <SettingsLinkBox 
+        text="Task Status Panel" 
+        bgImage={`linear-gradient(to bottom, #008A6470, #22C197),url(${image})`}
+        link="/task-status-panel"
+        icon={<FormatListBulletedIcon/>}
+        />
+      
       </Grid>
-
-      <Grid item md={3}> 
-          <Link to={"/task-status-panel"} style={{ textDecoration: 'none' }}>
-          <Box style = {{
-            width: 170,
-            height: 100,
-            backgroundColor: '#EEEEEE',
-            border: 30,
-            padding: 50,
-            margin: 20,
-            boxShadow: '100%',
-            borderRadius: '10%',
-            backgroundImage: `linear-gradient(to right bottom,#FFC55E60, #e19a1b),url(${bubbles})`,
-            marginRight: 900,
-          }}
-          > <Typography style = {{color: "#FFFFFF"}} align = "center" variant = 'title'>Task Status Panel</Typography>
-          </Box>
-          
-          </Link>
-      </Grid>
-    </Grid>
-    </div>
+      
+    </Container>
   )
 }
