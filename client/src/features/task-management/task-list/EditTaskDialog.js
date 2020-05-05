@@ -105,7 +105,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
         <Grid item>
           { // Request Form
             (localSubmissionId === -1 && !editMode)
-            ? <AttachRequestForm taskId={taskId} setSubmissionId={setSubmissionId}/>
+            ? <AttachRequestForm ownerId={ownerId} setSubmissionId={setSubmissionId}/>
             : <Typography variant="h5">
                 Linked Request ID: {localSubmissionId}
               </Typography> 

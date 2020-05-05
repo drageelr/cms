@@ -20,7 +20,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-export function AttachRequestForm({taskId, formDataList, setSubmissionId, dispatch}) {
+export function AttachRequestForm({ownerId, formDataList, setSubmissionId, dispatch}) {
 
   // fetch the CCA REQUEST LIST SO THAT IT CAN BE USED TO ATTACH A REQUEST TO A REQUEST TASK
 
@@ -46,7 +46,7 @@ export function AttachRequestForm({taskId, formDataList, setSubmissionId, dispat
     onRowClick : (rowData, rowMeta, dataIndex) => {
       const submissionId = rowData[0]
       setSubmissionId(submissionId)
-      dispatch(fetchCheckList({taskId, submissionId}))
+      dispatch(fetchCheckList({ownerId, submissionId}))
       // const fetchChecklists = await
       // const checklist = unwrapResult(fetchChecklists)
     }

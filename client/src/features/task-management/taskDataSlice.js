@@ -54,7 +54,7 @@ export const fetchCheckList = createAsyncThunk(
     if (isPending != true) {
       return
     } 
-    const { taskId, submissionId } = idObj
+    const { ownerId, submissionId } = idObj
     
     return await apiCaller('/api/form/fetch-checklist', { submissionId }, 200, 
     (data) => ({data, idObj}), rejectWithValue)    
@@ -84,7 +84,9 @@ export const createRequestTask = createAsyncThunk( // GIVES INTERNAL SERVER ERRO
   'taskData/createRequestTask',
   async (reqTaskObject, { getState, rejectWithValue }) => {
     const { title, description, submissionId, ownerId, statusId } = reqTaskObject
-    const checklists = getState().taskData.checklistAssignees
+    const checklistIds = getState().taskData.checklistAssignees
+
+    console.log(checklistIds)
 
     return await apiCaller('/api/task-manager/task/req/create', {
       task: {
@@ -93,7 +95,7 @@ export const createRequestTask = createAsyncThunk( // GIVES INTERNAL SERVER ERRO
         submissionId,
         ownerId,
         statusId,
-        checklists
+        checklistIds
       }
     }, 201, 
     (data) => ({data, reqTaskObject}), 
@@ -340,13 +342,13 @@ const taskdata = createSlice({
         state.isPending = false
         state.taskList = action.payload.taskList
         
-        state.taskList.map(taskObj => {
-          if (taskObj.taskId[0] === 'r' && taskObj.subTasks.length !== 0) {
-            taskObj.subTasks.map(subObj => {
-              state.taskList.push(subObj)
-            })
-          }
-        })
+        // state.taskList.map(taskObj => {
+        //   if (taskObj.taskId[0] === 'r' && taskObj.subTasks.length !== 0) {
+        //     taskObj.subTasks.map(subObj => {
+        //       state.taskList.push(subObj)
+        //     })
+        //   }
+        // })
       }
     },
     [fetchTaskManager.rejected]: (state, action) => {
@@ -368,16 +370,11 @@ const taskdata = createSlice({
         const {idObj, data} = action.payload
         state.checkList = data.checklists
 
-        state.taskList.forEach(taskObj => {
-          if (taskObj.taskId === idObj.taskId){
-            
-            state.checklistAssignees = data.checklists.map(checklistItem => ({
-                checklistId: checklistItem.checklistId, 
-                assigneeId: taskObj.ownerId
-              })
-            )            
-          }
-        })
+        state.checklistAssignees = data.checklists.map(checklistItem => ({
+            checklistId: checklistItem.checklistId, 
+            assigneeId: idObj.ownerId
+          })
+        )
       }
     },
     
