@@ -456,14 +456,14 @@ exports.fetchChecklist = async (req, res, next) => {
     let checklistList = [];
 
     for (let c of reqChecklists) {
-      let checklistObj = helperFuncs.duplicateObject(reqChecklists, ["checklistId", "sectionId", "description"]);
+      let checklistObj = helperFuncs.duplicateObject(c, ["checklistId", "sectionId", "description"]);
       checklistList.push(checklistObj);
     }
 
     res.json({
       statusCode: 200,
       statusName: httpStatus.getName(200),
-      message: "Checklist Sucessfully Fetched!",
+      message: "Checklist Successfully Fetched!",
       formId: reqForm.formId,
       checklists: checklistList
     })

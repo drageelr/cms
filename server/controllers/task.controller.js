@@ -56,11 +56,11 @@ function createLogText(targetType, targetId, targetName = "") {
 */
 
 exports.createReqTask = async (req, res, next) => {
-  let params = req.params;
+  let params = req.body;
   let task = params.task;
 
   try {
-    let reqSubmission = await Submission.findOne({submissionId: task.submissionId}, '_id');
+    let reqSubmission = await Submission.findOne({submissionId: task.submissionId}, '_id formId');
     if (!reqSubmission) throw new customError.SubmissionNotFoundError("invalid submissionId"); // raise submission not found error
 
     let reqCCA = await CCA.findOne({ccaId: task.ownerId}, '_id firstName lastName');
@@ -68,15 +68,27 @@ exports.createReqTask = async (req, res, next) => {
 
     let reqStatus = await Status.findOne({statusId: task.statusId}, '_id');
     if (!reqStatus) throw new customError.TaskStatusNotFoundError("invalid statusId"); // raise status not found error
-
-    let checklistIds = task.checklistIds.map(c => c.checklistId);
-    let reqChecklists = await Checklist.find({checklistId: {$in: checklistIds}});
+    
+    let checklistIds = []
+    let assigneeIds = []
+    if (task.checklistIds) {
+      checklistIds = task.checklistIds.map(c => c.checklistId);
+      assigneeIds = task.checklistIds.map(c => c.assigneeId);
+    }
+    
+    let reqChecklists = await Checklist.find({checklistId: {$in: checklistIds}, formId: reqSubmission.formId});
     if (reqChecklists.length != checklistIds.length) throw new customError.ChecklistNotFoundError("invalid checklistId"); // throw invalid checklist id(s)
 
-    let assigneeIds = task.checklistIds.map(c => c.assigneeId);
-    let reqCCAs = await CCA.find({ccaId: {$in: assigneeIds}}, '_id firstName lastName');
-    if (reqCCAs.length != assigneeIds.length) throw new customError.UserNotFoundError("invalid assigneeId"); // raise invalid assingee id(s)
-
+    let reqCCAs = [];
+    for (let aId of assigneeIds) {
+      let reqCCA = await CCA.findOne({ccaId: aId}, '_id firstName lastName');
+      if (reqCCA) {
+        let reqCCAObj = helperFuncs.duplicateObject(reqCCA, ["_id", "firstName", "lastName"]);
+        reqCCAs.push(reqCCAObj);
+      } else {
+        throw new customError.UserNotFoundError("invalid assigneeId"); // raise invalid assignee id(s)
+      }
+    }
 
     let reqRTask = new RTask({
       title: task.title,
@@ -115,7 +127,7 @@ exports.createReqTask = async (req, res, next) => {
         let reqSubTask = new SubTask({
           taskId: reqRTask._id,
           assigneeId: reqCCAs[i]._id,
-          description: reqChecklists[i]._description,
+          description: reqChecklists[i].description,
           check: false
         });
 
@@ -129,7 +141,7 @@ exports.createReqTask = async (req, res, next) => {
 
         subTasksToSend.push({
           subtaskId: reqSubTask.subtaskId,
-          assigneeId: reqSubTask.assigneeId,
+          assigneeId: assigneeIds[i],
           description: reqSubTask.description,
           check: reqSubTask.check
         });
@@ -146,6 +158,8 @@ exports.createReqTask = async (req, res, next) => {
         reqRTask.logIds.push(subTaskLog._id);
       }
     }
+
+    await reqRTask.save();
 
     res.json({
       statusCode: 201,
