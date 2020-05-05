@@ -24,15 +24,15 @@
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of CCA User (Admin/Member) and Society accounts.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Create CCA Account|Creates an account for a CCA Member|`/api/account-manager/cca/create-account`|`{ccaAccount*: ccaAccountObj}`|POST|`{ccaId: Number}`|CCA|`4.1`|
-|2|Create Society Account|Creates an account for a Society|`/api/account-manager/society/create-account`|`{societyAccount*: societyAccountObj}`|POST|`{societyId: Number}`|CCA|`4.1`|
-|3|Edit CCA Account|Edits an account of a CCA Member|`/api/account-manager/cca/edit-account`|`ccaAccount: ccaAccountObj "At least one field is required" "At least one field is required"`|POST|`{}`|CCA|`5.1`|
-|4|Edit Society Account|Edits an account of a Society|`/api/account-manager/society/edit-account`|`{societyAccount: societyAccountObj "At least one field is required"}`|POST|`{}`|CCA|`5.1`|
-|5|Get CCA Account List|Fetches the list of all existing CCA Member Accounts|`/api/account-manager/cca/account-list`|`{}`|POST|`{userList: userListCCA}`|CCA|`5.1`|
-|6|Get Society Account List|Fetches the list of all existing Society Accounts|`/api/account-manager/society/account-list`|`{}`|POST|`{userList: userListSociety}`|CCA|`5.1`|
-|7|Change Password (CCA)|Changes the password of a CCA Member|`/api/account-manager/cca/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|CCA|`2.1`|
-|8|Change Password (Society)|Changes the password of a Society Account|`/api/account-manager/society/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|Society|`2.1`|
-|9|Change Picture (CCA)|Changes the picture of a CCA Member Account|`/api/account-manager/cca/change-picture`|`{picture*: "String"}`|POST|`{}`|CCA|`2.1`|
+|1|Create CCA Account|Creates an account for a CCA Member|`/api/account/cca/create-account`|`{ccaAccount*: ccaAccountObj}`|POST|`{ccaId: Number}`|CCA|`4.1`|
+|2|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{societyAccount*: societyAccountObj}`|POST|`{societyId: Number}`|CCA|`4.1`|
+|3|Edit CCA Account|Edits an account of a CCA Member|`/api/account/cca/edit-account`|`ccaAccount: ccaAccountObj "At least one field is required" "At least one field is required"`|POST|`{}`|CCA|`5.1`|
+|4|Edit Society Account|Edits an account of a Society|`/api/account/society/edit-account`|`{societyAccount: societyAccountObj "At least one field is required"}`|POST|`{}`|CCA|`5.1`|
+|5|Get CCA Account List|Fetches the list of all existing CCA Member Accounts|`/api/account/cca/account-list`|`{}`|POST|`{userList: userListCCA}`|CCA|`5.1`|
+|6|Get Society Account List|Fetches the list of all existing Society Accounts|`/api/account/society/account-list`|`{}`|POST|`{userList: userListSociety}`|CCA|`5.1`|
+|7|Change Password (CCA)|Changes the password of a CCA Member|`/api/account/cca/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|CCA|`2.1`|
+|8|Change Password (Society)|Changes the password of a Society Account|`/api/account/society/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|Society|`2.1`|
+|9|Change Picture (CCA)|Changes the picture of a CCA Member Account|`/api/account/cca/change-picture`|`{picture*: "String"}`|POST|`{}`|CCA|`2.1`|
 
 - **Note: * means the field mentioned is required (For `Request Object`)**
 
@@ -84,12 +84,12 @@
 *Note: Will contain APIs for submitting / editing forms / viewing (CCA + Society), getting request list, updating request status (CCA) etc*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/submit`|`{formID*: Number, submissionID*: Number, itemsData*: itemsObj}`|POST|`{timestampCreated: DateTime, timestampModified: DateTime}`|Society|`7.1, 8.1`|
-|2|Add CCA Note|Attaches a Note from CCA to a request|`/api/cca/add-note`|`{submissionId*: Number, note*: "String-min(1)-max(100)"}`|POST|`{}`|CCA|`9.1`|
-|3|Add Society Note|Attaches a Note from Society to a request|`/api/society/add-note`|`{submissionId*: Number, note*: "String-min(1)-max(100)"}`|POST|`{}`|Society|`9.1`|
-|4|Fetch Submission List|Fetches list of all submissions made|`/api/fetch-list`|`{statusList: ["String"], timeObj*: timeObj}`|POST|`{submissions: submissionsList}`|CCA+Society|`9.1`|
-|5|Update Submission Status|Status of existing submission updated|`/api/update-status`|`{submissionId*: Number, status*: "String", issue: "String-min(1)-max(500)"}`|POST|`{}`|CCA|`8.1, 9.1`|
-|6|Fetch Submission|Fetches a submission with complete details|`/api/fetch`|`{submissionId*: Number}`|POST|`{itemsData: itemsObj, ccaNotes: ["String"], societyNotes: ["String"], formId: Number}`|CCA+Society|`9.1`|
+|1|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/submission/submit`|`{formID*: Number, submissionID*: Number, itemsData*: itemsObj}`|POST|`{timestampCreated: DateTime, timestampModified: DateTime}`|Society|`7.1, 8.1`|
+|2|Add CCA Note|Attaches a Note from CCA to a request|`/api/submission/cca/add-note`|`{submissionId*: Number, note*: "String-min(1)-max(100)"}`|POST|`{}`|CCA|`9.1`|
+|3|Add Society Note|Attaches a Note from Society to a request|`/api/submission/society/add-note`|`{submissionId*: Number, note*: "String-min(1)-max(100)"}`|POST|`{}`|Society|`9.1`|
+|4|Fetch Submission List|Fetches list of all submissions made|`/api/submission/fetch-list`|`{statusList: ["String"], timeObj*: timeObj}`|POST|`{submissions: submissionsList}`|CCA+Society|`9.1`|
+|5|Update Submission Status|Status of existing submission updated|`/api/submission/update-status`|`{submissionId*: Number, status*: "String", issue: "String-min(1)-max(500)"}`|POST|`{}`|CCA|`8.1, 9.1`|
+|6|Fetch Submission|Fetches a submission with complete details|`/api/submission/fetch`|`{submissionId*: Number}`|POST|`{itemsData: itemsObj, ccaNotes: ["String"], societyNotes: ["String"], formId: Number}`|CCA+Society|`9.1`|
 
 ### Object Schema
 |#|Name|Object|

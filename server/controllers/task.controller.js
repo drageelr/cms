@@ -35,9 +35,9 @@ var config = require('../config/config').variables;
 
 /**
  * Creates the text associated with archiving a target.
- * @param {*} targetType - type of target.
- * @param {*} targetId - Id of target.
- * @param {*} targetName - Name of the target. 
+ * @param {String} targetType - type of target.
+ * @param {Number} targetId - Id of target.
+ * @param {String} targetName - Name of the target. 
  */
 function createLogText(targetType, targetId, targetName = "") {
   const typeConversion = {

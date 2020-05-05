@@ -20,6 +20,9 @@ var customError = require('../errors/errors');
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
+/**
+ * Default credentials for the Admin account.
+ */
 exports.defaultCredentails = async () => {
   try {
     let anyCCA = await CCA.findOne({}, 'ccaId');
