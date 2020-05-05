@@ -344,7 +344,7 @@ exports.fetchForm = async (req, res, next) => {
         }
 
         if (reqForm.items[i].conditionalItems.length) {
-          formObj.items[i].conditionalItems = reqForm.items[i].conditionalItems.map(c => ({[c.optionId]: c.itemIds}));
+          formObj.items[i].conditionalItems = reqForm.items[i].conditionalItems.map(c => ({"optionId": c.optionId, "itemIds": c.itemIds}));
         }
       }
 
