@@ -77,7 +77,6 @@ router.post(
 // API 5.7: Fetch Archive Manager
 router.post(
   '/fetch-archive',
-  // Validation Missing!
   jwt.verify,
   validateUserAccess,
   validateCCAAccess,

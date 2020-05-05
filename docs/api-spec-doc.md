@@ -93,7 +93,7 @@
 |4|Edit Custom Task|Edits a custom task. Can't edit logs.|`/api/task-manager/task/cus/edit`|`{task*: editCusTaskObj}`|`POST`|`{newLog: logObj}`|`CCA`|`TBD`|
 |5|Add Log|Adds a log to task|`/api/task-manager/log/add`|`{taskId*: "String", description*: "String"}`|`POST`|`{logId: Number, createdAt: Date, updatedAt: Date}`|`CCA`|`TBD`|
 |6|Fetch Task Manager|Returns all tasks in the task manager|`/api/task-manager/fetch`|`{}`|`POST`|`{taskList: [reqTaskObjFull/cusTaskObjFull]}`|`CCA`|`TBD`|
-|7|Fetch Archive Manager|Returns all archived tasks based on a filter|`/api/task-manager/fetch-archive`|`TBD`|`POST`|`{taskList: [taskDetailsObj]}`|`CCA`|`TBD`|
+|7|Fetch Archive Manager|Returns all archived tasks based on a filter|`/api/task-manager/fetch-archive`|`{}`|`POST`|`{taskList: [taskDetailsObj]}`|`CCA`|`TBD`|
 |8|Fetch Task|Returns complete details of a task|`/api/task-manager/task/fetch`|`{taskId: "String"}`|`POST`|`{task: reqTaskObjFull/cusTaskObjFull}`|`CCA`|`TBD`|
 |9|Create Task Status|Creates a new task status|`/api/task-manager/task-status/create`|`{name*: "String", color*: "String"}`|`POST`|`{statusId: Number}`|`CCA`|`TBD`|
 |10|Edit Task Status|Edits an existing task status|`/api/task-manager/task-status/edit`|`{statusId*: Number, name**: "String", color**: "String"}`|`POST`|`{}`|`CCA`|`TBD`|
@@ -120,7 +120,7 @@
 |8|`subtaskObj2`|`{subtaskId: Number, assigneeId: Number, description: "String", check: Boolean, createdAt: Date, updatedAt: Date}`|
 |9|`cusTaskObjFull`|`{taskId: "String", title: "String", description: "String", ownerId: Number, statusId: Number, logs: [logObj], archive: Boolean, createdAt: Date, updatedAt: Date}`|
 |10|`logObj`|`{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}`|
-|11|`taskDetailsObj`|`{taskId: "String", ownerId: Number, createdAt: Date, updatedAt: Date}`|
+|11|`taskDetailsObj`|`{taskId: "String", title: "String", ownerId: Number, archive: Boolean, createdAt: Date, updatedAt: Date}`|
 
 ### 6. File Management
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|

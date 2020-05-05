@@ -79,9 +79,6 @@ exports.addLogValidation = {
   })
 }
 
-// Export API 5.7 Validation Object:
-// MISSING!
-
 // Export API 5.8 Validation Object:
 exports.fetchTaskValidation = {
   body: Joi.object({

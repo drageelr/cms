@@ -404,7 +404,7 @@ exports.fetchTaskManager = async (req, res, next) => {
     let reqRTasks = await RTask.find({archive: false});
     
     for (let r of reqRTasks) {
-      let taskObj = helperFuncs.duplicateObject(r, ['taskId', 'title', 'description', 'archive']);
+      let taskObj = helperFuncs.duplicateObject(r, ['taskId', 'title', 'description', 'archive', "createdAt", "updatedAt"]);
       taskObj.taskId = "r" + taskObj.taskId;
 
       let reqCCA = await CCA.findById(r.ownerId, 'ccaId');
@@ -429,8 +429,12 @@ exports.fetchTaskManager = async (req, res, next) => {
         let reqLog = await Log.findById(lId, 'logId creatorId description createdAt updatedAt');
         let logObj = helperFuncs.duplicateObject(reqLog, ["logId", "description", "createdAt", "updatedAt"]);
 
-        let logCCA = await CCA.findById(reqLog.creatorId, 'ccaId');
-        logObj.creatorId = logCCA.ccaId;
+        if (reqLog.creatorId){
+          let logCCA = await CCA.findById(reqLog.creatorId, 'ccaId');
+          logObj.creatorId = logCCA.ccaId;
+        } else {
+          logObj.creatorId = -1;
+        }
 
         taskObj.logs.push(logObj);
       }
@@ -441,7 +445,7 @@ exports.fetchTaskManager = async (req, res, next) => {
     let reqCTask = await CTask.find({archive: false});
 
     for (let c of reqCTask) {
-      let taskObj = helperFuncs.duplicateObject(c, ['taskId', 'title', 'description', 'archive']);
+      let taskObj = helperFuncs.duplicateObject(c, ['taskId', 'title', 'description', 'archive', "createdAt", "updatedAt"]);
       taskObj.taskId = "c" + taskObj.taskId;
 
       let reqCCA = await CCA.findById(c.ownerId, 'ccaId');
@@ -482,19 +486,106 @@ exports.fetchTaskManager = async (req, res, next) => {
 }
 
 exports.fetchArchiveManager = async (req, res, next) => {
-  res.json({
-    statusCode: 501,
-    statusName: httpStatus.getName(501),
-    message: "Not Yet Implemented!"
-  }) 
+  try {
+    let taskList = [];
+    
+    let reqRTasks = await RTask.find({archive: true});
+    
+    for (let r of reqRTasks) {
+      let taskObj = helperFuncs.duplicateObject(r, ['taskId', 'title', 'archive', 'createdAt', 'updatedAt']);
+      taskObj.taskId = "r" + taskObj.taskId;
+
+      let reqCCA = await CCA.findById(r.ownerId, 'ccaId');
+      taskObj.ownerId = reqCCA.ccaId;
+
+      taskList.push(taskObj);
+    }
+
+    let reqCTask = await CTask.find({archive: true});
+
+    for (let c of reqCTask) {
+      let taskObj = helperFuncs.duplicateObject(c, ['taskId', 'title', 'archive', 'createdAt', 'updatedAt']);
+      taskObj.taskId = "c" + taskObj.taskId;
+
+      let reqCCA = await CCA.findById(c.ownerId, 'ccaId');
+      taskObj.ownerId = reqCCA.ccaId;
+
+      taskList.push(taskObj);
+    }
+
+    if (!reqRTasks.length && !reqCTask.length) throw new customError.TaskNotFoundError("no tasks exist"); // throw task not found error
+
+    res.json({
+      statusCode: 200,
+      statusName: httpStatus.getName(200),
+      message: "Archive Manager Manager Successfully Fetched!",
+      taskList: taskList
+    });
+  } catch (err) {
+    next(err);
+  }
 }
 
 exports.fetchTask = async (req, res, next) => {
-  res.json({
-    statusCode: 501,
-    statusName: httpStatus.getName(501),
-    message: "Not Yet Implemented!"
-  })
+  let params = req.body;
+
+  try {
+    let reqTask = false;
+
+    if (params.taskId[0] == "r") {
+      reqTask = await RTask.findOne({taskId: parseInt(params.taskId.splice(1))});
+    } else if (params.taskId[0] == "c") {
+      reqTask = await CTask.findOne({taskId: parseInt(params.taskId.splice(1))});
+    }
+
+    if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId");
+
+    let taskObj = helperFuncs.duplicateObject(reqTask, ['taskId', 'title', 'description', 'archive', "createdAt", "updatedAt"]);
+    taskObj.taskId = params.taskId[0] + taskObj.taskId;
+
+    let reqCCA = await CCA.findById(reqTask.ownerId, 'ccaId');
+    taskObj.ownerId = reqCCA.ccaId;
+
+    let reqStatus = await Status.findById(reqTask.statusId, 'statusId');
+    taskObj.statusId = reqStatus.statusId;
+
+    taskObj.logs = [];
+    for (let lId of reqTask.logIds) {
+      let reqLog = await Log.findById(lId, 'logId creatorId description createdAt updatedAt');
+      let logObj = helperFuncs.duplicateObject(reqLog, ["logId", "description", "createdAt", "updatedAt"]);
+
+      if (reqLog.creatorId){
+        let logCCA = await CCA.findById(reqLog.creatorId, 'ccaId');
+        logObj.creatorId = logCCA.ccaId;
+      } else {
+        logObj.creatorId = -1;
+      }
+
+      taskObj.logs.push(logObj);
+    }
+
+    if (params.taskId[0] == "r") {
+      taskObj.subtasks = [];
+      for (let sId of reqTask.subtaskIds) {
+        let reqSubTask = await SubTask.findById(sId, 'subtaskId assigneeId description check');
+        let subtaskObj = helperFuncs.duplicateObject(reqSubTask, ["subtaskId", "description", "check"]);
+
+        let subtaskCCA = await CCA.findById(reqSubTask.assigneeId, 'ccaId');
+        subtaskObj.assigneeId = subtaskCCA.ccaId;
+
+        taskObj.subtasks.push(subtaskObj);
+      }
+    }
+
+    res.json({
+      statusCode: 200,
+      statusName: httpStatus.getName(200),
+      message: "Task Successfully Fetched!",
+      task: taskObj
+    });
+  } catch (err) {
+    next(err);
+  }
 }
 
 exports.createTaskStatus = async (req, res, next) => {
