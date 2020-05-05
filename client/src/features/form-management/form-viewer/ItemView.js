@@ -2,8 +2,11 @@ import React, {useState} from 'react'
 import {makeStyles, Paper, TextField, Checkbox, FormControlLabel, MenuItem, FormControl, Radio,
   RadioGroup, FormLabel, Button, InputLabel, Select } from '@material-ui/core'
 import { connect } from 'react-redux'
-import { setItemData } from '../formDataSlice'
+import CloudUploadIcon from '@material-ui/icons/CloudUpload'
+import GetAppIcon from '@material-ui/icons/GetApp'
+import { setItemData, uploadFile, downloadFile } from '../formDataSlice'
 import { setVisibilities } from '../conditionalViewSlice'
+import { unwrapResult } from '@reduxjs/toolkit'
 
 export const useStyles = makeStyles((theme) => ({
   itemPaper: {
@@ -19,7 +22,7 @@ export const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function ItemView({id, templateData, itemsData, componentItemIds, inReview, dispatch}) {
+function ItemView({id, templateData, itemsData, submissionId, componentItemIds, inReview, dispatch}) {
   const classes = useStyles()
   const {type, label, required, placeHolder, maxLength, fileTypes, options, conditionalItems} = templateData
   const itemData = itemsData.find(itemData => itemData.itemId == id)
@@ -40,9 +43,9 @@ function ItemView({id, templateData, itemsData, componentItemIds, inReview, disp
     function conditionalChange(e) {
       const optionId = Number(e.target.value)
       dispatch(setItemData({itemId: id, data: optionId}))
-
-      if (optionId in conditionalItems[optionId]) { //item has conditional options setup
-        const visibleItems = [id, ...conditionalItems[optionId][optionId]] // items that should be turned on
+      const conditionalItemOptionObj = conditionalItems.find(ciObj => ciObj.optionId === optionId)  
+      if (conditionalItemOptionObj !== undefined) { //item has conditional options setup, object found for the given optionId
+        const visibleItems = [id, ...conditionalItemOptionObj.itemIds] // items that should be turned on
         // must include itself as well
         
         // get all other items in that component, we have all componentItemIds
@@ -51,6 +54,21 @@ function ItemView({id, templateData, itemsData, componentItemIds, inReview, disp
         visibleItems.forEach(vId => newVisibilities[vId] = true)
         hiddenItems.forEach(hId => newVisibilities[hId] = false)
         dispatch(setVisibilities({newVisibilities}))
+      }
+    }
+
+    async function handleFileChange(e){
+      if (!inReview) {
+        const formData = new FormData();
+        console.log(e.target.files[0])
+        formData.append("", e.target.files[0], e.target.files[0].name) // create multipart form data
+        const uploadFileResult = await dispatch(uploadFile(formData))
+        const fileToken = unwrapResult(uploadFileResult)
+        // console.log(fileToken)
+        dispatch(setItemData({itemId: id, data: fileToken}))
+      }
+      else { //file downloads in review mode
+        dispatch(downloadFile({itemId: id, submissionId, fileName: `s${submissionId}_${label.toLowerCase()}`}))
       }
     }
 
@@ -98,6 +116,7 @@ function ItemView({id, templateData, itemsData, componentItemIds, inReview, disp
 
       case 'file':
         return (
+          !inReview ?
           <div>
             <input
               accept={fileTypes}
@@ -105,15 +124,18 @@ function ItemView({id, templateData, itemsData, componentItemIds, inReview, disp
               hidden // hide input html since MuiButton html will be used
               type="file"
               required={required}
-              onChange={(e) => !inReview && dispatch(setItemData({itemId: id, data: e.target.files[0].name}))} //single files only, at the first index in FileList
+              onChange={handleFileChange} //single files only, at the first index in FileList
             />
             <label htmlFor={`file-${id}`}>
-              <Button variant="contained"  component="span">
+              <Button variant="contained"  component="span" startIcon={<CloudUploadIcon/>}>
                 {label}
               </Button>
-              <p>{data}</p>
+              <p>{data.length != 0 && `Uploaded File [${data.substr(data.length - 7)}]`}</p>
             </label>
-          </div>
+          </div> : 
+          <Button variant="contained" onClick={handleFileChange} component="span" startIcon={<GetAppIcon/>}>
+            Download File for {`\"${label}\"`}
+          </Button>
         )
       
       case 'radio':
@@ -162,6 +184,7 @@ function ItemView({id, templateData, itemsData, componentItemIds, inReview, disp
 
 const mapStateToProps = (state) => ({ //needs both the template to render the form and data to populate it in edit submission mode
   itemsData: state.formData.itemsData,
+  submissionId: state.formData.id
 })
 
 

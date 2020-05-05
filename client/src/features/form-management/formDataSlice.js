@@ -151,6 +151,82 @@ export const addSocietyNote = createAsyncThunk(
   }
 )
 
+
+export const uploadFile = createAsyncThunk(
+  'formData/uploadFile',
+  async (formData, {rejectWithValue }) => {
+    console.log("FORM DATA", formData)
+    try {
+      let req_init = {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json',
+          // 'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${localStorage.token}` 
+        },
+      }
+      delete req_init.headers['Content-Type'] //server adds header boundary itself
+    
+      const res = await fetch('/api/file/upload', req_init)
+      if (res.ok) {
+        const data = await res.json()
+        console.log(data)
+        if (data.statusCode != 201) {
+          throw new Error((data.error !== undefined) 
+          ? `${data.statusCode}: ${data.message} - ${JSON.stringify(data.error.details).replace(/[\[\]\{\}"'\\]+/g, '').split(':').pop()}`
+          : `${data.statusCode}: ${data.message}`) 
+        }
+        return data.fileToken // fileToken from data
+      }
+      throw new Error(`${res.status}, ${res.statusText}`) 
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
+)
+
+export const downloadFile = createAsyncThunk(
+  'formData/downloadFile',
+  async ({submissionId, itemId, fileName}, {rejectWithValue }) => {
+    try {
+
+      let req_init = {
+        method: 'POST',
+        body: JSON.stringify({
+          submissionId, 
+          itemId
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`,
+        },
+        // redirect: 'follow'
+      }
+      
+      const res = await fetch('/api/file/download', req_init)
+
+      if (res.ok) {
+        const readBlob = await res.blob()
+        const url = window.URL.createObjectURL(readBlob);
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', fileName)
+        document.body.appendChild(link)
+        link.click()
+      }
+      else{
+        throw new Error(`${res.status}, ${res.statusText}`) 
+      }
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
+)
+
+
 const formData = createSlice({
   name: 'formData',
   initialState: initialState,
@@ -237,6 +313,20 @@ const formData = createSlice({
       state.societyNotes.push({note: action.payload.note, timestampCreated: "Just now"})
     },
     [addSocietyNote.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [uploadFile.fulfilled]: (state, action) => {
+
+    },
+    [uploadFile.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [downloadFile.fulfilled]: (state, action) => {
+      
+    },
+    [downloadFile.rejected]: (state, action) => {
       state.error = action.payload
     },
   }
