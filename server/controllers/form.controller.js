@@ -55,7 +55,7 @@ function validateItemType (item) {
         return "item with id " + item.itemId + " has non unqiue option ids";
       }
     }
-    // Conitional Items missing here!
+    // Conditional Items missing here!
   }
 
   return false;
@@ -142,6 +142,11 @@ function validateForm (params) {
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
+/**
+ * CCA member creates a form and
+ * specifies all functionalities associated to it.
+ */
+// API 3.1 Controller
 exports.createForm = async (req, res, next) => {
   let params = req.body;
 
@@ -191,6 +196,11 @@ exports.createForm = async (req, res, next) => {
   }
 }
 
+/**
+ * CCA member edits a form which was
+ * previously created.
+ */
+//API 3.2 Controller
 exports.editForm = async (req, res, next) => {
   let params = req.body;
 
@@ -273,6 +283,11 @@ exports.editForm = async (req, res, next) => {
   }
 }
 
+/**
+ * CCA member deletes an existing
+ * form template. 
+ */
+// API 3.3 Controller
 exports.deleteForm = async (req, res, next) => {
   let params = req.body;
 
@@ -306,6 +321,11 @@ exports.deleteForm = async (req, res, next) => {
   }
 }
 
+/**
+ * Fetches an existing form template
+ * from the database.
+ */
+// API 3.4 Controller
 exports.fetchForm = async (req, res, next) => {
   let params = req.body;
 
@@ -376,6 +396,11 @@ exports.fetchForm = async (req, res, next) => {
   }
 }
 
+/**
+ * Fetches a list of all available 
+ * forms.
+ */
+// API 3.5 Controller
 exports.fetchFormList = async (req, res, next) => {
   let params = req.body;
   
@@ -418,7 +443,11 @@ exports.fetchFormList = async (req, res, next) => {
   }
 }
 
-// API 3.6 Controller, to change Form Public/Private Status
+/**
+ * Change the status of a form from
+ * public to private or vice versa.
+ */
+// API 3.6 Controller
 exports.changeFormStatus = async (req, res, next) => {
   let params = req.body;
 
@@ -442,7 +471,11 @@ exports.changeFormStatus = async (req, res, next) => {
     next(err);
   }
 }
-
+/**
+ * Fetches the checklist associated
+ * with a submission. 
+ */
+// API 3.7 Controller
 exports.fetchChecklist = async (req, res, next) => {
   let params = req.body;
 

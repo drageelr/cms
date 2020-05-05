@@ -30,6 +30,11 @@ var { fileSavePath } = require('../config/config').variables;
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
+/**
+ * Uploads a supplementing file to a
+ * submission made.
+ */
+// API 6.1 Controller
 exports.uploadFile = async (req, res, next) => {
   try {
     
@@ -66,6 +71,11 @@ exports.uploadFile = async (req, res, next) => {
   }
 }
 
+/**
+ * Downloads a supplementary file attatched
+ * to a submission. 
+ */
+// API 6.2 Controller
 exports.downloadFile = async (req, res, next) => {
   let params = req.body;
 
