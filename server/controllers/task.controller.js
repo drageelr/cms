@@ -218,7 +218,7 @@ exports.editReqTask = async (req, res, next) => {
   let task = params.task;
 
   try {
-    let reqTask = await RTask.findOne({taskId: parseInt(task.taskId.splice(1))}, '_id');
+    let reqTask = await RTask.findOne({taskId: parseInt(task.taskId.slice(1))}, '_id');
     if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId"); // raise task not found error
 
     let reqCCA = CCA.findById(params.userObj._id, 'ccaId firstName lastName permissions');
@@ -302,13 +302,13 @@ exports.editCusTask = async (req, res, next) => {
   let task = params.task;
 
   try {
-    let reqTask = await CTask.findOne({taskId: parseInt(task.taskId.splice(1))}, '_id');
+    let reqTask = await CTask.findOne({taskId: parseInt(task.taskId.slice(1))}, '_id');
     if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId"); // raise task not found error
 
     let reqCCA = CCA.findById(params.userObj._id, 'ccaId firstName lastName permissions');
 
     let updateObj = helperFuncs.duplicateObject(task, ['title', 'description'], true);
-    let logDesc = createLogText("rt", task.taskId) + " edited by " + createLogText("u", reqCCA.ccaId, reqCCA.firstName + " " + reqCCA.lastName) + ".\nEdits:";
+    let logDesc = createLogText("ct", task.taskId) + " edited by " + createLogText("u", reqCCA.ccaId, reqCCA.firstName + " " + reqCCA.lastName) + ".\nEdits:";
 
     if (task.archive !== undefined ) {
       if ((task.archive && reqCCA.permissions.archiveTask) || (!task.archive && reqCCA.permissions.unarchive)) {
@@ -319,7 +319,7 @@ exports.editCusTask = async (req, res, next) => {
     }
 
     if (task.ownerId) {
-      let newOwner = await CCA.findOne({ccaId: task.ownerId}, 'firstName lastName');
+      let newOwner = await CCA.findOne({ccaId: task.ownerId}, '_id firstName lastName');
       if (!newOwner) throw new customError.UserNotFoundError("invalid ownerId"); // raise owner not found error
       updateObj.ownerId = newOwner._id;
       logDesc += "\n Ownership set to " + createLogText("u", task.ownerId, newOwner.firstName + " " + newOwner.lastName) + "."; 
@@ -345,7 +345,7 @@ exports.editCusTask = async (req, res, next) => {
     res.json({
       statusCode: 200,
       statusName: httpStatus.getName(200),
-      message: "Request Task Successfully Edited!",
+      message: "Custom Task Successfully Edited!",
       newLog: {
         logId: newLog.logId,
         creatorId: -1,

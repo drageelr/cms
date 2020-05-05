@@ -37,7 +37,7 @@ exports.ccaLogin = async (req, res, next) => {
     if (reqCCA) {
       let token = jwt.signID(reqCCA._id, "cca", "12h");
 
-      let permissions = helperFuncs.duplicateObject(reqCCA.permissions, ["soceityCRUD", "ccaCRUD", "accessFormMaker", "createReqTask", "createCustomTask", "createTaskStatus", "archiveTask", "unarchiveTask", "setFormStatus", "addCCANote"]);
+      let permissions = helperFuncs.duplicateObject(reqCCA.permissions, ["societyCRUD", "ccaCRUD", "accessFormMaker", "createReqTask", "createCustomTask", "createTaskStatus", "archiveTask", "unarchiveTask", "setFormStatus", "addCCANote"]);
       
       res.json({
         statusCode: 200,
