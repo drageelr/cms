@@ -80,6 +80,13 @@
 |5|Update Submission Status|Status of existing submission updated|`/api/update-status`|`{submissionId*: Number, status*: "String", issue: "String-min(1)-max(500)"}`|POST|`{}`|CCA|`8.1, 9.1`|
 |6|Fetch Submission|Fetches a submission with complete details|`/api/fetch`|`{submissionId*: Number}`|POST|`{itemsData: itemsObj, ccaNotes: ["String"], societyNotes: ["String"], formId: Number}`|CCA+Society|`9.1`|
 
+### Object Schema
+|#|Name|Object|
+|-|----|------|
+|1|`itemsObj`|`{itemId: Number, data: Object}`|
+|2|`timeObj`|`{dateStart: DateTime, dateEnd: DateTime}`|
+|3|`submissionsList`|`[{submissionId: Number, societyId: Number, status: "String", formId: Number, formTitle: "String", societyName: "String", societyNameInitials: "String", timestampCreated: DateTime, timestampModified: DateTime}]`|
+
 ### 5. Task Management
 *Note: Will contain APIs actions related to creating /editing / delete tasks, archiving / unarchiving task archives and creating / editing / deleting task statuses.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
