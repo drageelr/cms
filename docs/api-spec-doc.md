@@ -73,15 +73,7 @@
 *Note: Will contain APIs for submitting / editing forms / viewing (CCA + Society), getting request list, updating request status (CCA) etc*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/form-submission/submit`|`{formID*: Number, itemsData*: List<JSON>}`|POST|`{id: Number}`|Society|TBD|
-|2|Edit Form|Edits a form submitted by a Society|`/api/form-submission/edit`|`{id*: Number, itemsData*: List<JSON>}`|PUT|`{}`|Society|TBD|
-|3|View Form Submission|Views a form already submitted by a society|`/api/form-submission/view`|`{id*: Number}`|GET|`{id: Number, formID: Number, userID: Number, title: "String", isPublic: Boolean, sections: List<"String">, sections_order: List<Number>, components: List<JSON>, componenetsOrder: List<Number>, itemsData: List<JSON>, itemsOrder: List<Number>}, formStatus: "String", ccaNote: "String", societyNotes: List<"String">`|CCA + Society|TBD|
-|4|Add Note Society|Adds a note by a Soceity to a submitted form|`/api/form-submission/add-note-society`|`{id*: Number, societyNote*: "String"}`|POST|`{}`|Society|TBD|
-|5|Get CCA Request List|Displays list of all requests in process|`/api/form-submission/cca-list`|`{filter: "String"}`|GET|`{formDataList: [{id: Number, title: "String", date: DateTime, society: "String", status: "String"}]}`|CCA|TBD|
-|6|Get Society Request List|Displays list of all requests by a society|`/api/form-submission/society-list`|`{}`|GET|`{formDataList: [{id: Number, title: "String", date: DateTime, society: "String", status: "String"}]}`|Society|TBD|
-|7|Update Request Status|Changes the status of a request in process|`/api/form-submission/update-status-cca`|`{id*: Number, status*: "String"}`|PUT|`{}`|CCA|TBD|
-|8|Add Note CCA|Adds a note by CCA to a submitted request|`/api/form-submission/add-note-cca`|`{id*: Number, ccaNote*: "String"}`|POST|`{}`|CCA|TBD|
-|9|Update Request Status (President/Patron)|Changes the status of a request for approval|`/api/form-submission/update-status-pp`|`{id*: Number, status*: "String", issueNote: "String"}`|PUT|`{}`|President + Patron|TBD|
+|1|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/submit`|`{formID*: Number, submissionID*: Number, itemsData*: itemsObj}`|POST|`{timestampCreated: DateTime, timestampModified: DateTime}`|Society|`7.1, 8.1`|
 
 ### 5. Task Management
 *Note: Will contain APIs actions related to creating /editing / delete tasks, archiving / unarchiving task archives and creating / editing / deleting task statuses.*
