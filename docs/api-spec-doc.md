@@ -24,17 +24,25 @@
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of CCA User (Admin/Member) and Society accounts.*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Create CCA Account|Creates an account for a CCA Member|`/api/account/cca/create-account`|`{email*: "String allow: ['lums.edu.pk'], password*: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName*: "String-min(1)-max(30)", lastName*: "String-min(1)-max(30)", picture*: "String", permissions: {societyCRUD*: Boolean, ccaCRUD*: Boolean, accessFormMaker*: Boolean, createReqTask*: Boolean, createCustomTask*: Boolean, createTaskStatus*: Boolean, archiveTask*: Boolean, unarchiveTask*: Boolean, setFormStatus*: Boolean, addCCANote*: Boolean}}`|POST|`{ccaId: Number}`|CCA|`5.1`|
-|2|Create Society Account|Creates an account for a Society|`/api/account/society/create-account`|`{email*: "String allow: ['lums.edu.pk']", password*: "String-min(8)-max(30)-[a-zA-Z0-9]", name*: "String-min(1)-max(100)", nameInitials*: "String-min(1)-max(10)", presidentEmail*: "String allow: ['lums.edu.pk']", patronEmail*: "String allow: ['lums.edu.pk']"}`|POST|`{societyId: Number}`|CCA|`5.1`|
-|3|Edit CCA Account|Edits an account of a CCA Member|`/api/account/cca/edit-account`|`{email: "String allow: ['lums.edu.pk'], password: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName: "String-min(1)-max(30)", lastName: "String-min(1)-max(30)", picture: "String", permissions: {societyCRUD: Boolean, ccaCRUD: Boolean, accessFormMaker: Boolean, createReqTask: Boolean, createCustomTask: Boolean, createTaskStatus: Boolean, archiveTask: Boolean, unarchive: Boolean, setFormStatus: Boolean, addCCANote: Boolean}} "At least one field is required"`|POST|`{}`|CCA|`6.1`|
-|4|Edit Society Account|Edits an account of a Society|`/api/account/cca/edit-account`|`{email: "String allow: ['lums.edu.pk]", password: "String-min(8)-max(30)-[a-zA-Z0-9]", name: "String-min(1)-max(30)", nameInitials*: "String-min(1)-max(10)", presidentEmail: "String allow: ['lums.edu.pk]", patronEmail: "String allow: ['lums.edu.pk']" "At least one field is required"}`|POST|`{}`|CCA|`6.1`|
-|5|Get CCA Account List|Fetches the list of all existing CCA Member Accounts|`/api/account/cca/account-list`|`{}`|POST|`{userList: [{ccaId: Number, email: "String", role: "String", firstName: "String", lastName: "String", picture: "String", active: Boolean}]}`|CCA|`6.1`|
-|6|Get Society Account List|Fetches the list of all existing Society Accounts|`/api/account/society/account-list`|`{}`|POST|`{userList: [{societyId: Number, email: "String", name: "String", nameInitials: "String", presidentEmail: "String", patronEmail: "String", active: Boolean}]}`|CCA|`6.1`|
-|7|Change Password (CCA)|Changes the password of a CCA Member|`/api/account/cca/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|CCA|`2.1`|
-|8|Change Password (Society)|Changes the password of a Society Account|`/api/account/society/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|Society|`2.1`|
-|9|Change Picture (CCA)|Changes the picture of a CCA Member Account|`/api/account/cca/change-picture`|`{picture*: "String"}`|POST|`{}`|CCA||
+|1|Create CCA Account|Creates an account for a CCA Member|`/api/cca/create-account`|`{email*: "String allow: ['lums.edu.pk'], password*: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName*: "String-min(1)-max(30)", lastName*: "String-min(1)-max(30)", picture*: "String", permissions*: permissionsObj}`|POST|`{ccaId: Number}`|CCA|`4.1`|
+|2|Create Society Account|Creates an account for a Society|`/api/society/create-account`|`{email*: "String allow: ['lums.edu.pk']", password*: "String-min(8)-max(30)-[a-zA-Z0-9]", name*: "String-min(1)-max(100)", nameInitials*: "String-min(1)-max(10)", presidentEmail*: "String allow: ['lums.edu.pk']", patronEmail*: "String allow: ['lums.edu.pk']"}`|POST|`{societyId: Number}`|CCA|`4.1`|
+|3|Edit CCA Account|Edits an account of a CCA Member|`/api/cca/edit-account`|`{email: "String allow: ['lums.edu.pk'], password: "String-min(8)-max(30)-[a-zA-Z0-9]", firstName: "String-min(1)-max(30)", lastName: "String-min(1)-max(30)", picture: "String", permissions: permissionsObj} "At least one field is required"`|POST|`{}`|CCA|`5.1`|
+|4|Edit Society Account|Edits an account of a Society|`/api/society/edit-account`|`{email: "String allow: ['lums.edu.pk]", password: "String-min(8)-max(30)-[a-zA-Z0-9]", name: "String-min(1)-max(30)", nameInitials*: "String-min(1)-max(10)", presidentEmail: "String allow: ['lums.edu.pk]", patronEmail: "String allow: ['lums.edu.pk']" "At least one field is required"}`|POST|`{}`|CCA|`5.1`|
+|5|Get CCA Account List|Fetches the list of all existing CCA Member Accounts|`/api/cca/account-list`|`{}`|POST|`{userList: userListCCA}`|CCA|`5.1`|
+|6|Get Society Account List|Fetches the list of all existing Society Accounts|`/api/society/account-list`|`{}`|POST|`{userList: userListSociety}`|CCA|`5.1`|
+|7|Change Password (CCA)|Changes the password of a CCA Member|`/api/cca/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|CCA|`2.1`|
+|8|Change Password (Society)|Changes the password of a Society Account|`/api/society/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|Society|`2.1`|
+|9|Change Picture (CCA)|Changes the picture of a CCA Member Account|`/api/cca/change-picture`|`{picture*: "String"}`|POST|`{}`|CCA|`2.1`|
 
 - **Note: * means the field mentioned is required (For `Request Object`)**
+
+#### Object Schema
+|#|Name|Object|
+|-|----|------|
+|1|`permissionsObj`|`{societyCRUD: Boolean, ccaCRUD: Boolean, accessFormMaker: Boolean, createReqTask: Boolean, createCustomTask: Boolean, createTaskStatus: Boolean, archiveTask: Boolean, unarchiveTask: Boolean, setFormStatus: Boolean, addCCANote: Boolean}`|
+|2|`userListCCA`|`[{ccaId: Number, email: "String", role: "String", firstName: "String", lastName: "String", picture: "String", active: Boolean, permissions: permissionsObj}]`|
+|3|`userListSociety`|`[{societyId: Number, email: "String", name: "String", nameInitials: "String", presidentEmail: "String", patronEmail: "String", active: Boolean}]`|
+
 
 ### 3. Form Management
 *Note: Will contain APIs for actions related to creation / deletion / editing etc of forms.*
