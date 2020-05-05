@@ -74,6 +74,11 @@
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
 |1|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/submit`|`{formID*: Number, submissionID*: Number, itemsData*: itemsObj}`|POST|`{timestampCreated: DateTime, timestampModified: DateTime}`|Society|`7.1, 8.1`|
+|2|Add CCA Note|Attaches a Note from CCA to a request|`/api/cca/add-note`|`{submissionId*: Number, note*: "String-min(1)-max(100)"}`|POST|`{}`|CCA|`9.1`|
+|3|Add Society Note|Attaches a Note from Society to a request|`/api/society/add-note`|`{submissionId*: Number, note*: "String-min(1)-max(100)"}`|POST|`{}`|Society|`9.1`|
+|4|Fetch Submission List|Fetches list of all submissions made|`/api/fetch-list`|`{statusList: ["String"], timeObj*: timeObj}`|POST|`{submissions: submissionsList}`|CCA+Society|`9.1`|
+|5|Update Submission Status|Status of existing submission updated|`/api/update-status`|`{submissionId*: Number, status*: "String", issue: "String-min(1)-max(500)"}`|POST|`{}`|CCA|`8.1, 9.1`|
+|6|Fetch Submission|Fetches a submission with complete details|`/api/fetch`|`{submissionId*: Number}`|POST|`{itemsData: itemsObj, ccaNotes: ["String"], societyNotes: ["String"], formId: Number}`|CCA+Society|`9.1`|
 
 ### 5. Task Management
 *Note: Will contain APIs actions related to creating /editing / delete tasks, archiving / unarchiving task archives and creating / editing / deleting task statuses.*
