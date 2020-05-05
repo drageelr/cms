@@ -7,6 +7,7 @@
 var Submission = require('../models/submission.model');
 var Form = require('../models/form.model');
 var Society = require('../models/society.model');
+var File = require('../models/file.model');
 
 // Services:
 var httpStatus = require('../services/http-status');
@@ -73,7 +74,7 @@ function itemIdValidation (formItems, itemsData, requiredCheck = false) {
   return false;
 }
 
-function itemTypeValidation (formItems, itemsData) {
+async function itemTypeValidation (formItems, itemsData) {
   let formitemTypeObj = helperFuncs.createObjFromObjArr(formItems, "itemId", ["type", "maxLength", "options", "fileTypes"]);
   for (let i of itemsData) {
     // Data Type Validation
@@ -100,8 +101,18 @@ function itemTypeValidation (formItems, itemsData) {
         break
       case "file":
         const fileTypesArr = formitemTypeObj[i.itemId].fileTypes.split(',');
-        const nameSplitArr = i.data.split('.') //to get extension of file in last index
-        if (!fileTypesArr.includes('.' + nameSplitArr[nameSplitArr.length - 1])){
+        // const nameSplitArr = i.data.split('.') //to get extension of file in last index
+        // if (!fileTypesArr.includes('.' + nameSplitArr[nameSplitArr.length - 1])){
+        //   return "item with id " + i.itemId + " does not support this file type, file types allowed: " + formitemTypeObj[i.itemId].fileTypes;
+        // }
+        let fileObj = jwt.decodeTokenFunc(i.data);
+        let itemFile = await File.findById(fileObj._id);
+
+        if (!itemFile) return "item with id " + i.itemId + " has not been uploaded"
+        if (!itemFile.saved) return "item with id " + i.itemId + " was already used"
+        
+        const nameSplitArr = itemFile.name.split('.') //to get extension of file in last index
+        if (!fileTypesArr.includes('.' + nameSplitArr[nameSplitArr.length - 1])) {
           return "item with id " + i.itemId + " does not support this file type, file types allowed: " + formitemTypeObj[i.itemId].fileTypes;
         }
         break
@@ -188,12 +199,22 @@ exports.submitForm = async (req, res, next) => {
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
 
         // 2) Check item constraints based on types + form data
-        submissionValidationError = itemTypeValidation(reqForm.items, itemsData);
+        submissionValidationError = await itemTypeValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
 
         // 3) Check re-entry of an item is not given
         submissionValidationError = duplicateEntryValidation(reqSubmission, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
+
+        // 4) For "File" types, get correct data:
+        for(let iS of itemsData) {
+          for (let iF of reqForm.items) {
+            if (iS.itemId == iF.itemId && iF.type == "file") {
+              let reqFile = await File.findByIdAndDelete(jwt.decodeTokenFunc(iS.data)._id);
+              iS.data = reqFile.name;
+            }
+          }
+        }
 
         let resubmissionQuery = {$push: {itemsData}};
 
@@ -227,14 +248,24 @@ exports.submitForm = async (req, res, next) => {
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
 
         // 2) Check item constraints basonsed on types + form data
-        submissionValidationError = itemTypeValidation(reqForm.items, itemsData);
+        submissionValidationError = await itemTypeValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
+
+        // 4) For "File" types, get correct data:
+        for(let iS of itemsData) {
+          for (let iF of reqForm.items) {
+            if (iS.itemId == iF.itemId && iF.type == "file") {
+              let reqFile = await File.findByIdAndDelete(jwt.decodeTokenFunc(iS.data)._id);
+              iS.data = reqFile.name;
+            }
+          }
+        }
 
         let newSubmission = new Submission({
           formId: reqForm._id,
           societyId: params.userObj._id,
           status: "Pending(President)",
-          itemsData: params.itemsData
+          itemsData: itemsData
         });
         await newSubmission.save();
 

@@ -58,6 +58,12 @@ exports.signSubmission = (id, subId, type) => {
   return jwt.sign({_id: id, type: type, sub_id: subId}, config.secretKey);
 }
 
+exports.signFile = (fileId) => {
+  return jwt.sign({_id: fileId}, config.secretKey);
+}
+
+exports.decodeTokenFunc = decodeToken;
+
 /**
  * Verifies JWT token in bearer token authorization header.
  * @param req - Request.

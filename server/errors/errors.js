@@ -284,6 +284,26 @@ class SubTaskNotFoundError extends Error {
   }
 }
 
+// File Not Found Error Class:
+class FileNotFoundError extends Error {
+
+  /**
+  * Creates a FileNotFoundError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "FileNotFoundError";
+    this.statusCode = 404;
+    this.message = "File not found!";
+    this.details = errDetails;
+    this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
+  }
+}
+
 // Export Classes:
 module.exports.TokenError = TokenError;
 module.exports.AuthenticationError = AuthenticationError;
@@ -298,3 +318,4 @@ module.exports.TaskStatusNotFoundError = TaskStatusNotFoundError;
 module.exports.ChecklistNotFoundError = ChecklistNotFoundError;
 module.exports.TaskNotFoundError = TaskNotFoundError;
 module.exports.SubTaskNotFoundError = SubTaskNotFoundError;
+module.exports.FileNotFoundError = FileNotFoundError;

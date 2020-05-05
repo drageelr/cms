@@ -59,6 +59,10 @@ const userAccess = {
   "/api/task-manager/task-status/edit": ["cca"],
   "/api/task-manager/task-status/delete": ["cca"],
   "/api/task-manager/task-status/fetch-all": ["cca"],
+
+  // 6. File Management API "file.route.js"
+  "/api/file/upload": ["soc", "pres", "pat"],
+  "/api/file/download": ["cca", "soc", "pres", "pat"],
 };
 
 const ccaAccess = {

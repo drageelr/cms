@@ -47,7 +47,8 @@ exports.errorHandler = (err, req, res, next) => {
     err instanceof customError.TaskStatusNotFoundError ||
     err instanceof customError.ChecklistNotFoundError ||
     err instanceof customError.TaskNotFoundError ||
-    err instanceof customError.SubTaskNotFoundError) {
+    err instanceof customError.SubTaskNotFoundError ||
+    err instanceof customError.FileNotFoundError) {
     console.log(err.stack)
     res.json({
       statusCode: err.statusCode,

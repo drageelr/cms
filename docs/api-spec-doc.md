@@ -122,8 +122,15 @@
 |10|`logObj`|`{logId: Number, creatorId: Number, description: "String", createdAt: Date, updatedAt: Date}`|
 |11|`taskDetailsObj`|`{taskId: "String", ownerId: Number, createdAt: Date, updatedAt: Date}`|
 
+### 6. File Management
+|#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
+|-|----|-----------|-----|------------|--------------|---------------|------|---------------|
+|1|File Upload|Upload file for submission|`/api/file/upload`|`file` sent with `multipart/form-data` header|`POST`|`{fileToken: "String"}`|Society|`TBD`|
+|2|File Download|Download file from submission|`/api/file/download`|`{submissionId*: Number, itemId*: Number}`|`POST`|CCA + Society|`10.1`, `15.1`|
 
-**Note: * means the field mentioned is required**
+- **Note for `API 6.1`: `fileToken` recieved is to be sent as `data` for `item` which has the `type` "file".**
+- **Note: * means the field mentioned is required. (For `Request Object` OR `Object Schema` referenced in it)**
+- **Note: ** means the field mentioned might not always be there. (For `Response Object` OR `Object Schema` referenced in this and `Request Object`)**
 
 ## Status Codes
 **Note: These status codes have been altered for use in CMS. For further elaboration visit this [link.](https://restfulapi.net/http-status-codes/)**
@@ -184,7 +191,7 @@ error: {
     name: "String", 
     subName: "String", 
     details: object/"String"/Number
-}
+  }
 }
 ```
 
@@ -204,3 +211,10 @@ error: {
 |6.1|`UserNotFoundError`|`N/A`|`404`|`"String"`|User with the given parameters is not found|
 |7.1|`FormValidationError`|`N/A`|`400`|`"String"`|Logical error in form parameters|
 |8.1|`FormNotFoundError`|`N/A`|`404`|`"String"`|Form with the given parameters is not found|
+|9.1|`SubmissionValidationError`|`N/A`|`404`|`"String"`|Submission is not valid|
+|10.1|`SubmissionNotFoundError`|`N/A`|`404`|`"String"`|Submission with the given parameters is not found|
+|11.1|`TaskStatusNotFoundError`|`N/A`|`404`|`"String"`|Task Status with the given parameters is not found|
+|12.1|`ChecklistNotFoundError`|`N/A`|`404`|`"String"`|Checklist with the given parameters is not found|
+|13.1|`TaskNotFoundError`|`N/A`|`404`|`"String"`|Task with the given parameters is not found|
+|14.1|`SubTaskNotFoundError`|`N/A`|`404`|`"String"`|Sub Task with the given parameters is not found|
+|15.1|`FileNotFoundError`|`N/A`|`404`|`"String"`|File with the given parameters is not found|
