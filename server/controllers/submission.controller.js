@@ -108,8 +108,9 @@ async function itemTypeValidation (formItems, itemsData) {
         let fileObj = jwt.decodeTokenFunc(i.data);
         let itemFile = await File.findById(fileObj._id);
 
-        if (!itemFile) return "item with id " + i.itemId + " has not been uploaded"
-        if (!itemFile.saved) return "item with id " + i.itemId + " was already used"
+        if (!itemFile) return "item with id " + i.itemId + " has not been uploaded";
+        if (!itemFile.saved) return "item with id " + i.itemId + " was already used";
+        if (itemFile.formId) return "item with id " + i.itemId + " was unlinked, can't use it again";
         
         const nameSplitArr = itemFile.name.split('.') //to get extension of file in last index
         if (!fileTypesArr.includes('.' + nameSplitArr[nameSplitArr.length - 1])) {
@@ -210,7 +211,7 @@ exports.submitForm = async (req, res, next) => {
         for(let iS of itemsData) {
           for (let iF of reqForm.items) {
             if (iS.itemId == iF.itemId && iF.type == "file") {
-              let reqFile = await File.findByIdAndDelete(jwt.decodeTokenFunc(iS.data)._id);
+              let reqFile = await File.findByIdAndUpdate(jwt.decodeTokenFunc(iS.data)._id, {saved: true, formId: reqForm._id});
               iS.data = reqFile.name;
             }
           }
@@ -255,7 +256,7 @@ exports.submitForm = async (req, res, next) => {
         for(let iS of itemsData) {
           for (let iF of reqForm.items) {
             if (iS.itemId == iF.itemId && iF.type == "file") {
-              let reqFile = await File.findByIdAndDelete(jwt.decodeTokenFunc(iS.data)._id);
+              let reqFile = await File.findByIdAndUpdate(jwt.decodeTokenFunc(iS.data)._id, {saved: true, formId: reqForm._id});
               iS.data = reqFile.name;
             }
           }

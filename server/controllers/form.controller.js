@@ -8,6 +8,9 @@ var CCA = require('../models/cca.model');
 var Form = require('../models/form.model');
 var Checklist = require('../models/checklist.model');
 var Submission = require('../models/submission.model');
+var RTask = require('../models/reqtask.model');
+var SubTask = require('../models/subtask.model');
+var File = require('../models/file.model');
 
 // Services:
 var httpStatus = require('../services/http-status');
@@ -271,11 +274,36 @@ exports.editForm = async (req, res, next) => {
 }
 
 exports.deleteForm = async (req, res, next) => {
-  res.json({
-    statusCode: 501,
-    statusName: httpStatus.getName(501),
-    message: "Not yet implemented!"
-  });
+  let params = req.body;
+
+  try {
+    let reqForm = await Form.findOne({formId: params.formId}, '_id');
+    if (!reqForm) throw new customError.FormNotFoundError("invalid formId");
+
+    let reqSubmissions = await Submission.find({formId: reqForm._id}, '_id');
+
+    let submissionIds = reqSubmissions.map(s => s._id);
+
+    let reqRTasks = await RTask.find({submissionId: {$in: submissionIds}}, '_id');
+
+    let taskIds = reqRTasks.map(t => t._id);
+
+    await Promise.all([
+      Form.findByIdAndDelete(reqForm._id),
+      File.updateMany({formId: reqForm._id}, {saved: false}),
+      Submission.deleteMany({_id: {$in: submissionIds}}),
+      RTask.deleteMany({_id: taskIds}),
+      SubTask.deleteMany({taskId: {$in: taskIds}})
+    ]);
+
+    res.json({
+      statusCode: 200,
+      statusName: httpStatus.getName(200),
+      message: "Form and all related Submissions, Tasks and SubTasks have been deleted!"
+    });
+  } catch (err) {
+    next(err);
+  }
 }
 
 exports.fetchForm = async (req, res, next) => {

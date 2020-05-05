@@ -22,6 +22,10 @@ const fileSchema = new Schema({
   saved: {
     type: Boolean,
     required: true
+  },
+  formId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Form'
   }
 });
 
