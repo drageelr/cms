@@ -42,6 +42,11 @@ const submissionStatus = {
   <<<<< HELPER FUNCTIONS >>>>>
 */
 
+/**
+ * Validates the existence and uniqueness of a form item.
+ * @param {any} formItems - Existing items in a form.
+ * @param {any} itemsData - Data provided to a form.
+ */
 function itemIdValidation (formItems, itemsData, requiredCheck = false) {
   // Validate Item Ids Uniqueness 
   let itemIds = [];
@@ -74,6 +79,11 @@ function itemIdValidation (formItems, itemsData, requiredCheck = false) {
   return false;
 }
 
+/**
+ * Validates the type of items in itemsData.
+ * @param {any} formItems - Existing items in a form.
+ * @param {any} itemsData - Data provided to a form. 
+ */
 async function itemTypeValidation (formItems, itemsData) {
   let formitemTypeObj = helperFuncs.createObjFromObjArr(formItems, "itemId", ["type", "maxLength", "options", "fileTypes"]);
   for (let i of itemsData) {
@@ -123,6 +133,11 @@ async function itemTypeValidation (formItems, itemsData) {
   return false;
 }
 
+/**
+ * Checks for whether duplicate item Id compared to the given Id exists.
+ * @param {any} reqSubmission - Submitted request. 
+ * @param {any} itemsData - Data provided to a form.
+ */
 function duplicateEntryValidation (reqSubmission, itemsData) {
   let submissionItemIds = helperFuncs.createArrFromObjArr(reqSubmission.itemsData, "itemId");
   for (let i in itemsData) {
@@ -134,6 +149,10 @@ function duplicateEntryValidation (reqSubmission, itemsData) {
   return false;
 }
 
+/**
+ * Compares the status list with predefined applicable statuses.
+ * @param {[String]} statusList - List of statuses by CCA.
+ */
 function validateStatus (statusList) {
   if (statusList.length < 1 || statusList.length > 6) {
     return "too many statuses given"
@@ -154,6 +173,10 @@ function validateStatus (statusList) {
   return false;
 }
 
+/**
+ * Returns the president status of a submission.
+ * @param {String} currentStatus - Current status of a submission.
+ */
 function autoStatusUpdate (currentStatus) {
   const nextStatus = {
     "Issue(President)": {status: "Pending(President)", email: "presidentEmail", type: "pres"},
@@ -163,12 +186,28 @@ function autoStatusUpdate (currentStatus) {
   return nextStatus[currentStatus];
 }
 
+/**
+ * Sends a review email to the society by the President/Patron.
+ * @param {String} recipientEmail - Email of the recipient society.
+ * @param {String} accountType - Whether President or Patron account.
+ * @param {String} societyInitials - Initials used to identify the society in the Database.
+ * @param {Number} submissionId - Id of form submission.
+ * @param {Number} societyId - Id of society's account.
+ */
 function sendReviewEmail (recipientEmail, accountType, societyInitials, submissionId, societyId) {
   let token = jwt.signSubmission(societyId, submissionId, accountType);
   let link = "" + config.serverURL + "review/" + accountType + "?token=" + token;
   nodemailer.sendSubmissionReview(recipientEmail, link, societyInitials);
 }
 
+/**
+ * Sends an issue email to the society by the President/Patron.
+ * @param {String} recipientEmail - Email of the recipient society.
+ * @param {String} issue - Issue associated with the submitted form.
+ * @param {Number} submissionIdNumeric - Id of form submission.
+ * @param {String} issuerType - Whether President or Patron sent issue email.
+ * @param {String} issuerEmail - Email Id of the sender.
+ */
 function sendIssueEmail (recipientEmail, issue, submissionIdNumeric, issuerType, issuerEmail) {
   const issuerName = {pat: "Patron", pres: "President"}
   let body = "An issue has been identified by the " + issuerName[issuerType] + " (email: " + issuerEmail + ") " + " of your society in Submission " + submissionIdNumeric + ". Kindly recitfy the issue by attaching notes to the submission or editing the fields previously unfilled!. <br /> <b>Issue:<b/>" + issue;
@@ -179,6 +218,11 @@ function sendIssueEmail (recipientEmail, issue, submissionIdNumeric, issuerType,
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
+/**
+ * Submits a form to the President/Patron
+ * for approval, and then to CCA.
+ */
+// API 4.1 Controller
 exports.submitForm = async (req, res, next) => {
   let params = req.body;
   let formId = params.formId;
@@ -295,6 +339,11 @@ exports.submitForm = async (req, res, next) => {
   }
 }
 
+/**
+ * Attaches a note to a submission
+ * by a CCA members.
+ */
+// API 4.2 Controller
 exports.addCCANote = async (req, res, next) => {
   let params = req.body;
   
@@ -320,6 +369,11 @@ exports.addCCANote = async (req, res, next) => {
   }
 }
 
+/**
+ * Attaches a note to a submission
+ * by a Society.
+ */
+// API 3 Controller
 exports.addSocietyNote = async (req, res, next) => {
   let params = req.body;
   
@@ -345,6 +399,11 @@ exports.addSocietyNote = async (req, res, next) => {
   }
 }
 
+/**
+ * Fetches the list of all submission for
+ * the CCA or Society.
+ */
+// API 4.4 Controller
 exports.getSubmissionList = async (req, res, next) => {
   let params = req.body;
 
@@ -405,6 +464,11 @@ exports.getSubmissionList = async (req, res, next) => {
   }
 }
 
+/**
+ * Updates the Submission status of 
+ * a form.
+ */
+// API 4.5 Controller
 exports.updateSubmissionStatus = async (req, res, next) => {
   let params = req.body;
 
@@ -445,6 +509,11 @@ exports.updateSubmissionStatus = async (req, res, next) => {
   }
 }
 
+/**
+ * Fetches a particular form and its components 
+ * associated with a submission.
+ */
+// API 4.6 Controller
 exports.fetchSubmission = async (req, res, next) => {
   let params = req.body;
 

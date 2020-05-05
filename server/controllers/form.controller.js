@@ -37,6 +37,11 @@ const itemTypes = {
   <<<<< HELPER FUNCTIONS >>>>>
 */
 
+/**
+ * Validates item according to specified
+ * item keys.
+ * @param {any} item 
+ */
 function validateItemType (item) {
   let itemKeys = Object.keys(item);
   if (!helperFuncs.compareLists(itemKeys, itemTypes[item.type])) {
@@ -61,6 +66,10 @@ function validateItemType (item) {
   return false;
 }
 
+/**
+ * Validates form with existing forms.
+ * @param {any} params 
+ */
 function validateForm (params) {
   // Check For Duplicate Ids:
 
