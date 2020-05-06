@@ -7,17 +7,22 @@
 var Submission = require('../models/submission.model');
 var Form = require('../models/form.model');
 var Society = require('../models/society.model');
+var File = require('../models/file.model');
 
 // Services:
 var httpStatus = require('../services/http-status');
+var jwt = require('../services/jwt');
+var nodemailer = require('../services/nodemailer');
 
 // Others:
 var customError = require('../errors/errors');
 var helperFuncs = require('../services/helper-funcs');
+var config = require('../config/config').variables;
 
 /*
   ------------------ CODE BODY --------------------
 */
+
 // Constants:
 const itemDataTypes = {
   textbox: "string",
@@ -37,6 +42,11 @@ const submissionStatus = {
   <<<<< HELPER FUNCTIONS >>>>>
 */
 
+/**
+ * Validates the existence and uniqueness of a form item.
+ * @param {any} formItems - Existing items in a form.
+ * @param {any} itemsData - Data provided to a form.
+ */
 function itemIdValidation (formItems, itemsData, requiredCheck = false) {
   // Validate Item Ids Uniqueness 
   let itemIds = [];
@@ -69,7 +79,12 @@ function itemIdValidation (formItems, itemsData, requiredCheck = false) {
   return false;
 }
 
-function itemTypeValidation (formItems, itemsData) {
+/**
+ * Validates the type of items in itemsData.
+ * @param {any} formItems - Existing items in a form.
+ * @param {any} itemsData - Data provided to a form. 
+ */
+async function itemTypeValidation (formItems, itemsData) {
   let formitemTypeObj = helperFuncs.createObjFromObjArr(formItems, "itemId", ["type", "maxLength", "options", "fileTypes"]);
   for (let i of itemsData) {
     // Data Type Validation
@@ -96,8 +111,19 @@ function itemTypeValidation (formItems, itemsData) {
         break
       case "file":
         const fileTypesArr = formitemTypeObj[i.itemId].fileTypes.split(',');
-        const nameSplitArr = i.data.split('.') //to get extension of file in last index
-        if (!fileTypesArr.includes('.' + nameSplitArr[nameSplitArr.length - 1])){
+        // const nameSplitArr = i.data.split('.') //to get extension of file in last index
+        // if (!fileTypesArr.includes('.' + nameSplitArr[nameSplitArr.length - 1])){
+        //   return "item with id " + i.itemId + " does not support this file type, file types allowed: " + formitemTypeObj[i.itemId].fileTypes;
+        // }
+        let fileObj = jwt.decodeTokenFunc(i.data);
+        let itemFile = await File.findById(fileObj._id);
+
+        if (!itemFile) return "item with id " + i.itemId + " has not been uploaded";
+        if (!itemFile.saved) return "item with id " + i.itemId + " was already used";
+        if (itemFile.formId) return "item with id " + i.itemId + " was unlinked, can't use it again";
+        
+        const nameSplitArr = itemFile.name.split('.') //to get extension of file in last index
+        if (!fileTypesArr.includes('.' + nameSplitArr[nameSplitArr.length - 1])) {
           return "item with id " + i.itemId + " does not support this file type, file types allowed: " + formitemTypeObj[i.itemId].fileTypes;
         }
         break
@@ -107,6 +133,11 @@ function itemTypeValidation (formItems, itemsData) {
   return false;
 }
 
+/**
+ * Checks for whether duplicate item Id compared to the given Id exists.
+ * @param {any} reqSubmission - Submitted request. 
+ * @param {any} itemsData - Data provided to a form.
+ */
 function duplicateEntryValidation (reqSubmission, itemsData) {
   let submissionItemIds = helperFuncs.createArrFromObjArr(reqSubmission.itemsData, "itemId");
   for (let i in itemsData) {
@@ -118,6 +149,10 @@ function duplicateEntryValidation (reqSubmission, itemsData) {
   return false;
 }
 
+/**
+ * Compares the status list with predefined applicable statuses.
+ * @param {[String]} statusList - List of statuses by CCA.
+ */
 function validateStatus (statusList) {
   if (statusList.length < 1 || statusList.length > 6) {
     return "too many statuses given"
@@ -138,23 +173,56 @@ function validateStatus (statusList) {
   return false;
 }
 
+/**
+ * Returns the president status of a submission.
+ * @param {String} currentStatus - Current status of a submission.
+ */
 function autoStatusUpdate (currentStatus) {
   const nextStatus = {
-    "Issue(President)": {status: "Pending(President)", email: "presidentEmail"},
-    "Issue(Patron)": {status: "Pending(Patron)", email: "patronEmail"},
+    "Issue(President)": {status: "Pending(President)", email: "presidentEmail", type: "pres"},
+    "Issue(Patron)": {status: "Pending(Patron)", email: "patronEmail", type: "pat"},
   };
 
   return nextStatus[currentStatus];
 }
 
-function sendEmail (recipientEmail) {
+/**
+ * Sends a review email to the society by the President/Patron.
+ * @param {String} recipientEmail - Email of the recipient society.
+ * @param {String} accountType - Whether President or Patron account.
+ * @param {String} societyInitials - Initials used to identify the society in the Database.
+ * @param {Number} submissionId - Id of form submission.
+ * @param {Number} societyId - Id of society's account.
+ */
+function sendReviewEmail (recipientEmail, accountType, societyInitials, submissionId, societyId) {
+  let token = jwt.signSubmission(societyId, submissionId, accountType);
+  let link = "" + config.serverURL + "review/" + accountType + "?token=" + token;
+  nodemailer.sendSubmissionReview(recipientEmail, link, societyInitials);
+}
 
-} 
+/**
+ * Sends an issue email to the society by the President/Patron.
+ * @param {String} recipientEmail - Email of the recipient society.
+ * @param {String} issue - Issue associated with the submitted form.
+ * @param {Number} submissionIdNumeric - Id of form submission.
+ * @param {String} issuerType - Whether President or Patron sent issue email.
+ * @param {String} issuerEmail - Email Id of the sender.
+ */
+function sendIssueEmail (recipientEmail, issue, submissionIdNumeric, issuerType, issuerEmail) {
+  const issuerName = {pat: "Patron", pres: "President"}
+  let body = "An issue has been identified by the " + issuerName[issuerType] + " (email: " + issuerEmail + ") " + " of your society in Submission " + submissionIdNumeric + ". Kindly recitfy the issue by attaching notes to the submission or editing the fields previously unfilled!. <br /> <b>Issue:<b/>" + issue;
+  nodemailer.sendIssueEmail(recipientEmail, body);
+}
 
 /*
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
+/**
+ * Submits a form to the President/Patron
+ * for approval, and then to CCA.
+ */
+// API 4.1 Controller
 exports.submitForm = async (req, res, next) => {
   let params = req.body;
   let formId = params.formId;
@@ -169,18 +237,29 @@ exports.submitForm = async (req, res, next) => {
 
       if (reqSubmission) {
         // existing submission -> different validation
+        let submissionValidationError = false;
 
         // 1) Check item ids are correct or not! (Match itemIds in form + Check for duplicate ids)
         submissionValidationError = itemIdValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
 
         // 2) Check item constraints based on types + form data
-        submissionValidationError = itemTypeValidation(reqForm.items, itemsData);
+        submissionValidationError = await itemTypeValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
 
         // 3) Check re-entry of an item is not given
         submissionValidationError = duplicateEntryValidation(reqSubmission, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
+
+        // 4) For "File" types, get correct data:
+        for(let iS of itemsData) {
+          for (let iF of reqForm.items) {
+            if (iS.itemId == iF.itemId && iF.type == "file") {
+              let reqFile = await File.findByIdAndUpdate(jwt.decodeTokenFunc(iS.data)._id, {saved: true, formId: reqForm._id});
+              iS.data = reqFile.name;
+            }
+          }
+        }
 
         let resubmissionQuery = {$push: {itemsData}};
 
@@ -192,44 +271,56 @@ exports.submitForm = async (req, res, next) => {
         
         await reqSubmission.update(resubmissionQuery);
 
-        let reqSociety = await Society.findById(params.userObj._id, statusToUpdateObj.email);
+        if (statusToUpdateObj) {
+          let reqSociety = await Society.findById(params.userObj._id, statusToUpdateObj.email);
+          sendReviewEmail(reqSociety[statusToUpdateObj.email], reqSociety[statusToUpdateObj].type, reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
+        }
 
-        sendEmail(reqSociety[statusToUpdateObj.email]);
       
         res.json({
-          status: 200,
-          statusCode: httpStatus.getName(200),
+          status: httpStatus.getName(200),
+          statusCode: 200,
           message: "Submission Successful!",
-          timestampCreated: newSubmission.createdAt,
-          timestampModified: newSubmission.updatedAt
+          timestampCreated: reqSubmission.createdAt,
+          timestampModified: reqSubmission.updatedAt
         });
       } else if (!submissionId) {
         // new submission -> Normal validation
         let submissionValidationError = false;
-
+        
         // 1) Check item ids are correct or not! (Match itemIds in form + Check for duplicate ids) + 3) Check All required are given in this or not
         submissionValidationError = itemIdValidation(reqForm.items, itemsData, true);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
 
         // 2) Check item constraints basonsed on types + form data
-        submissionValidationError = itemTypeValidation(reqForm.items, itemsData);
+        submissionValidationError = await itemTypeValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
+
+        // 4) For "File" types, get correct data:
+        for(let iS of itemsData) {
+          for (let iF of reqForm.items) {
+            if (iS.itemId == iF.itemId && iF.type == "file") {
+              let reqFile = await File.findByIdAndUpdate(jwt.decodeTokenFunc(iS.data)._id, {saved: true, formId: reqForm._id});
+              iS.data = reqFile.name;
+            }
+          }
+        }
 
         let newSubmission = new Submission({
           formId: reqForm._id,
           societyId: params.userObj._id,
           status: "Pending(President)",
-          itemsData: params.itemsData
+          itemsData: itemsData
         });
         await newSubmission.save();
 
-        let reqSociety = await Society.findById(params.userObj._id, 'presidentEmail');
+        let reqSociety = await Society.findById(params.userObj._id, 'presidentEmail _id nameInitials');
 
-        sendEmail(reqSociety.presidentEmail);
+        sendReviewEmail(reqSociety.presidentEmail, "pres", reqSociety.nameInitials, newSubmission._id, reqSociety._id);
 
         res.json({
-          status: 200,
-          statusCode: httpStatus.getName(200),
+          status: httpStatus.getName(200),
+          statusCode: 200,
           message: "Submission Successful!",
           submissionId: newSubmission.submissionId,
           timestampCreated: newSubmission.createdAt,
@@ -248,6 +339,11 @@ exports.submitForm = async (req, res, next) => {
   }
 }
 
+/**
+ * Attaches a note to a submission
+ * by a CCA members.
+ */
+// API 4.2 Controller
 exports.addCCANote = async (req, res, next) => {
   let params = req.body;
   
@@ -273,6 +369,11 @@ exports.addCCANote = async (req, res, next) => {
   }
 }
 
+/**
+ * Attaches a note to a submission
+ * by a Society.
+ */
+// API 3 Controller
 exports.addSocietyNote = async (req, res, next) => {
   let params = req.body;
   
@@ -299,6 +400,11 @@ exports.addSocietyNote = async (req, res, next) => {
 }
 
 
+/**
+ * Fetches the list of all submission for
+ * the CCA or Society.
+ */
+// API 4.4 Controller
 exports.getSubmissionList = async (req, res, next) => {
   let params = req.body;
 
@@ -332,6 +438,7 @@ exports.getSubmissionList = async (req, res, next) => {
         let reqForm = await Form.findById(s.formId, 'title formId');
         
         submissionsList.push({
+          submissionId: s.submissionId,
           societyId: s.societyId,
           status: s.status,
           formId: reqForm.formId,
@@ -358,7 +465,11 @@ exports.getSubmissionList = async (req, res, next) => {
   }
 }
 
-// Apply Resubmission or other things to cater
+/**
+ * Updates the Submission status of 
+ * a form.
+ */
+// API 4.5 Controller
 exports.updateSubmissionStatus = async (req, res, next) => {
   let params = req.body;
 
@@ -367,11 +478,20 @@ exports.updateSubmissionStatus = async (req, res, next) => {
     
     if (reqSubmission) {
       let statusAvailable = submissionStatus[params.userObj.type];
-      if (!(params.status in statusAvailable)) throw new customError.SubmissionValidationError("invalid status or status not allowed, allowed statuses are: ", JSON.stringify(statusAvailable));
-
+      if (!(statusAvailable.includes(params.status))) {
+        throw new customError.SubmissionValidationError("invalid status or status not allowed, allowed statuses are: " + JSON.stringify(statusAvailable));
+      }
       // params.status contains the string "Issue"
       if (params.status.includes("Issue") && params.issue && params.userObj.type != "cca"){
-        // Email Issue
+        let reqSociety = await Society.findById(params.userObj._id, 'patronEmail presidentEmail email');
+        let emailAddr = reqSociety.presidentEmail;
+        if (params.userObj.type == "pat") {
+          emailAddr = reqSociety.patronEmail;
+        }
+        sendIssueEmail(reqSociety.email, params.issue, reqSubmission.submissionId, params.userObj.type, emailAddr);
+      } else if (params.status == "Pending(Patron)" && params.userObj.type != "cca") {
+        let reqSociety = await Society.findById(params.userObj._id, 'patronEmail _id nameInitials');
+        sendReviewEmail(reqSociety.patronEmail, "pat", reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
       }
       
       await reqSubmission.update({status: params.status});
@@ -385,12 +505,16 @@ exports.updateSubmissionStatus = async (req, res, next) => {
       // raise submission not found error
       throw new customError.SubmissionNotFoundError("invalid submission id");
     }
-    
   } catch (err) {
     next(err);
   }
 }
 
+/**
+ * Fetches a particular form and its components 
+ * associated with a submission.
+ */
+// API 4.6 Controller
 exports.fetchSubmission = async (req, res, next) => {
   let params = req.body;
 
@@ -399,9 +523,10 @@ exports.fetchSubmission = async (req, res, next) => {
 
     if (reqSubmission) {
       let itemsData = helperFuncs.createArrFromObjArr(reqSubmission.itemsData, ["itemId", "data"]);
+      let reqForm = await Form.findById(reqSubmission.formId, 'formId');
       let societyNotes = [];
       let ccaNotes = [];
-      
+
       for (let s of reqSubmission.societyNotes) {
         societyNotes.push({
           note: s.note,
@@ -422,6 +547,7 @@ exports.fetchSubmission = async (req, res, next) => {
         itemsData: itemsData,
         ccaNotes: ccaNotes,
         societyNotes: societyNotes,
+        formId: reqForm.formId
       });
     } else {
       // raise submission not found error

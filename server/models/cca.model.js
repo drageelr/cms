@@ -90,6 +90,14 @@ const ccaSchema = new Schema({
   active: {
     type: Boolean,
     required: true
+  },
+  themeColor: {
+    type: String,
+    required: true
+  },
+  darkMode: {
+    type: Boolean,
+    required: true
   }
 })
 

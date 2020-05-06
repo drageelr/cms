@@ -39,7 +39,7 @@ const itemSchema = Joi.object({
   })),
   conditionalItems: Joi.array().items(Joi.object({
     optionId: Joi.number().required(),
-    itemId: Joi.number().required()
+    itemIds: Joi.array().items(Joi.number()).required()
   })),
   fileTypes: Joi.string()
 });
@@ -71,11 +71,11 @@ exports.editFormValidation = {
       sections: Joi.array().items(sectionSchema).required(),
       components: Joi.array().items(componentSchema).required(),
       items: Joi.array().items(itemSchema).required(),
-      checklistItems: [{
+      checklistItems: Joi.array().items(Joi.object({
         checklistId: Joi.number(),
         sectionId: Joi.number().required(),
         description: Joi.string().required()
-      }]
+      }))
     }
   })
 }
@@ -84,5 +84,20 @@ exports.editFormValidation = {
 exports.fetchFormValidation = {
   body: Joi.object({
     formId: Joi.number().required(),
+  })
+}
+
+// Export API 3.6 Validation Object:
+exports.changeFormStatusValidation = {
+  body: Joi.object({
+    formId: Joi.number().required(),
+    isPublic: Joi.bool().required()
+  })
+}
+
+// Export API 3.7 Validation Object:
+exports.fetchChecklistValidation = {
+  body: Joi.object({
+    submissionId: Joi.number().required()
   })
 }

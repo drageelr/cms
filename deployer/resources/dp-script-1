@@ -1,6 +1,8 @@
 #!/bin/bash
 pm2 stop cms-server
 pm2 delete cms-server
+pm2 stop cms-cleaner
+pm2 delete cms-cleaner
 sudo rm -r CMS
 mkdir CMS
 sudo rm -r GitHub

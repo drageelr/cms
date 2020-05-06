@@ -204,6 +204,106 @@ class SubmissionNotFoundError extends Error {
   }
 }
 
+// Task Status Not Found Error Class:
+class TaskStatusNotFoundError extends Error {
+
+  /**
+  * Creates a TaskStatusNotFoundError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "TaskStatusNotFoundError";
+    this.statusCode = 404;
+    this.message = "Task Status not found!";
+    this.details = errDetails;
+    this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
+  }
+}
+
+// Checklist Not Found Error Class:
+class ChecklistNotFoundError extends Error {
+
+  /**
+  * Creates a ChecklistNotFoundError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "ChecklistNotFoundError";
+    this.statusCode = 404;
+    this.message = "Checklist not found!";
+    this.details = errDetails;
+    this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
+  }
+}
+
+// Task Not Found Error Class:
+class TaskNotFoundError extends Error {
+
+  /**
+  * Creates a TaskNotFoundError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "TaskNotFoundError";
+    this.statusCode = 404;
+    this.message = "Task not found!";
+    this.details = errDetails;
+    this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
+  }
+}
+
+// Sub Task Not Found Error Class:
+class SubTaskNotFoundError extends Error {
+
+  /**
+  * Creates a SubTaskNotFoundError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "SubTaskNotFoundError";
+    this.statusCode = 404;
+    this.message = "SubTask not found!";
+    this.details = errDetails;
+    this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
+  }
+}
+
+// File Not Found Error Class:
+class FileNotFoundError extends Error {
+
+  /**
+  * Creates a FileNotFoundError object.
+  */
+  constructor(errDetails) {
+    super();
+    this.name = "FileNotFoundError";
+    this.statusCode = 404;
+    this.message = "File not found!";
+    this.details = errDetails;
+    this.subName = "N/A";
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TokenError);
+    }
+  }
+}
+
 // Export Classes:
 module.exports.TokenError = TokenError;
 module.exports.AuthenticationError = AuthenticationError;
@@ -214,3 +314,8 @@ module.exports.FormValidationError = FormValidationError;
 module.exports.FormNotFoundError = FormNotFoundError;
 module.exports.SubmissionValidationError = SubmissionValidationError;
 module.exports.SubmissionNotFoundError = SubmissionNotFoundError;
+module.exports.TaskStatusNotFoundError = TaskStatusNotFoundError;
+module.exports.ChecklistNotFoundError = ChecklistNotFoundError;
+module.exports.TaskNotFoundError = TaskNotFoundError;
+module.exports.SubTaskNotFoundError = SubTaskNotFoundError;
+module.exports.FileNotFoundError = FileNotFoundError;
