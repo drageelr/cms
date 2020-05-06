@@ -53,7 +53,8 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
         description: desc, 
         submissionId: localSubmissionId,
         ownerId: ownerId, 
-        statusId: statusId
+        statusId: statusId,
+        archive: false
       }
       dispatch(createRequestTask(reqTaskObject))
     } 
@@ -63,6 +64,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
         description: desc, 
         ownerId: ownerId, 
         statusId: statusId,
+        archive: false
       }
       dispatch(createCustomTask(cusTaskObject))
     }
@@ -148,107 +150,107 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
   }
 
   return (
-  <Dialog fullWidth maxWidth="md" open={open} onClose={()=>setOpen(false)} TransitionComponent={Transition}>
-    {/*TaskName----TaskID----TaskArchiveButton*/}
-    <Grid style={{padding: "15px"}} item container direction="row" justify="space-between" alignItems="flex-start">
-      <Typography gutterBottom variant="h5" color="inherit">
-        <Grid container direction="row"> 
-          Task Name:
-          <TextField 
-            id="task-title"
-            variant="outlined"
-            value={taskTitle}
-            onChange={(e)=>{setTaskTitle(e.target.value)}}
-            inputProps={{onBlur: handleTitleChange}}
-            style={{resize: "none", marginTop: -8, marginLeft: 4, size:"small", outline: "none"}}
-          />
+    <Dialog fullWidth maxWidth="md" open={open} onClose={()=>setOpen(false)} TransitionComponent={Transition}>
+      {/*TaskName----TaskID----TaskArchiveButton*/}
+      <Grid style={{padding: "15px"}} item container direction="row" justify="space-between" alignItems="flex-start">
+        <Typography gutterBottom variant="h5" color="inherit">
+          <Grid container direction="row"> 
+            Task Name:
+            <TextField 
+              id="task-title"
+              variant="outlined"
+              value={taskTitle}
+              onChange={(e)=>{setTaskTitle(e.target.value)}}
+              inputProps={{onBlur: handleTitleChange}}
+              style={{resize: "none", marginTop: -8, marginLeft: 4, size:"small", outline: "none"}}
+            />
+          </Grid>
+            <Typography gutterBottom variant="h6" color="textPrimary">
+              ID: {taskId}
+          </Typography>
+        </Typography>
+        <Grid>
+          {
+            editMode
+            ? <DeleteIcon cursor="pointer" onClick={handleDelete} />
+            : <CancelIcon cursor="pointer" onClick={()=>setOpen(false)} />
+          }
         </Grid>
-          <Typography gutterBottom variant="h6" color="textPrimary">
-            ID: {taskId}
-        </Typography>
-      </Typography>
-      <Grid>
-        {
-          editMode
-          ? <DeleteIcon cursor="pointer" onClick={handleDelete} />
-          : <CancelIcon cursor="pointer" onClick={()=>setOpen(false)} />
-        }
       </Grid>
-    </Grid>
 
-    {/*Description Box*/}
-    <Box padding= {2} marginTop={-2}>
-      <Typography gutterBottom variant="h6" color="inherit" style={{marginLeft:27}}>
-        <Typography style={{marginLeft: -30, marginBottom: -36}}>
-          <SubjectIcon fontSize={"large"}/>
+      {/*Description Box*/}
+      <Box padding= {2} marginTop={-2}>
+        <Typography gutterBottom variant="h6" color="inherit" style={{marginLeft:27}}>
+          <Typography style={{marginLeft: -30, marginBottom: -36}}>
+            <SubjectIcon fontSize={"large"}/>
+          </Typography>
+          Description
         </Typography>
-        Description
-      </Typography>
-      <Card style={{minHeight: 100, minWidth: 0, background: "#ebecf0"}}>
-        <TextField 
-          placeholder={"Add description here..."}
-          multiline
-          rows="6"
-          value={desc}
-          onChange={(e)=>setDesc(e.target.value)}
-          inputProps={{onBlur: handleDescChange}}
-          style={{
-            resize: "none",
-            width: "100%",
-            overflow: "hidden",
-            outline: "none",
-            border: "none",
-            background: "#ebecf0"
-          }}
-        />
-      </Card>
-    </Box>
+        <Card style={{minHeight: 100, minWidth: 0, background: "#ebecf0"}}>
+          <TextField 
+            placeholder={"Add description here..."}
+            multiline
+            rows="6"
+            value={desc}
+            onChange={(e)=>setDesc(e.target.value)}
+            inputProps={{onBlur: handleDescChange}}
+            style={{
+              resize: "none",
+              width: "100%",
+              overflow: "hidden",
+              outline: "none",
+              border: "none",
+              background: "#ebecf0"
+            }}
+          />
+        </Card>
+      </Box>
+          
+      <Grid container direction="row" justify="space-between" alignItems="flex-start" style={{padding: "0px 17px 0px 17px"}}>
+        <Grid item style={{marginBottom: 20}}> {/*Assign Task Owner*/}
+          <AssignTaskOwner/>
+        </Grid>
+        <Grid item style={{marginTop: 5}}> {/*Task Status Colors*/}
+          <TaskStatus setStatusId={setStatusId} taskId={taskId}/>
+        </Grid>
+      </Grid>
         
-    <Grid container direction="row" justify="space-between" alignItems="flex-start" style={{padding: "0px 17px 0px 17px"}}>
-      <Grid item style={{marginBottom: 20}}> {/*Assign Task Owner*/}
-        <AssignTaskOwner/>
-      </Grid>
-      <Grid item style={{marginTop: 5}}> {/*Task Status Colors*/}
-        <TaskStatus setStatusId={setStatusId} taskId={taskId}/>
-      </Grid>
-    </Grid>
-      
-    {
-      isRequestTask && /*CheckList Text (and checklist) and Request Task Button conditionally rendered*/
-      <div>
-        <RequestVSCustom/>
-        {
-          (localSubmissionId !== -1) 
-          ? <Grid item style={{padding: "0px 17px 0px 17px", marginTop: -10}}>
-              <CheckList taskId={taskId}/>
-            </Grid>
-          : <h6 style={{marginTop: -1, marginLeft: 17}}>No Request Attached</h6>
-        }
-      </div>
-    }
+      {
+        isRequestTask && /*CheckList Text (and checklist) and Request Task Button conditionally rendered*/
+        <div>
+          <RequestVSCustom/>
+          {
+            (localSubmissionId !== -1) 
+            ? <Grid item style={{padding: "0px 17px 0px 17px", marginTop: -10}}>
+                <CheckList taskId={taskId}/>
+              </Grid>
+            : <h6 style={{marginTop: -1, marginLeft: 17}}>No Request Attached</h6>
+          }
+        </div>
+      }
 
-    {/* Task Assignees */}
-    {/* <AddAssignee taskId={taskId}/> */}
-    {
-      editMode && //Logs
-      <LogEditor taskId={taskId}/>
-    }
-    {/*Complete Task Button*/}
-    <DialogActions>
-      <div style={{marginRight: 10}}>
-        {
-          (!editMode) &&
-          <Button 
-            variant="contained" 
-            color="inherit"
-            onClick={handleCreateComplete}
-          >
-            Create Task
-          </Button>
-        }
-      </div>
-    </DialogActions>
-  </Dialog>
+      {/* Task Assignees */}
+      {/* <AddAssignee taskId={taskId}/> */}
+      {
+        editMode && //Logs
+        <LogEditor taskId={taskId}/>
+      }
+      {/*Complete Task Button*/}
+      <DialogActions>
+        <div style={{marginRight: 10}}>
+          {
+            (!editMode) &&
+            <Button 
+              variant="contained" 
+              color="inherit"
+              onClick={handleCreateComplete}
+            >
+              Create Task
+            </Button>
+          }
+        </div>
+      </DialogActions>
+    </Dialog>
   )
 }
 

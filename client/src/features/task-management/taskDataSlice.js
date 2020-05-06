@@ -1,16 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { apiCaller } from '../../helpers'
 
-/**
-  A temporary initial state has been created to test with the components and render meaningful
-  on the screen. The action creators in the reducer are responsible for implementing the changes 
-  that the user makes when editing the task.
-*/
-
 const initialState = {
   archiveList: [],
   checkList: [],
   taskList: [], 
+  task: {},
   checklistAssignees: [],
   isPending: false,
   error: null
@@ -24,7 +19,7 @@ export const fetchTaskManager = createAsyncThunk(
       return
     }
     return await apiCaller('/api/task-manager/fetch', {}, 200, 
-    (data) =>(data), 
+    (data) =>({data}), 
     rejectWithValue)  
   }
 )
@@ -68,7 +63,8 @@ export const fetchArchiveManager = createAsyncThunk(
     } 
 
     return await apiCaller('/api/task-manager/fetch-archive', {}, 200, 
-    (data) => (data), rejectWithValue)
+    (data) => ({data}), 
+    rejectWithValue)
   }
 )
 
@@ -187,7 +183,7 @@ export const deleteSubTask = createAsyncThunk(
         subtaskId: obj.subtaskId,
         assigneeId: obj.assigneeId,
         description: obj.description, 
-        check: false
+        check: true
       })
     })
 
@@ -283,6 +279,22 @@ export const archiveTask = createAsyncThunk(
   }
 )
 
+export const unArchiveTask = createAsyncThunk(
+  'taskData/unArchiveTask',
+  async (archiveObj, { rejectWithValue }) => {
+    const { taskId, ownerId } = archiveObj
+    
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        archive: false
+      }
+    }, 200, 
+    (data) => ({data, archiveObj}), 
+    rejectWithValue)   
+  }
+)
+
 const taskdata = createSlice({
   name: 'taskData',
   initialState: initialState,
@@ -314,7 +326,7 @@ const taskdata = createSlice({
               taskObj.subtasks.map(assSubTask => {
                 if (assSubTask.taskId === taskId) { // get the subtask from the task that is same as the current subtask
                   // assSubTask.check = false
-                  subtaskObj.check = false
+                  subtaskObj.check = true
                 }
               })
             }
@@ -381,7 +393,7 @@ const taskdata = createSlice({
       if (state.isPending === true) {
         state.isPending = false
 
-        state.taskList = action.payload.taskList
+        state.taskList = action.payload.data.taskList
 
         state.taskList.map(taskObj => {
           if (taskObj.taskId[0] === 'r' && taskObj.subtasks.length !== 0) {
@@ -414,7 +426,6 @@ const taskdata = createSlice({
         state.isPending = true
       }
     },
-
     [fetchCheckList.fulfilled]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
@@ -428,7 +439,6 @@ const taskdata = createSlice({
         )
       }
     },
-    
     [fetchCheckList.rejected]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
@@ -442,10 +452,10 @@ const taskdata = createSlice({
       }
     },
     [fetchArchiveManager.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        state.archiveList = action.payload.data.taskList
-      }
+      //if (state.isPending === true) {
+        //state.isPending = false
+        state.archiveList = action.payload.data.archiveList
+      //}
     },
     [fetchArchiveManager.rejected]: (state, action) => {
       if (state.isPending === true) {
@@ -460,19 +470,12 @@ const taskdata = createSlice({
       }
     },
     [fetchTask.fulfilled]: (state, action) => { // works for unarchive too as it fetches and pushes the task obj to the list
-      const {data, archiveObj} = action.payload
+      if (state.isPending === true) {
+        state.isPending = false
+        const {data, archiveObj} = action.payload
 
-      console.log(data)
-      state.taskList.push(data.task)
-
-      state.archiveList.map(arcObj => {
-        if(arcObj.taskId === archiveObj.taskId) {
-          arcObj.archive = false
-        }
-      })
-
-      var filteredAry = state.archiveList.filter(function(e) { return e.taskId !== archiveObj.taskId })
-      state.archiveList = filteredAry
+        state.task = data.task
+      }
     },
     [fetchTask.rejected]: (state, action) => {
       if (state.isPending === true) {
@@ -492,7 +495,7 @@ const taskdata = createSlice({
           ownerId: subTask.assigneeId,
           assigneeId: subTask.assigneeId,
           description: subTask.description,
-          check: true
+          check: false
         }
         subTaskList.push(subTaskObj)
         state.taskList.push(subTaskObj)
@@ -501,7 +504,7 @@ const taskdata = createSlice({
       state.taskList.push({
         taskId: data.taskId,
         logs: data.logs,
-        subTasks: subTaskList,
+        subtasks: subTaskList,
         ...reqTaskObject
       })
       state.error = 'Request Task Created'
@@ -648,8 +651,36 @@ const taskdata = createSlice({
           task.logs.push(data.newLog)
         }
       })
+
+      // var filteredAry = state.taskList.filter(function(e) { return e.assTaskId !== archiveObj.taskId })
+      // state.taskList = filteredAry
     },
     [archiveTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [unArchiveTask.fulfilled]: (state, action) => {
+      const {data, archiveObj} = action.payload
+
+      state.taskList.push(state.task)
+
+      state.taskList.map(task => {
+        if(task.taskId === archiveObj.taskId) {
+          task.archive = false
+        }
+        task.logs.push(data.newLog)
+      })
+
+      state.archiveList.map(arcObj => {
+        if(arcObj.taskId === archiveObj.taskId) {
+          arcObj.archive = false
+        }
+      })
+
+      var filteredAry = state.archiveList.filter(function(e) { return e.taskId !== archiveObj.taskId })
+      state.archiveList = filteredAry
+    },
+    [unArchiveTask.rejected]: (state, action) => {
       state.error = action.payload
     },
   }

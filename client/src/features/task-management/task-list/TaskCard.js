@@ -10,6 +10,9 @@ import { subTaskDisplay, moveSubTask, deleteSubTask } from '../taskDataSlice'
 
 /**
   This component renders the cards in each column. Each Card displays some details about a task. 
+  The cards are of 2 types: 
+  Task Card,
+  SubTask
   Essentially the Task Title, Task Id, Task Status and an edit icon which when clicked, opens the 
   edit dialog box.
 
@@ -17,6 +20,8 @@ import { subTaskDisplay, moveSubTask, deleteSubTask } from '../taskDataSlice'
   @param {number} index used to distinguish draggable cards 
   @param {object} taskData from the corresponding redux slice, to retrieve all the data related
   the a particular task and use it to populate the card 
+  @param {object} taskStatusDetails from the corresponding redux slice, to retrieve the task statuses that 
+  are assigned to a task, along with the hex color values
 */
 
 export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch}) {
@@ -54,7 +59,7 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
 
   function SubTask() {
     return (
-      (taskObj !== undefined && taskObj.check === true) &&
+      (taskObj !== undefined && taskObj.check !== true) &&
       <Card height="10%" key={index} style={{marginBottom: 10}} cursor="pointer" variant="outlined">
         <CardContent>
           <Grid item xs container direction="row" spacing={0}>
@@ -84,41 +89,44 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
   }
 
   function MainTask() {
-    return <Card elevation={3} style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" >
-      <CardContent>
-        <Grid item xs container direction="row" spacing={0}>
-          <Grid item xs>
-            {
-              <Typography key={index} gutterBottom variant="h6"> {taskObj.title} </Typography>
-            }
-          </Grid>  
+    return (
+      (taskObj !== undefined && taskObj.archive === false) &&
+      <Card elevation={3} style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" >
+        <CardContent>
+          <Grid item xs container direction="row" spacing={0}>
+            <Grid item xs>
+              {
+                <Typography key={index} gutterBottom variant="h6"> {taskObj.title} </Typography>
+              }
+            </Grid>  
 
-          <Grid item> 
-            <EditIcon onClick={() => setOpen(true)} fontSize="small" color="action" cursor="pointer"/>
-            <EditTaskDialog 
-              editMode={true}
-              open={open}
-              setOpen={setOpen}
-              isRequestTask={taskId[0]==="r"}
-              taskId={taskId}/>
+            <Grid item> 
+              <EditIcon onClick={() => setOpen(true)} fontSize="small" color="action" cursor="pointer"/>
+              <EditTaskDialog 
+                editMode={true}
+                open={open}
+                setOpen={setOpen}
+                isRequestTask={taskId[0]==="r"}
+                taskId={taskId}/>
+            </Grid>
           </Grid>
-        </Grid>
 
-        <Grid container direction="row" justify='space-between' alignItems="flex-end">
-          <Grid item>
-            <Box fontSize={12}>
-              <StopIcon fontSize="small" style={{fill: taskStatusColor, marginBottom: -4}} /> {/*if condition if no task status*/}
-              {taskStatusName} 
-            </Box>
+          <Grid container direction="row" justify='space-between' alignItems="flex-end">
+            <Grid item>
+              <Box fontSize={12}>
+                <StopIcon fontSize="small" style={{fill: taskStatusColor, marginBottom: -4}} /> {/*if condition if no task status*/}
+                {taskStatusName} 
+              </Box>
+            </Grid>
+            <Grid>
+              <Typography variant='subtitle2'>
+                {taskId}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid>
-            <Typography variant='subtitle2'>
-              {taskId}
-            </Typography>
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    )  
   }
 
   return (

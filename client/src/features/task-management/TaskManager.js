@@ -51,7 +51,7 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
     dispatch(fetchCCAAccounts())
     dispatch(fetchCCARequestList())
     dispatch(fetchTaskStatus())
-    // dispatch(fetchArchiveManager())
+    dispatch(fetchArchiveManager())
     dispatch(fetchTaskManager())
   }, [])
 

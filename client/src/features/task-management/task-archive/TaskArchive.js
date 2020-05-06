@@ -1,15 +1,15 @@
 import React, {useEffect} from 'react'
 import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
-import { fetchTask } from "../taskDataSlice"
+import { fetchTask, unArchiveTask } from "../taskDataSlice"
 import { CircularProgress, Button} from '@material-ui/core'
 import { Link } from 'react-router-dom'
 
 function ArchiveList({ taskData, ccaDetails, dispatch }) {
 
   function handleUnArchiveClick({event, taskId, ownerId}) {
-    console.log(taskId, ownerId)
     dispatch(fetchTask({taskId, ownerId}))
+    dispatch(unArchiveTask({taskId}))
   }
 
   function UnArchiveButton({taskId, ownerId}) {
@@ -39,17 +39,18 @@ function ArchiveList({ taskData, ccaDetails, dispatch }) {
         taskData.isPending ? <CircularProgress style={{marginLeft: '49vw', marginTop: '40vh'}}/> :  
         <MUIDataTable
           data={ taskData.archiveList.map((archiveObj, index) => {
-            if (archiveObj.archive) {
+            if (archiveObj.archive === true) {
               return [
                 archiveObj.taskId,
-                archiveObj.ownerId,
+                archiveObj.title,
+                // archiveObj.ownerId,
                 <CCAName ownerId={archiveObj.ownerId}/>,
                 archiveObj.updatedAt,
                 <UnArchiveButton taskId={archiveObj.taskId} ownerId={archiveObj.ownerId}/>
               ]
             }})
           }
-          columns={["Task ID", "Owner ID", "Owner Name", "Last Modified", " "]}
+          columns={["Task ID", "Title", "Owner Name", "Last Modified", " "]}
           options={{
             search:false,
             searchOpen:false,
@@ -59,11 +60,6 @@ function ArchiveList({ taskData, ccaDetails, dispatch }) {
             filter: false,
             disableToolbarSelect: true,
             selectableRows:false,
-            // onRowsDelete: (rowsDeleted) => {
-            //   for (let dataIndex in rowsDeleted.lookup) {
-            //     dispatch(deleteForm(dataIndex))
-            //   }
-            // }
           }}
         />
       }
