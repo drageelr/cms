@@ -43,8 +43,7 @@ export function RequestList({requestListData, dispatch}) {
   const [selectedDateTo, setSelectedDateTo] = useState(new Date('2020-05-01'))
 
   const options = {
-    viewColumns:false,
-    filter: false,
+    download: false,
     disableToolbarSelect: true,
     selectableRows:false,
     customToolbar: () => <CustomFilterBar/>
@@ -205,9 +204,7 @@ export function RequestList({requestListData, dispatch}) {
             requestListData.formDataList.map((request, _) => [
               request.submissionId,
               request.formTitle,
-              <Box color="slategray" >
-                {simplifyTimestamp(request.timestampModified)}
-              </Box>, //<DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
+              simplifyTimestamp(request.timestampModified, false), //<DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
               request.societyNameInitials,
               <ChangeFormStatusSelect submissionId={request.submissionId} status={request.status} />,
               <Button 

@@ -42,6 +42,8 @@ export async function apiCaller(api, body, successCode, dataReturner, rejectWith
 }
 
 export function simplifyTimestamp(ts, dateOnly=true) {
+  if (ts === "Just now") return ts
+  
   const monthAbbrev = {"01":"Jan", "02":"Feb", "03":"Mar", "04":"Apr", "05":"May", "06":"Jun", "07":"Jul", "08":"Aug",
   "09":"Sep", "10":"Oct", "11":"Nov", "12":"Dec"}
   const dateTime = ts.split('T')

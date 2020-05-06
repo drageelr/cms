@@ -15,6 +15,14 @@ const useStyles = makeStyles((theme) => ({
   notesPaper: {
     overflow:'auto',
     height: '30vh',
+  },
+  noteObjectPaper: {
+    padding: 2, 
+    borderRadius: 3, 
+    margin: 8, 
+    width: '20vw',
+    backgroundColor: theme.palette.primary.main,
+    color: 'white'
   }
 }))
 
@@ -29,7 +37,7 @@ export default function NotesSideBar({submissionId, drawerOpen, toggleDrawer, no
         {
           notes.map((note, index) => {
             return (
-            <Paper key={index} style={{padding: 2, borderRadius: 3, margin: 8, width: '20vw', backgroundColor: 'blue', color: 'white'}} >
+            <Paper key={index} className={classes.noteObjectPaper} >
               <Typography style={{margin: 5, fontWeight: 500}}>
                 {note.note}
               </Typography>

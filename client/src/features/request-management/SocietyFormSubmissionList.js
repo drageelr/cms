@@ -80,7 +80,7 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
               {submission.formTitle}
             </Typography>,
             <Box color="text.secondary" ><DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
-              {simplifyTimestamp(submission.timestampModified)}
+              {simplifyTimestamp(submission.timestampModified, false)}
             </Box>,
             <LinearProgress 
             value={selectValue(submission.status)}
@@ -101,13 +101,10 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
             onClick={()=>history.push(`/form-viewer/edit/${submission.submissionId}`)}
             >
               view submission
-            </Button>,
-            <IconButton onClick={() => handleDelete(submission.submissionId)}>
-              <DeleteIcon/>
-            </IconButton>
+            </Button>
           ])
         } 
-        columns={["Submitted Form", "Last edited", "Approval Progress", "Form Status", "", ""]} 
+        columns={["Submitted Form", "Last edited", "Approval Progress", "Form Status", "",]} 
         options={options}
       />
       <ErrorSnackbar stateError={ submissionListData.error } clearError={clearError}/>
