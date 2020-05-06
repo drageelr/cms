@@ -18,36 +18,41 @@ import ChangePassword from './features/account-settings/ChangePassword'
 import SocietyDashboard from './ui/SocietyDashboard'
 import { connect } from 'react-redux'
 
-const appTheme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#3578fa',
-    },
-    secondary: {
-      main: '#ffffff',
-    },
-  },
-  typography: {
-    fontFamily: [
-      '-apple-system',
-      'Montserrat',
-    ].join(','),
-    fontSize: 12,
-  },
-  overrides: {
-    MUIDataTableBodyCell: {
-      root: {
-        fontSize: 13
-      }
-    }
-  }
-})
-
 function App({ user }) {
   const { isLoggedIn, userType, name, picture } = user
-  // console.log("User: ", user)
-  // var userDetails = JSON.parse(localStorage.getItem('localuser'))
-  // console.log("hello: ",user)
+  const isDark = true
+  if (isDark) {
+    document.body.style = 'background: #424242'
+  }
+  
+  const appTheme = createMuiTheme({
+    palette: {
+      type: isDark ? 'dark' : 'light',
+      primary: {
+        main: '#3578fa',
+      },
+      secondary: {
+        main: '#ffffff',
+      },
+      text: {
+        secondary: isDark ? '#ffffff': '#666699'
+      }
+    },
+    typography: {
+      fontFamily: [
+        '-apple-system',
+        'Montserrat',
+      ].join(','),
+      fontSize: 12,
+    },
+    overrides: {
+      MUIDataTableBodyCell: {
+        root: {
+          fontSize: 13
+        }
+      }
+    }
+  })
   
   return (
     <Router>

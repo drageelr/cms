@@ -79,7 +79,6 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     if(ccaMember !== undefined){
       setPermissions(ccaMember.permissions)
     }
-    
   }
   
   function handleClosePermission() {
@@ -379,13 +378,16 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
           <PanelBar style = {{fontWeight: 'bold'}} handleAdd={handleAdd} title="CCA Accounts" buttonText="Add CCA Account"/>
           {permissionMode ? <PermissionsDialog/> : <CCADialog />}
           <br/>
-          <Container style={{color: "gray", overflowX: 'auto'}} >
+          <Container style={{overflowX: 'auto'}} >
           <Grid container spacing={3} >
           {
             ccaDetails.ccaList !== undefined &&
             ccaDetails.ccaList.map((ccaDetail,index) => (
               <Grid item xs={3}> 
-                <Card display='flex' elevation={3} style = {{marginLeft: 10, maxWidth: 275, background: ccaDetail.active ? "##F6F6F6" : "darkgray"}}>
+                <Card display='flex'elevation={7} style={{
+                  marginLeft: 10, 
+                  maxWidth: 275, 
+                  background: ccaDetail.active ? "##F6F6F6" : "darkgray"}}>
                   <CardHeader
                     avatar={
                       <CCAPicture src={ccaDetail.picture}/>

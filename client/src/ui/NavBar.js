@@ -7,12 +7,11 @@ import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck'
 import SettingsIcon from '@material-ui/icons/Settings'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import DonutSmallIcon from '@material-ui/icons/DonutSmall'
+import LockIcon from '@material-ui/icons/Lock'
 import { makeStyles } from '@material-ui/core/styles'
-import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Box, Grid} from '@material-ui/core'
+import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Box, Grid, Button} from '@material-ui/core'
 import { useDispatch } from 'react-redux'
 import { logout } from '../features/account-settings/userSlice'
-import {Button} from '@material-ui/core'
-import LockIcon from '@material-ui/icons/Lock'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -23,6 +22,11 @@ const useStyles = makeStyles((theme) => ({
     padding: 18,
     margin: 10,
   },
+  appBar: {
+    height: 45, 
+    // boxShadow: "none", 
+    background: theme.palette.type === 'dark' ? 'linear-gradient(to bottom, #424242, #424242)' :'linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 82%,rgba(237,237,237,1) 100%)'
+  }
 }))
 
 export default function NavBar({name, userType, picture}) {
@@ -37,7 +41,7 @@ export default function NavBar({name, userType, picture}) {
   function RoundLinkButton({ link, icon, title }) {
     return (
       <Grid container direction='column' alignItems='center' style={{paddingBottom: 16}}>
-        <Grid item xs>
+        <Grid item xs> 
           <Link to={link}>
             <IconButton color='primary' onClick={toggleDrawer} classes={classes.roundButton} style={{backgroundColor: 'white'}}>
               {icon}
@@ -57,7 +61,7 @@ export default function NavBar({name, userType, picture}) {
 
   return (
     <div>
-      <AppBar position="static" style={{height: 45, boxShadow: "none", background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 82%,rgba(237,237,237,1) 100%)'}} >
+      <AppBar position="static" className={classes.appBar} >
         <Toolbar style={{minHeight: 30}} >
           <Grid container direction='row' justify="space-between" alignItems="center">
             
@@ -76,7 +80,7 @@ export default function NavBar({name, userType, picture}) {
                 </Grid>
                 <Grid item>
                   <Typography>
-                    <Box color="black" fontSize={26} fontWeight={600}>
+                    <Box color="text.primary" fontSize={26} fontWeight={600}>
                       {"CMS"}
                     </Box>
                   </Typography>
@@ -91,7 +95,7 @@ export default function NavBar({name, userType, picture}) {
                 src={picture}
               />
               <Typography>
-                <Box color="black" fontWeight={600} m={1}>
+                <Box color="text.primary" fontWeight={600} m={1}>
                   {name}
                 </Box>
               </Typography>
