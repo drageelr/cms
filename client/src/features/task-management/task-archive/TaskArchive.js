@@ -1,15 +1,11 @@
 import React, {useEffect} from 'react'
 import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
-import { fetchArchiveList, fetchTask } from "../taskDataSlice"
+import { fetchTask } from "../taskDataSlice"
 import { CircularProgress, Button} from '@material-ui/core'
 import { Link } from 'react-router-dom'
 
 function ArchiveList({ taskData, ccaDetails, dispatch }) {
-
-  useEffect(() => {
-    dispatch(fetchArchiveList())
-  }, [])
 
   function handleUnArchiveClick({event, taskId, ownerId}) {
     console.log(taskId, ownerId)
@@ -42,13 +38,17 @@ function ArchiveList({ taskData, ccaDetails, dispatch }) {
       {
         taskData.isPending ? <CircularProgress style={{marginLeft: '49vw', marginTop: '40vh'}}/> :  
         <MUIDataTable
-          data={ taskData.archiveList.map((archiveObj, index) => [
-            archiveObj.taskId,
-            archiveObj.ownerId,
-            <CCAName ownerId={archiveObj.ownerId}/>,
-            archiveObj.updatedAt,
-            <UnArchiveButton taskId={archiveObj.taskId} ownerId={archiveObj.ownerId}/>
-          ])}
+          data={ taskData.archiveList.map((archiveObj, index) => {
+            if (archiveObj.archive) {
+              return [
+                archiveObj.taskId,
+                archiveObj.ownerId,
+                <CCAName ownerId={archiveObj.ownerId}/>,
+                archiveObj.updatedAt,
+                <UnArchiveButton taskId={archiveObj.taskId} ownerId={archiveObj.ownerId}/>
+              ]
+            }})
+          }
           columns={["Task ID", "Owner ID", "Owner Name", "Last Modified", " "]}
           options={{
             search:false,

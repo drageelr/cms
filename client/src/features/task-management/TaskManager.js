@@ -3,21 +3,21 @@ import {connect} from 'react-redux'
 import TaskColumn from './task-list/TaskColumn'
 import TaskArchive from './task-archive/TaskArchive'
 import { DragDropContext } from 'react-beautiful-dnd'
-import { Fab, Dialog, AppBar, Toolbar, Typography, Slide, IconButton, makeStyles, Box } from '@material-ui/core'
+import { Fab, Dialog, AppBar, Toolbar, Typography, Slide, IconButton, makeStyles, Box, LinearProgress } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import ArchiveIcon from '@material-ui/icons/Archive'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import { fetchCCAAccounts } from '../account-settings/ccaDetailsSlice'
 import { fetchTaskStatus } from '../account-settings/taskStatusDetailsSlice'
 import { fetchCCARequestList } from '../request-management/requestListSlice'
-import { moveTask, fetchTaskManager, editSubTask, moveSubTask, moveTaskSync, clearError } from './taskDataSlice'
-
+import { moveTask, fetchTaskManager, fetchArchiveManager, editSubTask, moveSubTask, moveTaskSync, clearError } from './taskDataSlice'
 
 /**
   The parent component that initiates the Task Manager. 
 
-  @param {object} columnData from the corresponding redux slice, to retrieve all the data for 
+  @param {object} ccaDetails from the corresponding redux slice, to retrieve all the data of the CCA users for 
   each column and pass it on to the sub components
+  @param {object} taskData slice from redux corresponding to the current component
   @param {function} dispatch from redux, used to dispatch the moveTask action to the reducer 
 */
 
@@ -37,31 +37,34 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 function TaskManager({ ccaDetails, taskData, dispatch }) {
 
-  // fetch the CCAAccountsList(before fetching the Task Manager) and save it in the ccaList Initial state in 
-  // ccaDetailsSlice and then that slice will be used to extract CCA account details for Task Manager, also fetch
-  // the task status as they are to be used for task cards
+  /* 
+    fetch the CCAAccountsList(before fetching the Task Manager) and save it in the ccaList Initial state in 
+    ccaDetailsSlice and then that slice will be used to extract CCA account details for Task Manager, also fetch
+    the task status as they are to be used for task cards
+
+    fetchTaskManager() --> A fetch call to the backend to FETCH the TASK MANAGER, once I get the taskList, I'll have to make a list of 
+    all the columns, by going through each task and adding each unique ownerId to an array called columnOrder
+    (will do this in the backend when the fetch task is fulfilled and in the fetchtaskfulfilled extraReducer)
+  */
+
   useEffect(() => { 
     dispatch(fetchCCAAccounts())
     dispatch(fetchCCARequestList())
     dispatch(fetchTaskStatus())
-    /*
-    A fetch call to the backend to FETCH the TASK MANAGER, once I get the taskList, I'll have to make a list of 
-    all the columns, by going through each task and adding each unique ownerId to an array called columnOrder
-    (will do this in the backend when the fetch task is fulfilled and in the fetchtaskfulfilled extraReducer)
-    */
+    // dispatch(fetchArchiveManager())
     dispatch(fetchTaskManager())
-
   }, [])
 
-  // we will decide and make columns based on the CCA Accounts List, the order in which the CCA Accounts List is
-  // fetched, will be the order of the columns and for each account there will be a column in the Task Manager
+  /* 
+    The order in which the CCA Accounts List is fetched, will be the order of the columns in the Task Manager 
+    and for each CCA Account there will be a column in the Task Manager.
+  */
+  
   let columnOrder = []
   ccaDetails.map(ccaObj => {
     columnOrder.push(ccaObj.ccaId)
   })
   columnOrder = Array.from(new Set(columnOrder))
-
-  
 
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
@@ -88,25 +91,22 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
     
     if (draggableId[0] === 's') {
       let mainTaskId = -1
-      dispatch(editSubTask({
-        taskId: draggableId,
-        srcColumnId: source.droppableId,
-        dstColumnId: destination.droppableId,
-      }))
-      taskData.taskList.map(taskObj => {
+
+      dispatch(editSubTask({subTaskId: draggableId, dstColumnId: destination.droppableId}))
+
+      taskData.taskList.forEach(taskObj => {
         if (taskObj.taskId === draggableId) {
           mainTaskId = taskObj.assTaskId
         }
       })
-      taskData.taskList.map(taskObj => {
-        if (taskObj.taskId === mainTaskId) {
-          var subTaskList = taskObj.subTasks
-          dispatch(moveSubTask({mainTaskId, subTaskList}))
-        }
-      })
-
+      dispatch(moveSubTask({mainTaskId}))
     } else {
       dispatch(moveTaskSync({taskId: draggableId, dstColumnId: destination.droppableId, dstIndex:  destination.index}))
+      taskData.taskList.map(task => {
+        if (task.taskId === draggableId) {
+          console.log(task)
+        }
+      })
       dispatch(moveTask({  // probably call the edit API as we want to update the ownerID of the task
         taskId: draggableId,
         srcColumnId: source.droppableId,
@@ -118,6 +118,7 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
   }
 
   return (
+    taskData.isPending ? <LinearProgress /> :
     <DragDropContext onDragEnd={onDragEnd}>
       <br/>
       <Box display="flex" flex-direction="row" marginLeft={2}>

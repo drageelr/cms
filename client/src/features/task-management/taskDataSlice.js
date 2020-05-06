@@ -10,8 +10,7 @@ import { apiCaller } from '../../helpers'
 const initialState = {
   archiveList: [],
   checkList: [],
-  taskList: [],
-  subTaskIds: [],
+  taskList: [], 
   checklistAssignees: [],
   isPending: false,
   error: null
@@ -23,8 +22,7 @@ export const fetchTaskManager = createAsyncThunk(
     const { isPending } = getState().taskData
     if (isPending != true) {
       return
-    } 
-
+    }
     return await apiCaller('/api/task-manager/fetch', {}, 200, 
     (data) =>(data), 
     rejectWithValue)  
@@ -61,22 +59,16 @@ export const fetchCheckList = createAsyncThunk(
   }
 )
 
-export const fetchArchiveList = createAsyncThunk(
-  'taskData/fetchArchiveList',
+export const fetchArchiveManager = createAsyncThunk(
+  'taskData/fetchArchiveManager',
   async (_, { getState, rejectWithValue }) => {
     const { isPending } = getState().taskData
     if (isPending != true) {
       return
     } 
-    return {}
 
-    //TBD
     return await apiCaller('/api/task-manager/fetch-archive', {}, 200, 
-    (data) => {
-      
-    }, rejectWithValue)  
-    //{taskList: [taskDetailsObj]}
-    //{taskId: "String", ownerId: Number, createdAt: Date, updatedAt: Date}
+    (data) => (data), rejectWithValue)
   }
 )
 
@@ -85,8 +77,6 @@ export const createRequestTask = createAsyncThunk( // GIVES INTERNAL SERVER ERRO
   async (reqTaskObject, { getState, rejectWithValue }) => {
     const { title, description, submissionId, ownerId, statusId } = reqTaskObject
     const checklistIds = getState().taskData.checklistAssignees
-
-    console.log(checklistIds)
 
     return await apiCaller('/api/task-manager/task/req/create', {
       task: {
@@ -154,12 +144,57 @@ export const moveTask = createAsyncThunk(
 export const moveSubTask = createAsyncThunk(
   'taskData/moveSubTask',
   async (subTaskObject, { getState, rejectWithValue }) => {
-    const { mainTaskId, subTaskList } = subTaskObject
+    const { mainTaskId } = subTaskObject
+    
+    let taskList1 = getState().taskData.taskList
+    let subTaskList = []
+    taskList1.map((task, index) => {
+      if (task.taskId === mainTaskId) {
+        subTaskList = getState().taskData.taskList[index].subtasks
+      }
+    })
+    
+    let tempSubList = []
+    
+    subTaskList.map(obj => {
+      tempSubList.push({
+        subtaskId: obj.subtaskId,
+        assigneeId: obj.assigneeId,
+        description: obj.description, 
+        check: obj.check
+      })
+    })
 
     return await apiCaller('/api/task-manager/task/req/edit', {
       task: {
         taskId: mainTaskId,
-        subTasks: subTaskList
+        subtasks: tempSubList
+      }
+    }, 200, 
+    (data) => ({data, mainTaskId}), 
+    rejectWithValue)
+  }
+)
+
+export const deleteSubTask = createAsyncThunk(
+  'taskData/deleteSubTask',
+  async (subTaskObject, { getState, rejectWithValue }) => {
+    const { mainTaskId, subTaskList } = subTaskObject
+    let tempSubList = []
+    
+    subTaskList.map(obj => {
+      tempSubList.push({
+        subtaskId: obj.subtaskId,
+        assigneeId: obj.assigneeId,
+        description: obj.description, 
+        check: false
+      })
+    })
+
+    return await apiCaller('/api/task-manager/task/req/edit', {
+      task: {
+        taskId: mainTaskId,
+        subtasks: tempSubList
       }
     }, 200, 
     (data) => ({data, mainTaskId}), 
@@ -232,34 +267,26 @@ export const changeTaskStatus = createAsyncThunk(
   }
 )
 
+export const archiveTask = createAsyncThunk(
+  'taskData/archiveTask',
+  async (archiveObj, { rejectWithValue }) => {
+    const { taskId, ownerId } = archiveObj
+    
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        archive: true
+      }
+    }, 200, 
+    (data) => ({data, archiveObj}), 
+    rejectWithValue)   
+  }
+)
+
 const taskdata = createSlice({
   name: 'taskData',
   initialState: initialState,
   reducers: {
-    archiveTask: (state, action) => { // send the task id to the server and create an archive of it
-      const {taskId, ownerId} = action.payload
-
-      state.columns[ownerId].taskIds.map(id => {
-        if (taskId === id) {
-          var filteredAry = state.columns[ownerId].taskIds.filter(function(e) { return e != id })
-          const obj = state.tasks[taskId]
-          state.archiveList.push(obj)
-          state.columns[ownerId].taskIds = filteredAry
-        } 
-      })
-    },
-
-    unArchiveTask: (state, action) => { // on getting the archive tasks from server,
-      // also get the taskOwner id with it so then adding task back to column is simple, for now hard-coding the column
-      const {taskId,ownerId} = action.payload 
-
-      state.columns[ownerId].taskIds.push(taskId) // put the task back in owners list
-      state.archiveList.map(id => {
-        var filteredAry = state.archiveList.filter(function(e) { return e.id != taskId })
-        state.archiveList = filteredAry
-      })
-    },
-
     addTaskAssignees: (state, action) => {
       const {taskId, value} = action.payload
       
@@ -284,9 +311,9 @@ const taskdata = createSlice({
         if (subtaskObj.taskId === taskId) { // get the subtask Obj from the task list
           state.taskList.map(taskObj => {
             if (taskObj.taskId === subtaskObj.assTaskId) { // get the task obj from task list to which the sub task is associated
-              taskObj.subTasks.map(assSubTask => {
+              taskObj.subtasks.map(assSubTask => {
                 if (assSubTask.taskId === taskId) { // get the subtask from the task that is same as the current subtask
-                  assSubTask.check = false
+                  // assSubTask.check = false
                   subtaskObj.check = false
                 }
               })
@@ -297,23 +324,36 @@ const taskdata = createSlice({
     },
 
     editSubTask: (state, action) => {
-      const {taskId, srcColumnId, dstColumnId} = action.payload
+      const {subTaskId, srcColumnId, dstColumnId} = action.payload
+
+      let taskId = ""
+      let subI = -1 // subtask index (which is in the main taskList)
+      let subSubI = -1 // subtask index (which is in the main task's subtask list)
+      let taskIndex = -1 // main task index
       
-      state.taskList.map(taskObj => {
-        if (taskObj.taskId === taskId) { // get the subtask in the taskList
-          state.taskList.map(assTaskObj => {
-            if(assTaskObj.taskId === taskObj.assTaskId) { // get the task whose subtask is this subtask
-              assTaskObj.subTasks.map(assSubTask => {
-                if (assSubTask.taskId === taskId) {
-                  assSubTask.ownerId = dstColumnId
-                  assSubTask.assigneeId = dstColumnId
-                  taskObj.ownerId = dstColumnId
-                }
-              })
+      state.taskList.map((task, index) => {
+        if (task.taskId === subTaskId) { // get the subtask in the taskList
+          subI = index
+        }
+      })
+
+      taskId = state.taskList[subI].assTaskId // main task Id
+      state.taskList[subI].ownerId = Number(dstColumnId) // change the subtasks ownerId - outside the task
+      state.taskList[subI].assigneeId = Number(dstColumnId) // change the subtask assigneeId - outside the task
+
+      state.taskList.map((task, index) => {
+        if (task.taskId === taskId) {
+          taskIndex = index
+          task.subtasks.forEach((subTask, index) => {
+            if (subTask.taskId === subTaskId) {
+              subSubI = index
             }
           })
         }
       })
+
+      state.taskList[taskIndex].subtasks[subSubI].ownerId = Number(dstColumnId) 
+      state.taskList[taskIndex].subtasks[subSubI].assigneeId = Number(dstColumnId) 
     },
 
     moveTaskSync: (state, action) => {
@@ -340,15 +380,26 @@ const taskdata = createSlice({
     [fetchTaskManager.fulfilled]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
+
         state.taskList = action.payload.taskList
-        
-        // state.taskList.map(taskObj => {
-        //   if (taskObj.taskId[0] === 'r' && taskObj.subTasks.length !== 0) {
-        //     taskObj.subTasks.map(subObj => {
-        //       state.taskList.push(subObj)
-        //     })
-        //   }
-        // })
+
+        state.taskList.map(taskObj => {
+          if (taskObj.taskId[0] === 'r' && taskObj.subtasks.length !== 0) {
+            taskObj.subtasks.map((subObj, index) => {
+              let subTaskObj = {
+                taskId: `s${subObj.subtaskId}`,
+                subtaskId: subObj.subtaskId,
+                assTaskId: taskObj.taskId,
+                ownerId: subObj.assigneeId,
+                assigneeId: subObj.assigneeId,
+                description: subObj.description,
+                check: subObj.check
+              }
+              taskObj.subtasks[index] = subTaskObj
+              state.taskList.push(subTaskObj)
+            })
+          }
+        })
       }
     },
     [fetchTaskManager.rejected]: (state, action) => {
@@ -385,18 +436,18 @@ const taskdata = createSlice({
       }
     },
 
-    [fetchArchiveList.pending]: (state, action) => {
+    [fetchArchiveManager.pending]: (state, action) => {
       if (state.isPending === false) {
         state.isPending = true
       }
     },
-    [fetchArchiveList.fulfilled]: (state, action) => {
+    [fetchArchiveManager.fulfilled]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
-        state.archiveList = action.payload
+        state.archiveList = action.payload.data.taskList
       }
     },
-    [fetchArchiveList.rejected]: (state, action) => {
+    [fetchArchiveManager.rejected]: (state, action) => {
       if (state.isPending === true) {
         state.isPending = false
         state.error = action.payload
@@ -412,12 +463,16 @@ const taskdata = createSlice({
       const {data, archiveObj} = action.payload
 
       console.log(data)
-      //state.taskList.push(task)   
-      
-      // state.archiveList.map(obj => {
-      //   var filteredAry = state.archiveList.filter(function(e) { return e.obj.taskId !== archiveObj.taskId })
-      //   state.archiveList = filteredAry
-      // })
+      state.taskList.push(data.task)
+
+      state.archiveList.map(arcObj => {
+        if(arcObj.taskId === archiveObj.taskId) {
+          arcObj.archive = false
+        }
+      })
+
+      var filteredAry = state.archiveList.filter(function(e) { return e.taskId !== archiveObj.taskId })
+      state.archiveList = filteredAry
     },
     [fetchTask.rejected]: (state, action) => {
       if (state.isPending === true) {
@@ -427,34 +482,27 @@ const taskdata = createSlice({
     },
 
     [createRequestTask.fulfilled]: (state, action) => {
-      console.log(action.payload)
-      // let subTaskObj = {}
-      
-      // state.checkList.map(checkObj => {
-      //   var subTaskId = state.subTaskIds.splice(0, 1) // get the every first id in the array
-      //   var subTaskDesc = checkObj.description
-      //   state.taskList.map(taskObj => {
-      //     if (taskObj.taskId === IdObj.taskId) {
-      //       subTaskObj = {
-      //         taskId: `s${subTaskId}`,
-      //         subtaskId: subTaskId,
-      //         assTaskId: IdObj.taskId, //associated taskId (task to which this subtask is associated with)
-      //         ownerId: taskObj.ownerId,
-      //         assigneeId: taskObj.ownerId,
-      //         description: subTaskDesc,
-      //         check: true
-      //       }
-      //       taskObj.subTasks.push(subTaskObj)
-      //     }
-      //   })
-      //   state.taskList.push(subTaskObj)
-      // })
+      const {data, reqTaskObject} = action.payload
+      let subTaskList = []
+      data.subtasks.map(subTask => {
+        let subTaskObj = {
+          taskId: `s${subTask.subtaskId}`,
+          subtaskId: subTask.subtaskId,
+          assTaskId: data.taskId,
+          ownerId: subTask.assigneeId,
+          assigneeId: subTask.assigneeId,
+          description: subTask.description,
+          check: true
+        }
+        subTaskList.push(subTaskObj)
+        state.taskList.push(subTaskObj)
+      })
 
       state.taskList.push({
-        taskId: action.payload.data.taskId,
-        logs: action.payload.data.logs,
-        subTasks: action.payload.data.subTaskIds,
-        ...action.payload.reqTaskObject
+        taskId: data.taskId,
+        logs: data.logs,
+        subTasks: subTaskList,
+        ...reqTaskObject
       })
       state.error = 'Request Task Created'
     },
@@ -521,6 +569,19 @@ const taskdata = createSlice({
       state.error = action.payload
     },
 
+    [deleteSubTask.fulfilled]: (state, action) => {
+      const { data, mainTaskId } = action.payload
+      
+      // state.taskList.map(taskObj => {
+      //   if(taskObj.taskId === mainTaskId) {
+      //     taskObj.logs.push(data.newLog)
+      //   }
+      // })
+    },
+    [deleteSubTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
     [taskOwnerChange.fulfilled]: (state, action) => {
       const {data, ownerChangeObj} = action.payload
       
@@ -577,12 +638,24 @@ const taskdata = createSlice({
       state.error = action.payload
     },
 
+    [archiveTask.fulfilled]: (state, action) => {
+      const {data, archiveObj} = action.payload
+
+      state.taskList.map(task => {
+        if(task.taskId === archiveObj.taskId) {
+          task.archive = true
+          state.archiveList.push(task)
+          task.logs.push(data.newLog)
+        }
+      })
+    },
+    [archiveTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
   }
 })
 
 export const {
-  archiveTask, 
-  unArchiveTask,
   addTaskAssignees,
   deleteTaskAssignee,
   subTaskDisplay, 

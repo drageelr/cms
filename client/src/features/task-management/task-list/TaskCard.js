@@ -6,7 +6,7 @@ import { Card, CardContent, Typography, Grid, Box } from '@material-ui/core'
 import StopIcon from '@material-ui/icons/Stop'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import { subTaskDisplay } from '../taskDataSlice'
+import { subTaskDisplay, moveSubTask, deleteSubTask } from '../taskDataSlice'
 
 /**
   This component renders the cards in each column. Each Card displays some details about a task. 
@@ -24,7 +24,6 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
   let taskStatusName = ""
   let taskStatusColor = ""
   let statusId = -1
-  //get defaultDesc, defaultTitle, defaultOwner, submissionId from taskData
   const taskObj = taskData.taskList.find(taskObj => taskObj.taskId === taskId)
   if (taskObj !== undefined) { // if found
     statusId = taskObj.statusId
@@ -39,25 +38,45 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
 
   function handleSubTaskDisplay() {
     dispatch(subTaskDisplay({taskId}))
+    
+    let mainTaskId = -1
+    taskData.taskList.map(taskObj => {
+      if (taskObj.taskId === taskId) {
+        mainTaskId = taskObj.assTaskId
+      }
+    })
+    taskData.taskList.map(taskObj => {
+      if (taskObj.taskId === mainTaskId) {
+        dispatch(deleteSubTask({mainTaskId, subTaskList: taskObj.subtasks}))
+      }
+    })
   }
 
   function SubTask() {
     return (
       (taskObj !== undefined && taskObj.check === true) &&
-      <Card key={index} style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" variant="outlined">
+      <Card height="10%" key={index} style={{marginBottom: 10}} cursor="pointer" variant="outlined">
         <CardContent>
           <Grid item xs container direction="row" spacing={0}>
             <Grid item xs>
-              <Typography key={index} gutterBottom variant="h6"> {taskObj.description} </Typography>
+              <Typography key={index} gutterBottom variant="subtitle1"> {taskObj.description} </Typography>
             </Grid> 
             <Grid>
               <DeleteOutlineIcon onClick={handleSubTaskDisplay} cursor="pointer"/>
             </Grid>
           </Grid>
-          <Grid direction="row-reverse">
-            <Typography variant='body2'>
-              {taskId}
-            </Typography>
+          <Grid container direction="row" justify='space-between' alignItems="flex-end">
+            <Grid>
+              <Typography variant='subtitle2'>
+                {"Task ID: "}
+                {taskObj.assTaskId}
+              </Typography>
+            </Grid>
+            <Grid>
+              <Typography variant='subtitle2'>
+                {taskId}
+              </Typography>
+            </Grid>
           </Grid>
         </CardContent>
       </Card>
@@ -93,7 +112,7 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
             </Box>
           </Grid>
           <Grid>
-            <Typography variant='body2'>
+            <Typography variant='subtitle2'>
               {taskId}
             </Typography>
           </Grid>

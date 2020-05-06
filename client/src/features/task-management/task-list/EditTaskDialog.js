@@ -19,7 +19,7 @@ import SubjectIcon from '@material-ui/icons/Subject'
 
   @param {string} taskId this id is used to navigate between sub components of the task editor dialog  
   @param {object} taskData slice from redux corresponding to the current component
-  @param {function} dispatch redux associated function to pass action creators to the reducer
+  @param {function} redux associated function to pass action creators to the reducer
   @param {bool} open a bool state passed from the TaskCard component to open the task editor Dialog Box
   @param {function} setOpen sets the state of open to true or false depending on the user input
 */
@@ -88,7 +88,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
     }
   }
 
-  function handleDelete() { // CALL EDIT TASK API/ARCHIVE TASK API
+  function handleDelete() {
     dispatch(archiveTask({taskId, ownerId}))
   }
 

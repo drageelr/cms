@@ -1,31 +1,5 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
-
-const sampleState = {
-  taskList: [
-    {
-      statusId : 2,
-      name: "Backlog",
-      color: '#808080',
-    },
-    {
-      statusId : 3,
-      name: "In Progress",
-      color: '#FF6347',
-    },
-    {
-      statusId : 4,
-      name: "Done",
-      color: '#00FF00',
-    },
-    {
-      statusId : 5,
-      name: "Urgent",
-      color: '#FF0000',
-    },
-  ],
-  isPending: true,
-  error:'', 
-}
+import { apiCaller } from '../../helpers'
 
 const initialState = {
   taskList: [],
@@ -41,17 +15,12 @@ export const fetchTaskStatus = createAsyncThunk(
       return
     }
     
-    const fetchCall = () => {
-      var promise = new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(sampleState)
-        }, 1000)
-      })
-      return promise
-    }
+    return await apiCaller('/api/task-manager/task-status/fetch-all', {}, 200,
+    (data) => {
+      return {taskList: data.statuses}
+    },
+    rejectWithValue)
 
-    const result = await fetchCall()
-    return result
   }
 )
 
@@ -69,11 +38,12 @@ export const deleteTaskStatus = createAsyncThunk(
 export const addTaskStatus = createAsyncThunk(
   'taskStatusDetails/addTaskStatus',
   async (taskStatusObject, { getState, rejectWithValue}) => {
-    const { isPending } = getState().taskStatusDetails
-    if (isPending != true) {
-      return
-    }
-    return {id: 'ts-3',taskStatusObject : taskStatusObject}
+    const {name,color} = taskStatusObject
+    return await apiCaller('/api/task-manager/task-status/create', {name: name, color: color}, 201,
+    (data) => {
+      return {statusId: data.statusId,taskStatusObject}
+    },
+    rejectWithValue)
   }
 )
 
@@ -130,15 +100,16 @@ const taskStatusDetails = createSlice({
       }
     },
     [addTaskStatus.fulfilled]: (state, action) => {
-      if (state.isPending === true){
+      console.log("das: ", action.payload)
+      if(state.isPending === true){
         state.isPending = false
+
         state.taskList.push({
-        id : action.payload.id, 
-        name: action.payload.taskStatusObject.name,
-        colorHex: action.payload.taskStatusObject.colorHex,
-      })
-      state.error = 'Task Status Added'
-      } 
+          id: action.payload.id,
+          ...action.payload.taskStatusObject
+        })
+        state.error = 'Task Status Added' 
+      }
     },
     [addTaskStatus.rejected]: (state, action) => {
       if (state.isPending === true) {
@@ -178,16 +149,17 @@ const taskStatusDetails = createSlice({
       }
     },
     [fetchTaskStatus.fulfilled]: (state, action) => {
-      // console.log(action.payload.taskList)
+      // console.log("fetchTaskStatus.fulfilled")
       if(state.isPending === true){
         state.isPending = false
+        // console.log(action.payload)
         state.taskList = action.payload.taskList
         state.error = 'Task Status Panel Loaded'
       }
     },
     [fetchTaskStatus.rejected]: (state, action) => {
       if (state.isPending === true) {
-        // state.isPending = false
+        state.isPending = false
         state.error = action.payload
       }
     } 

@@ -24,16 +24,7 @@ export function CheckList({taskId, taskData, dispatch}) {
       submissionId = taskObj.submissionId
     }
   })
-
-  // useEffect(() => { 
-  //   dispatch(createSubTask({taskId}))
-  // }, [])
-
-  // taskData.checkList.map(checkObj => {
-  //   var subTaskDesc = checkObj.description
-  //   dispatch(createSubTask({taskId, subTaskDesc}))
-  // })
-
+  
   return (
     <div>
       {

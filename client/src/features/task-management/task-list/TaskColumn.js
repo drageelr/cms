@@ -11,6 +11,8 @@ import { Droppable } from 'react-beautiful-dnd'
   @param {string} ownerId id of a CCA user who owns the column
   @param {number} taskData from the corresponding redux slice, to retrieve all the data related
   the a particular owner to pass them on and populate the column.
+  @param {object} ccaDetails from the corresponding redux slice, to retrieve all the data of the CCA users for 
+  each column and pass it on to the sub components
 */
 
 const columnStyle = {
@@ -43,7 +45,8 @@ export function TaskColumn({ownerId, taskData, ccaDetails}) {
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {
               taskData.taskList.map((taskObj, index) => {
-                if (ownerId === taskObj.ownerId) {
+                if ((ownerId === taskObj.ownerId && taskObj.archive === false) || 
+                (ownerId === taskObj.ownerId && taskObj.taskId[0] ==='s' && taskObj.check === true)) {
                   return (
                     <TaskCard taskId={taskObj.taskId} index={index} key={taskObj.taskId}/>
                   )
