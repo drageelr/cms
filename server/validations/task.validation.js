@@ -48,12 +48,13 @@ exports.editReqTaskValidation = {
       description: Joi.string(),
       ownerId: Joi.number(),
       statusId: Joi.number(),
+      archive: Joi.bool(),
       subtasks: Joi.array().items(Joi.object({
         subtaskId: Joi.number().required(),
         assigneeId: Joi.number(),
         description: Joi.string(),
         check: Joi.bool()
-      }))
+      })),
     })
   })
 }
@@ -67,6 +68,7 @@ exports.editCusTaskValidation = {
       description: Joi.string(),
       ownerId: Joi.number(),
       statusId: Joi.number(),
+      archive: Joi.bool(),
     }).required()
   })
 }

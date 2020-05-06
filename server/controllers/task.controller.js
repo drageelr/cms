@@ -230,7 +230,6 @@ exports.createCusTask = async (req, res, next) => {
 exports.editReqTask = async (req, res, next) => {
   let params = req.body;
   let task = params.task;
-
   try {
     let reqTask = await RTask.findOne({taskId: parseInt(task.taskId.slice(1))}, '_id');
     if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId"); // raise task not found error
@@ -533,7 +532,7 @@ exports.fetchArchiveManager = async (req, res, next) => {
       statusCode: 200,
       statusName: httpStatus.getName(200),
       message: "Archive Manager Manager Successfully Fetched!",
-      taskList: taskList
+      archiveList: taskList
     });
   } catch (err) {
     next(err);
@@ -547,9 +546,9 @@ exports.fetchTask = async (req, res, next) => {
     let reqTask = false;
 
     if (params.taskId[0] == "r") {
-      reqTask = await RTask.findOne({taskId: parseInt(params.taskId.splice(1))});
+      reqTask = await RTask.findOne({taskId: parseInt(params.taskId.slice(1))});
     } else if (params.taskId[0] == "c") {
-      reqTask = await CTask.findOne({taskId: parseInt(params.taskId.splice(1))});
+      reqTask = await CTask.findOne({taskId: parseInt(params.taskId.slice(1))});
     }
 
     if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId");
