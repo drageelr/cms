@@ -3,7 +3,7 @@ import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
-import {Container, LinearProgress} from '@material-ui/core'
+import {Container, LinearProgress,Typography, Box} from '@material-ui/core'
 import { TextField } from 'formik-material-ui'
 import { changePassword, clearError } from './userSlice'
 import { connect } from 'react-redux'
@@ -16,12 +16,26 @@ import ErrorSnackbar from '../../ui/ErrorSnackbar'
   @param {function} dispatch to dispatch actions to redux, prop by connect 
   (these 2 will be commonly used by redux components so they will not be repeated in the comments)
 */
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  changePasswordTitle: {
+    padding: theme.spacing(2),
+    marginTop: 10,
+    color: theme.palette.text.primary
+  },
+}))
 
 function ChangePassword({error, dispatch}) {
-
+  const classes = useStyles()
   return (
     <Container component="main" maxWidth="xs"> 
-      <h1 style={{marginLeft: 40}}>Change Password</h1>
+      <Typography variant="h4" className={classes.changePasswordTitle}>
+        <Box fontWeight={700} textAlign="center">
+          Change Password
+        </Box>
+      </Typography>
       <Formik
         validateOnChange={false} validateOnBlur={true}
         initialValues = {{
