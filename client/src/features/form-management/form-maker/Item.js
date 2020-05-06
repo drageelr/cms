@@ -5,7 +5,6 @@ import EditDeleteBar from './EditDeleteBar'
 
 export const useStyles = makeStyles((theme) => ({
   itemPaper: {
-    backgroundColor: theme.palette.secondary.main,
     padding: theme.spacing(1),
     paddingTop: 0.3,
     width: '97%',

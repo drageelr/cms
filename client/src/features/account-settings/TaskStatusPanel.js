@@ -15,8 +15,8 @@ import PanelBar from './PanelBar'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.common.white,
+    backgroundColor: theme.palette.background.paper,
+    color: theme.palette.secondary.main,
   },
   body: {
     fontSize: 14,
@@ -26,7 +26,7 @@ const StyledTableCell = withStyles((theme) => ({
 const StyledTableRow = withStyles((theme) => ({
   root: {
     '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.background.default,
     },
   },
 }))(TableRow)
@@ -58,7 +58,6 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
   const [editId, setEditId] = useState(-1)
 
   function EditDeleteMoreButton({id}) {
-    console.log("sending id: ", id)
     const menusList=[
       {
         text: 'Edit',
@@ -88,7 +87,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
   function TaskStatusDialog(){
     let initialValues = {
       name: '',
-      colorHex: ''
+      color: ''
     }
 
     if (editMode){
@@ -96,7 +95,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
         return task.statusId === editId
       })
       if (taskDetail != undefined){
-        initialValues = {name:taskDetail.name,color: taskDetail.color}
+        initialValues = {name:taskDetail.name, color: taskDetail.color}
       }  
     }
 
@@ -125,8 +124,8 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
           onSubmit={(values,{setSubmitting}) => {
             // (taskStatusDetails.isPending) ? <CircularProgress/>
             dispatch(editMode 
-              ?editTaskStatus(({id: editId, name: values.name, colorHex: values.colorHex}))
-              :addTaskStatus({name: values.name, colorHex: values.colorHex}))
+              ? editTaskStatus(({id: editId, name: values.name, color: values.color}))
+              : addTaskStatus({name: values.name, color: values.color}))
               .then(()=>{
                 setSubmitting(false)
               })
@@ -142,7 +141,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
                   </Grid>
                   
                   <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="colorHex" required label="Color" helperText = "Enter Hex Value for Color (#000000)"/>    
+                    <Field component={TextField} name="color" required label="Color" helperText = "Enter Hex Value for Color (#000000)"/>    
                   </Grid>
                 </Grid>
               </DialogContent>

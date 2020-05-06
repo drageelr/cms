@@ -20,7 +20,7 @@ import { connect } from 'react-redux'
 
 function App({ user }) {
   const { isLoggedIn, userType, name, picture } = user
-  const isDark = true
+  const isDark = false
   if (isDark) {
     document.body.style = 'background: #424242'
   }

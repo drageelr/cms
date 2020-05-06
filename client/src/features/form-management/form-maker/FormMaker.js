@@ -16,7 +16,7 @@ export const useStyles = makeStyles((theme) => ({
     width: '90%',
     maxHeight: '74%',
     overflow: 'auto',
-    backgroundColor: 'darkgray'
+    backgroundColor: theme.palette.action.hover
   },
 }))
 

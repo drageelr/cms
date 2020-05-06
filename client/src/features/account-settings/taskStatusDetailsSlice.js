@@ -4,7 +4,7 @@ import { apiCaller } from "../../helpers"
 const initialState = {
   taskList: [],
   isPending: true,
-  error:'',
+  error: null,
 }
 
 export const fetchTaskStatus = createAsyncThunk(
@@ -26,11 +26,11 @@ export const fetchTaskStatus = createAsyncThunk(
 
 export const deleteTaskStatus = createAsyncThunk(
   'taskStatusDetails/deleteTaskStatus',
-  async(statusId, { getState, rejectWithValue}) => {
-    console.log("deleted to be : , ", statusId)
+  async(statusId, { rejectWithValue}) => {
+
     return await apiCaller('/api/task-manager/task-status/delete', {statusId: statusId}, 203,
     (data) => {
-      return {statusId}
+      return {id: statusId}
     },
     rejectWithValue)
   }
@@ -38,11 +38,12 @@ export const deleteTaskStatus = createAsyncThunk(
 
 export const addTaskStatus = createAsyncThunk(
   'taskStatusDetails/addTaskStatus',
-  async (taskStatusObject, { getState, rejectWithValue}) => {
+  async (taskStatusObject, {rejectWithValue}) => {
     const {name,color} = taskStatusObject
-    return await apiCaller('/api/task-manager/task-status/create', {name: name, color: color}, 201,
+
+    return await apiCaller('/api/task-manager/task-status/create', {name, color: color}, 201,
     (data) => {
-      return {statusId: data.statusId,taskStatusObject}
+      return {id: data.statusId,taskStatusObject}
     },
     rejectWithValue)
   }
@@ -50,13 +51,12 @@ export const addTaskStatus = createAsyncThunk(
 
 export const editTaskStatus = createAsyncThunk(
   'taskStatusDetails/editTaskStatus',
-  async (taskStatusObject, { getState, rejectWithValue}) => {
-    const {id,name,colorHex} = taskStatusObject
-    console.log(taskStatusObject)
+  async (taskStatusObject, { rejectWithValue}) => {
+    const {id,name,color} = taskStatusObject
     
-    return await apiCaller('api/task-manager/task-status/edit',{statusId: id,name: name,color: colorHex}, 203,
+    return await apiCaller('api/task-manager/task-status/edit',{statusId: id, name, color: color}, 203,
     (data) => {
-      return {taskStatusObject}
+      return taskStatusObject
     },
     rejectWithValue)
   }
@@ -88,18 +88,14 @@ const taskStatusDetails = createSlice({
     },
 
     [addTaskStatus.fulfilled]: (state, action) => {
-      
-      console.log("das: ", action.payload)
-      if(state.isPending === true){
+      console.log("ADDING TS", action.payload)
         state.isPending = false
       
         state.taskList.push({
           id: action.payload.id,
           ...action.payload.taskStatusObject
         })
-        state.error = 'Task Status Added' 
-      }
-      },
+    },
     [addTaskStatus.rejected]: (state, action) => {
         state.error = action.payload
     },
@@ -107,7 +103,7 @@ const taskStatusDetails = createSlice({
     [editTaskStatus.fulfilled]: (state, action) => {
       let i = 0
       state.taskList.find((obj,index) => {
-        if (obj.statusId === action.payload.statusId){
+        if (obj.statusId === action.payload.id){
           i = index
         }
       })
@@ -124,12 +120,9 @@ const taskStatusDetails = createSlice({
       }
     },
     [fetchTaskStatus.fulfilled]: (state, action) => {
-      console.log("fetchTaskStatus.fulfilled")
       if(state.isPending === true){
         state.isPending = false
-        console.log(action.payload)
         state.taskList = action.payload.taskList
-        state.error = 'Task Status Panel Loaded'
       }
     },
     [fetchTaskStatus.rejected]: (state, action) => {

@@ -59,7 +59,7 @@ export function TaskStatus({taskId, taskData, dispatch}) {
               return <MenuItem value={colorStatus.name}>
                 <Grid container direction="row" justify= "flex-start" alignItems="center">
                   <Grid item>
-                    <StopIcon fontSize="large" style={{fill: `${colorStatus.colorHex}`}} />
+                    <StopIcon fontSize="large" style={{fill: `${colorStatus.color}`}} />
                   </Grid>
                   <Grid item>
                     {colorStatus.name}

@@ -67,22 +67,22 @@ const initialState = {
     {
       id : 'ts-1',
       name: "Backlog",
-      colorHex: '#808080',
+      color: '#808080',
     },
     {
       id : 'ts-2',
       name: "In Progress",
-      colorHex: '#FF6347',
+      color: '#FF6347',
     },
     {
       id : 'ts-3',
       name: "Done",
-      colorHex: '#00FF00',
+      color: '#00FF00',
     },
     {
       id : 'ts-4',
       name: "Urgent",
-      colorHex: '#FF0000',
+      color: '#FF0000',
     },
   ],
 
