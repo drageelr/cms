@@ -47,7 +47,9 @@ exports.defaultCredentails = async () => {
           addCCANote: true
         },
         active: true,
-        role: "admin"
+        role: "admin",
+        themeColor: "#3578fa",
+        darkMode: false
       });
 
       await anyCCA.save();
