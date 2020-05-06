@@ -1,5 +1,5 @@
 import React from 'react'
-import { Paper, Grid, Button, Typography, Box, makeStyles, Fab, Divider} from '@material-ui/core'
+import { Paper, Grid, Button, Typography, Box, makeStyles, Fab, Divider, Tooltip} from '@material-ui/core'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 
 const useStyles = makeStyles((theme) => ({
@@ -32,6 +32,7 @@ export default function PanelBar({handleAdd, title, buttonText}){
           </Grid>
 
           <Grid item>
+          <Tooltip title="add" placement="bottom-start">
             <Fab
               size="medium"
               variant="contained" 
@@ -41,6 +42,7 @@ export default function PanelBar({handleAdd, title, buttonText}){
               onClick = {handleAdd}
             > <AddCircleIcon className={classes.extendedIcon}/> <subtitle1 style={{textSize: 10}}>{buttonText}</subtitle1>
             </Fab>
+          </Tooltip>
           </Grid>
         </Grid>
         <Divider variant='middle'/>
