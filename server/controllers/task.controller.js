@@ -260,7 +260,7 @@ exports.editReqTask = async (req, res, next) => {
     let logDesc = createLogText("rt", task.taskId) + " edited by " + createLogText("u", reqCCA.ccaId, reqCCA.firstName + " " + reqCCA.lastName) + ".\nEdits:";
 
     if (task.archive !== undefined ) {
-      if ((task.archive && reqCCA.permissions.archiveTask) || (!task.archive && reqCCA.permissions.unarchive)) {
+      if ((task.archive && reqCCA.permissions.archiveTask) || (!task.archive && reqCCA.permissions.unarchiveTask)) {
         updateObj.archive = task.archive;
       } else {
         throw new customError.ForbiddenAccessError("user cant change archive field", "PermissionError"); // raise permission error;
@@ -348,7 +348,7 @@ exports.editCusTask = async (req, res, next) => {
     let logDesc = createLogText("ct", task.taskId) + " edited by " + createLogText("u", reqCCA.ccaId, reqCCA.firstName + " " + reqCCA.lastName) + ".\nEdits:";
 
     if (task.archive !== undefined ) {
-      if ((task.archive && reqCCA.permissions.archiveTask) || (!task.archive && reqCCA.permissions.unarchive)) {
+      if ((task.archive && reqCCA.permissions.archiveTask) || (!task.archive && reqCCA.permissions.unarchiveTask)) {
         updateObj.archive = task.archive;
       } else {
         throw new customError.ForbiddenAccessError("user cant change archive field", "PermissionError"); // raise permission error;
