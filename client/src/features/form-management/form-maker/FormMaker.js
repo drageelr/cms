@@ -16,7 +16,7 @@ export const useStyles = makeStyles((theme) => ({
     width: '90%',
     maxHeight: '74%',
     overflow: 'auto',
-    background: 'linear-gradient(to left, #ffffff, #f7f7f7, #efefef, #e8e8e8, #e0e0e0)'
+    backgroundColor: theme.palette.action.hover
   },
 }))
 

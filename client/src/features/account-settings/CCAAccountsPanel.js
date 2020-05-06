@@ -12,14 +12,26 @@ import * as Yup from 'yup'
 import ErrorSnackbar from "../../ui/ErrorSnackbar"
 import PanelBar from './PanelBar'
 import AccessibilityIcon from '@material-ui/icons/Accessibility'
-
+import Pagination from '@material-ui/lab/Pagination'
 import { addCCAAccount, toggleActiveCCAAccount, editCCAAccount, fetchCCAAccounts, clearError, editCCAPermissions } from './ccaDetailsSlice'
+import { makeStyles } from '@material-ui/core/styles'
+import Paper from '@material-ui/core/Paper'
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+  },
+  paper: {
+    width: '100%',
+    height: '90%',
+    marginBottom: theme.spacing(5),
+  },
+}))
 
 function CCAAccountPanel({ccaDetails,dispatch}) {
-
+  const classes = useStyles()
   useEffect(() => {
-    dispatch(fetchCCAAccounts())
-  }, [])
+    dispatch(fetchCCAAccounts())}, [])
   
   const [isOpen, setIsOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
@@ -27,14 +39,27 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
   const [picture, setPicture] = useState("https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-6.png")
   const [permissionMode, setPermissionsMode] = useState(false)
   const [permissions, setPermissions] = useState({})
+  const [page, setPage] = React.useState(0);
   
-
-  function handleImageUpload(event, ccaId) {
-    const url = URL.createObjectURL(event.target.files[0])
-    setPicture(url)
+  
+  function handleChangePage(event, newPage){
+    setPage(newPage);
   }
 
-  function handlePermissionsChange(event){
+  function handleImageUpload(event, ccaId) {
+    var reader = new FileReader()
+    reader.readAsDataURL(event.target.files[0])
+    
+    reader.onload = async () => {
+      setPicture(reader.result)
+    }
+
+    reader.onerror = (error) => {
+      console.log('Error: ', error)
+    }
+  }
+
+  function handlePermissionsChange(event) {
     setPermissions({ 
       ...permissions, 
       [event.target.name]: event.target.checked 
@@ -54,9 +79,8 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     if(ccaMember !== undefined){
       setPermissions(ccaMember.permissions)
     }
-    
   }
-  
+
   function handleClosePermission() {
     setPermissionsMode(false)
   }
@@ -343,42 +367,60 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
 
   }
 
+  function CCAPicture({src}){
+    return <Avatar style = {{width:125, height:125}} src={src}/>
+  }
+
   return (
     <div>
       {ccaDetails.isPending ? <LinearProgress /> :
         <div>
-          <PanelBar handleAdd={handleAdd} title="CCA Accounts" buttonText="Add CCA Account"/>
+          <PanelBar style = {{fontWeight: 'bold'}} handleAdd={handleAdd} title={`CCA Accounts (${ccaDetails.ccaList.length})`} buttonText="Add CCA Account"/>
           {permissionMode ? <PermissionsDialog/> : <CCADialog />}
           <br/>
-          <Container style={{color: "gray"}} >
-          <Grid container spacing={3}>
+          <Container style={{overflowX: 'auto'}} >
+          <Grid container spacing={3} >
           {
+            ccaDetails.ccaList !== undefined &&
             ccaDetails.ccaList.map((ccaDetail,index) => (
               <Grid item xs={3}> 
-                <Card variant="outlined" style = {{marginLeft: 10, maxWidth: 300, background: ccaDetail.active ? "whitesmoke" : "darkgray"}}>
+                <Card display='flex'elevation={7} style={{
+                  marginLeft: 10, 
+                  maxWidth: 275, 
+                  background: ccaDetail.active ? "##F6F6F6" : "darkgray"}}>
                   <CardHeader
                     avatar={
-                      <Avatar style = {{width:150, height:150}} src = {ccaDetail.picture}/>
+                      <CCAPicture src={ccaDetail.picture}/>
                     }
                     action={
+                      
                       <EditDeleteMoreButton ccaId={ccaDetail.ccaId} active={ccaDetail.active}/>
                     }
                   />
                   <CardContent>
-                    <Typography style = {{textAlign: 'left', fontSize: 20}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
-                    <Typography>{ccaDetail.role}</Typography>
-                    <Typography>{ccaDetail.email}</Typography>
+                    <Typography color="textPrimary" style = {{textAlign: 'left', fontSize: 20, fontWeight: 'bold'}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
+                    <Typography color="textSecondary" style = {{fontWeight:500}}>{(ccaDetail.role).charAt(0).toUpperCase() + (ccaDetail.role).slice(1)}</Typography>
+                    <br/>
+                    <Typography color="textSecondary">{ccaDetail.email}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
             ))
           }
           </Grid>
+          <Pagination 
+            count={ccaDetails.ccaList.Length} 
+            color="primary" 
+            page={page}
+            onChangePage={handleChangePage}
+          />
           </Container>
         </div>
+        
       }
       <ErrorSnackbar stateError={ccaDetails.error} clearError={clearError}/>
     </div>
+    
   )
 }
 

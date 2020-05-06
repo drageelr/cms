@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     width: 200,
     height: '100%',
-    backgroundColor: 'whitesmoke',
+    backgroundColor: theme.palette.action.selected,
   },
   innerDiv: {
     padding: theme.spacing(2),
@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     width: 200,
     maxHeight: '75%',
-    backgroundColor: 'whitesmoke',
     overflow: 'auto'
   },
   subtaskPaper: {

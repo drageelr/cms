@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { withStyles, makeStyles } from '@material-ui/core/styles'
 import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog,
-  DialogActions, DialogContent, DialogTitle, LinearProgress } from '@material-ui/core'
+  DialogActions, DialogContent, DialogTitle, LinearProgress, Fab } from '@material-ui/core'
 import {addTaskStatus,editTaskStatus,deleteTaskStatus,fetchTaskStatus} from './taskStatusDetailsSlice'
 import {connect} from 'react-redux'
 import { Formik, Form, Field } from 'formik'
@@ -15,8 +15,8 @@ import PanelBar from './PanelBar'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
+    backgroundColor: theme.palette.background.paper,
+    color: theme.palette.secondary.main,
   },
   body: {
     fontSize: 14,
@@ -31,11 +31,14 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow)
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme)=>({
   table: {
     minWidth: 600,
   },
-})
+  margin: {
+    margin: theme.spacing(1),
+  },
+}))
 
 /**
   The TaskStatusPanel consists of buttons to add new task statuses or 
@@ -45,7 +48,7 @@ const useStyles = makeStyles({
  */
 
 function TaskStatusPanel({taskStatusDetails,dispatch}){
-
+  
   useEffect(() => {dispatch(fetchTaskStatus())},[])
 
   const classes = useStyles()
@@ -64,7 +67,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
       {
         text: 'Delete',
         icon: <DeleteIcon/>,
-        onClick: ()=>dispatch(deleteTaskStatus({statusId})),
+        onClick: ()=>dispatch(deleteTaskStatus(id)),
       },
     ]
     return <MoreButton menusList={menusList}/>
@@ -92,7 +95,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
         return task.statusId === editId
       })
       if (taskDetail != undefined){
-        initialValues = {name:taskDetail.name,color: taskDetail.color}
+        initialValues = {name:taskDetail.name, color: taskDetail.color}
       }  
     }
 
@@ -121,8 +124,8 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
           onSubmit={(values,{setSubmitting}) => {
             // (taskStatusDetails.isPending) ? <CircularProgress/>
             dispatch(editMode 
-              ?editTaskStatus(({statusId: editId, name: values.name, color: values.color}))
-              :addTaskStatus({name: values.name, color: values.color}))
+              ? editTaskStatus(({id: editId, name: values.name, color: values.color}))
+              : addTaskStatus({name: values.name, color: values.color}))
               .then(()=>{
                 setSubmitting(false)
               })
@@ -143,9 +146,9 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
                 </Grid>
               </DialogContent>
               <DialogActions>
-                <Button onClick={submitForm} color="primary">
+                <Fab onClick={submitForm} color="primary" variant="extended" size = "large">
                   Save
-                </Button>
+                </Fab>
                 
                 <Button autoFocus onClick={handleClose}>
                   Cancel
@@ -166,11 +169,10 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
     {
     taskStatusDetails.isPending? <LinearProgress variant = "indeterminate"/>:
     <div>
-      <PanelBar handleAdd={handleAdd} title="Task Status Panel" buttonText="Add New Task Status"/>
+      <PanelBar handleAdd={handleAdd} title={`Task Statuses (${taskStatusDetails.taskList.length})`} buttonText="Add New Task Status"/>
       <TaskStatusDialog/>
-      <h3 style = {{textAlign: 'center', fontSize: 20, marginLeft: '15%'}}>Task Status Panel </h3>
       <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="customized table">
+      <Table className={classes.table} aria-label="customized table" stickyHeader aria-label="sticky table">
         <TableHead>
           <TableRow>
             <StyledTableCell>Task Status</StyledTableCell>
@@ -179,7 +181,9 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
           </TableRow>
         </TableHead>
         <TableBody>
-          {taskStatusDetails.taskList.map((taskStatusDetail,index) => (
+        
+          {taskStatusDetails.taskList !== undefined &&
+          taskStatusDetails.taskList.map((taskStatusDetail,index) => (
             <StyledTableRow key={index}>
               <StyledTableCell component="th" scope="row">
                 {taskStatusDetail.name}

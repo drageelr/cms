@@ -18,98 +18,104 @@ import ChangePassword from './features/account-settings/ChangePassword'
 import SocietyDashboard from './ui/SocietyDashboard'
 import { connect } from 'react-redux'
 
-const appTheme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#3578fa',
-    },
-    secondary: {
-      main: '#ffffff',
-    },
-  },
-  typography: {
-    fontFamily: [
-      '-apple-system',
-      'Montserrat',
-    ].join(','),
-    fontSize: 12,
-  },
-  overrides: {
-    MUIDataTableBodyCell: {
-      root: {
-        fontSize: 13
-      }
-    }
-  }
-})
-
 function App({ user }) {
   const { isLoggedIn, userType, name, picture } = user
-  var userDetails = JSON.parse(localStorage.getItem("localUser"))
-
+  const isDark = false
+  if (isDark) {
+    document.body.style = 'background: #424242'
+  }
+  
+  const appTheme = createMuiTheme({
+    palette: {
+      type: isDark ? 'dark' : 'light',
+      primary: {
+        main: '#3578fa',
+      },
+      secondary: {
+        main: '#ffffff',
+      },
+      text: {
+        secondary: isDark ? '#ffffff': '#666699'
+      }
+    },
+    typography: {
+      fontFamily: [
+        '-apple-system',
+        'Montserrat',
+      ].join(','),
+      fontSize: 12,
+    },
+    overrides: {
+      MUIDataTableBodyCell: {
+        root: {
+          fontSize: 13
+        }
+      }
+    }
+  })
+  
   return (
     <Router>
       <ThemeProvider theme={appTheme}>
         { isLoggedIn ?
         <div>
-          <NavBar name={name} userType={userDetails.userType} picture={picture}/>
+          <NavBar name={name} userType={user.userType} picture={picture}/>
           <Switch>
             <Route path="/" exact component={userDetails.userType === "CCA" ? TaskManager : SocietyDashboard}/>
             <Route path="/form-viewer" exact component={FormViewer}/>
             <Route path="/form-viewer/:mode/:id" component={FormViewer}/>
             <Route path="/change-password" exact component={ChangePassword}/>
-
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/settings" exact component={CCASettingsHome}/>
                 ) : (
                   <Route path="/" exact component={SocietyDashboard}/>
                 )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/request-list" exact component={RequestList}/>
                 ) : (
                   <Route path="/" component={SocietyDashboard}/>
                 )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/task-status-panel" exact component={TaskStatusPanel}/>
                 ) : (
                   <Route path="/" component={SocietyDashboard}/>
                 )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/cca-panel" exact component={CCAAccountsPanel}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/society-panel" exact exact component={SocietyAccountsPanel}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/form-maker" exact component={FormMaker}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/form-maker/:id" exact component={FormMaker}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              userDetails.userType === "CCA" ? (
+              user.userType === "CCA" ? (
                 <Route path="/forms" exact component={FormList}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
