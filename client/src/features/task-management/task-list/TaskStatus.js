@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import {changeTaskStatus} from "../taskDataSlice"
 import { Grid, Typography, FormControl, Select, MenuItem } from '@material-ui/core'
 import StopIcon from '@material-ui/icons/Stop'
+
 
 /**
   Renders a Select Menu, allowing the user to select one one of the available statuses. It stores
@@ -13,23 +14,43 @@ import StopIcon from '@material-ui/icons/Stop'
   @param {function} dispatch dispatch the change Task Status
 */
 
-export function TaskStatus({taskId, taskData, dispatch}) {
+export function TaskStatus({taskId, taskData, setStatusId, taskStatusDetails, dispatch}) {
 
-  const [open, setOpen] = React.useState(false)
-  const [status, setStatus] = React.useState("")
+  let defaultStatusId = -1
+  let defaultStatusName = ""
+  taskData.forEach(taskObj => {
+    if (taskObj.taskId === taskId) {
+      defaultStatusId = taskObj.statusId
+    }
+  })
+  
+  taskStatusDetails.forEach(statObj =>{
+    if (statObj.statusId === defaultStatusId) {
+      defaultStatusName = statObj.name
+    }
+  })
 
-  function handleChange(e) {
-    setStatus(e.target.value)
-    var status= e.target.value
-    dispatch(changeTaskStatus({taskId, status}))
-  }
+  const [statusCode, setStatusCode] = useState(defaultStatusName)
+  const [open, setOpen] = useState(false)
 
-  function handleOpen() {
-    setOpen(true)
+  function handleChange(event) {
+    var statusId = -1
+    taskStatusDetails.map(statusObj => {
+      if (statusObj.name === event.target.value) {
+        statusId = statusObj.statusId
+      }
+    })
+    setStatusId(statusId)
+    setStatusCode(event.target.value)
+    dispatch(changeTaskStatus({taskId, statusId}))
   }
 
   function handleClose() {
     setOpen(false)
+  }
+
+  function handleOpen() {
+    setOpen(true)
   }
 
   return (
@@ -64,18 +85,20 @@ export function TaskStatus({taskId, taskData, dispatch}) {
                   <Grid item>
                     {colorStatus.name}
                   </Grid>
-                </Grid>
-              </MenuItem>
-            })}
-          </Select>
-        </FormControl>
-      </Grid>
-    </Grid> 
+                </MenuItem>
+              )
+            })
+          }
+        </Select>
+      </FormControl>
+    </Grid>
+    </Grid>
   )
 }
 
 const mapStateToProps = (state) => ({
-  taskData: state.taskData
+  taskData: state.taskData.taskList,
+  taskStatusDetails: state.taskStatusDetails.taskList
 })
 
 export default connect(mapStateToProps)(TaskStatus)

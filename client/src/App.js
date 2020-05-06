@@ -61,7 +61,10 @@ function App({ user }) {
         <div>
           <NavBar name={name} userType={user.userType} picture={picture}/>
           <Switch>
-            <Route path="/" exact component={user.userType === "CCA" ? TaskManager : SocietyDashboard}/>
+            <Route path="/" exact component={userDetails.userType === "CCA" ? TaskManager : SocietyDashboard}/>
+            <Route path="/form-viewer" exact component={FormViewer}/>
+            <Route path="/form-viewer/:mode/:id" component={FormViewer}/>
+            <Route path="/change-password" exact component={ChangePassword}/>
             {
               user.userType === "CCA" ? (
                 <Route path="/settings" exact component={CCASettingsHome}/>
@@ -118,10 +121,7 @@ function App({ user }) {
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
-            <Route path="/form-viewer" exact component={FormViewer}/>
-            <Route path="/form-viewer/:id" component={FormViewer}/>
-            <Route path="/change-password" exact component={ChangePassword}/>
-
+            
             <Route path="*" component={LoginPage}/>
 
           </Switch>

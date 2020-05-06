@@ -1,277 +1,308 @@
-import { createSlice } from "@reduxjs/toolkit"
-
-/**
-  A temporary initial state has been created to test with the components and render meaningful
-  on the screen. The action creators in the reducer are responsible for implementing the changes 
-  that the user makes when editing the task.
-*/
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { apiCaller } from '../../helpers'
 
 const initialState = {
-  
-  userData:[
-    {
-      id: "column-1",
-      email: "",
-      password: "",
-      firstName: "Asher",
-      lastName: "Javaid",
-      picture: "",
-      role: "",
-      userType: "",
-      permissions: {
-        societyCRUD: true,
-        ccaCRUD: true,
-        accessFormMaker: true,
-        createReqTask: true,
-        createCustomTask: true,
-        createTaskStatus: true,
-        archiveTask: true,
-        unarchiveTask: true,
-        setFormStatus: true,
-        addCCANote: true
-      },
-      timeStampCreated: ""
-    },
-    {
-      id: "column-2",
-      email: "",
-      password: "",
-      firstName: "Farkhanda",
-      lastName: "Khan",
-      picture: "",
-      role: "",
-      userType: "CCA",
-      permissions: {
-        societyCRUD: true,
-        ccaCRUD: true,
-        accessFormMaker: true,
-        createReqTask: true,
-        createCustomTask: true,
-        createTaskStatus: true,
-        archiveTask: true,
-        unarchiveTask: true,
-        setFormStatus: true,
-        addCCANote: true
-      },
-      timeStampCreated: ""
-    },
-  ],
-  
-  users: ["Asher", "Farkhanda"],  
-
-  columnOrder: ['column-1','column-2'],
-
   archiveList: [],
-  
-  taskStatuses : [
-    {
-      id : 'ts-1',
-      name: "Backlog",
-      color: '#808080',
-    },
-    {
-      id : 'ts-2',
-      name: "In Progress",
-      color: '#FF6347',
-    },
-    {
-      id : 'ts-3',
-      name: "Done",
-      color: '#00FF00',
-    },
-    {
-      id : 'ts-4',
-      name: "Urgent",
-      color: '#FF0000',
-    },
-  ],
-
-  tasks: {
-    'r1': { // r stands for request task
-      id: 'r1', 
-      title: 'Group Logs', 
-      formDataId: "", // stores the ID of the request that is linked to it
-      description: "hello world", 
-      ownerId:'column-1', 
-      status: 'ts-1',
-      assigneeList: [],
-      subTasksList: [], // list that contains the subtasks linked with this task
-      logsList: [
-        {
-          id: "log1",
-          taskId: "r1",
-          creatorId: "column-1",
-          description: "Hello WOrld",
-          timeStampCreated: "",
-          timeStampModified: ""
-        },
-      ] 
-    },
-    'c2': { // c stands for request task
-      id: 'c2', 
-      title: 'Documents', 
-      description: "world! good bye", 
-      ownerId:'column-2', 
-      status: 'ts-4',
-      assigneeList: [], // assignees list
-      logsList: []
-    },
-    'r2': { // r stands for request task
-      id: 'r2',  // request task ID
-      title: 'Something Something', // title of the task
-      formDataId: "", // stores the ID of the request that is linked to it
-      description: "bye world",  // description of the task
-      ownerId:'column-2', // the owner(column) in which this task will go
-      status: 'ts-1', // the color status id applied to this task
-      assigneeList: [], // the list of assignees assigned to this task
-      subTasksList: [], // list that contains the subtasks linked with this task
-      logsList: []
-    },
-  },
-
-  columns: {
-    'column-1': {
-      id: 'column-1',
-      title: 'Ashar Javaid',
-      taskIds: ['r1']
-    },
-    'column-2': {
-      id: 'column-2',
-      title: 'Farkhanda Khan',
-      taskIds: ['c2', 'r2']
-    }
-  },
-  
-  checkListItems : [
-    // {
-    //   id:"checkItem-1",
-    //   formId: "R-ID-1",
-    //   title: "Make the Checklist by tonight asap.",
-    //   description: "I am trying my best.",
-    //   sectionIndex: "1.1",
-    //   isAssigned: false,
-    //   isChecked: false,
-    // },
-    // {
-    //   id:"checkItem-2",
-    //   formId: "R-ID-1",
-    //   title: "Complete UI tonight.",
-    //   description: "OK",
-    //   sectionIndex: "1.2",
-    //   isAssigned: false,
-    //   isChecked: false,
-    // },
-    // {
-    //   id:"checkItem-3",
-    //   formId: "R-ID-2",
-    //   title: "Material UI complete",
-    //   description: "Nothing",
-    //   sectionIndex: "1.3",
-    //   isAssigned: false,
-    //   isChecked: false,
-    // },
-  ],
+  checkList: [],
+  taskList: [], 
+  task: {},
+  checklistAssignees: [],
+  isPending: false,
+  error: null
 }
 
-let cId = 1
-let tId = 2
-let sId = 0
-let lId = 1
+export const fetchTaskManager = createAsyncThunk(
+  'taskData/fetchTaskManager',
+  async (_, { getState, rejectWithValue }) => {
+    const { isPending } = getState().taskData
+    if (isPending != true) {
+      return
+    }
+    return await apiCaller('/api/task-manager/fetch', {}, 200, 
+    (data) =>({data}), 
+    rejectWithValue)  
+  }
+)
+
+export const fetchTask = createAsyncThunk(
+  'taskData/fetchTask',
+  async (archiveObj, { getState, rejectWithValue }) => {
+    const {taskId, ownerId} = archiveObj
+
+    const { isPending } = getState().taskData
+    if (isPending != true) {
+      return
+    } 
+
+    return await apiCaller('/api/task-manager/task/fetch', { taskId }, 200, 
+    (data) => ({data, archiveObj}), 
+    rejectWithValue)  
+  }
+)
+
+export const fetchCheckList = createAsyncThunk(
+  'taskData/fetchCheckList',
+  async (idObj, { getState, rejectWithValue }) => {
+    const { isPending } = getState().taskData
+    if (isPending != true) {
+      return
+    } 
+    const { ownerId, submissionId } = idObj
+    
+    return await apiCaller('/api/form/fetch-checklist', { submissionId }, 200, 
+    (data) => ({data, idObj}), rejectWithValue)    
+  }
+)
+
+export const fetchArchiveManager = createAsyncThunk(
+  'taskData/fetchArchiveManager',
+  async (_, { getState, rejectWithValue }) => {
+    const { isPending } = getState().taskData
+    if (isPending != true) {
+      return
+    } 
+
+    return await apiCaller('/api/task-manager/fetch-archive', {}, 200, 
+    (data) => ({data}), 
+    rejectWithValue)
+  }
+)
+
+export const createRequestTask = createAsyncThunk( // GIVES INTERNAL SERVER ERROR
+  'taskData/createRequestTask',
+  async (reqTaskObject, { getState, rejectWithValue }) => {
+    const { title, description, submissionId, ownerId, statusId } = reqTaskObject
+    const checklistIds = getState().taskData.checklistAssignees
+
+    return await apiCaller('/api/task-manager/task/req/create', {
+      task: {
+        title,
+        description,
+        submissionId,
+        ownerId,
+        statusId,
+        checklistIds
+      }
+    }, 201, 
+    (data) => ({data, reqTaskObject}), 
+    rejectWithValue)  
+  }
+)
+
+export const createCustomTask = createAsyncThunk(
+  'taskData/createCustomTask',
+  async (cusTaskObject, { rejectWithValue }) => {
+    const { title, description, ownerId, statusId } = cusTaskObject
+
+    return await apiCaller('/api/task-manager/task/cus/create', {
+      task: {
+        title: title,
+        description: description,
+        ownerId: ownerId,
+        statusId: statusId
+      }
+    }, 201, 
+    (data) => ({data, cusTaskObject}), 
+    rejectWithValue)
+  }
+)
+
+export const createNewLog = createAsyncThunk(
+  'taskData/createNewLog',
+  async (logObj, { rejectWithValue }) => {
+    const { taskId, creatorId, logText } = logObj
+  
+    return await apiCaller('/api/task-manager/log/add', {
+      taskId: taskId,
+      description: logText
+    }, 201, 
+    (data) => ({data, logObj}), 
+    rejectWithValue)  
+  }
+)
+
+export const moveTask = createAsyncThunk(
+  'taskData/moveTask',
+  async (editTaskObject, { rejectWithValue }) => {
+    const { taskId, srcColumnId, dstColumnId } = editTaskObject
+
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        ownerId: Number(dstColumnId)
+      }
+    }, 200, 
+    (data) => ({data, editTaskObject}), 
+    rejectWithValue)
+  }
+)
+
+export const moveSubTask = createAsyncThunk(
+  'taskData/moveSubTask',
+  async (subTaskObject, { getState, rejectWithValue }) => {
+    const { mainTaskId } = subTaskObject
+    
+    let taskList1 = getState().taskData.taskList
+    let subTaskList = []
+    taskList1.map((task, index) => {
+      if (task.taskId === mainTaskId) {
+        subTaskList = getState().taskData.taskList[index].subtasks
+      }
+    })
+    
+    let tempSubList = []
+    
+    subTaskList.map(obj => {
+      tempSubList.push({
+        subtaskId: obj.subtaskId,
+        assigneeId: obj.assigneeId,
+        description: obj.description, 
+        check: obj.check
+      })
+    })
+
+    return await apiCaller('/api/task-manager/task/req/edit', {
+      task: {
+        taskId: mainTaskId,
+        subtasks: tempSubList
+      }
+    }, 200, 
+    (data) => ({data, mainTaskId}), 
+    rejectWithValue)
+  }
+)
+
+export const deleteSubTask = createAsyncThunk(
+  'taskData/deleteSubTask',
+  async (subTaskObject, { getState, rejectWithValue }) => {
+    const { mainTaskId, subTaskList } = subTaskObject
+    let tempSubList = []
+    
+    subTaskList.map(obj => {
+      tempSubList.push({
+        subtaskId: obj.subtaskId,
+        assigneeId: obj.assigneeId,
+        description: obj.description, 
+        check: true
+      })
+    })
+
+    return await apiCaller('/api/task-manager/task/req/edit', {
+      task: {
+        taskId: mainTaskId,
+        subtasks: tempSubList
+      }
+    }, 200, 
+    (data) => ({data, mainTaskId}), 
+    rejectWithValue)
+  }
+)
+
+export const taskOwnerChange = createAsyncThunk(
+  'taskData/taskOwnerChange',
+  async (ownerChangeObj, { rejectWithValue }) => {
+    const { taskId, owner } = ownerChangeObj
+    console.log(ownerChangeObj) 
+
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        ownerId: Number(owner)
+      }
+    }, 200, 
+    (data) => ({data, ownerChangeObj}), 
+    rejectWithValue)
+  }
+)
+
+export const updateTitle = createAsyncThunk(
+  'taskData/updateTitle',
+  async (titleObj, { rejectWithValue }) => {
+    const { taskId, newTitle } = titleObj
+
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        title: newTitle
+      }
+    }, 200, 
+    (data) => ({data, titleObj}), 
+    rejectWithValue)
+  }
+)
+
+export const updateDescription = createAsyncThunk(
+  'taskData/updateDescription',
+  async (descObj, { rejectWithValue }) => {
+    const { taskId, desc } = descObj
+    
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        description: desc
+      }
+    }, 200, 
+    (data) => ({data, descObj}), 
+    rejectWithValue)
+  }
+)
+
+export const changeTaskStatus = createAsyncThunk(
+  'taskData/changeTaskStatus',
+  async (statusObj, { rejectWithValue }) => {
+    const { taskId, statusId } = statusObj
+    
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        statusId: statusId
+      }
+    }, 200, 
+    (data) => ({data, statusObj}), 
+    rejectWithValue)   
+  }
+)
+
+export const archiveTask = createAsyncThunk(
+  'taskData/archiveTask',
+  async (archiveObj, { rejectWithValue }) => {
+    const { taskId, ownerId } = archiveObj
+    
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        archive: true
+      }
+    }, 200, 
+    (data) => ({data, archiveObj}), 
+    rejectWithValue)   
+  }
+)
+
+export const unArchiveTask = createAsyncThunk(
+  'taskData/unArchiveTask',
+  async (archiveObj, { rejectWithValue }) => {
+    const { taskId, ownerId } = archiveObj
+    
+    return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
+      task: {
+        taskId: taskId,
+        archive: false
+      }
+    }, 200, 
+    (data) => ({data, archiveObj}), 
+    rejectWithValue)   
+  }
+)
 
 const taskdata = createSlice({
   name: 'taskData',
   initialState: initialState,
   reducers: {
-    addTask: (state, action) => {
-      const {ownerId, text, taskType} = action.payload
-      
-      tId += 1
-      let typeInit = ""
-
-      taskType === "request" ? typeInit="r" : typeInit="c"
-      const taskId = `${typeInit}${tId}`
-
-      const newTask = { 
-        id: taskId, 
-        title: text, 
-        formDataId: "", // stores the ID of the request that is linked to it
-        description: "", 
-        ownerId: ownerId, 
-        status: '',
-        assigneeList: [],
-        subTasksList: [],
-        logsList:[]
-      }
-  
-      state.tasks[taskId] = newTask
-      state.columns[ownerId].taskIds.push(taskId)
-    },
-      
-    moveTask: (state, action) => {
-      const { srcColumnId, srcIndex, dstColumnId, dstIndex, taskId } = action.payload
-  
-      const srcColumn = state.columns[srcColumnId]
-      const dstColumn = state.columns[dstColumnId]
-  
-      srcColumn.taskIds.splice(srcIndex, 1) // delete the single task Id from src index from the source column
-      dstColumn.taskIds.splice(dstIndex, 0, taskId) //insert it at dst index in the dst column
-    },
-
-    updateDescription: (state, action) => {
-      const {taskId, description} = action.payload
-      
-      state.tasks[taskId].description = description
-    },
-
-    updateTitle: (state, action) => {
-      const {taskId, newTitle} = action.payload
-      
-      state.tasks[taskId].title = newTitle
-    },
-
-    archiveTask: (state, action) => { // send the task id to the server and create an archive of it
-      const {taskId, ownerId} = action.payload
-
-      state.columns[ownerId].taskIds.map(id => {
-        if (taskId === id) {
-          var filteredAry = state.columns[ownerId].taskIds.filter(function(e) { return e != id })
-          const obj = state.tasks[taskId]
-          state.archiveList.push(obj)
-          state.columns[ownerId].taskIds = filteredAry
-        } 
-      })
-    },
-
-    unArchiveTask: (state, action) => { // when i get the archive tasks from server, i will also get the taskowner id with it so then adding task back to column is simple, for now hardcoding the column
-      const {taskId,ownerId} = action.payload 
-      
-      state.columns[ownerId].taskIds.push(taskId) // put the task back in owners list
-      state.archiveList.map(id => {
-        var filteredAry = state.archiveList.filter(function(e) { return e.id != taskId })
-        state.archiveList = filteredAry
-      })
-    },
-
-    taskOwner: (state, action) => {
-      const {taskId, owner} = action.payload
-      
-      state.tasks[taskId].ownerId = owner
-    },
-
     addTaskAssignees: (state, action) => {
       const {taskId, value} = action.payload
       
       state.tasks[taskId].assigneeList.push(value)
-    },
-
-    changeTaskStatus: (state, action) => {
-      const { taskId, status} = action.payload
-      
-      state.taskStatuses.map(statObj => {
-        if(statObj.name === status) {
-          state.tasks[taskId].status = statObj.id
-        }
-      })
     },
     
     deleteTaskAssignee: (state, action) => {
@@ -285,81 +316,383 @@ const taskdata = createSlice({
       })
     },
 
-    linkFormToTask : (state, action) => {
-      const {taskId, requestId} = action.payload
-      
-      state.tasks[taskId].formDataId = requestId
-    },
+    subTaskDisplay: (state, action) => {
+      const {taskId} = action.payload
 
-    changeCheckStatus: (state, action) => {
-      const { taskId, checkListObj, status} = action.payload
-      
-      state.checkListItems.map(objCheck => {
-        if (checkListObj.id === objCheck.id) {
-          objCheck.isChecked = status
+      state.taskList.map(subtaskObj => {
+        if (subtaskObj.taskId === taskId) { // get the subtask Obj from the task list
+          state.taskList.map(taskObj => {
+            if (taskObj.taskId === subtaskObj.assTaskId) { // get the task obj from task list to which the sub task is associated
+              taskObj.subtasks.map(assSubTask => {
+                if (assSubTask.taskId === taskId) { // get the subtask from the task that is same as the current subtask
+                  // assSubTask.check = false
+                  subtaskObj.check = true
+                }
+              })
+            }
+          })
         }
       })
     },
 
-    createSubTask : (state, action) => {
-      const {taskId, userObj, checkListObj} = action.payload
+    editSubTask: (state, action) => {
+      const {subTaskId, srcColumnId, dstColumnId} = action.payload
 
-      sId +=1
+      let taskId = ""
+      let subI = -1 // subtask index (which is in the main taskList)
+      let subSubI = -1 // subtask index (which is in the main task's subtask list)
+      let taskIndex = -1 // main task index
+      
+      state.taskList.map((task, index) => {
+        if (task.taskId === subTaskId) { // get the subtask in the taskList
+          subI = index
+        }
+      })
 
-      let subObj = {
-        id: `s${sId}`,
-        taskId: taskId,
-        statusId: "",
-        assigneeId: userObj.id, 
-        title: checkListObj.title, 
-        description: checkListObj.description,
-        sectionIndex: checkListObj.sectionIndex
-      }
-      state.tasks[taskId].subTasksList.push(subObj.id)
-      state.columns[subObj.assigneeId].taskIds.push(subObj.id)
-      state.tasks[subObj.id] = subObj
+      taskId = state.taskList[subI].assTaskId // main task Id
+      state.taskList[subI].ownerId = Number(dstColumnId) // change the subtasks ownerId - outside the task
+      state.taskList[subI].assigneeId = Number(dstColumnId) // change the subtask assigneeId - outside the task
 
-      state.checkListItems.map((tempObj, index) => { // the isAssigned property is set to true if a checklistItem has been assigned to an assignee
-        if (tempObj.id === checkListObj.id) {
-          tempObj.title = userObj.firstName + " -> " + tempObj.title
-          tempObj.isAssigned = true
+      state.taskList.map((task, index) => {
+        if (task.taskId === taskId) {
+          taskIndex = index
+          task.subtasks.forEach((subTask, index) => {
+            if (subTask.taskId === subTaskId) {
+              subSubI = index
+            }
+          })
+        }
+      })
+
+      state.taskList[taskIndex].subtasks[subSubI].ownerId = Number(dstColumnId) 
+      state.taskList[taskIndex].subtasks[subSubI].assigneeId = Number(dstColumnId) 
+    },
+
+    moveTaskSync: (state, action) => {
+      const editTaskObject = action.payload
+
+      state.taskList.forEach(taskObj => {
+        if(taskObj.taskId === editTaskObject.taskId) {
+          taskObj.ownerId = Number(action.payload.dstColumnId)
         }
       })
     },
 
-    createNewLog: (state, action) => {
-      const {taskId, logText} = action.payload
-    
-      lId+=1
-      let newLog = {
-        id: `log${lId}`,
-        taskId: taskId,
-        creatorId: state.tasks[taskId].ownerId,
-        description: logText,
-        timeStampCreated: "",
-        timeStampModified: ""
-      }
-
-      state.tasks[taskId].logsList.push(newLog)
+    clearError: (state, action) => {
+      state.error = null
     }
+  },
+
+  extraReducers: {
+    [fetchTaskManager.pending]: (state, action) => {
+      if (state.isPending === false) {
+        state.isPending = true
+      }
+    },
+    [fetchTaskManager.fulfilled]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+
+        state.taskList = action.payload.data.taskList
+
+        state.taskList.map(taskObj => {
+          if (taskObj.taskId[0] === 'r' && taskObj.subtasks.length !== 0) {
+            taskObj.subtasks.map((subObj, index) => {
+              let subTaskObj = {
+                taskId: `s${subObj.subtaskId}`,
+                subtaskId: subObj.subtaskId,
+                assTaskId: taskObj.taskId,
+                ownerId: subObj.assigneeId,
+                assigneeId: subObj.assigneeId,
+                description: subObj.description,
+                check: subObj.check
+              }
+              taskObj.subtasks[index] = subTaskObj
+              state.taskList.push(subTaskObj)
+            })
+          }
+        })
+      }
+    },
+    [fetchTaskManager.rejected]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = action.payload
+      }
+    },
+
+    [fetchCheckList.pending]: (state, action) => {
+      if (state.isPending === false) {
+        state.isPending = true
+      }
+    },
+    [fetchCheckList.fulfilled]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        const {idObj, data} = action.payload
+        state.checkList = data.checklists
+
+        state.checklistAssignees = data.checklists.map(checklistItem => ({
+            checklistId: checklistItem.checklistId, 
+            assigneeId: idObj.ownerId
+          })
+        )
+      }
+    },
+    [fetchCheckList.rejected]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = action.payload
+      }
+    },
+
+    [fetchArchiveManager.pending]: (state, action) => {
+      if (state.isPending === false) {
+        state.isPending = true
+      }
+    },
+    [fetchArchiveManager.fulfilled]: (state, action) => {
+      //if (state.isPending === true) {
+        //state.isPending = false
+        state.archiveList = action.payload.data.archiveList
+      //}
+    },
+    [fetchArchiveManager.rejected]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = action.payload
+      }
+    },
+
+    [fetchTask.pending]: (state, action) => {
+      if (state.isPending === false) {
+        state.isPending = true
+      }
+    },
+    [fetchTask.fulfilled]: (state, action) => { // works for unarchive too as it fetches and pushes the task obj to the list
+      if (state.isPending === true) {
+        state.isPending = false
+        const {data, archiveObj} = action.payload
+
+        state.task = data.task
+      }
+    },
+    [fetchTask.rejected]: (state, action) => {
+      if (state.isPending === true) {
+        state.isPending = false
+        state.error = action.payload
+      }
+    },
+
+    [createRequestTask.fulfilled]: (state, action) => {
+      const {data, reqTaskObject} = action.payload
+      let subTaskList = []
+      data.subtasks.map(subTask => {
+        let subTaskObj = {
+          taskId: `s${subTask.subtaskId}`,
+          subtaskId: subTask.subtaskId,
+          assTaskId: data.taskId,
+          ownerId: subTask.assigneeId,
+          assigneeId: subTask.assigneeId,
+          description: subTask.description,
+          check: false
+        }
+        subTaskList.push(subTaskObj)
+        state.taskList.push(subTaskObj)
+      })
+
+      state.taskList.push({
+        taskId: data.taskId,
+        logs: data.logs,
+        subtasks: subTaskList,
+        ...reqTaskObject
+      })
+      state.error = 'Request Task Created'
+    },
+    [createRequestTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [createCustomTask.fulfilled]: (state, action) => {
+      state.taskList.push({
+        taskId: action.payload.data.taskId,
+        logs: action.payload.data.logs,
+        ...action.payload.cusTaskObject
+      })
+      state.error = 'Custom Task Created'
+    },
+    [createCustomTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [createNewLog.fulfilled]: (state, action) => {
+      const { data, logObj } = action.payload
+      
+      state.taskList.map(taskObj => {
+        if(taskObj.taskId === logObj.taskId) {
+          taskObj.logs.push({
+            logId: data.logId,
+            creatorId: logObj.creatorId,
+            description: logObj.logText,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt
+          })
+        }
+      })
+    },
+
+    [createNewLog.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [moveTask.fulfilled]: (state, action) => {
+      const {data, editTaskObject} = action.payload
+
+      state.taskList.forEach(taskObj => {
+        if(taskObj.taskId === editTaskObject.taskId) {
+          taskObj.logs.push(data.newLog)
+        }
+      })
+    },
+
+    [moveTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [moveSubTask.fulfilled]: (state, action) => {
+      const { data, mainTaskId } = action.payload
+      
+      state.taskList.map(taskObj => {
+        if(taskObj.taskId === mainTaskId) {
+          taskObj.logs.push(data.newLog)
+        }
+      })
+    },
+    [moveSubTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [deleteSubTask.fulfilled]: (state, action) => {
+      const { data, mainTaskId } = action.payload
+      
+      // state.taskList.map(taskObj => {
+      //   if(taskObj.taskId === mainTaskId) {
+      //     taskObj.logs.push(data.newLog)
+      //   }
+      // })
+    },
+    [deleteSubTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [taskOwnerChange.fulfilled]: (state, action) => {
+      const {data, ownerChangeObj} = action.payload
+      
+      state.taskList.map(taskObj => {
+        if (taskObj.taskId === ownerChangeObj.taskId) {
+          taskObj.ownerId = ownerChangeObj.owner
+          taskObj.logs.push(data.newLog)
+        }
+      })
+    },
+    [taskOwnerChange.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [updateTitle.fulfilled]: (state, action) => {
+      const {data, titleObj} = action.payload
+      
+      state.taskList.map(taskObj => {
+        if (taskObj.taskId === titleObj.taskId) {
+          taskObj.title = titleObj.newTitle
+          taskObj.logs.push(data.newLog)
+        }
+      })
+    },
+    [updateTitle.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [updateDescription.fulfilled]: (state, action) => {
+      const {data, descObj} = action.payload
+
+      state.taskList.map(taskObj => {
+        if (taskObj.taskId === descObj.taskId) {
+          taskObj.description = descObj.desc
+          taskObj.logs.push(data.newLog)
+        }
+      })
+    },
+    [updateDescription.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [changeTaskStatus.fulfilled]: (state, action) => {
+      const {data, statusObj} = action.payload
+
+      state.taskList.map(taskObj => {
+        if(taskObj.taskId === statusObj.taskId) {
+          taskObj.statusId = statusObj.statusId
+          taskObj.logs.push(data.newLog)
+        }
+      })
+    },
+    [changeTaskStatus.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [archiveTask.fulfilled]: (state, action) => {
+      const {data, archiveObj} = action.payload
+
+      state.taskList.map(task => {
+        if(task.taskId === archiveObj.taskId) {
+          task.archive = true
+          state.archiveList.push(task)
+          task.logs.push(data.newLog)
+        }
+      })
+
+      // var filteredAry = state.taskList.filter(function(e) { return e.assTaskId !== archiveObj.taskId })
+      // state.taskList = filteredAry
+    },
+    [archiveTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [unArchiveTask.fulfilled]: (state, action) => {
+      const {data, archiveObj} = action.payload
+
+      state.taskList.push(state.task)
+
+      state.taskList.map(task => {
+        if(task.taskId === archiveObj.taskId) {
+          task.archive = false
+        }
+        task.logs.push(data.newLog)
+      })
+
+      state.archiveList.map(arcObj => {
+        if(arcObj.taskId === archiveObj.taskId) {
+          arcObj.archive = false
+        }
+      })
+
+      var filteredAry = state.archiveList.filter(function(e) { return e.taskId !== archiveObj.taskId })
+      state.archiveList = filteredAry
+    },
+    [unArchiveTask.rejected]: (state, action) => {
+      state.error = action.payload
+    },
   }
 })
-    
-export const { 
-  addTask, 
-  updateTitle,
-  updateDescription, 
-  moveTask, 
-  archiveTask, 
-  unArchiveTask, 
-  taskOwner,
+
+export const {
   addTaskAssignees,
-  changeTaskStatus,
   deleteTaskAssignee,
-  changeCheckStatus, 
-  linkFormToTask, 
-  createSubTask,
-  createNewLog,
+  subTaskDisplay, 
+  editSubTask,
+  moveTaskSync,
+  clearError
 } = taskdata.actions
 
 export default taskdata.reducer

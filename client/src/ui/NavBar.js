@@ -73,7 +73,7 @@ export default function NavBar({name, userType, picture}) {
               }
             </Grid>
           
-            <Grid item display='flex' flexDirection='row' style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
+            <Grid item style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
               <Grid container>
                 <Grid item>
                   <DonutSmallIcon color="primary" fontSize='large' style={{marginTop: 4, paddingRight: 5}}/>
@@ -93,6 +93,7 @@ export default function NavBar({name, userType, picture}) {
                 style={{margin: 5, width: 35, height: 35}} 
                 alt={name} 
                 src={picture}
+                className={classes.blue}
               />
               <Typography>
                 <Box color="text.primary" fontWeight={600} m={1}>

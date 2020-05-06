@@ -57,12 +57,12 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
   const [editMode,setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
 
-  function EditDeleteMoreButton({id}) {
+  function EditDeleteMoreButton({statusId}) {
     const menusList=[
       {
         text: 'Edit',
         icon: <EditIcon/>,
-        onClick: ()=>handleEdit(id)
+        onClick: ()=>handleEdit(statusId)
       },
       {
         text: 'Delete',
@@ -78,8 +78,8 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
     setIsOpen (true)
   }
 
-  function handleEdit(id){
-    setEditId(id)
+  function handleEdit(statusId){
+    setEditId(statusId)
     setEditMode(true)  
     setIsOpen (true)
   }
@@ -194,7 +194,6 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
               </StyledTableCell>
 
               <StyledTableCell align="right">
-                {/* {console.log("id pressed: ", taskStatusDetail.statusId)} */}
                 <EditDeleteMoreButton id={taskStatusDetail.statusId}/>
               </StyledTableCell>
             </StyledTableRow>

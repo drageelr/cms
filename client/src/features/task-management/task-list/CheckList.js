@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { changeCheckStatus } from '../taskDataSlice'
 import { Checkbox, FormControlLabel } from '@material-ui/core'
-import SelectAssigneeButton from "./SelectAssigneeButton"
 
 /**
   Displays a checklistItems of items that it receives in case a Form has been linked with this Task. 
@@ -15,41 +13,38 @@ import SelectAssigneeButton from "./SelectAssigneeButton"
   @param {function} dispatch to dispatch the action of changing the checklistItems checked
 */
 
-export function SubTask({taskId, taskData, dispatch}) {
+export function CheckList({taskId, taskData, dispatch}) {
 
   const [check, setCheck] = useState(false)
 
-  function handleCheckedBox({event, checkListObj}) {
-    setCheck(event.target.checked)  
-    var status = event.target.checked
-    dispatch(changeCheckStatus({taskId, checkListObj, status}))
-  }
-
+  let submissionId = -1
+  taskData.taskList.map(taskObj => { // get the submissionId associated to the task
+    if (taskObj.taskId === taskId) {
+      submissionId = taskObj.submissionId
+    }
+  })
+  
   return (
     <div>
-    {
-      taskData.checkListItems.map(checkListObj => {
-        if ((taskData.tasks[taskId].formDataId != "") && taskData.tasks[taskId].formDataId === checkListObj.formId) { 
+      {
+        taskData.checkList.map(checkListObj => {
           return (
-          <div>
+            <div>
               <FormControlLabel
                 control={
-                  <Checkbox 
-                    color='primary' 
-                    checked={checkListObj.isChecked} 
-                    value = {check}
-                    onChange={(event) => {handleCheckedBox({event, checkListObj})}}
+                  <Checkbox
+                    disabled
+                    checked
+                    color='primary'
                   />
                 }
-                label={checkListObj.title}
+                label={checkListObj.description}
               />
-              <SelectAssigneeButton taskId={taskId} checkListObj={checkListObj} />
-              </div>
+            </div>
           )
-        }
-      })
-    }
-    </div> 
+        })
+      }
+    </div>
   )
 }
 
@@ -57,4 +52,4 @@ const mapStateToStates = (state) => ({
   taskData: state.taskData
 })
 
-export default connect(mapStateToStates)(SubTask)
+export default connect(mapStateToStates)(CheckList)

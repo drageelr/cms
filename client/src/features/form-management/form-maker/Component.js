@@ -12,7 +12,9 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 10,
     width: '98%',
     height: '98%',
+    backgroundColor: 'lightgray',
     marginBottom: 10,
+    border: 1,
   }
 }))
 
@@ -30,7 +32,7 @@ export default function Component({id, title, data, parentId}) {
   const classes = useStyles()
   const {itemsOrder, items} = data
   return (
-    <Paper square elevation={0} className={classes.componentsPaper}>
+    <Paper elevation={0} className={classes.componentsPaper}>
       <EditDeleteBar 
       renderTitle={()=>
         <Typography color="text.secondary"style={{marginBottom: 0, marginTop: 6, fontSize: 10}}>

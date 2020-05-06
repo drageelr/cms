@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
-import { apiCaller } from "../../helpers"
+import { apiCaller } from '../../helpers'
+
 
 const initialState = {
   taskList: [],
@@ -17,7 +18,7 @@ export const fetchTaskStatus = createAsyncThunk(
     
     return await apiCaller('/api/task-manager/task-status/fetch-all', {}, 200,
     (data) => {
-      console.log("Returning data")
+
       return {taskList: data.statuses}
     },
     rejectWithValue)
@@ -88,9 +89,7 @@ const taskStatusDetails = createSlice({
     },
 
     [addTaskStatus.fulfilled]: (state, action) => {
-      console.log("ADDING TS", action.payload)
         state.isPending = false
-      
         state.taskList.push({
           id: action.payload.id,
           ...action.payload.taskStatusObject
@@ -114,14 +113,17 @@ const taskStatusDetails = createSlice({
         state.error = action.payload
 
     },
+
     [fetchTaskStatus.pending]: (state, action) => {
       if (state.isPending === false) {
         state.isPending = true
       }
     },
     [fetchTaskStatus.fulfilled]: (state, action) => {
+      // console.log("fetchTaskStatus.fulfilled")
       if(state.isPending === true){
         state.isPending = false
+        // console.log(action.payload)
         state.taskList = action.payload.taskList
       }
     },
