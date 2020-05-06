@@ -33,8 +33,10 @@
 |7|Change Password (CCA)|Changes the password of a CCA Member|`/api/account/cca/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|CCA|`2.1`|
 |8|Change Password (Society)|Changes the password of a Society Account|`/api/account/society/change-password`|`{passwordCurrent*: "String-min(8)-max(30)-[a-zA-Z0-9]", passwordNew*: "String-min(8)-max(30)-[a-zA-Z0-9]"}`|POST|`{}`|Society|`2.1`|
 |9|Change Picture (CCA)|Changes the picture of a CCA Member Account|`/api/account/cca/change-picture`|`{picture*: "String"}`|POST|`{}`|CCA|`2.1`|
+|10|Change Society Theme|Changes theme of the society|`/api/account/society/change-theme`|`{themeColor: "String", darkMode: Boolean}`|`POST`|`{}`|Society||
 
 - **Note: * means the field mentioned is required (For `Request Object`)**
+- **Note: for `API 2.3` and `API 2.4`: Both `ccaAccountObj` and `societyAccountObj` in these API's request object can have the following 2 optional fields. 1) `themeColor: "String"`. 2) `darkMode: Boolean`.**
 
 #### Object Schema
 |#|Name|Object|

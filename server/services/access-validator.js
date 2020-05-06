@@ -29,6 +29,7 @@ const userAccess = {
   "/api/account/cca/change-password": ["cca"],
   "/api/account/society/change-password": ["soc"],
   "/api/account/cca/change-picture": ["cca"],
+  "/api/account/society/change-theme": ["soc"],
 
   // 3. Form Management API "form.route.js":
   "/api/form/create": ["cca"],

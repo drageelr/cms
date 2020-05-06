@@ -40,7 +40,7 @@ exports.createCCAAccount = async (req, res, next) => {
       // throw duplicate user error
       throw new customError.DuplicateUserError("cca user already exists");
     } else {
-      let reqCCA = new CCA({firstName: params.firstName, lastName: params.lastName, email: params.email, password: params.password, picture: params.picture, permissions: params.permissions, active: true, role: params.role});
+      let reqCCA = new CCA({firstName: params.firstName, lastName: params.lastName, email: params.email, password: params.password, picture: params.picture, permissions: params.permissions, active: true, role: params.role, themeColor: "#3578fa", darkMode: false});
       await reqCCA.save();
 
       res.json({
@@ -72,7 +72,7 @@ exports.createSocietyAccount = async (req, res, next) => {
       // throw duplicate error
       throw new customError.DuplicateUserError("society user already exists");
     } else {
-      let reqSociety = new Society({nameInitials: params.nameInitials, name: params.name, email: params.email, password: params.password, presidentEmail: params.presidentEmail, patronEmail: params.patronEmail, active: true});
+      let reqSociety = new Society({nameInitials: params.nameInitials, name: params.name, email: params.email, password: params.password, presidentEmail: params.presidentEmail, patronEmail: params.patronEmail, active: true, themeColor: "#3578fa", darkMode: false});
       await reqSociety.save();
 
       res.json({
@@ -98,7 +98,7 @@ exports.editCCAAccount = async (req, res, next) => {
   let params = req.body;
 
   try {
-    let ccaObject = helperFuncs.duplicateObject(params, ["email", "password", "role", "firstName", "lastName", "picture", "active"], true);
+    let ccaObject = helperFuncs.duplicateObject(params, ["email", "password", "role", "firstName", "lastName", "picture", "active", "themeColor", "darkMode"], true);
     if (params.permissions) {
       let reqPermissions = helperFuncs.duplicateObject(params.permissions, [], true, "permissions.");
       ccaObject.$set = reqPermissions;
@@ -133,7 +133,7 @@ exports.editSocietyAccount = async (req, res, next) => {
   let params = req.body;
 
   try {
-    let societyObject = helperFuncs.duplicateObject(params, ["email", "password", "name", "nameInitials", "presidentEmail", "patronEmail", "active"], true);
+    let societyObject = helperFuncs.duplicateObject(params, ["email", "password", "name", "nameInitials", "presidentEmail", "patronEmail", "active",  "themeColor", "darkMode"], true);
 
     let reqSociety = await Society.findOneAndUpdate({societyId: params.societyId}, societyObject);
   
@@ -305,6 +305,27 @@ exports.changeCCAPicture = async (req, res, next) => {
         statusName: httpStatus.getName(203),
         message: "Picture changed successfully"
       });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// API 2.10 Controller
+exports.changeSocietyTheme = async (req, res, next) => {
+  //Variables:
+  let params = req.body;
+
+  try {
+    let societyObject = helperFuncs.duplicateObject(params, ["themeColor", "darkMode"], true);
+
+    await Society.findByIdAndUpdate(params.userObj._id, societyObject);
+    
+    // success response
+    res.json({
+      statusCode: 203,
+      statusName: httpStatus.getName(203),
+      message: "Theme Successfully Changed"
+    });
   } catch (err) {
     next(err);
   }

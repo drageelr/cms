@@ -100,5 +100,14 @@ router.post(
   accountController.changeCCAPicture
 );
 
+// API 2.9: Change Society Theme
+router.post(
+  '/society/change-theme',
+  validate(accountValidation.changeSocietyTheme, { keyByField: true }),
+  jwt.verify,
+  validateUserAccess,
+  accountController.changeSocietyTheme
+);
+
 // Export router
 module.exports = router;

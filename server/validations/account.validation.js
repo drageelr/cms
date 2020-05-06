@@ -68,7 +68,9 @@ exports.ccaEditAccount = {
       setFormStatus: Joi.bool(),
       addCCANote: Joi.bool()
     },
-    active: Joi.bool()
+    active: Joi.bool(),
+    themeColor: Joi.string(),
+    darkMode: Joi.bool()
   })
 };
 
@@ -82,7 +84,9 @@ exports.societyEditAccount = {
     nameInitials: Joi.string().min(1).max(10),
     presidentEmail: Joi.string().email(),
     patronEmail: Joi.string().email(),
-    active: Joi.bool()
+    active: Joi.bool(),
+    themeColor: Joi.string(),
+    darkMode: Joi.bool()
   })
 };
 
@@ -100,3 +104,11 @@ exports.changeCCAPicture = {
     picture: Joi.string().required()
   })
 };
+
+// Export API 2.10 Validation Object:
+exports.changeSocietyTheme = {
+  body: Joi.object({
+    themeColor: Joi.string(),
+    darkMode: Joi.bool()
+  })
+}
