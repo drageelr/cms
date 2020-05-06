@@ -71,11 +71,11 @@ function FormList({formList, dispatch}) {
         data={formList.list.map((form, index) => [ //only fetch public forms for society
           form.title, 
           form.creatorName, 
-          <Box color="slategray" >{simplifyTimestamp(form.timestampModified, false)}</Box>,,
+          <Box color="slategray" >{simplifyTimestamp(form.timestampModified, false)}</Box>,
           form.isPublic ? 'Public' : 'Private', 
           <MoreFormOptionsButton index={index}/>
         ])}
-        columns={['Name','Created by','Last edited','Status',{name: 'More', options: {filter: false, sort: false}}]}
+        columns={['Name','Created by','Last edited','Status', {name: 'More', options: {filter: false, sort: false}}]}
         options={{
           print: false,
           searchPlaceholder: 'Search for a Form...',

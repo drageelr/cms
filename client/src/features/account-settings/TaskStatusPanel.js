@@ -67,7 +67,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
       {
         text: 'Delete',
         icon: <DeleteIcon/>,
-        onClick: ()=>dispatch(deleteTaskStatus(id)),
+        onClick: ()=>dispatch(deleteTaskStatus(statusId)),
       },
     ]
     return <MoreButton menusList={menusList}/>

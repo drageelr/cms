@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {makeStyles, Paper, TextField, Checkbox, FormControlLabel, MenuItem, FormControl, Radio,
-  RadioGroup, FormLabel, Button, InputLabel, Select } from '@material-ui/core'
+  RadioGroup, FormLabel, Button, InputLabel, Select, Typography } from '@material-ui/core'
 import { connect } from 'react-redux'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import GetAppIcon from '@material-ui/icons/GetApp'
@@ -93,9 +93,9 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
 
       case 'textlabel':
         return (
-          <h5 id={id} style={{fontWeight:600}}>
+          <Typography variant='h5'  id={id} style={{fontWeight:600, fontSize:14}}>
             {label}
-          </h5>
+          </Typography>
         )
 
       case 'checkbox':

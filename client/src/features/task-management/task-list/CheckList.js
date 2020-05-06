@@ -15,12 +15,11 @@ import { Checkbox, FormControlLabel } from '@material-ui/core'
 
 export function CheckList({taskId, taskData, dispatch}) {
 
-  const [check, setCheck] = useState(false)
-
   let submissionId = -1
   taskData.taskList.map(taskObj => { // get the submissionId associated to the task
     if (taskObj.taskId === taskId) {
       submissionId = taskObj.submissionId
+      console.log(submissionId)
     }
   })
   

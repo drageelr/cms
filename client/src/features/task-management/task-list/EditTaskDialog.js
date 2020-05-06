@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import AttachRequestForm from './AttachRequestForm'
 import TaskStatus from './TaskStatus'
 import CheckList from "./CheckList"
-import AddAssignee from "./AddAssignee"
 import LogEditor from "../logs/LogEditor"
 import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
   createCustomTask } from "../taskDataSlice"
@@ -27,6 +26,8 @@ import SubjectIcon from '@material-ui/icons/Subject'
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
+
+
 
 export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, taskId, ccaDetails, dispatch, open, setOpen}) {  
   let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1 }
@@ -95,6 +96,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
   }
 
   function RequestVSCustom() { // conditionally render "Checklist" and Request Form Button
+    console.log(localSubmissionId)
     return (
       <Grid container direction="row" justify="space-between" alignItems="flex-start" style={{padding: "0px 17px 0px 17px"}}>
         <Grid item>
@@ -186,12 +188,13 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
           </Typography>
           Description
         </Typography>
-        <Card style={{minHeight: 100, minWidth: 0, background: "#ebecf0"}}>
+        <Card style={{minHeight: 100, minWidth: 0}}>
           <TextField 
             placeholder={"Add description here..."}
             multiline
             rows="6"
             value={desc}
+            variant="outlined"
             onChange={(e)=>setDesc(e.target.value)}
             inputProps={{onBlur: handleDescChange}}
             style={{
@@ -200,7 +203,6 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
               overflow: "hidden",
               outline: "none",
               border: "none",
-              background: "#ebecf0"
             }}
           />
         </Card>

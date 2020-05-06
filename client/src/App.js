@@ -20,14 +20,13 @@ import { connect } from 'react-redux'
 
 function App({ user }) {
   const { isLoggedIn, userType, name, picture } = user
-  const isDark = false
-  if (isDark) {
-    document.body.style = 'background: #424242'
-  }
+  const [darkMode, setDarkMode] = React.useState(false)
+
+  document.body.style = darkMode ? 'background: #424242' : 'background: #ffffff' 
   
   const appTheme = createMuiTheme({
     palette: {
-      type: isDark ? 'dark' : 'light',
+      type: darkMode ? 'dark' : 'light',
       primary: {
         main: '#3578fa',
       },
@@ -35,7 +34,7 @@ function App({ user }) {
         main: '#ffffff',
       },
       text: {
-        secondary: isDark ? '#ffffff': '#666699'
+        secondary: darkMode ? '#ffffff': '#6f7eaa'
       }
     },
     typography: {
@@ -59,63 +58,63 @@ function App({ user }) {
       <ThemeProvider theme={appTheme}>
         { isLoggedIn ?
         <div>
-          <NavBar name={name} userType={user.userType} picture={picture}/>
+          <NavBar name={name} userType={userType} picture={picture} darkMode={darkMode} setDarkMode={setDarkMode}/>
           <Switch>
-            <Route path="/" exact component={userDetails.userType === "CCA" ? TaskManager : SocietyDashboard}/>
+            <Route path="/" exact component={userType === "CCA" ? TaskManager : SocietyDashboard}/>
             <Route path="/form-viewer" exact component={FormViewer}/>
             <Route path="/form-viewer/:mode/:id" component={FormViewer}/>
             <Route path="/change-password" exact component={ChangePassword}/>
             {
-              user.userType === "CCA" ? (
+              userType === "CCA" ? (
                 <Route path="/settings" exact component={CCASettingsHome}/>
                 ) : (
                   <Route path="/" exact component={SocietyDashboard}/>
                 )
             }
             {
-              user.userType === "CCA" ? (
+              userType === "CCA" ? (
                 <Route path="/request-list" exact component={RequestList}/>
                 ) : (
                   <Route path="/" component={SocietyDashboard}/>
                 )
             }
             {
-              user.userType === "CCA" ? (
+              userType === "CCA" ? (
                 <Route path="/task-status-panel" exact component={TaskStatusPanel}/>
                 ) : (
                   <Route path="/" component={SocietyDashboard}/>
                 )
             }
             {
-              user.userType === "CCA" ? (
+              userType === "CCA" ? (
                 <Route path="/cca-panel" exact component={CCAAccountsPanel}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              user.userType === "CCA" ? (
+              userType === "CCA" ? (
                 <Route path="/society-panel" exact exact component={SocietyAccountsPanel}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              user.userType === "CCA" ? (
+              userType === "CCA" ? (
                 <Route path="/form-maker" exact component={FormMaker}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              user.userType === "CCA" ? (
+              userType === "CCA" ? (
                 <Route path="/form-maker/:id" exact component={FormMaker}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>
               )
             }
             {
-              user.userType === "CCA" ? (
+              userType === "CCA" ? (
                 <Route path="/forms" exact component={FormList}/>
               ) : (
                 <Route path="/" component={SocietyDashboard}/>

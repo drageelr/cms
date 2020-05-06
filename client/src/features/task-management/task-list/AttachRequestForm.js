@@ -47,8 +47,6 @@ export function AttachRequestForm({ownerId, formDataList, setSubmissionId, dispa
       const submissionId = rowData[0]
       setSubmissionId(submissionId)
       dispatch(fetchCheckList({ownerId, submissionId}))
-      // const fetchChecklists = await
-      // const checklist = unwrapResult(fetchChecklists)
     }
   }
 

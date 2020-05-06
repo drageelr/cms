@@ -3,7 +3,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert'
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz'
 import {Menu, MenuItem, IconButton} from '@material-ui/core'
 
-export default function MoreButton({menusList, horizontal}) {
+export default function MoreButton({menusList}) {
   const [anchorEl, setAnchorEl] = React.useState(null)
   
   function handleClick(e) {
@@ -17,11 +17,7 @@ export default function MoreButton({menusList, horizontal}) {
   return (
     <div>
       <IconButton size="small" onClick={handleClick}>
-        {
-          (horizontal !== undefined) 
-          ? <MoreVertIcon/>
-          : <MoreHorizIcon fontSize="large"/>
-        }
+        <MoreHorizIcon fontSize="large"/>
       </IconButton>
       <Menu
         id="form-menu"

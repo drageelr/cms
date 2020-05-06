@@ -84,6 +84,10 @@ const user = createSlice ({
     },
     clearError: (state, action) => {
       state.error = null
+    },
+
+    setUserPicture: (state, action) => {
+      state.picture = action.payload.picture
     }
   },
   extraReducers: {
@@ -130,6 +134,6 @@ const user = createSlice ({
   }
 })
 
-export const { logout, clearError } = user.actions
+export const { logout, clearError, setUserPicture } = user.actions
 
 export default user.reducer

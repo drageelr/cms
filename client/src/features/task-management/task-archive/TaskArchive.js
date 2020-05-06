@@ -18,6 +18,7 @@ function ArchiveList({ taskData, ccaDetails, dispatch }) {
         disableElevation 
         href="" 
         color="primary"
+        variant = "contained"
         onClick={(event) => handleUnArchiveClick({event, taskId, ownerId})}
       >
         Unarchive

@@ -3,20 +3,28 @@ import { Grid, TextField, Button, Typography, Card, Avatar, Container, Paper, Bo
 import { connect } from 'react-redux'
 import { createNewLog } from '../taskDataSlice'
 import { makeStyles } from '@material-ui/core/styles'
+import { simplifyTimestamp } from '../../../helpers'
 
 const useStyles = makeStyles((theme) => ({
-  notesPaper: {
+  logEditorPaper: {
     overflow:'auto',
     height: '34vh',
-    width: '85vh',
+    width: '34vw',
     marginLeft: 17
+  },
+  logPaper:{
+    padding: 2, 
+    borderRadius: 3, 
+    margin: 8, 
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.secondary.main,
+    width: '32vw'
   }
 }))
 
 export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
   const [logText, setLogText] = useState("")
   const classes = useStyles()
-
   let ownerName=""
   let picture = ""
 
@@ -29,7 +37,7 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
   }
 
   function LogsList() {
-    return <Box borderRadius={8} border={1} borderColor="grey.400" className={classes.notesPaper}>
+    return <Box borderRadius={8} border={1} borderColor="grey.400" className={classes.logEditorPaper}>
       <List>
         {
           taskData.map(taskObj => {
@@ -45,7 +53,7 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
                     }
                   })
 
-                  return <Paper style={{padding: 2, borderRadius: 3, margin: 8, width: '52vw', backgroundColor: 'blue', color: 'white'}} >
+                  return <Paper className={classes.logPaper} >
                     <Grid container direction="row" justify="space-between" alignItems="flex-start">
                       <Grid item container style={{padding: "5px"}}>
                         <Avatar src={picture} style={{height: 20, width: 20, marginTop: 4}}/>
@@ -54,13 +62,13 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
                         </Typography>
                         <Grid item style={{marginLeft: "55%"}}>
                           <Typography>
-                            {logData.createdAt}
+                            {simplifyTimestamp(logData.createdAt, false)}
                           </Typography>
                         </Grid>
                       </Grid>
                     </Grid>
                     <Typography style={{marginLeft: 27, fontSize: 16}}>
-                      {logData.description}
+                      {logData.description.split('.')[1].replace(/ *\([^)]*\) */g, "")}
                     </Typography>
                   </Paper>          
                 })
@@ -109,28 +117,3 @@ const mapStateToProps = (state) => ({
 })
 
 export default connect(mapStateToProps)(LogEditor)
-
-// return <Grid direction="row" justify="flex-start" alignItems="flex-start">
-              //   <Grid item style={{marginLeft: 15, marginTop: 10}}>
-              //     <Paper>
-              //     {/* <Card style={{width: "61%", height: "30%"}} raised="true"> */}
-                    // <Grid container direction="row" justify="space-between" alignItems="flex-start">
-                    //   <Grid item container style={{padding: "5px"}}>
-                    //     <Avatar src={picture} style={{height: 20, width: 20, marginTop: 4}}/>
-                    //     <Typography variant="h6" style={{marginLeft: 3}}>
-                    //       {ownerName}
-                    //     </Typography>
-                    //     <Grid item style={{marginLeft: "55%"}}>
-                    //       <Typography>
-                    //         {logData.createdAt}
-                    //       </Typography>
-                    //     </Grid>
-                    //   </Grid>
-                    // </Grid>
-                    // <Typography style={{marginLeft: 27, fontSize: 16}}>
-                    //   {logData.description}
-                    // </Typography>
-              //       </Paper>
-              //     {/* </Card> */}
-              //   </Grid>
-              // </Grid>

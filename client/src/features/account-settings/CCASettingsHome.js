@@ -1,13 +1,12 @@
 import React from 'react'
-import { Link, Redirect } from 'react-router-dom'
-import { Grid, Button, Box, Typography} from '@material-ui/core'
+import { Link } from 'react-router-dom'
+import { Grid, Box, Typography} from '@material-ui/core'
 import LockIcon from '@material-ui/icons/Lock'
 import PersonIcon from '@material-ui/icons/Person'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted'
-import image from "./bg.jpg"
-import { Paper, makeStyles, Fab, Container, Card } from '@material-ui/core'
-import { Spring } from 'react-spring/renderprops';
+import { makeStyles, Container, Card } from '@material-ui/core'
+
 /**
   The CCASettingsHome constitutes buttons for the following: Change Password, CCA Accounts,
   Society Accounts, and Task Status Panel.

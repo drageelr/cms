@@ -12,10 +12,9 @@ import * as Yup from 'yup'
 import ErrorSnackbar from "../../ui/ErrorSnackbar"
 import PanelBar from './PanelBar'
 import AccessibilityIcon from '@material-ui/icons/Accessibility'
-import Pagination from '@material-ui/lab/Pagination'
 import { addCCAAccount, toggleActiveCCAAccount, editCCAAccount, fetchCCAAccounts, clearError, editCCAPermissions } from './ccaDetailsSlice'
 import { makeStyles } from '@material-ui/core/styles'
-import Paper from '@material-ui/core/Paper'
+import { setUserPicture } from './userSlice'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,7 +50,9 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     reader.readAsDataURL(event.target.files[0])
     
     reader.onload = async () => {
-      setPicture(reader.result)
+      const b64 = reader.result
+      setPicture(b64)
+      dispatch(setUserPicture({picture: b64}))
     }
 
     reader.onerror = (error) => {
@@ -278,18 +279,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
               password: values.password,
               picture: picture,
               role:values.role,
-              permissions: {
-                societyCRUD: true,
-                ccaCRUD: true,
-                accessFormMaker: true,
-                createReqTask: true,
-                createCustomTask: true,
-                createTaskStatus: true,
-                archiveTask: true,
-                unarchiveTask: true,
-                setFormStatus: true,
-                addCCANote: true
-              },
+              permissions: initialValues.permissions,
             })).then(() => {
               setSubmitting(false)
               setEditMode(false)
@@ -378,42 +368,36 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
           <PanelBar style = {{fontWeight: 'bold'}} handleAdd={handleAdd} title={`CCA Accounts (${ccaDetails.ccaList.length})`} buttonText="Add CCA Account"/>
           {permissionMode ? <PermissionsDialog/> : <CCADialog />}
           <br/>
-          <Container style={{overflowX: 'auto'}} >
-          <Grid container spacing={3} >
-          {
-            ccaDetails.ccaList !== undefined &&
-            ccaDetails.ccaList.map((ccaDetail,index) => (
-              <Grid item xs={3}> 
-                <Card display='flex'elevation={7} style={{
-                  marginLeft: 10, 
-                  maxWidth: 275, 
-                  background: ccaDetail.active ? "##F6F6F6" : "darkgray"}}>
-                  <CardHeader
-                    avatar={
-                      <CCAPicture src={ccaDetail.picture}/>
-                    }
-                    action={
-                      
-                      <EditDeleteMoreButton ccaId={ccaDetail.ccaId} active={ccaDetail.active}/>
-                    }
-                  />
-                  <CardContent>
-                    <Typography color="textPrimary" style = {{textAlign: 'left', fontSize: 20, fontWeight: 'bold'}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
-                    <Typography color="textSecondary" style = {{fontWeight:500}}>{(ccaDetail.role).charAt(0).toUpperCase() + (ccaDetail.role).slice(1)}</Typography>
-                    <br/>
-                    <Typography color="textSecondary">{ccaDetail.email}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))
-          }
-          </Grid>
-          <Pagination 
-            count={ccaDetails.ccaList.Length} 
-            color="primary" 
-            page={page}
-            onChangePage={handleChangePage}
-          />
+          <Container  >
+            <Grid container spacing={3} >
+            {
+              ccaDetails.ccaList !== undefined &&
+              ccaDetails.ccaList.map((ccaDetail,index) => (
+                <Grid item xs={3}> 
+                  <Card display='flex' elevation={7} style={{
+                    marginLeft: 20, 
+                    maxWidth: 275, 
+                    }}>
+                    <CardHeader
+                      avatar={
+                        <CCAPicture src={ccaDetail.picture}/>
+                      }
+                      action={
+                        
+                        <EditDeleteMoreButton ccaId={ccaDetail.ccaId} active={ccaDetail.active}/>
+                      }
+                    />
+                    <CardContent>
+                      <Typography color="textPrimary" style = {{textAlign: 'left', fontSize: 20, fontWeight: 'bold'}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
+                      <Typography color="textSecondary" style = {{fontWeight:500}}>{(ccaDetail.role).charAt(0).toUpperCase() + (ccaDetail.role).slice(1)}</Typography>
+                      <br/>
+                      <Typography color="textSecondary">{ccaDetail.email}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))
+            }
+            </Grid>
           </Container>
         </div>
         

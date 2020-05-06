@@ -52,7 +52,7 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
     })
     taskData.taskList.map(taskObj => {
       if (taskObj.taskId === mainTaskId) {
-        dispatch(deleteSubTask({mainTaskId, subTaskList: taskObj.subtasks}))
+        dispatch(deleteSubTask({mainTaskId, taskId, subTaskList: taskObj.subtasks}))
       }
     })
   }

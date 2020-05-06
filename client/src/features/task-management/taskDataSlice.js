@@ -43,10 +43,6 @@ export const fetchTask = createAsyncThunk(
 export const fetchCheckList = createAsyncThunk(
   'taskData/fetchCheckList',
   async (idObj, { getState, rejectWithValue }) => {
-    const { isPending } = getState().taskData
-    if (isPending != true) {
-      return
-    } 
     const { ownerId, submissionId } = idObj
     
     return await apiCaller('/api/form/fetch-checklist', { submissionId }, 200, 
@@ -57,11 +53,7 @@ export const fetchCheckList = createAsyncThunk(
 export const fetchArchiveManager = createAsyncThunk(
   'taskData/fetchArchiveManager',
   async (_, { getState, rejectWithValue }) => {
-    const { isPending } = getState().taskData
-    if (isPending != true) {
-      return
-    } 
-
+    
     return await apiCaller('/api/task-manager/fetch-archive', {}, 200, 
     (data) => ({data}), 
     rejectWithValue)
@@ -175,16 +167,26 @@ export const moveSubTask = createAsyncThunk(
 export const deleteSubTask = createAsyncThunk(
   'taskData/deleteSubTask',
   async (subTaskObject, { getState, rejectWithValue }) => {
-    const { mainTaskId, subTaskList } = subTaskObject
+    const { mainTaskId, taskId, subTaskList } = subTaskObject
     let tempSubList = []
-    
+    let tempObj = {}
+
     subTaskList.map(obj => {
-      tempSubList.push({
-        subtaskId: obj.subtaskId,
-        assigneeId: obj.assigneeId,
-        description: obj.description, 
-        check: true
-      })
+      if (obj.taskId === taskId) {
+        tempSubList.push({
+          subtaskId: obj.subtaskId,
+          assigneeId: obj.assigneeId,
+          description: obj.description, 
+          check: true
+        })
+      } else {
+        tempSubList.push({
+          subtaskId: obj.subtaskId,
+          assigneeId: obj.assigneeId,
+          description: obj.description, 
+          check: obj.check
+        })
+      }
     })
 
     return await apiCaller('/api/task-manager/task/req/edit', {
@@ -421,23 +423,19 @@ const taskdata = createSlice({
       }
     },
 
-    [fetchCheckList.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [fetchCheckList.fulfilled]: (state, action) => {
-      if (state.isPending === true) {
-        state.isPending = false
-        const {idObj, data} = action.payload
-        state.checkList = data.checklists
+      const {idObj, data} = action.payload
+      state.checkList = data.checklists
 
-        state.checklistAssignees = data.checklists.map(checklistItem => ({
-            checklistId: checklistItem.checklistId, 
-            assigneeId: idObj.ownerId
-          })
-        )
-      }
+      state.taskList.map(task => {
+        task.submissionId = idObj.submissionId
+      })
+
+      state.checklistAssignees = data.checklists.map(checklistItem => ({
+          checklistId: checklistItem.checklistId, 
+          assigneeId: idObj.ownerId
+        })
+      )
     },
     [fetchCheckList.rejected]: (state, action) => {
       if (state.isPending === true) {
@@ -446,11 +444,6 @@ const taskdata = createSlice({
       }
     },
 
-    [fetchArchiveManager.pending]: (state, action) => {
-      if (state.isPending === false) {
-        state.isPending = true
-      }
-    },
     [fetchArchiveManager.fulfilled]: (state, action) => {
       //if (state.isPending === true) {
         //state.isPending = false

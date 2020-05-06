@@ -9,7 +9,8 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import DonutSmallIcon from '@material-ui/icons/DonutSmall'
 import LockIcon from '@material-ui/icons/Lock'
 import { makeStyles } from '@material-ui/core/styles'
-import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Box, Grid, Button} from '@material-ui/core'
+import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Box, Grid, Button, 
+  FormControl, FormGroup, FormControlLabel, Switch} from '@material-ui/core'
 import { useDispatch } from 'react-redux'
 import { logout } from '../features/account-settings/userSlice'
 
@@ -29,13 +30,17 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function NavBar({name, userType, picture}) {
+export default function NavBar({name, userType, picture, setDarkMode, darkMode}) {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const dispatch = useDispatch()
 
   function toggleDrawer() {
     setDrawerOpen(!drawerOpen)
+  }
+
+  function handleDarkModeChange() {
+    setDarkMode(!darkMode)
   }
 
   function RoundLinkButton({ link, icon, title }) {
@@ -129,9 +134,21 @@ export default function NavBar({name, userType, picture}) {
         <br/>
         <br/>
         <br/>
-        <RoundLinkButton link={'/'} icon={<PlaylistAddCheckIcon fontSize='large'/>} title={'Task Manager'}/>
-        <RoundLinkButton link={'/forms'} icon={<EditIcon fontSize='large'/>} title={'Form Maker'}/>
-        <RoundLinkButton link={'/request-list'} icon={<ListAltIcon fontSize='large'/>} title={'Request List'}/>
+        <Grid container direction="column" justify="space-evenly">
+          <Grid item>
+            <RoundLinkButton link={'/'} icon={<PlaylistAddCheckIcon fontSize='large'/>} title={'Task Manager'}/>
+            <RoundLinkButton link={'/forms'} icon={<EditIcon fontSize='large'/>} title={'Form Maker'}/>
+            <RoundLinkButton link={'/request-list'} icon={<ListAltIcon fontSize='large'/>} title={'Request List'}/>
+          </Grid>
+
+          <Grid item>
+          <FormControlLabel
+            style={{marginLeft: 10, color: "white"}}
+            control={<Switch color="secondary" size="small" checked={darkMode} onChange={handleDarkModeChange} name="darkMode"/>}
+            label="Dark Mode"
+          />
+          </Grid>
+        </Grid>
       </Drawer>
     </div>
   )

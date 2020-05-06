@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import FormViewerBar from './FormViewerBar'
-import {makeStyles, List, Paper, Container, CircularProgress, Typography } from '@material-ui/core'
+import {makeStyles, List, Paper, Container, CircularProgress, Button, Typography } from '@material-ui/core'
 import { connect } from 'react-redux'
 import ItemView from './ItemView'
 import { fetchFormData, clearError } from '../formDataSlice'
@@ -60,9 +60,7 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
       : <Container>
         {/* //Container to center align the View, also sections and items rendered only (components are only logical) */}
         <Paper elevation={4} className={classes.sectionPaper}>
-          <Typography variant='h3' color='text.primary' style={{marginLeft: 10}}>
-              {sections[sectionId]}
-            </Typography>
+          <h3 style={{color: 'white', marginLeft: 10}}>{sectionTitles[sectionId]}</h3>
           <List>
             { 
               (sectionId in componentsOrder) && // does the section has components?
