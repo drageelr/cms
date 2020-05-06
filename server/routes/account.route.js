@@ -84,7 +84,7 @@ router.post(
 
 // API 2.8: Change Password (Society)
 router.post(
-  '/society/change-pasword',
+  '/society/change-password',
   validate(accountValidation.changePassword, { keyByField: true }),
   jwt.verify,
   validateUserAccess,
