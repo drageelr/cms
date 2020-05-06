@@ -170,7 +170,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
     {
     taskStatusDetails.isPending? <LinearProgress variant = "indeterminate"/>:
     <div>
-      <PanelBar handleAdd={handleAdd} title="Task Status Panel" buttonText="Add New Task Status"/>
+      <PanelBar handleAdd={handleAdd} title={`Task Statuses (${taskStatusDetails.taskList.length})`} buttonText="Add New Task Status"/>
       <TaskStatusDialog/>
       <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="customized table" stickyHeader aria-label="sticky table">

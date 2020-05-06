@@ -221,7 +221,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
     {
       societyData.isPending? <LinearProgress variant = "indeterminate"/>:
       <div>
-        <PanelBar handleAdd={handleAdd} title="Society Accounts" buttonText="Add Society Account"/>
+        <PanelBar handleAdd={handleAdd} title={`Society Accounts (${societyData.societyList.length})`} buttonText="Add Society Account"/>
         <SocietyDialog/>
         <Paper className={classes.root}>
           <TableContainer className={classes.container}>

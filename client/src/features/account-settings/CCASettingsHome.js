@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
   ccaSettingsTitle: {
     padding: theme.spacing(2),
     marginTop: 10,
+    color: theme.palette.text.primary
   },
   settingsBoxText: {
     color: theme.palette.secondary.main,

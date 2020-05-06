@@ -80,7 +80,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
       setPermissions(ccaMember.permissions)
     }
   }
-  
+
   function handleClosePermission() {
     setPermissionsMode(false)
   }
@@ -375,7 +375,7 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
     <div>
       {ccaDetails.isPending ? <LinearProgress /> :
         <div>
-          <PanelBar style = {{fontWeight: 'bold'}} handleAdd={handleAdd} title="CCA Accounts" buttonText="Add CCA Account"/>
+          <PanelBar style = {{fontWeight: 'bold'}} handleAdd={handleAdd} title={`CCA Accounts (${ccaDetails.ccaList.length})`} buttonText="Add CCA Account"/>
           {permissionMode ? <PermissionsDialog/> : <CCADialog />}
           <br/>
           <Container style={{overflowX: 'auto'}} >
