@@ -72,11 +72,9 @@ function App({ user }) {
                 )
             }
             {
-              userType === "CCA" ? (
+              userType === "CCA" && (
                 <Route path="/request-list" exact component={RequestList}/>
-                ) : (
-                  <Route path="/" component={SocietyDashboard}/>
-                )
+              )
             }
             {
               userType === "CCA" ? (

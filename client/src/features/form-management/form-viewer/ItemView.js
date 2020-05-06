@@ -10,7 +10,7 @@ import { unwrapResult } from '@reduxjs/toolkit'
 
 export const useStyles = makeStyles((theme) => ({
   itemPaper: {
-    backgroundColor: theme.palette.secondary.main,
+    // backgroundColor: theme.palette.secondary.main,
     padding: theme.spacing(1),
     width: '97%',
     height: '100%',

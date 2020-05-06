@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
   },
   notesPaper: {
     overflow:'auto',
-    height: '34vh',
+    height: '30vh',
   }
 }))
 

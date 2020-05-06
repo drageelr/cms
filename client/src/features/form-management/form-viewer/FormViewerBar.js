@@ -52,6 +52,7 @@ export default function FormListBar({submissionId, title, notesData, isCCA, crea
             {
             !inReview && // hide save button in review mode
             <Button
+              color="primary"
               variant="contained"
               startIcon={<SaveIcon />}
               style={{marginLeft:10}}

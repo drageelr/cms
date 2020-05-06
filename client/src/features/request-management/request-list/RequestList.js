@@ -170,7 +170,7 @@ export function RequestList({requestListData, dispatch}) {
         aria-labelledby="status-dialog"
         aria-describedby="status-dialog-desc"
       >
-        <DialogTitle id="status-dialog">{"Choose Custom Dates"}</DialogTitle>
+        <DialogTitle id="status-dialog">Choose Custom Dates</DialogTitle>
         <DialogContent>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container direction="column" justify="center" alignItems="center">
@@ -205,7 +205,9 @@ export function RequestList({requestListData, dispatch}) {
             requestListData.formDataList.map((request, _) => [
               request.submissionId,
               request.formTitle,
-              <Box color="slategray" >{simplifyTimestamp(request.timestampModified)}</Box>, //<DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
+              <Box color="slategray" >
+                {simplifyTimestamp(request.timestampModified)}
+              </Box>, //<DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
               request.societyNameInitials,
               <ChangeFormStatusSelect submissionId={request.submissionId} status={request.status} />,
               <Button 

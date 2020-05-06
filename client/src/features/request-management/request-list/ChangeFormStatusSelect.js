@@ -13,9 +13,11 @@ import { useDispatch } from 'react-redux'
 
 export default function ChangeFormStatusSelect({submissionId, status}) {
   const dispatch = useDispatch()
+  const [localStatus, setLocalStatus] = React.useState(status)
   const [open, setOpen] = React.useState(false)
 
   function handleChange(e) {
+    setLocalStatus(e.target.value)
     dispatch(changeFormStatus({submissionId, status: e.target.value}))
   }
 
@@ -30,18 +32,18 @@ export default function ChangeFormStatusSelect({submissionId, status}) {
           id="label"
           open = {open}
           onClose={()=>setOpen(false)}
-          value={status}
+          value={localStatus}
           onOpen={()=>setOpen(true)}
           style={{height: 30, width: 200}}
           variant = "outlined"
           onChange={handleChange}
         >
-          {
-            options.map((option, index) => <MenuItem key={index} value={option}>{option}</MenuItem>)
-          }
-          {
-            disabledOptions.map((option, index) => <MenuItem key={index} disabled={true} value={option}>{option}</MenuItem>)
-          }
+        {
+          options.map((option, index) => <MenuItem key={index} value={option}>{option}</MenuItem>)
+        }
+        {
+          disabledOptions.map((option, index) => <MenuItem key={index} disabled={true} value={option}>{option}</MenuItem>)
+        }
         </Select>
       </FormControl>
     </div>
