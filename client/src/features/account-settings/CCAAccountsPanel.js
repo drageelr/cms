@@ -12,13 +12,11 @@ import * as Yup from 'yup'
 import ErrorSnackbar from "../../ui/ErrorSnackbar"
 import PanelBar from './PanelBar'
 import AccessibilityIcon from '@material-ui/icons/Accessibility'
-import Pagination from '@material-ui/lab/Pagination';
+import Pagination from '@material-ui/lab/Pagination'
 import { addCCAAccount, toggleActiveCCAAccount, editCCAAccount, fetchCCAAccounts, clearError, editCCAPermissions } from './ccaDetailsSlice'
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles'
+import Paper from '@material-ui/core/Paper'
 
-
-var Base64 = require('js-base64').Base64;
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -29,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(5),
   },
 }))
+
 function CCAAccountPanel({ccaDetails,dispatch}) {
   const classes = useStyles()
   useEffect(() => {
@@ -48,15 +47,19 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
   }
 
   function handleImageUpload(event, ccaId) {
-    const url = URL.createObjectURL(event.target.files[0])
-    var b64 = Base64.btoa(event.target.files[0])
-    console.log("starting: , ", event.target.files[0])
-    console.log("base 64: , ", b64)
-    console.log("decode: ", Base64.atob(b64))
-    setPicture(b64)
+    var reader = new FileReader()
+    reader.readAsDataURL(event.target.files[0])
+    
+    reader.onload = async () => {
+      setPicture(reader.result)
+    }
+
+    reader.onerror = (error) => {
+      console.log('Error: ', error)
+    }
   }
 
-  function handlePermissionsChange(event){
+  function handlePermissionsChange(event) {
     setPermissions({ 
       ...permissions, 
       [event.target.name]: event.target.checked 
@@ -365,6 +368,10 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
 
   }
 
+  function CCAPicture({src}){
+    return <Avatar style = {{width:125, height:125}} src={src}/>
+  }
+
   return (
     <div>
       {ccaDetails.isPending ? <LinearProgress /> :
@@ -373,16 +380,15 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
           {permissionMode ? <PermissionsDialog/> : <CCADialog />}
           <br/>
           <Container style={{color: "gray", overflowX: 'auto'}} >
-          <Paper className={classes.paper}>
-          <Grid container spacing={3}  style = {{zIndex:-5}}>
+          <Grid container spacing={3} >
           {
             ccaDetails.ccaList !== undefined &&
             ccaDetails.ccaList.map((ccaDetail,index) => (
               <Grid item xs={3}> 
-                <Card elevation = {200} variant="outlined" style = {{marginLeft: 10, maxWidth: 275, background: ccaDetail.active ? "##F6F6F6" : "darkgray"}}>
+                <Card display='flex' elevation={3} style = {{marginLeft: 10, maxWidth: 275, background: ccaDetail.active ? "##F6F6F6" : "darkgray"}}>
                   <CardHeader
                     avatar={
-                      <Avatar style = {{width:100, height:100}} src = {Base64.atob(ccaDetail.picture)}/>
+                      <CCAPicture src={ccaDetail.picture}/>
                     }
                     action={
                       
@@ -390,18 +396,16 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
                     }
                   />
                   <CardContent>
-                    <Typography style = {{textAlign: 'left', fontSize: 20, fontWeight: 'bold', fontColor:'black'}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
-                    <Typography style = {{fontColor: 'gray'}}>{ccaDetail.role}</Typography>
+                    <Typography color="textPrimary" style = {{textAlign: 'left', fontSize: 20, fontWeight: 'bold'}}>{ccaDetail.firstName} {ccaDetail.lastName}</Typography>
+                    <Typography color="textSecondary" style = {{fontWeight:500}}>{(ccaDetail.role).charAt(0).toUpperCase() + (ccaDetail.role).slice(1)}</Typography>
                     <br/>
-                    <Typography style = {{fontColor: 'gray'}}>{ccaDetail.email}</Typography>
+                    <Typography color="textSecondary">{ccaDetail.email}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
             ))
           }
           </Grid>
-          </Paper>
-          
           <Pagination 
             count={ccaDetails.ccaList.Length} 
             color="primary" 

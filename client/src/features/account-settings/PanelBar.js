@@ -1,5 +1,5 @@
 import React from 'react'
-import { Paper, Grid, Button, Typography, Box, makeStyles, Fab} from '@material-ui/core'
+import { Paper, Grid, Button, Typography, Box, makeStyles, Fab, Divider} from '@material-ui/core'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 
 const useStyles = makeStyles((theme) => ({
@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
   propertiesPaper: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(1.5),
   },
   extendedIcon: {
     marginRight: theme.spacing(1),
@@ -21,10 +21,9 @@ export default function PanelBar({handleAdd, title, buttonText}){
   const classes = useStyles()
 
   return <div className={classes.root}>
-    <Paper elevation={3} square variant="outlined" className={classes.propertiesPaper} zIndex={10}>
-      <Grid container elevation={3} direction="row" justify="space-between"alignItems="center">
-        <Grid item elevation={3}>
-          <Typography variant="h4" elevation={3}>
+      <Grid container direction="row" justify="space-between"alignItems="center" className={classes.propertiesPaper}>
+        <Grid item >
+          <Typography variant="h4" >
             <Box fontWeight={700}>
               {title}
             </Box>
@@ -44,6 +43,7 @@ export default function PanelBar({handleAdd, title, buttonText}){
           </Fab>
         </Grid>
       </Grid>
-    </Paper>
+      <Divider />
+
   </div>
 }

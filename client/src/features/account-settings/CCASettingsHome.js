@@ -35,7 +35,7 @@ export default function CCASettingsHome() {
     return(
       <Grid item>
           <Link to={link} style={{ textDecoration: 'none' }}>
-            <Card elevation={3} style={{
+            <Card style={{
               width: 150,
               height: 100,
               border: 30,
