@@ -97,6 +97,10 @@ const ccaAccess = {
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
+/**
+ * Validates access of users and return an error if
+ * a forbidden resource is being accessed.
+ */
 exports.validateUserAccess = (req, res, next) => {
   try {
     let accessList = userAccess[req.originalUrl];
@@ -123,6 +127,10 @@ exports.validateUserAccess = (req, res, next) => {
   }
 }
 
+/**
+ * Validates access of CCA users based on their permissions
+ * and returns if a forbidden resource is being accessed. 
+ */
 exports.validateCCAAccess = async (req, res, next) => {
   try {
     if (req.body.userObj.type == "cca") {

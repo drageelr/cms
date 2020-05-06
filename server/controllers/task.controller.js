@@ -33,6 +33,12 @@ var config = require('../config/config').variables;
   <<<<< HELPER FUNCTIONS >>>>>
 */
 
+/**
+ * Creates the text associated with archiving a target.
+ * @param {String} targetType - type of target.
+ * @param {Number} targetId - Id of target.
+ * @param {String} targetName - Name of the target. 
+ */
 function createLogText(targetType, targetId, targetName = "") {
   const typeConversion = {
     rt: "[Request Task]",
@@ -55,6 +61,11 @@ function createLogText(targetType, targetId, targetName = "") {
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
+/**
+ * Create a request task associated
+ * to a submission.
+ */
+// API 5.1 Controller
 exports.createReqTask = async (req, res, next) => {
   let params = req.body;
   let task = params.task;
@@ -173,6 +184,11 @@ exports.createReqTask = async (req, res, next) => {
   }
 }
 
+/**
+ * Create a customer task, 
+ * not associated to a submission.
+ */
+// API 5.2 Controller
 exports.createCusTask = async (req, res, next) => {
   let params = req.body;
   let task = params.task;
@@ -227,6 +243,10 @@ exports.createCusTask = async (req, res, next) => {
   }
 }
 
+/**
+ * Edits a created request task.
+ */
+// API 5.3 Controller
 exports.editReqTask = async (req, res, next) => {
   let params = req.body;
   let task = params.task;
@@ -310,6 +330,10 @@ exports.editReqTask = async (req, res, next) => {
   }
 }
 
+/**
+ * Edits a created custom task.
+ */
+// API 5.4 Controller
 exports.editCusTask = async (req, res, next) => {
   let params = req.body;
   let task = params.task;
@@ -372,6 +396,11 @@ exports.editCusTask = async (req, res, next) => {
   }
 }
 
+/**
+ * Adds a log to a task,
+ * request or custom.
+ */
+// API 5.5 Controller
 exports.addLog = async (req, res, next) => {
   let params = req.body;
 
@@ -410,6 +439,11 @@ exports.addLog = async (req, res, next) => {
   }
 }
 
+/**
+ * Fetches all tasks that exist
+ * in the task manager.
+ */
+// API 5.6 Controller
 exports.fetchTaskManager = async (req, res, next) => {
   try {
     let taskList = [];
@@ -498,6 +532,11 @@ exports.fetchTaskManager = async (req, res, next) => {
   }
 }
 
+/**
+ * Fetches all archived tasks,
+ * based on the filter entered.
+ */
+// API 5.7 Controller
 exports.fetchArchiveManager = async (req, res, next) => {
   try {
     let taskList = [];
@@ -539,6 +578,11 @@ exports.fetchArchiveManager = async (req, res, next) => {
   }
 }
 
+/**
+ * Fetches complete details associated
+ * to a task.
+ */
+// API 5.8 Controller
 exports.fetchTask = async (req, res, next) => {
   let params = req.body;
 
@@ -601,6 +645,10 @@ exports.fetchTask = async (req, res, next) => {
   }
 }
 
+/**
+ * Creates a new status for tasks.
+ */
+// API 5.9 Controller
 exports.createTaskStatus = async (req, res, next) => {
   let params = req.body;
 
@@ -623,6 +671,10 @@ exports.createTaskStatus = async (req, res, next) => {
   }
 }
 
+/**
+ * Edits an existing task status.
+ */
+// API 5.10 Controller
 exports.editTaskStatus = async (req, res, next) => {
   let params = req.body;
 
@@ -644,6 +696,10 @@ exports.editTaskStatus = async (req, res, next) => {
   }
 }
 
+/**
+ * Deletes an existing task status.
+ */
+// API 5.11 Controller
 exports.deleteTaskStatus = async (req, res, next) => {
   let params = req.body;
 
@@ -663,6 +719,10 @@ exports.deleteTaskStatus = async (req, res, next) => {
   }
 }
 
+/**
+ * Fetches all existing task statuses.
+ */
+// API 5.12 Controller
 exports.fetchTaskStatuses = async (req, res, next) => {
   try {
     let reqStatuses = await Status.find({});

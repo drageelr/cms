@@ -28,6 +28,7 @@ var helperFuncs = require('../services/helper-funcs');
  * are provided. In case an account with the same email address
  * already exists, it will not be created. 
  */
+// API 2.1 Controller
 exports.createCCAAccount = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -59,6 +60,7 @@ exports.createCCAAccount = async (req, res, next) => {
 * are provided. In case an account with the same email 
 * address already exists, it will not be created. 
 */
+// API 2.2 Controller
 exports.createSocietyAccount = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -90,6 +92,7 @@ exports.createSocietyAccount = async (req, res, next) => {
  * CCA member, and throws an error if the user 
  * is not found.
  */
+// API 2.3 Controller
 exports.editCCAAccount = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -124,6 +127,7 @@ exports.editCCAAccount = async (req, res, next) => {
 * Society, and throws an error if the user
 * is not found.
 */
+// API 2.4 Controller
 exports.editSocietyAccount = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -154,6 +158,7 @@ exports.editSocietyAccount = async (req, res, next) => {
  * accounts, throws an error if member
  * is not found.
  */
+// API 2.5 Controller
 exports.getCCAList = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -190,6 +195,7 @@ exports.getCCAList = async (req, res, next) => {
  * Accounts, throws an error if a
  * society is not found.
  */
+// API 2.6 Controller
 exports.getSocietyList = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -224,6 +230,7 @@ exports.getSocietyList = async (req, res, next) => {
  * Changes the password of a CCA
  * account.
  */
+// API 2.7 Controller
 exports.changeCCAPassword = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -254,6 +261,7 @@ exports.changeCCAPassword = async (req, res, next) => {
  * Changes the password of a Society
  * account.
  */
+// API 2.8 Controller
 exports.changeSocietyPassword = async (req, res, next) => {
   //Variables:
   let params = req.body;
@@ -283,6 +291,7 @@ exports.changeSocietyPassword = async (req, res, next) => {
 * Changes the picture of a CCA
 * account.
 */
+// API 2.9 Controller
 exports.changeCCAPicture = async (req, res, next) => {
   // Variables:
   let params = req.body;

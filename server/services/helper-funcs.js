@@ -7,6 +7,11 @@
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
+/**
+ * Creates a duplicate of an object.
+ * @param {object} orgObj - original object to be duplicated.
+ * @returns {object} - copy of original object.
+ */
 exports.duplicateObject = (orgObj, propList = [], ignoreUndefined = false, prefix = "", ignoreList = []) => {
   let copyObj = {};
 
@@ -38,6 +43,13 @@ exports.duplicateObject = (orgObj, propList = [], ignoreUndefined = false, prefi
   return copyObj;
 }
 
+/**
+ * Creates an array from an array of objects 
+ * of a particular attribute.
+ * @param {[object]} objArr - array of object.
+ * @param {String} propName - name of attribute for array creation.
+ * @returns {Array} - array of a particular attribute returned.
+ */
 exports.createArrFromObjArr = (objArr, propName) => {
   let propArr = [];
 
@@ -63,6 +75,11 @@ exports.createArrFromObjArr = (objArr, propName) => {
   return propArr;
 }
 
+/**
+ * Creates an object from an array of objects.
+ * @param {[object]} objArr - array of objects
+ * @returns {object} - particular object required.
+ */
 exports.createObjFromObjArr = (objArr, keyProp, keyValue, ignoreUndefined = false) => {
   let miniObj = {};
 
@@ -85,6 +102,10 @@ exports.createObjFromObjArr = (objArr, keyProp, keyValue, ignoreUndefined = fals
   return miniObj;
 }
 
+/**
+ * Compare to lists of any type and return true
+ * if they are the same.
+ */
 exports.compareLists = (list1, list2) => {
   let count = 0;
   for (let i of list1) {
