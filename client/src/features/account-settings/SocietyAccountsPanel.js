@@ -1,7 +1,7 @@
 import React, {useState,useEffect} from 'react'
-import { withStyles, makeStyles } from '@material-ui/core/styles'
+import { withStyles, makeStyles, useTheme } from '@material-ui/core/styles'
 import {Table, TableContainer, TableBody, TableCell, TableHead, TableRow, Paper, Button, Dialog, DialogContent, DialogTitle, 
-  DialogContentText, DialogActions, Grid, CircularProgress, LinearProgress, Typography} from '@material-ui/core'
+  DialogContentText, DialogActions, Grid, CircularProgress, LinearProgress, Typography, } from '@material-ui/core'
 import {addSocietyAccount,editSocietyAccount,toggleActiveSocietyAccount,fetchSocietyAccounts} from './societyDataSlice'
 import {connect} from 'react-redux'
 import { Formik, Form, Field } from 'formik'
@@ -40,6 +40,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
   },[])
 
   const classes = useStyles()
+  const theme = useTheme()
   const [isOpen,setIsOpen] = useState(false)
   const [editMode,setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
@@ -221,7 +222,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
     {
       societyData.isPending? <LinearProgress variant = "indeterminate"/>:
       <div>
-        <PanelBar handleAdd={handleAdd} title="Society Accounts" buttonText="Add Society Account"/>
+        <PanelBar handleAdd={handleAdd} title={`Society Accounts (${societyData.societyList.length})`} buttonText="Add Society Account"/>
         <SocietyDialog/>
         <Paper className={classes.root}>
           <TableContainer className={classes.container}>
@@ -237,7 +238,7 @@ function SocietyAccountsPanel({societyData,dispatch}) {
               <TableBody>
               {societyData.societyList.map((society,index) => (
                 societyData.isPending? <CircularProgress variant = "indeterminate"/>:
-                <TableRow key={index} style={{background: society.active ? 'whitesmoke' : 'lightgray'}}>
+                <TableRow key={index} style={{background: society.active ? theme.palette.action.hover : theme.palette.action.disabledBackground}}>
                   <TableCell component="th" scope="row">
                     <Typography>{society.nameInitials}</Typography>
                   </TableCell>

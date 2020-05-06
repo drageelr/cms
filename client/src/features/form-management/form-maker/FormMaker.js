@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import FormMakerBar from './FormMakerBar'
 import Properties from './Properties'
 import Section from './Section'
-import {makeStyles, List, Paper, CircularProgress, Snackbar} from '@material-ui/core'
+import { makeStyles, List, Paper, CircularProgress } from '@material-ui/core'
 import {connect} from 'react-redux'
 import FormMakerAddButton from './FormMakerAddButton'
 import { fetchForm, clearError, setCreateMode, setTitle, resetState } from '../formTemplateSlice'
@@ -16,7 +16,7 @@ export const useStyles = makeStyles((theme) => ({
     width: '90%',
     maxHeight: '74%',
     overflow: 'auto',
-    backgroundColor: 'darkgray'
+    backgroundColor: theme.palette.action.hover
   },
 }))
 
@@ -31,7 +31,7 @@ export const useStyles = makeStyles((theme) => ({
 */
 
 function FormMaker({ formTemplate, dispatch, match }) {
-  const { createMode, title, isPublic, sections, sectionsOrder, componentsOrder, components, itemsOrder, items, isPending, error } = formTemplate
+  const { createMode, title, isPublic, sectionTitles, sectionsOrder, componentsOrder, componentTitles, itemsOrder, items, isPending, error } = formTemplate
   const classes = useStyles()
   const formId = match.params.id
   
@@ -56,7 +56,7 @@ function FormMaker({ formTemplate, dispatch, match }) {
         <List>
           {
             sectionsOrder.map(sectionId => {
-              return <Section key={sectionId} id={sectionId} title={sections[sectionId]} data={{componentsOrder, components, itemsOrder, items}}/>
+              return <Section key={sectionId} id={sectionId} title={sectionTitles[sectionId]} data={{componentsOrder, componentTitles, itemsOrder, items}}/>
             })
           }
           <FormMakerAddButton type="section"/>

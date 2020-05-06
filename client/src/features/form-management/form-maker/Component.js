@@ -1,18 +1,20 @@
 import React from 'react'
 import Item from "./Item"
-import {makeStyles, List, Paper } from '@material-ui/core'
+import {makeStyles, List, Paper, Typography } from '@material-ui/core'
 import FormMakerAddButton from './FormMakerAddButton'
 import EditDeleteBar from './EditDeleteBar'
 
 const useStyles = makeStyles((theme) => ({
   componentsPaper: {
-    backgroundColor: 'lightgray',
+    backgroundColor: theme.palette.action.disabled,
     padding: theme.spacing(1),
     paddingTop: 0.3,
     paddingLeft: 10,
     width: '98%',
     height: '98%',
+    backgroundColor: 'lightgray',
     marginBottom: 10,
+    border: 1,
   }
 }))
 
@@ -30,12 +32,12 @@ export default function Component({id, title, data, parentId}) {
   const classes = useStyles()
   const {itemsOrder, items} = data
   return (
-    <Paper square elevation={0} className={classes.componentsPaper}>
+    <Paper elevation={0} className={classes.componentsPaper}>
       <EditDeleteBar 
       renderTitle={()=>
-        <h6 style={{marginBottom: 0, marginTop: 6, color: 'darkgray'}}>
+        <Typography color="text.secondary"style={{marginBottom: 0, marginTop: 6, fontSize: 10}}>
           {title}
-        </h6>
+        </Typography>
       }
       type={'component'}
       id ={id}

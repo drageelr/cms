@@ -39,10 +39,10 @@ export default function DropdownProperties({propertyAddMode, propertyId, itemDat
         const newItemData = {
           type: 'dropdown', 
           label: values.label,
-          options: values.options.split(','), 
+          options: (typeof values.options === "string") ? values.options.split(',') : values.options, 
           required: values.required, 
           defaultVisibility: values.defaultVisibility,
-          conditionalItems: [{optionId: 0, itemId: 0}]
+          conditionalItems: [{optionId: -1, itemIds: []}]
         }
 
         if (propertyAddMode){

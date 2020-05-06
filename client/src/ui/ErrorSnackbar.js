@@ -14,7 +14,8 @@ export default function ErrorSnackbar({stateError, clearError}) {
       onClose={() => dispatch(clearError())}
       message={stateError}
       action={
-      <IconButton size="small" aria-label="close" color="inherit" onClick={() => dispatch(clearError())}>
+      <IconButton size="small" aria-label="close" color="inherit"
+      onClick={() => dispatch(clearError())}>
           <CloseIcon fontSize="small" />
       </IconButton>
       }

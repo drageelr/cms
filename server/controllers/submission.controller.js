@@ -399,6 +399,7 @@ exports.addSocietyNote = async (req, res, next) => {
   }
 }
 
+
 /**
  * Fetches the list of all submission for
  * the CCA or Society.

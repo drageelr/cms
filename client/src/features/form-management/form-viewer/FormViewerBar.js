@@ -7,7 +7,7 @@ import SaveIcon from '@material-ui/icons/Save'
 import NotesSideBar from './NotesSideBar'
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
-import { createFormData, editFormData } from '../formDataSlice'
+import { createFormData, editFormData, resetState } from '../formDataSlice'
 
 const useStyles = makeStyles((theme) => ({
   propertiesPaper: {
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function FormListBar({title, notesData, isCCA, createMode }) {
+export default function FormListBar({submissionId, title, notesData, isCCA, createMode , inReview}) {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
@@ -35,8 +35,8 @@ export default function FormListBar({title, notesData, isCCA, createMode }) {
         <Grid container direction="row" justify="space-between" alignItems="center">
 
           <Grid item>
-            <Typography variant="h4">
-                <Box fontWeight={600} m={1}>
+            <Typography variant="h5">
+                <Box fontWeight={600}>
                   {title}
                 </Box>
               </Typography>
@@ -49,23 +49,27 @@ export default function FormListBar({title, notesData, isCCA, createMode }) {
               onClick={toggleDrawer}
             >Notes</Button>
         
+            {
+            !inReview && // hide save button in review mode
             <Button
+              color="primary"
               variant="contained"
               startIcon={<SaveIcon />}
               style={{marginLeft:10}}
               onClick={()=>dispatch(createMode ? createFormData() : editFormData())}
             >Save</Button>
-        
+            }
+
             <Button
             variant="contained"
             style={{marginLeft:10, marginRight: 15}}
-            onClick={()=>setExitDialogOpen(true)}
+            onClick={()=> setExitDialogOpen(true)}
             >Exit</Button>
           </Grid>
 
         </Grid>
       </Paper>
-      <NotesSideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} notesData={notesData} isCCA={isCCA}/>
+      <NotesSideBar submissionId={submissionId} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} notesData={notesData} isCCA={isCCA}/>
 
       <Dialog aria-labelledby="conditional-item-dialog" open={exitDialogOpen}>
         <DialogTitle id="exit-dialog-title">Exit</DialogTitle>
@@ -75,7 +79,10 @@ export default function FormListBar({title, notesData, isCCA, createMode }) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>history.push('/request-list')} color="primary">
+          <Button onClick={()=>{
+              dispatch(resetState())
+              history.push('/request-list')
+          }} color="primary">
             Yes
           </Button>
           <Button onClick={()=>setExitDialogOpen(false)}>

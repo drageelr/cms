@@ -13,7 +13,7 @@ import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import landingBG from './landingBG.svg'
 
 // card styling
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme=>({
   root: {
     position: 'absolute',
     maxWidth: '32vw',
@@ -21,12 +21,12 @@ const useStyles = makeStyles({
     marginTop: 0,
     height: '100%',
     backgroundColor: "#3578fa",
-    color: 'white'
+    color: theme.palette.secondary.main
   },
   input: {
     color: 'black',
   }
-})
+}))
 
 /**
   The LoginPage constitutes a toggle button to switch between a CCA or Society
@@ -35,14 +35,14 @@ const useStyles = makeStyles({
 
 function LoginPage({error, dispatch}) {
   const classes = useStyles()
-  const [userType, setUserType] = React.useState("CCA")
   const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
   const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
+  const [userType, setUserType] = React.useState("CCA")
 
   React.useEffect(() => {
-    dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
+    // dispatch(login({email: "ieee@lums.edu.pk", password: "ieee12345", userType: "Society"}))
+    dispatch(login({email: "admin@lums.edu.pk", password: "Test12345", userType: "CCA"}))
   }, [])
-  
 
   return (
     <Container component="main" className={classes.root}>
@@ -52,8 +52,8 @@ function LoginPage({error, dispatch}) {
       <Formik
         validateOnChange={false} validateOnBlur={true}
         initialValues = {{
-            email: '',
-            password: '',
+            email: 'developer@lums.edu.pk',
+            password: 'Test12345',
         }}
         validationSchema={Yup.object({
             email: Yup.string()
@@ -66,7 +66,7 @@ function LoginPage({error, dispatch}) {
             dispatch(login({email: values.email, password: values.password, userType: userType}))
             .then(() => {
               setSubmitting(false)
-            })  
+            }) 
           }
         }
         >

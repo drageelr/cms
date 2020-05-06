@@ -36,7 +36,7 @@ export default function FormMakerBar({title, isPublic, createMode}) {
   const history = useHistory()
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
   const [titleDialogOpen, setTitleDialogOpen] = useState(false)
-  const [localTitle, setLocalTitle] = useState(title)
+  const [localTitle, setLocalTitle] = useState('')
   
   function viewChecklist(){
     dispatch(setPropertyWindow({propertyType: 'checklist', propertyId: ''}))
@@ -50,6 +50,11 @@ export default function FormMakerBar({title, isPublic, createMode}) {
     setLocalTitle(e.target.value)
   }
 
+  function handleSaveTitle(){
+    dispatch(setTitle(localTitle))
+    setTitleDialogOpen(false)
+  }
+
   return (
     <div className={classes.root}>
       <Paper square variant="outlined" className={classes.propertiesPaper}>
@@ -57,7 +62,7 @@ export default function FormMakerBar({title, isPublic, createMode}) {
 
           <Grid item>
             <Typography variant="h5">
-              <Box marginLeft={30} fontWeight={600} m={1}>
+              <Box marginLeft={30} fontWeight={600}>
                 {title}
                 <IconButton onClick={()=>setTitleDialogOpen(true)}><EditIcon fontSize="small"/></IconButton>
               </Box>
@@ -73,6 +78,7 @@ export default function FormMakerBar({title, isPublic, createMode}) {
             
             <Button
             variant="contained"
+            color="primary"
             startIcon={<SaveIcon />}
             style={{marginLeft:10}}
             onClick={()=> {
@@ -128,18 +134,20 @@ export default function FormMakerBar({title, isPublic, createMode}) {
         <DialogContent>
           <DialogContentText>
             <TextField 
-                variant="outlined"
-                name="formTitle"
-                margin="normal"
-                required
-                label="Form Title"
-                onChange={handleTitleChange}
-                autoFocus
-              > {localTitle} </TextField>
+              value={localTitle}
+              placeholder={title}
+              onChange={handleTitleChange}
+              variant="outlined"
+              name="formTitle"
+              margin="normal"
+              label="New Form Title"
+              required
+              autoFocus
+            />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>dispatch(setTitle(localTitle))} color="primary">
+          <Button onClick={handleSaveTitle} color="primary">
             Save
           </Button>
           <Button onClick={()=>setTitleDialogOpen(false)}>

@@ -37,7 +37,7 @@ export default function FileProperties({propertyAddMode, propertyId, itemData, p
         const newItemData = {
           type: 'file', 
           label: values.label,
-          fileTypes: values.fileTypes.split(','),
+          fileTypes: values.fileTypes,
           required: values.required, 
           defaultVisibility: values.defaultVisibility
         }

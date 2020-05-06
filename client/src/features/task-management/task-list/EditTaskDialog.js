@@ -1,23 +1,24 @@
-import React, {useState} from 'react'
-import { connect, useStore } from 'react-redux'
+import React, {useState, useEffect} from 'react'
+import { connect } from 'react-redux'
 import AttachRequestForm from './AttachRequestForm'
 import TaskStatus from './TaskStatus'
-import SubTask from "./SubTaskCheckList"
-import AddAssignee from "./AddAssignee"
+import CheckList from "./CheckList"
 import LogEditor from "../logs/LogEditor"
-import { archiveTask, taskOwner, updateTitle, updateDescription } from "../taskDataSlice"
-import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, TextareaAutosize, Button } from '@material-ui/core'
+import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
+  createCustomTask } from "../taskDataSlice"
+import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, Button } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
+import CancelIcon from '@material-ui/icons/Cancel'
 import SubjectIcon from '@material-ui/icons/Subject'
 
 /**
   The task edit dialog is handled by this component. It navigates between sub components of the task
-  editor dialog. The data to the child components e.g AddAssignee, SubTaskChecklist components is 
+  editor dialog. The data to the child components e.g AddAssignee, Checklist components is 
   passed via this component.    
 
   @param {string} taskId this id is used to navigate between sub components of the task editor dialog  
   @param {object} taskData slice from redux corresponding to the current component
-  @param {function} dispatch redux associated function to pass action creators to the reducer
+  @param {function} redux associated function to pass action creators to the reducer
   @param {bool} open a bool state passed from the TaskCard component to open the task editor Dialog Box
   @param {function} setOpen sets the state of open to true or false depending on the user input
 */
@@ -26,229 +27,239 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-export function EditTaskDialog({taskId, taskData, dispatch, open, setOpen}) {  
-  const [selectOpen, setSelectOpen] = useState(false)
-  const [text, setText] = useState(taskData.tasks[taskId].description)
-  const [taskTitle, setTaskTitle] = useState(taskData.tasks[taskId].title)
-  const [owner, setOwner] = useState("")
 
-  function handleSelectOpen(){
-    setSelectOpen(true)
+
+export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, taskId, ccaDetails, dispatch, open, setOpen}) {  
+  let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1 }
+
+  //get defaultDesc, defaultTitle, defaultOwner, submissionId from taskData
+  const taskObj = taskList.find(taskObj => taskObj.taskId === taskId)
+  if (taskObj !== undefined) { // if found
+    const { description, title, ownerId, submissionId, statusId } = taskObj
+    initialState = { description, title, ownerId, submissionId, statusId }
   }
 
-  function handleSelectClose() {
-    setSelectOpen(false)
-  }
+  const [selectOpen, setSelectOpen] = useState(false)  
+  const [desc, setDesc] = useState(initialState.description)
+  const [taskTitle, setTaskTitle] = useState(initialState.title)
+  const [owner, setOwner] = useState(initialState.ownerId)
+  const [statusId, setStatusId] = useState(initialState.statusId)
+  const [localSubmissionId, setSubmissionId] = useState(initialState.submissionId)
 
-  function handleOwnerSet(event) {
-    const owner = event.target.value
-    dispatch(taskOwner({taskId, owner}))
-    setOwner(event.target.value)
-  }
 
-  function handleClickClose() {
+  function handleCreateComplete(){
+    if (isRequestTask) {      
+      const reqTaskObject = { 
+        title: taskTitle, 
+        description: desc, 
+        submissionId: localSubmissionId,
+        ownerId: ownerId, 
+        statusId: statusId,
+        archive: false
+      }
+      dispatch(createRequestTask(reqTaskObject))
+    } 
+    else {
+      const cusTaskObject = { 
+        title: taskTitle, 
+        description: desc, 
+        ownerId: ownerId, 
+        statusId: statusId,
+        archive: false
+      }
+      dispatch(createCustomTask(cusTaskObject))
+    }
     setOpen(false)
-    // setText(""s)
+  }
+  
+  async function handleOwnerSet(event) {
+    setOwner(event.target.value)
+    if (editMode) {
+      dispatch(taskOwnerChange({taskId, owner: event.target.value}))
+    }
   }
 
   function handleTitleChange (event) {
-    let newTitle = event.target.value
-    dispatch(updateTitle({taskId, newTitle}))
-    setTaskTitle(event.target.value)
+    if (editMode) {
+      dispatch(updateTitle({taskId, newTitle: event.target.value}))
+    }
   }
 
   function handleDescChange(event) {
-    const description = event.target.value
-    dispatch(updateDescription({taskId, description}))
-    setText(event.target.value)
-  }
-
-  function handleCloseDialog(){
-    setOpen(false)
+    if (editMode) {
+      dispatch(updateDescription({taskId, desc: event.target.value}))
+    }
   }
 
   function handleDelete() {
-    const ownerId = taskData.tasks[taskId].ownerId
     dispatch(archiveTask({taskId, ownerId}))
   }
 
-  function renderDialogBox() {
+  function RequestVSCustom() { // conditionally render "Checklist" and Request Form Button
+    console.log(localSubmissionId)
     return (
-      <Dialog 
-        fullWidth
-        maxWidth="md"
-        open={open} 
-        onClose={handleClickClose} 
-        TransitionComponent={Transition}
-      >
-        {/*TaskName----TaskID----TaskArchiveButton*/}
-        <Grid style={{padding: "15px"}} item container direction="row" justify="space-between" alignItems="flex-start">
-          <Grid>
-              <Typography gutterBottom variant="h5" color="inherit">
-                <Grid container direction="row"> 
-                  <Grid item>
-                    Task Name:
-                    <TextField 
-                      autoFocus
-                      variant="outlined"
-                      value={taskTitle}
-                      defaultValue={"hell"}
-                      onChange={handleTitleChange}
-                      style={{
-                        resize: "none",
-                        marginTop: -8,
-                        marginLeft: 4,  
-                        size:"small",
-                        value:{taskTitle},
-                        overflow: "hidden",
-                        outline: "none"
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-                  <Typography gutterBottom variant="subtitle1" color="textPrimary">
-                    task id: {taskId}
-                  </Typography>
-              </Typography>
-          </Grid>
-          <Grid>
-            <DeleteIcon cursor="pointer" onClick={handleDelete} fontSize={"large"}/>
-          </Grid>
+      <Grid container direction="row" justify="space-between" alignItems="flex-start" style={{padding: "0px 17px 0px 17px"}}>
+        <Grid item>
+          {  // Checklist Text  
+            <Typography gutterBottom variant="h5" color="inherit">
+              Checklist:
+            </Typography> 
+          }
         </Grid>
-
-        {/*Description Box*/}
-        <Box padding= {2}>
-          <Typography 
-            gutterBottom 
-            variant="h6" 
-            color="inherit"
-            style={{marginLeft:27, marginTop:0}}
-          >
-            <Typography style={{marginLeft: -30, marginBottom: -36}}>
-              <SubjectIcon fontSize={"large"}/>
-            </Typography>
-            Description
-          </Typography>
-          <Card style={{
-            minHeight: 100,
-            minWidth: 0,
-            background: "#ebecf0",
-          }}>
-            <TextField 
-              placeholder={"Add description here..."}
-              autoFocus
-              multiline
-              rows="6"
-              value={text}
-              defaultValue={taskData.tasks[taskId].description}
-              onChange={handleDescChange}
-              style={{
-                resize: "none",
-                width: "100%",
-                value:{text},
-                overflow: "hidden",
-                outline: "none",
-                border: "none",
-                background: "#ebecf0"
-              }}
-            />
-          </Card>
-        </Box>
-            
-        <Grid 
-          container 
-          direction="row" 
-          justify="space-between" 
-          alignItems="flex-start"
-          style={{padding: "0px 17px 0px 17px"}}
-        >
-          <Grid item> {/*Checklist text*/}
-            { taskId[0] === 'r' &&  
-              <Typography gutterBottom variant="h6" color="inherit">
-                Checklist:
+        <Grid item>
+          { // Request Form
+            (localSubmissionId === -1 && !editMode)
+            ? <AttachRequestForm ownerId={ownerId} setSubmissionId={setSubmissionId}/>
+            : <Typography variant="h5">
+                Linked Request ID: {localSubmissionId}
               </Typography> 
-            }
-          </Grid>
-          <Grid item> {/*REQUEST-FORM*/}
-            {taskId[0] === 'r' && taskData.tasks[taskId].formDataId === "" ? <AttachRequestForm taskId={taskId}/> :
-              taskData.tasks[taskId].formDataId} 
-          </Grid>
+          }
         </Grid>
-
-        <Grid 
-          container 
-          direction="row" 
-          justify="space-between" 
-          alignItems="flex-start"
-          style={{padding: "0px 17px 0px 17px"}}
-        >
-          <Grid item style={{marginBottom: 20}}> {/*CHECKLIST-SUBTASK*/}
-            { taskId[0] === 'r' && <SubTask taskId={taskId}/> }
-          </Grid>
-          <Grid item style={{marginTop: 5}}> {/*Task Status Colors*/}
-            <TaskStatus taskId={taskId}/>
-          </Grid>
-        </Grid>
-
-        {/* Assign Task Owner */}
-        <Grid container direction="row" justify='flex-start' alignItems="flex-start">
-          <Grid item>
-              <Typography style={{marginLeft: 17, marginRight: 5}} gutterBottom variant="h6" color="inherit">
-                Task Owner:    
-              </Typography>
-          </Grid>
-          <Grid item>
-            <FormControl>
-              <Select
-                labelId = "select-label"
-                id="label"
-                open={selectOpen}
-                onClose={handleSelectClose}
-                onOpen={handleSelectOpen}
-                value={owner}
-                defaultValue={taskData.tasks[taskId].ownerId}
-                onChange={handleOwnerSet}
-                variant = "outlined"
-                style={{height: 30, padding: "0px 0px 0px 0px", marginTop: 3}}
-              >
-                <MenuItem value={""} disabled>
-                  <em>None</em>
-                </MenuItem>
-                {taskData.users.map((person, index) => {
-                  return <MenuItem key={index} value={person}>{person}</MenuItem>  
-                })}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-      
-        {/* Task Assignees */}
-        <AddAssignee taskId={taskId}/>
-
-        {/* Logs */}
-        <LogEditor taskId={taskId}/>
-
-        {/*Complete Task Button*/}
-        <DialogActions>
-          <div style={{marginRight: 10}}>
-            <Button 
-              variant="contained" 
-              color="inherit"
-              onClick={handleCloseDialog}
-            >
-              Complete Task
-            </Button>
-          </div>
-        </DialogActions>
-      </Dialog>
+      </Grid>
     )
   }
 
-  return renderDialogBox()
+  function AssignTaskOwner() { // Give Select Option to Add Task Assignee
+    return (
+      <Grid container direction="row" justify='flex-start' alignItems="flex-start">
+        <Typography style={{marginRight: 5}} gutterBottom variant="h6" color="inherit">
+          Task Owner:    
+        </Typography>
+        <FormControl>
+          <Select
+            labelId = "select-label"
+            id="label"
+            open={selectOpen}
+            onClose={()=>setSelectOpen(false)}
+            onOpen={()=>setSelectOpen(true)}
+            value={owner}
+            onChange={handleOwnerSet}
+            variant = "outlined"
+            style={{height: 30, width: "100%",  marginTop: 3}}
+          >
+            <MenuItem value={owner}>
+              <em>None</em>
+            </MenuItem>
+            {
+              ccaDetails.map((ccaUser, index) => 
+                <MenuItem key={index} value={ccaUser.ccaId}>{ccaUser.firstName}</MenuItem> 
+              )
+            }
+          </Select>
+        </FormControl>
+      </Grid>
+    )
+  }
+
+  return (
+    <Dialog fullWidth maxWidth="md" open={open} onClose={()=>setOpen(false)} TransitionComponent={Transition}>
+      {/*TaskName----TaskID----TaskArchiveButton*/}
+      <Grid style={{padding: "15px"}} item container direction="row" justify="space-between" alignItems="flex-start">
+        <Typography gutterBottom variant="h5" color="inherit">
+          <Grid container direction="row"> 
+            Task Name:
+            <TextField 
+              id="task-title"
+              variant="outlined"
+              value={taskTitle}
+              onChange={(e)=>{setTaskTitle(e.target.value)}}
+              inputProps={{onBlur: handleTitleChange}}
+              style={{resize: "none", marginTop: -8, marginLeft: 4, size:"small", outline: "none"}}
+            />
+          </Grid>
+            <Typography gutterBottom variant="h6" color="textPrimary">
+              ID: {taskId}
+          </Typography>
+        </Typography>
+        <Grid>
+          {
+            editMode
+            ? <DeleteIcon cursor="pointer" onClick={handleDelete} />
+            : <CancelIcon cursor="pointer" onClick={()=>setOpen(false)} />
+          }
+        </Grid>
+      </Grid>
+
+      {/*Description Box*/}
+      <Box padding= {2} marginTop={-2}>
+        <Typography gutterBottom variant="h6" color="inherit" style={{marginLeft:27}}>
+          <Typography style={{marginLeft: -30, marginBottom: -36}}>
+            <SubjectIcon fontSize={"large"}/>
+          </Typography>
+          Description
+        </Typography>
+        <Card style={{minHeight: 100, minWidth: 0}}>
+          <TextField 
+            placeholder={"Add description here..."}
+            multiline
+            rows="6"
+            value={desc}
+            variant="outlined"
+            onChange={(e)=>setDesc(e.target.value)}
+            inputProps={{onBlur: handleDescChange}}
+            style={{
+              resize: "none",
+              width: "100%",
+              overflow: "hidden",
+              outline: "none",
+              border: "none",
+            }}
+          />
+        </Card>
+      </Box>
+          
+      <Grid container direction="row" justify="space-between" alignItems="flex-start" style={{padding: "0px 17px 0px 17px"}}>
+        <Grid item style={{marginBottom: 20}}> {/*Assign Task Owner*/}
+          <AssignTaskOwner/>
+        </Grid>
+        <Grid item style={{marginTop: 5}}> {/*Task Status Colors*/}
+          <TaskStatus setStatusId={setStatusId} taskId={taskId}/>
+        </Grid>
+      </Grid>
+        
+      {
+        isRequestTask && /*CheckList Text (and checklist) and Request Task Button conditionally rendered*/
+        <div>
+          <RequestVSCustom/>
+          {
+            (localSubmissionId !== -1) 
+            ? <Grid item style={{padding: "0px 17px 0px 17px", marginTop: -10}}>
+                <CheckList taskId={taskId}/>
+              </Grid>
+            : <h6 style={{marginTop: -1, marginLeft: 17}}>No Request Attached</h6>
+          }
+        </div>
+      }
+
+      {/* Task Assignees */}
+      {/* <AddAssignee taskId={taskId}/> */}
+      {
+        editMode && //Logs
+        <LogEditor taskId={taskId}/>
+      }
+      {/*Complete Task Button*/}
+      <DialogActions>
+        <div style={{marginRight: 10}}>
+          {
+            (!editMode) &&
+            <Button 
+              variant="contained" 
+              color="inherit"
+              onClick={handleCreateComplete}
+            >
+              Create Task
+            </Button>
+          }
+        </div>
+      </DialogActions>
+    </Dialog>
+  )
 }
 
 const mapStateToProps = (state) => ({
-  taskData: state.taskData,
+  taskList: state.taskData.taskList,
+  ccaDetails: state.ccaDetails.ccaList,
+  taskView: state.taskView
 })
 
 export default connect(mapStateToProps)(EditTaskDialog)

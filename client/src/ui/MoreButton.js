@@ -1,5 +1,6 @@
 import React from 'react'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz'
 import {Menu, MenuItem, IconButton} from '@material-ui/core'
 
 export default function MoreButton({menusList}) {
@@ -16,7 +17,7 @@ export default function MoreButton({menusList}) {
   return (
     <div>
       <IconButton size="small" onClick={handleClick}>
-        <MoreVertIcon/>
+        <MoreHorizIcon fontSize="large"/>
       </IconButton>
       <Menu
         id="form-menu"

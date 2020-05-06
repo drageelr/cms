@@ -2,12 +2,17 @@ import React, {useState} from 'react'
 import { connect } from 'react-redux'
 import EditTaskDialog from './EditTaskDialog'
 import { Draggable } from "react-beautiful-dnd"
-import { Card, CardContent, Typography, Grid, MenuItem } from '@material-ui/core'
+import { Card, CardContent, Typography, Grid, Box } from '@material-ui/core'
 import StopIcon from '@material-ui/icons/Stop'
 import EditIcon from '@material-ui/icons/Edit'
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import { subTaskDisplay, moveSubTask, deleteSubTask } from '../taskDataSlice'
 
 /**
   This component renders the cards in each column. Each Card displays some details about a task. 
+  The cards are of 2 types: 
+  Task Card,
+  SubTask
   Essentially the Task Title, Task Id, Task Status and an edit icon which when clicked, opens the 
   edit dialog box.
 
@@ -15,71 +20,125 @@ import EditIcon from '@material-ui/icons/Edit'
   @param {number} index used to distinguish draggable cards 
   @param {object} taskData from the corresponding redux slice, to retrieve all the data related
   the a particular task and use it to populate the card 
+  @param {object} taskStatusDetails from the corresponding redux slice, to retrieve the task statuses that 
+  are assigned to a task, along with the hex color values
 */
 
-export function TaskCard({taskId, index, taskData}) {
-
+export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch}) {
   const [open, setOpen] = useState(false)
-
-  const statusId = taskData.tasks[taskId].status
   let taskStatusName = ""
   let taskStatusColor = ""
+  let statusId = -1
+  const taskObj = taskData.taskList.find(taskObj => taskObj.taskId === taskId)
+  if (taskObj !== undefined) { // if found
+    statusId = taskObj.statusId
+  }
 
-  taskData.taskStatuses.map(statObj => {
-    if(statObj.id === statusId) {
-      taskStatusName = statObj.name
-      taskStatusColor = statObj.colorHex
+  taskStatusDetails.forEach(statusObj => {
+    if(statusObj.statusId === statusId) {
+      taskStatusName = statusObj.name
+      taskStatusColor = statusObj.color
     }
   })
+
+  function handleSubTaskDisplay() {
+    dispatch(subTaskDisplay({taskId}))
+    
+    let mainTaskId = -1
+    taskData.taskList.map(taskObj => {
+      if (taskObj.taskId === taskId) {
+        mainTaskId = taskObj.assTaskId
+      }
+    })
+    taskData.taskList.map(taskObj => {
+      if (taskObj.taskId === mainTaskId) {
+        dispatch(deleteSubTask({mainTaskId, taskId, subTaskList: taskObj.subtasks}))
+      }
+    })
+  }
+
+  function SubTask() {
+    return (
+      (taskObj !== undefined && taskObj.check !== true) &&
+      <Card height="10%" key={index} style={{marginBottom: 10}} cursor="pointer" variant="outlined">
+        <CardContent>
+          <Grid item xs container direction="row" spacing={0}>
+            <Grid item xs>
+              <Typography key={index} gutterBottom variant="subtitle1"> {taskObj.description} </Typography>
+            </Grid> 
+            <Grid>
+              <DeleteOutlineIcon onClick={handleSubTaskDisplay} cursor="pointer"/>
+            </Grid>
+          </Grid>
+          <Grid container direction="row" justify='space-between' alignItems="flex-end">
+            <Grid>
+              <Typography variant='subtitle2'>
+                {"Task ID: "}
+                {taskObj.assTaskId}
+              </Typography>
+            </Grid>
+            <Grid>
+              <Typography variant='subtitle2'>
+                {taskId}
+              </Typography>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  function MainTask() {
+    return (
+      (taskObj !== undefined && taskObj.archive === false) &&
+      <Card elevation={3} style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" >
+        <CardContent>
+          <Grid item xs container direction="row" spacing={0}>
+            <Grid item xs>
+              {
+                <Typography key={index} gutterBottom variant="h6"> {taskObj.title} </Typography>
+              }
+            </Grid>  
+
+            <Grid item> 
+              <EditIcon onClick={() => setOpen(true)} fontSize="small" color="action" cursor="pointer"/>
+              <EditTaskDialog 
+                editMode={true}
+                open={open}
+                setOpen={setOpen}
+                isRequestTask={taskId[0]==="r"}
+                taskId={taskId}/>
+            </Grid>
+          </Grid>
+
+          <Grid container direction="row" justify='space-between' alignItems="flex-end">
+            <Grid item>
+              <Box fontSize={12}>
+                <StopIcon fontSize="small" style={{fill: taskStatusColor, marginBottom: -4}} /> {/*if condition if no task status*/}
+                {taskStatusName} 
+              </Box>
+            </Grid>
+            <Grid>
+              <Typography variant='subtitle2'>
+                {taskId}
+              </Typography>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    )  
+  }
 
   return (
     <Draggable draggableId={taskId} index={index}>
       {
         (provided) => (
           <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-            <Card 
-              style={{
-                minHeight: 85,
-                minWidth: 0,
-                marginBottom: 10,
-              }}
-              cursor="pointer"
-              variant="outlined"
-            >
-              <CardContent>
-                <Grid item xs container direction="row" spacing={0}>
-                  <Grid item xs>
-                    <Typography gutterBottom variant="h6">
-                      {taskData.tasks[taskId].title} 
-                    </Typography>
-                  </Grid>  
-                  {taskId[0] === 's' ? null : 
-                  <Grid item> 
-                    <EditIcon 
-                      onClick={() => setOpen(true)} 
-                      fontSize="small" 
-                      color="action" 
-                      cursor="pointer"
-                    />
-                    <EditTaskDialog open={open} setOpen = {setOpen} taskId={taskId}/>
-                  </Grid>}
-                </Grid>
-
-                <Grid container direction="row" justify='space-between' alignItems="flex-end">
-                  <Grid item>
-                    <MenuItem>
-                      <StopIcon fontSize="small" style={{fill: taskStatusColor, marginLeft:"-22%"}} />
-                      {taskStatusName} 
-                    </MenuItem>
-                  </Grid>
-                  <Grid>
-                    <Typography variant='body2'>
-                      {taskId}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
+            {
+              taskId[0] === 's' 
+              ? <SubTask/> 
+              : <MainTask/>
+            }
           </div>
         )
       }
@@ -89,6 +148,7 @@ export function TaskCard({taskId, index, taskData}) {
 
 const mapStateToProps = (state) => ({
   taskData: state.taskData,
+  taskStatusDetails: state.taskStatusDetails.taskList
 })
 
 export default connect(mapStateToProps) (TaskCard)

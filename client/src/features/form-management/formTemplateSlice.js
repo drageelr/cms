@@ -10,9 +10,9 @@ const initialState = {
   isPublic: false,
   title: "",
   sectionsOrder: [], //ordered list of section Ids (any Ids are not unique to any other forms)
-  sections: {},
+  sectionTitles: {},
   componentsOrder: {}, // sectionId:  list of component Ids in order
-  components: {}, //componentId: componentTitle
+  componentTitles: {}, //componentId: componentTitle
   itemsOrder: {}, //componentId: ordered list of itemIds
   items: {}, //itemId: itemData
   checklistItems: [], //sectionId: subTask
@@ -33,10 +33,11 @@ export const fetchForm = createAsyncThunk(
     
     return await apiCaller('/api/form/fetch', { formId: formId }, 200, 
     (data) => {
+      const id = data.form.formId
       delete data.form['formId']
-  
+
       return {
-        id: data.form.formId,
+        id,
         ...convertToClientForm(data.form)  
       }
     }, rejectWithValue)
@@ -46,14 +47,14 @@ export const fetchForm = createAsyncThunk(
 export const createForm = createAsyncThunk(
   'formTemplate/createForm',
   async (_, { getState, rejectWithValue }) => {
-    const {isPublic, title, sectionsOrder, sections, componentsOrder, components,
+    const {isPublic, title, sectionsOrder, sectionTitles, componentsOrder, componentTitles,
     itemsOrder, items, checklistItems} = getState().formTemplate
 
     return await apiCaller('/api/form/create', {form: convertToServerForm({
       title,
       isPublic,
-      sections,
-      components,
+      sectionTitles,
+      componentTitles,
       items,
       sectionsOrder,
       componentsOrder,
@@ -71,14 +72,14 @@ export const createForm = createAsyncThunk(
 export const editForm = createAsyncThunk(
   'formTemplate/editForm',
   async (_, {getState, rejectWithValue }) => {
-    const {id, isPublic, title, sectionsOrder, sections, componentsOrder, components,
+    const {id, isPublic, title, sectionsOrder, sectionTitles, componentsOrder, componentTitles,
       itemsOrder, items, checklistItems} = getState().formTemplate
-
+    
     const form = {formId: id,...convertToServerForm({
       title,
       isPublic,
-      sections,
-      components,
+      sectionTitles,
+      componentTitles,
       items,
       sectionsOrder,
       componentsOrder,
@@ -86,8 +87,7 @@ export const editForm = createAsyncThunk(
       checklistItems
     })}
 
-    console.log("SENDING", form)
-
+    
     return await apiCaller('/api/form/edit', {form: form}, 200, 
     (data) => ({
       id: data.formId,
@@ -137,26 +137,26 @@ const formTemplate = createSlice({
 
     addSection: (state, action) => { 
       sId += 1
-      state.sections[sId] = action.payload.title
+      state.sectionTitles[sId] = action.payload.title
       state.sectionsOrder.push(sId)
       state.componentsOrder[sId] = []
       state.checklistItems.push({sectionId: sId, description: "Edit here"})
     },
 
     editSection: (state, action) => { 
-      state.sections[action.payload.id] = action.payload.title
+      state.sectionTitles[action.payload.id] = action.payload.title
     },
 
     addComponent: (state, action) => {
       cId += 1
 
       state.componentsOrder[action.payload.parentId].push(cId)
-      state.components[cId] = action.payload.title
+      state.componentTitles[cId] = action.payload.title
       state.itemsOrder[cId] = []
     },
 
     editComponent: (state, action) => {
-      state.components[action.payload.id] = action.payload.title
+      state.componentTitles[action.payload.id] = action.payload.title
     },
 
     addItem: (state, action) => {
@@ -167,6 +167,10 @@ const formTemplate = createSlice({
 
     editItem: (state, action) => {
       state.items[action.payload.id] = action.payload.newItemData
+    },
+
+    setItemConditionals: (state, action) => {
+      state.items[action.payload.itemId].conditionalItems = action.payload.conditionalItems
     },
 
     moveFormPart: (state, action) => {
@@ -212,9 +216,9 @@ const formTemplate = createSlice({
         isPublic: false,
         title: "",
         sectionsOrder: [], 
-        sections: {},
+        sectionTitles: {},
         componentsOrder: {},
-        components: {},
+        componentTitles: {},
         itemsOrder: {},
         items: {},
         checklistItems: [],
@@ -235,12 +239,12 @@ const formTemplate = createSlice({
           }
           
           state.sectionsOrder.splice(index, 1)
-          delete state.sections[id] //section title removed
+          delete state.sectionTitles[id] //section title removed
 
           if (id in state.componentsOrder){ //has existing components
 
             state.componentsOrder[id].map(componentId => { //for every component for section
-              delete state.components[componentId] //delete component title
+              delete state.componentTitles[componentId] //delete component title
 
               if (componentId in state.itemsOrder){ //has existing items
                 state.itemsOrder[componentId].map(itemId => { //for every item for component
@@ -257,6 +261,10 @@ const formTemplate = createSlice({
               state.componentsOrder[id] = []
             }
           }
+
+          // must delete the corresponding checklist item as well, so just update it with a filtered list without that sectionId item
+          state.checklistItems = state.checklistItems.filter(
+            checklistItem => checklistItem.sectionId != id)
           break
         }
         case 'component':{
@@ -273,11 +281,11 @@ const formTemplate = createSlice({
           }
 
 
-          if (state.components[id].length != 1){
-            delete state.components[id] //item data removed
+          if (state.componentTitles[id].length != 1){
+            delete state.componentTitles[id] //item data removed
           }
           else {
-            state.components[id] = ""
+            state.componentTitles[id] = ""
           }
           break
         } 
@@ -341,7 +349,7 @@ const formTemplate = createSlice({
 })
 
 
-export const { addSection, editSection, addItem, editItem, addComponent, editComponent, setFormId,
+export const { addSection, editSection, addItem, editItem, addComponent, editComponent, setFormId, setItemConditionals,
   editChecklistSubtask, deleteFormPart, toggleIsPublic, moveFormPart, clearError, setCreateMode, setTitle, resetState} = formTemplate.actions
 
 export default formTemplate.reducer

@@ -1,29 +1,5 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
-
-// const sampleState = {
-//   societyList: [
-//     {
-//       societyId: 's-1',
-//       nameInitials: "LUMUN",
-//       name: "LUMS Model United Nations",
-//       email: "lumun@lums.edu.pk",
-//       presidentEmail: "zozo@gmail.com",
-//       patronEmail: "hamza@gmail.com",
-//       password: 'TEST'
-//     },
-//     {
-//       societyId: 's-2',
-//       nameInitials: "LUMUN",
-//       name: "LUMS Model United Nations",
-//       email: "lumun@lums.edu.pk",
-//       presidentEmail: "zozo@gmail.com",
-//       patronEmail: "hamza@gmail.com",
-//       password: 'TEST'
-//     }
-//   ],
-//   isPending: true,
-//   error: null
-// }  
+import { apiCaller } from "../../helpers"
 
 const initialState = {
   societyList: [],
@@ -39,64 +15,25 @@ export const fetchSocietyAccounts = createAsyncThunk(
       return
     }
 
-    try {
-      const res = await fetch('/api/account/society/account-list', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 200) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
-        }
-
-        return {isPending: false, error: '' , societyList: data.userList}
-      }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/account/society/account-list', {}, 200,
+    (data) => {
+      return {isPending: false, error: '' , societyList: data.userList}
+    },
+    rejectWithValue)
   }
 )
 
 export const toggleActiveSocietyAccount = createAsyncThunk(
   'societyData/toggleActiveSocietyAccount',
   async({societyId, active}, { rejectWithValue}) => {
-    try {
-      const res = await fetch('/api/account/society/edit-account', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          societyId: societyId,
-          active: !active
-        })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        
-
-        if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
-        }
-
-        return {societyId, active}
-      }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/account/society/edit-account', {
+      societyId: societyId,
+      active: !active
+    }, 203,
+    (data) => {
+      return {societyId, active}
+    },
+    rejectWithValue)   
   }
 )
 
@@ -104,41 +41,20 @@ export const addSocietyAccount = createAsyncThunk(
   'societyData/addSocietyAccount',
   async (societyObject, { rejectWithValue }) => {
     const {nameInitials, name, email, presidentEmail, patronEmail, password} = societyObject
-    try {
-      const res = await fetch('/api/account/society/create-account', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          name: name,
-          nameInitials: nameInitials,
-          presidentEmail: presidentEmail,
-          patronEmail: patronEmail
-        })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        
-        if (data.status != 201) {
-          throw new Error(`${data.status}: ${data.message}\n${JSON.stringify(data.error.details)}`)
-        }
-
-        return {societyId: data.societyId, societyObject}
-      }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
+    return await apiCaller('/api/account/society/create-account', {
+      email: email,
+      password: password,
+      name: name,
+      nameInitials: nameInitials,
+      presidentEmail: presidentEmail,
+      patronEmail: patronEmail
+    }, 201,
+    (data) => {
+      return {societyId: data.societyId, societyObject}
+    },
+    rejectWithValue)   
     }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
-  }
 )
-
 
 export const editSocietyAccount = createAsyncThunk(
   'societyData/editSocietyAccount',
@@ -156,30 +72,11 @@ export const editSocietyAccount = createAsyncThunk(
     if (password !== undefined){
       body = {...body, password: password}
     }
-    try {
-      const res = await fetch('/api/account/society/edit-account', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify(body)
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          throw new Error(`${data.statusCode}: ${data.message}\n${JSON.stringify(data.error.details)}`)
-        }
-
-        return {societyId, societyObject}
-      }
-      throw new Error(`Error: ${res.status}, ${res.statusText}`)
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
+    return await apiCaller('/api/account/society/edit-account', body, 203,
+    (data) => {
+      return {societyId, societyObject}
+    },
+    rejectWithValue)
   }
 )
 
@@ -208,6 +105,7 @@ const societyData = createSlice({
     },
 
     [addSocietyAccount.fulfilled]: (state, action) => {
+      console.log(action.payload)
       state.societyList.push({
         societyId: action.payload.societyId, 
         ...action.payload.societyObject
@@ -250,7 +148,6 @@ const societyData = createSlice({
     }
   }
 })
-
 
 export const {clearError} = societyData.actions
 

@@ -6,7 +6,6 @@ import EditDeleteBar from './EditDeleteBar'
 
 const useStyles = makeStyles((theme) => ({
   sectionPaper: {
-    backgroundColor: theme.palette.secondary.main,
     padding: theme.spacing(1),
     paddingTop: 0.3,
     width: '87%',
@@ -21,15 +20,15 @@ const useStyles = makeStyles((theme) => ({
 
   @param {number} id for the section
   @param {string} title for the section
-  @param {object} data section data required to use and pass (componentsOrder, components, itemsOrder, items)
+  @param {object} data section data required to use and pass (componentsOrder, componentTitles, itemsOrder, items)
 */
 
 export default function Section({id, title, data}) {
   const classes = useStyles()
-  const { componentsOrder, components, itemsOrder, items } = data
+  const { componentsOrder, componentTitles, itemsOrder, items } = data
   
   return (
-    <Paper elevation={4} className={classes.sectionPaper}>
+    <Paper elevation={6} className={classes.sectionPaper}>
       <EditDeleteBar 
         renderTitle={()=><h3 style={{marginLeft: 10}}>{title}</h3>}
         type={'section'}
@@ -40,7 +39,7 @@ export default function Section({id, title, data}) {
       {
         (id in componentsOrder) ?
         componentsOrder[id].map(componentId => {
-          return <Component key={componentId} id={componentId} parentId={id} title={components[componentId]} data={{itemsOrder, items}}/>
+          return <Component key={componentId} id={componentId} parentId={id} title={componentTitles[componentId]} data={{itemsOrder, items}}/>
         })
         : null 
       }

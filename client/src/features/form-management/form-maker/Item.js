@@ -1,15 +1,11 @@
 import React from 'react'
 import {makeStyles, Paper, TextField, Checkbox, FormControlLabel, MenuItem, FormControl, 
-  Radio, RadioGroup, FormLabel, Button, InputLabel, Select } from '@material-ui/core'
+  Radio, RadioGroup, FormLabel, Button, InputLabel, Select, Grid } from '@material-ui/core'
 import EditDeleteBar from './EditDeleteBar'
 
 export const useStyles = makeStyles((theme) => ({
   itemPaper: {
-    backgroundColor: theme.palette.secondary.main,
     padding: theme.spacing(1),
-    paddingTop: 0.3,
-    width: '97%',
-    height: '100%',
     marginBottom: 10,
   },
   formControl: {
@@ -125,14 +121,23 @@ export default function Item({id, parentId, data}) {
   }
 
   return (
-    <Paper elevation={2} className={classes.itemPaper} style={{paddingBottom: '4%'}}>
-      <EditDeleteBar 
-      renderTitle={()=><h5></h5>}
-      type={'item-'+type}
-      id ={id}
-      parentId={parentId}
-      />
-      {renderItem()}
+    <Paper elevation={2} className={classes.itemPaper} >
+      <Grid container>
+        <Grid item lg>
+        {
+          renderItem()
+        }
+        </Grid>
+        
+        <Grid item>
+        <EditDeleteBar 
+          renderTitle={()=><h5></h5>}
+          type={'item-'+type}
+          id ={id}
+          parentId={parentId}
+          />
+        </Grid>
+      </Grid>
     </Paper>
   )
 }

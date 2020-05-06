@@ -1,16 +1,21 @@
 import React, { useEffect} from 'react'
 import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/styles'
-import { Paper, List, Typography, Button } from '@material-ui/core'
+import { Paper, List, Typography, Button, Container } from '@material-ui/core'
 import { useHistory } from 'react-router-dom'
-import { fetchFormList } from '../formListSlice'
+import { fetchFormList, clearError } from '../formListSlice'
+import ListAltIcon from '@material-ui/icons/ListAlt'
+import ErrorSnackbar from '../../../ui/ErrorSnackbar'
 
 const useStyles = makeStyles((theme) => ({
   formListPaper: {
     overflow:'auto',
-    height: '90vh',
+    height: '92%',
     width: '20vw',
-    backgroundColor: 'darkgray'
+    background: 'linear-gradient(to right bottom, #3274f3, #82b4ff)'
+    // background: 'linear-gradient(to right, #43cea2, #185a9d)'
+    // background: 'linear-gradient(to right, #c33764, #1d2671)',
+    // background: 'linear-gradient(to right, #3a1c71, #d76d77, #ffaf7b)'
   }
 }))
 
@@ -24,25 +29,23 @@ function SocietyFormList({formList, dispatch}) {
 
   return (
     <Paper className={classes.formListPaper} style={{position: 'absolute'}}>
-        <h4 style={{marginLeft: '30%', marginBottom: 7, color: 'white'}}>Forms List</h4>
-        <List>
+        <Container>
+          <h4 style={{color: 'white', textAlign: 'center'}}>Forms</h4>
           {
-            formList.list.map((form, index) => {
-              return (
-                form.isPublic ?  //display public forms only to societies
-                <Paper key={index} style={{borderRadius: 3, margin: 10, backgroundColor: 'white'}} >
-                  <Button onClick={()=>history.push(`/form-viewer/${form.formId}`)}>
-                    <Typography style={{margin: 5}}>
-                    {form.title}
+            formList.list.map((form, index) => (
+                form.isPublic &&  //display public forms only to societies
+                <Paper key={index} style={{borderRadius: 3, marginBottom: 10}} >
+                  <Button onClick={()=>history.push(`/form-viewer/create/${form.formId}`)}>
+                    <Typography style={{margin: 2, fontSize: 12, fontWeight: 500}}>
+                      <ListAltIcon style={{marginBottom: -5, marginRight: 5}}/>{form.title}
                     </Typography>
                   </Button>
                   <br/>
                 </Paper>
-                : null
-              )
-            })
+            ))
           }
-        </List>
+        </Container>
+        <ErrorSnackbar stateError={formList.error} clearError={clearError} />
     </Paper>
   )
 }

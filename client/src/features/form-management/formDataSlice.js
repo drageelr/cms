@@ -1,34 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { apiCaller } from "../../helpers" 
 
-const sampleState = {
-  id: 0, //form data id
-  formId: 0, //form Id
-  userId: 0, //user id of the user that submitted
-  formStatus: 'Pending',
-  ccaNote: '1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!1. Please do not worry if you are unable to submit on time! 2. Read the instructions carefully!1. Please do not worry if',
-  ccaNoteTimestampModified: '03/13/2009 21:31:30',
-  societyNotes: ['Vendor change, check section \'Vendors\'', 'Sent for approval'],
-  itemsData: { //itemId : itemData
-    4: true, //checkbox
-    2: 'Small', //dropdown
-    3: 'Vice President', //radio
-    5: "../../../public/logo192.png", //file
-    0: "lumun@lums.edu.pk", //textbox
-    1: "" //textlabel
-  },
-  timestampCreated: '02/13/2009 21:31:30',
-  timestampModified: '02/13/2009 21:31:31',
-}
 
 const initialState = {
   id: 0, //form data id
   formId: 0, //form Id
   userId: 0, //user id of the user that submitted
   formStatus: '',
-  ccaNote: '',
-  ccaNoteTimestampModified: '',
+  ccaNotes: [],
   societyNotes: [],
-  itemsData: {},
+  itemsData: [],
   timestampCreated: '',
   timestampModified: '',
   createMode: true,
@@ -43,168 +24,229 @@ export const fetchFormData = createAsyncThunk(
     if (isPending != true) {
       return
     }
+    const submissionId = Number(formDataId)
 
-    try {
-      const res = await fetch('/api/form/fetch', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          formId: formDataId
-        })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 200) {
-          //CHANGE 1
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        return data.form
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    }
-    // return sampleState
+    return await apiCaller('/api/submission/fetch', {submissionId}, 200, 
+    (data) => ({
+      id: submissionId,
+      formId: data.formId,
+      ccaNotes: data.ccaNotes,
+      societyNotes: data.societyNotes,
+      itemsData: data.itemsData
+    }), 
+    rejectWithValue)
   }
 )
 
 
+export const createFormData = createAsyncThunk(
+  'formData/createFormData',
+  async (_, {getState, rejectWithValue }) => {
+    const formId = getState().formTemplate.id
+    const itemsData = getState().formData.itemsData
+    
+    // only required to send form Id and items Data when creating a form
+    return await apiCaller('/api/submission/submit', {formId, itemsData}, 200, 
+    (data) => ({
+      id: data.submissionId,
+      timestampCreated: data.timestampCreated,
+      timestampModified: data.timestampModified
+    }), 
+    rejectWithValue)
+  }
+)
+
 export const editFormData = createAsyncThunk(
   'formData/editFormData',
-  async (_, {rejectWithValue }) => {
-    try {
-      const res = await fetch('/api/form/edit', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          //
-        })
-      })
-      
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        
-        return data.description
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
+  async (_, {getState, rejectWithValue }) => {
+    const { id, sectionsOrder, componentsOrder, itemsOrder, items } = getState().formTemplate
+    const submissionId = getState().formData.id
+    const itemsData = getState().formData.itemsData
+
+    console.log("ITEMS DATA", itemsData)
+
+    const initialItemData = {
+      textbox: '',
+      textlabel: '',
+      checkbox: false,
+      dropdown: -1,
+      radio: -1,
+      file: ''
     }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    } 
+
+    // must filter out item data to send section wise (do not send filled sections)
+    // get all form template data, move section wise, for all items in that section,
+    const sectionsFilled = sectionsOrder.map(sectionId => { 
+      const isSectionFilled = (sectionId in componentsOrder) // if section has components 
+      ? componentsOrder[sectionId].map(componentId => {
+        const isComponentFilled = (componentId in itemsOrder) 
+        ? itemsOrder[componentId].map(itemId => {
+          if (!(itemId in itemsData)) return false //did not receive some item's data at all, then return false (unfilled)
+    
+          // compare against serverItemsData, if all items do not have initial state data in that section,
+          const itemTemplate = items[itemId] // to get type of item to check initial state
+          const itemData = itemsData[itemId] // data for that item currently
+
+          return (itemData != initialItemData[itemTemplate.type]) // return false if item field has been filled 
+        }).every(isItemFilled => isItemFilled == true)  // array of false values for that component
+        : true  // if no items inside it's filled
+        console.log("isComponentFilled ", componentId, isComponentFilled)
+      }).every(isComponentFilled => isComponentFilled == true)
+      : true
+      console.log("isSectionFilled ", sectionId,  isSectionFilled)
+      return isSectionFilled
+    })
+    
+    console.log("Sections Filled", sectionsFilled)
+    // remove all of those items from serverItemsData as the section is considered locked
+    console.log("EDIT SEND", {formId: id, submissionId, itemsData})
+
+    return await apiCaller('/api/submission/submit', {formId: id, submissionId, itemsData}, 200, 
+    (data) => ({submissionId}), 
+    rejectWithValue)
+
   }
 )
 
 export const deleteFormData = createAsyncThunk(
   'formData/deleteFormData',
   async (formDataId, {rejectWithValue }) => {
-    try {
-      const res = await fetch('/api/form/delete', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
-        },
-        body: JSON.stringify({
-          formId: formDataId
-        })
-      })
-      
-      if (res.ok) {
-        const data = await res.json()
-        if (data.statusCode != 203) {
-          //CHANGE 1
-          throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
-          : `${data.statusCode}: ${data.message}`) 
-        }
-        
-        return ''  
-      }
-      //CHANGE 2
-      throw new Error(`${res.status}, ${res.statusText}`) 
-    }
-    catch (err) {
-      return rejectWithValue(err.toString())
-    } 
+
+    return await apiCaller('/api/form/delete', {formId: formDataId}, 203, 
+    (data) => {
+      return ''
+    }, 
+    rejectWithValue) 
   }
 )
 
-export const createFormData = createAsyncThunk(
-  'formData/createFormData',
+
+export const addCcaNote = createAsyncThunk(
+  'formData/addCcaNote',
+  async ({submissionId, note}, {rejectWithValue }) => {
+    
+    return await apiCaller('/api/submission/cca/add-note', {
+      submissionId, 
+      note
+    }, 203, 
+    (data) => {
+      return {submissionId, note}
+    }, 
+    rejectWithValue)
+  }
+)
+
+export const addSocietyNote = createAsyncThunk(
+  'formData/addSocietyNote',
+  async ({submissionId, note}, {rejectWithValue }) => {
+
+    return await apiCaller('/api/submission/society/add-note', {
+      submissionId, 
+      note
+    }, 203, 
+    (data) => {
+      return {submissionId, note}
+    }, 
+    rejectWithValue)
+  }
+)
+
+
+export const uploadFile = createAsyncThunk(
+  'formData/uploadFile',
   async (formData, {rejectWithValue }) => {
+    console.log("FORM DATA", formData)
     try {
-      const res = await fetch('/api/form/create', {
+      let req_init = {
         method: 'POST',
+        body: formData,
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.token}`, 
+          // 'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${localStorage.token}` 
         },
-        body: JSON.stringify({
-          form: formData
-        })
-      })
-
-
+      }
+      delete req_init.headers['Content-Type'] //server adds header boundary itself
+    
+      const res = await fetch('/api/file/upload', req_init)
       if (res.ok) {
         const data = await res.json()
-        if (data.statusCode != 203) {
+        console.log(data)
+        if (data.statusCode != 201) {
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - "${JSON.stringify(data.error.details)}"`
+          ? `${data.statusCode}: ${data.message} - ${JSON.stringify(data.error.details).replace(/[\[\]\{\}"'\\]+/g, '').split(':').pop()}`
           : `${data.statusCode}: ${data.message}`) 
         }
-        
-        return ''
-        
+        return data.fileToken // fileToken from data
       }
-      //CHANGE 2
       throw new Error(`${res.status}, ${res.statusText}`) 
     }
     catch (err) {
       return rejectWithValue(err.toString())
-    } 
+    }
   }
 )
+
+export const downloadFile = createAsyncThunk(
+  'formData/downloadFile',
+  async ({submissionId, itemId, fileName}, {rejectWithValue }) => {
+    try {
+
+      let req_init = {
+        method: 'POST',
+        body: JSON.stringify({
+          submissionId, 
+          itemId
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.token}`,
+        },
+        // redirect: 'follow'
+      }
+      
+      const res = await fetch('/api/file/download', req_init)
+
+      if (res.ok) {
+        const readBlob = await res.blob()
+        const url = window.URL.createObjectURL(readBlob);
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', fileName)
+        document.body.appendChild(link)
+        link.click()
+      }
+      else{
+        throw new Error(`${res.status}, ${res.statusText}`) 
+      }
+    }
+    catch (err) {
+      return rejectWithValue(err.toString())
+    }
+  }
+)
+
 
 const formData = createSlice({
   name: 'formData',
   initialState: initialState,
   reducers: {
-    updateCcaNote: (state, action) => {
-      state.ccaNote = action.payload.ccaNote
-      // change time modified
-    },
-
     setCreateMode: (state, action) => {
       state.createMode = action.payload.createMode
     },
 
-    setItemData: (state, action) => {
-      state.itemsData[action.payload.id] = action.payload.data
+    resetState: (state, action) => {
+      return initialState
     },
 
-    addSocietyNote: (state, action) => {
-      state.societyNotes.push(action.payload.newSocietyNote)
+    setItemData: (state, action) => {
+      const itemData = state.itemsData.find(itemData => itemData.itemId == action.payload.itemId)
+      if (itemData === undefined){
+        state.itemsData.push({itemId: action.payload.itemId, data: action.payload.data}) 
+      }
+      else {
+        state.itemsData[state.itemsData.indexOf(itemData)].data = action.payload.data
+      }
     },
 
     clearError: (state, action) => {
@@ -219,8 +261,13 @@ const formData = createSlice({
     },
     [fetchFormData.fulfilled]: (state, action) => {
       if (state.isPending === true) {
+        
         return {
-          ...action.payload,
+          id: action.payload.id,
+          formId: action.payload.formId,
+          ccaNotes: action.payload.ccaNotes,
+          societyNotes: action.payload.societyNotes,
+          itemsData: action.payload.itemsData,
           createMode: false,
           isPending: false,
           error: null,
@@ -235,6 +282,7 @@ const formData = createSlice({
     },
     [editFormData.fulfilled]: (state, action) => {
       state.error = 'Edited Form Data'
+      state.id = action.payload.submissionId
     },
     [editFormData.rejected]: (state, action) => {
       state.error = action.payload
@@ -246,15 +294,44 @@ const formData = createSlice({
       state.error = action.payload
     },
     [createFormData.fulfilled]: (state, action) => {
-      state.error = 'Created Form Data' 
+      state.error = 'Created Form Data'
+      state.id = action.payload.id 
+      state.createMode = false
     },
     [createFormData.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [addCcaNote.fulfilled]: (state, action) => {
+      state.ccaNotes.push({note: action.payload.note, timestampCreated: "Just now"})
+    },
+    [addCcaNote.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [addSocietyNote.fulfilled]: (state, action) => {
+      state.societyNotes.push({note: action.payload.note, timestampCreated: "Just now"})
+    },
+    [addSocietyNote.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [uploadFile.fulfilled]: (state, action) => {
+
+    },
+    [uploadFile.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [downloadFile.fulfilled]: (state, action) => {
+      
+    },
+    [downloadFile.rejected]: (state, action) => {
       state.error = action.payload
     },
   }
 })
 
-export const { updateCcaNote, setItemData, addSocietyNote, clearError, setCreateMode } = formData.actions
-
+export const { setItemData, clearError, setCreateMode, resetState } = formData.actions
 
 export default formData.reducer
