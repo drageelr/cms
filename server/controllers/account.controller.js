@@ -171,7 +171,7 @@ exports.getCCAList = async (req, res, next) => {
 
       for (let i = 0; i < reqCCAList.length; i++) {
         userList[i] = helperFuncs.duplicateObject(reqCCAList[i], ["ccaId", "email", "role", "firstName", "lastName", "picture", "active"]);
-        userList[i].permissions = helperFuncs.duplicateObject(reqCCAList[i].permissions, ["soceityCRUD", "ccaCRUD", "accessFormMaker", "createReqTask", "createCustomTask", "createTaskStatus", "archiveTask", "unarchiveTask", "setFormStatus", "addCCANote"]);
+        userList[i].permissions = helperFuncs.duplicateObject(reqCCAList[i].permissions, ["societyCRUD", "ccaCRUD", "accessFormMaker", "createReqTask", "createCustomTask", "createTaskStatus", "archiveTask", "unarchiveTask", "setFormStatus", "addCCANote"]);
       }
 
       // success response
