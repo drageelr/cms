@@ -101,12 +101,14 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
     }
 
     if (editMode){
-      const taskDetail = taskStatusDetails.taskList.find((task,index) =>{
-        return task.statusId === editId
+      // const taskDetail = 
+      taskStatusDetails.taskList.map((task,index) =>{
+        if (task.statusId === editId){
+          if (task !== undefined){
+            initialValues = {name:task.name, color: task.color}
+          }
+        }
       })
-      if (taskDetail != undefined){
-        initialValues = {name:taskDetail.name, color: taskDetail.color}
-      }  
     }
 
     function handleClose(){
@@ -194,8 +196,8 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
         <TableBody>
         
           {taskStatusDetails.taskList !== undefined &&
-          taskStatusDetails.taskList.map((taskStatusDetail,index) => (
-            <StyledTableRow key={index}>
+          taskStatusDetails.taskList.map((taskStatusDetail,index) => {
+            return <StyledTableRow key={index}>
               <StyledTableCell component="th" scope="row">
                 {taskStatusDetail.name}
               </StyledTableCell>
@@ -207,11 +209,11 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
 
               <TableCell align="right">
                 <div>
-                  <EditDeleteMoreButton id={taskStatusDetail.statusId}/>
+                  <EditDeleteMoreButton statusId={taskStatusDetail.statusId}/>
                 </div>
               </TableCell>
             </StyledTableRow>
-          ))}
+        })}
         </TableBody>
       </Table>
       </TableContainer>
