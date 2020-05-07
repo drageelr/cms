@@ -482,17 +482,28 @@ exports.getSubmissionList = async (req, res, next) => {
 // API 4.5 Controller
 exports.updateSubmissionStatus = async (req, res, next) => {
   let params = req.body;
+  console.log(params)
 
   try {
     let reqSubmission = await Submission.findOne({submissionId: params.submissionId});
     
     if (reqSubmission) {
       let statusAvailable = submissionStatus[params.userObj.type];
-      if (!(statusAvailable.includes(params.status))) {
+      // if (!(statusAvailable.includes(params.status))) {
+      let statusCheck = false;
+
+      for (let f of statusAvailable) {
+        if (params.status == f) {
+          statusCheck = true;
+          break;
+        }
+      }
+      if (!statusCheck) {
+        console.log(params)
         throw new customError.SubmissionValidationError("invalid status or status not allowed, allowed statuses are: " + JSON.stringify(statusAvailable));
       }
       // params.status contains the string "Issue"
-      if (params.status.includes("Issue") && params.issue && params.userObj.type != "cca"){
+      if ((params.status == "Issue(President)" || params.status == "Issue(Patron)") && params.issue && params.userObj.type != "cca") {
         let reqSociety = await Society.findById(params.userObj._id, 'patronEmail presidentEmail email');
         let emailAddr = reqSociety.presidentEmail;
         if (params.userObj.type == "pat") {
