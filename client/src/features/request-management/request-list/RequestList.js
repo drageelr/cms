@@ -88,7 +88,8 @@ export function RequestList({requestListData, dispatch}) {
       options: {
         filter: false,
         print: false,
-        download: false
+        download: false,
+        sort: false
       }
     },
   ]

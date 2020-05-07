@@ -132,7 +132,8 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
       options: {
         filter: false,
         print: false,
-        download: false
+        download: false,
+        sort: false
       }
     },
   ]

@@ -71,11 +71,28 @@ function FormList({formList, dispatch}) {
         data={formList.list.map((form, index) => [ //only fetch public forms for society
           form.title, 
           form.creatorName, 
-          <Box >{simplifyTimestamp(form.timestampModified, false)}</Box>,
+          simplifyTimestamp(form.timestampModified, false),
           form.isPublic ? 'Public' : 'Private', 
           <MoreFormOptionsButton index={index}/>
         ])}
-        columns={['Name','Created by','Last edited','Status', {name: 'More', options: {filter: false, sort: false}}]}
+        columns={[
+          {
+            name:"Name",
+            options: {
+              customBodyRender: (value, tableMeta, updateValue) => {
+                return (
+                  <Typography variant="h5" style={{fontSize: 12, fontWeight: 600}}>
+                    {value}
+                  </Typography>
+                )
+              }
+            }
+          },
+          'Created by',
+          'Last edited',
+          'Status', 
+          {name: 'More', options: {filter: false, print: false, download: true, sort: false}
+        }]}
         options={{
           print: false,
           searchPlaceholder: 'Search for a Form...',
@@ -83,7 +100,7 @@ function FormList({formList, dispatch}) {
       
           onRowsDelete: (rowsDeleted) => {
             for (let dataIndex in rowsDeleted.lookup) {
-              dispatch(deleteForm(dataIndex))
+              dispatch(deleteForm(formList.list[dataIndex].formId))
             }
           }
         }}
