@@ -34,12 +34,12 @@ exports.ccaLogin = async (req, res, next) => {
   let params = req.body;
 
   try {
-    let reqCCA = await CCA.findOne({email: params.email, password: params.password}, '_id ccaId firstName lastName picture permissions');
+    let reqCCA = await CCA.findOne({email: params.email, password: params.password}, '_id ccaId firstName lastName picture permissions themeColor darkMode');
     if (reqCCA) {
       let token = jwt.signID(reqCCA._id, "cca", "12h");
 
       let permissions = helperFuncs.duplicateObject(reqCCA.permissions, ["societyCRUD", "ccaCRUD", "accessFormMaker", "createReqTask", "createCustomTask", "createTaskStatus", "archiveTask", "unarchiveTask", "setFormStatus", "addCCANote"]);
-      
+
       res.json({
         statusCode: 200,
         statusName: httpStatus.getName(200),
@@ -50,7 +50,9 @@ exports.ccaLogin = async (req, res, next) => {
           firstName: reqCCA.firstName,
           lastName: reqCCA.lastName,
           picture: reqCCA.picture,
-          permissions: permissions
+          permissions: permissions,
+          themeColor: reqCCA.themeColor,
+          darkMode: reqCCA.darkMode
         }
       });
     } else {
@@ -72,7 +74,7 @@ exports.societyLogin = async (req, res, next) => {
   let params = req.body;
 
   try {
-    let reqSociety = await Society.findOne({email: params.email, password: params.password}, '_id societyId name nameInitials presidentEmail patronEmail');
+    let reqSociety = await Society.findOne({email: params.email, password: params.password}, '_id societyId name nameInitials presidentEmail patronEmail themeColor darkMode');
     if (reqSociety) {
       let token = jwt.signID(reqSociety._id, "soc", "12h");
       res.json({
@@ -85,7 +87,9 @@ exports.societyLogin = async (req, res, next) => {
           name: reqSociety.name,
           nameInitials: reqSociety.nameInitials,
           patronEmail: reqSociety.patronEmail,
-          presidentEmail: reqSociety.presidentEmail
+          presidentEmail: reqSociety.presidentEmail,
+          themeColor: reqSociety.themeColor,
+          darkMode: reqSociety.darkMode
         }
       });
     } else {
