@@ -18,23 +18,16 @@ import SocietyDashboard from './ui/SocietyDashboard'
 import { connect } from 'react-redux'
 
 function App({ user }) {
-  const { isLoggedIn, userType, name, picture } = user
-  const [darkMode, setDarkMode] = React.useState(false)
+  const { id, isLoggedIn, userType, name, picture, themeColor, darkMode } = user
+  const [localDarkMode, setLocalDarkMode] = React.useState(darkMode)
 
   document.body.style = darkMode ? 'background: #424242' : 'background: #ffffff' 
-  
-  // var color = user.themeColor
-  // if (user.themeColor === undefined) {
-  //   color = '#3578fa'
-  // } else {
-  //   color = user.themeColor
-  // }
 
   const appTheme = createMuiTheme({
     palette: {
       type: darkMode ? 'dark' : 'light',
       primary: {
-        main: '#3578fa',
+        main: themeColor,
       },
       secondary: {
         main: '#ffffff',
@@ -59,11 +52,6 @@ function App({ user }) {
     }
   })
 
-  console.log(darkMode)
-  
-  function CCARouteComponent(component) {
-    return isLoggedIn ? ( userType == "CCA" ? component : SocietyDashboard) : LoginPage
-  }
 
   return (
     <Router>
@@ -71,7 +59,9 @@ function App({ user }) {
         <div>
           { 
             isLoggedIn &&
-            <NavBar name={name} userType={userType} picture={picture} darkMode={darkMode} setDarkMode={setDarkMode}/>
+            <NavBar name={name} userType={userType} picture={picture} 
+              darkMode={localDarkMode} setDarkMode={setLocalDarkMode} ccaId={id}
+              userThemeColor={themeColor}/>
           }
           <Switch>
             <Route path="/" exact component={isLoggedIn ? (userType === "CCA" ? TaskManager : SocietyDashboard) : LoginPage}/>

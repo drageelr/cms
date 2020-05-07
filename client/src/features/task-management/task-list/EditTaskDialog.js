@@ -50,7 +50,6 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
 
   function handleCreateComplete(){
     if (isRequestTask) {      
-      console.log(localSubmissionId)
       const reqTaskObject = { 
         title: taskTitle, 
         description: desc, 

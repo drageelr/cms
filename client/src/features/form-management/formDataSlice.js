@@ -120,7 +120,6 @@ export const addSocietyNote = createAsyncThunk(
 export const uploadFile = createAsyncThunk(
   'formData/uploadFile',
   async (formData, {rejectWithValue }) => {
-    console.log("FORM DATA", formData)
     try {
       let req_init = {
         method: 'POST',
@@ -136,7 +135,6 @@ export const uploadFile = createAsyncThunk(
       const res = await fetch('/api/file/upload', req_init)
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
         if (data.statusCode != 201) {
           throw new Error((data.error !== undefined) 
           ? `${data.statusCode}: ${data.message} - ${JSON.stringify(data.error.details).replace(/[\[\]\{\}"'\\]+/g, '').split(':').pop()}`

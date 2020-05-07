@@ -23,6 +23,8 @@ const initialState = {
     setFormStatus: true,
     addCCANote: true
   },
+  darkMode: false,
+  themeColor: '#3578fa',
   isPending: true,
   error: null
 }
@@ -71,6 +73,30 @@ export const changePassword = createAsyncThunk(
     rejectWithValue)
   }
 )
+
+
+export const changeThemeColor = createAsyncThunk(
+  'ccaDetails/changeThemeColor',
+  async (themeObj,  { rejectWithValue }) => {
+    const {ccaId, themeColor} = themeObj
+
+    return await apiCaller('/api/account/cca/edit-account', {ccaId, themeColor}, 203,
+    (data) => themeColor,
+    rejectWithValue)
+  }
+)
+
+export const changeDarkMode = createAsyncThunk(
+  'ccaDetails/changeDarkMode',
+  async (modeObj,  { rejectWithValue }) => {
+    const {darkMode, ccaId} = modeObj
+    
+    return await apiCaller('/api/account/cca/edit-account', {ccaId, darkMode}, 203,
+    (data) => darkMode,
+    rejectWithValue)
+  }
+)
+
 
 const user = createSlice ({
   name:'user',
@@ -136,6 +162,20 @@ const user = createSlice ({
         state.isPending = false
         state.error = action.payload
       }
+    },
+
+    [changeThemeColor.fulfilled]: (state, action) => {
+      state.themeColor = action.payload
+    },
+    [changeThemeColor.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [changeDarkMode.fulfilled]: (state, action) => {
+      state.darkMode = action.payload
+    },
+    [changeDarkMode.rejected]: (state, action) => {
+      state.error = action.payload
     }
   }
 })

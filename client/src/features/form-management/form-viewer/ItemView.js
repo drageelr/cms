@@ -71,7 +71,6 @@ function ItemView({id, templateData, itemsData, submissionId, itemFilledIds, com
     async function handleFileChange(e){
       if (!inReview) {
         const formData = new FormData();
-        console.log(e.target.files[0])
         formData.append("", e.target.files[0], e.target.files[0].name) // create multipart form data
         const uploadFileResult = await dispatch(uploadFile(formData))
         const fileToken = unwrapResult(uploadFileResult)

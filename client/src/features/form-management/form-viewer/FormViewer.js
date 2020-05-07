@@ -46,8 +46,6 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
     }
 
     if (presOrPat) { //patron, president issue/approval mode
-      console.log(presOrPat, token)
-      console.log(mode, inReview)
 
       dispatch(setUserDetails({userType: "PresPatron", isLoggedIn: true ,token}))
       
