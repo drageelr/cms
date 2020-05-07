@@ -7,7 +7,9 @@ import {Container, LinearProgress,Typography, Box} from '@material-ui/core'
 import { TextField } from 'formik-material-ui'
 import { changePassword, clearError } from './userSlice'
 import { connect } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
+
 
 /**
   Description
@@ -29,6 +31,8 @@ const useStyles = makeStyles((theme) => ({
 
 function ChangePassword({error, dispatch}) {
   const classes = useStyles()
+  const history = useHistory()
+
   return (
     <Container component="main" maxWidth="xs"> 
       <Typography variant="h4" className={classes.changePasswordTitle}>
@@ -114,7 +118,7 @@ function ChangePassword({error, dispatch}) {
               <br/>
               {isSubmitting && <LinearProgress />}
               <Button type="submit" variant="contained" color="primary" spacing= '10' onClick={onSubmit} >Change my Password</Button>
-              <Button variant="contained" color="primary" spacing= '10' style = {{marginLeft: 30}}>Cancel</Button>
+              <Button variant="contained" spacing= '10' onClick={() => history.goBack()} style={{marginLeft: 30}}>Back</Button>
             
             </Form>
           )

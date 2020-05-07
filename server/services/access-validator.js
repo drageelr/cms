@@ -29,6 +29,7 @@ const userAccess = {
   "/api/account/cca/change-password": ["cca"],
   "/api/account/society/change-password": ["soc"],
   "/api/account/cca/change-picture": ["cca"],
+  "/api/account/society/change-theme": ["soc"],
 
   // 3. Form Management API "form.route.js":
   "/api/form/create": ["cca"],
@@ -36,6 +37,7 @@ const userAccess = {
   "/api/form/delete": ["cca"],
   "/api/form/fetch": ["cca", "soc"],
   "/api/form/fetch-list": ["cca", "soc"],
+  "/api/form/fetch-checklist": ["cca"],
   
   // 4. Request Management API "submission.route.js":
   "/api/submission/submit": ["soc"],
@@ -44,6 +46,24 @@ const userAccess = {
   "/api/submission/fetch-list": ["cca", "soc"],
   "/api/submission/cca/update-status": ["cca", "pres", "pat"],
   "/api/submission/cca/fetch": ["cca", "soc", "pres", "pat"],
+
+  // 5. Task Management API "task.route.js"
+  "/api/task-manager/task/req/create": ["cca"],
+  "/api/task-manager/task/cus/create": ["cca"],
+  "/api/task-manager/task/req/edit": ["cca"],
+  "/api/task-manager/task/cus/edit": ["cca"],
+  "/api/task-manager/log/add": ["cca"],
+  "/api/task-manager/fetch": ["cca"],
+  "/api/task-manager/fetch-archive": ["cca"],
+  "/api/task-manager/task-fetch": ["cca"],
+  "/api/task-manager/task-status/create": ["cca"],
+  "/api/task-manager/task-status/edit": ["cca"],
+  "/api/task-manager/task-status/delete": ["cca"],
+  "/api/task-manager/task-status/fetch-all": ["cca"],
+
+  // 6. File Management API "file.route.js"
+  "/api/file/upload": ["soc", "pres", "pat"],
+  "/api/file/download": ["cca", "soc", "pres", "pat"],
 };
 
 const ccaAccess = {
@@ -59,16 +79,29 @@ const ccaAccess = {
   "/api/form/create": "accessFormMaker",
   "/api/form/edit": "accessFormMaker",
   "/api/form/delete": "accessFormMaker",
+  "/api/form/fetch-checklist": "createReqTask",
 
   // 4. Request Management API "submission.route.js":
   "/api/submission/cca/add-note": "addCCANote",
   "/api/submission/cca/update-status": "setFormStatus",
+
+  // 5. Task Management API "task.route.js"
+  "/api/task-manager/task/req/create": "createReqTask",
+  "/api/task-manager/task/cus/create": "createCustomTask",
+  "/api/task-manager/fetch-archive": "archiveTask",
+  "/api/task-manager/task-status/create": "createTaskStatus",
+  "/api/task-manager/task-status/edit": "createTaskStatus",
+  "/api/task-manager/task-status/delete": "createTaskStatus",
 };
 
 /*
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
+/**
+ * Validates access of users and return an error if
+ * a forbidden resource is being accessed.
+ */
 exports.validateUserAccess = (req, res, next) => {
   try {
     let accessList = userAccess[req.originalUrl];
@@ -88,24 +121,30 @@ exports.validateUserAccess = (req, res, next) => {
         throw new customError.ForbiddenAccessError("forbidden access to resource", "RouteError");
       }
     } else {
-      next(err);
+      next();
     }
   } catch (err) {
     next(err)
   }
 }
 
+/**
+ * Validates access of CCA users based on their permissions
+ * and returns if a forbidden resource is being accessed. 
+ */
 exports.validateCCAAccess = async (req, res, next) => {
   try {
-    if (req.body.userObj.type != "cca") next();
-    let reqCCA = await CCA.findById(req.body.userObj._id, 'role permissions');
-    if (reqCCA.role != "admin") {
-      let access = ccaAccess[req.originalUrl];
-    
-      if(reqCCA.permissions[access]) {
-        next();
+    if (req.body.userObj.type == "cca") {
+      let reqCCA = await CCA.findById(req.body.userObj._id, 'role permissions');
+      if (reqCCA.role != "admin") {
+        let access = ccaAccess[req.originalUrl];
+        if(reqCCA.permissions[access]) {
+          next();
+        } else {
+          throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
+        }
       } else {
-        throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
+        next();
       }
     } else {
       next();

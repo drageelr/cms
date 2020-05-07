@@ -23,11 +23,10 @@ export const fetchFormList = createAsyncThunk(
 
 export const deleteForm = createAsyncThunk(
   'formList/deleteForm',
-  async (index, { rejectWithValue}) => {
+  async (formId, { rejectWithValue}) => {
 
-    // return await apiCaller('/api/form/delete', {},
-    // 200, (data)=>data.index, rejectWithValue)
-    return rejectWithValue("API to be integrated. Deleting locally.")
+    return await apiCaller('/api/form/delete', {formId},
+    200, (data)=>data.index, rejectWithValue)
   }
 )
 
@@ -77,6 +76,7 @@ const formList = createSlice({
         }  
       })  
       state.list.splice(i,1)
+      state.error = "Form and all related Submissions, Tasks and SubTasks have been deleted!"
     },
     [deleteForm.rejected]: (state, action) => {
       state.error = action.payload

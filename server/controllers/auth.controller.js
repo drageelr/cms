@@ -28,6 +28,7 @@ var helperFuncs = require('../services/helper-funcs');
 * is supplied in req.body object. Sends a response back with a jwt
 * token and user object containing user data.
 */
+// API 1.1 Controller
 exports.ccaLogin = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -37,7 +38,7 @@ exports.ccaLogin = async (req, res, next) => {
     if (reqCCA) {
       let token = jwt.signID(reqCCA._id, "cca", "12h");
 
-      let permissions = helperFuncs.duplicateObject(reqCCA.permissions, ["soceityCRUD", "ccaCRUD", "accessFormMaker", "createReqTask", "createCustomTask", "createTaskStatus", "archiveTask", "unarchiveTask", "setFormStatus", "addCCANote"]);
+      let permissions = helperFuncs.duplicateObject(reqCCA.permissions, ["societyCRUD", "ccaCRUD", "accessFormMaker", "createReqTask", "createCustomTask", "createTaskStatus", "archiveTask", "unarchiveTask", "setFormStatus", "addCCANote"]);
       
       res.json({
         statusCode: 200,
@@ -65,6 +66,7 @@ exports.ccaLogin = async (req, res, next) => {
  * is supplied in req.body object. Sends a response back with a jwt
  * token and user object containing user data.
  */
+// API 1.2 Controller
 exports.societyLogin = async (req, res, next) => {
   // Variables:
   let params = req.body;

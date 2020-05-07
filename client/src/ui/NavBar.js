@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     height: 45, 
     // boxShadow: "none", 
     background: theme.palette.type === 'dark' ? 'linear-gradient(to bottom, #424242, #424242)' :'linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 82%,rgba(237,237,237,1) 100%)'
-  }
+  },
 }))
 
 export default function NavBar({name, userType, picture, setDarkMode, darkMode}) {
@@ -98,8 +98,8 @@ export default function NavBar({name, userType, picture, setDarkMode, darkMode})
                 style={{margin: 5, width: 35, height: 35}} 
                 alt={name} 
                 src={picture}
-                className={classes.blue}
-              />
+                className={classes.drawerPaper}
+              >{name[0]}</Avatar>
               <Typography>
                 <Box color="text.primary" fontWeight={600} m={1}>
                   {name}

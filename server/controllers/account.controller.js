@@ -28,6 +28,7 @@ var helperFuncs = require('../services/helper-funcs');
  * are provided. In case an account with the same email address
  * already exists, it will not be created. 
  */
+// API 2.1 Controller
 exports.createCCAAccount = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -39,7 +40,7 @@ exports.createCCAAccount = async (req, res, next) => {
       // throw duplicate user error
       throw new customError.DuplicateUserError("cca user already exists");
     } else {
-      let reqCCA = new CCA({firstName: params.firstName, lastName: params.lastName, email: params.email, password: params.password, picture: params.picture, permissions: params.permissions, active: true, role: params.role});
+      let reqCCA = new CCA({firstName: params.firstName, lastName: params.lastName, email: params.email, password: params.password, picture: params.picture, permissions: params.permissions, active: true, role: params.role, themeColor: "#3578fa", darkMode: false});
       await reqCCA.save();
 
       res.json({
@@ -59,6 +60,7 @@ exports.createCCAAccount = async (req, res, next) => {
 * are provided. In case an account with the same email 
 * address already exists, it will not be created. 
 */
+// API 2.2 Controller
 exports.createSocietyAccount = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -70,7 +72,7 @@ exports.createSocietyAccount = async (req, res, next) => {
       // throw duplicate error
       throw new customError.DuplicateUserError("society user already exists");
     } else {
-      let reqSociety = new Society({nameInitials: params.nameInitials, name: params.name, email: params.email, password: params.password, presidentEmail: params.presidentEmail, patronEmail: params.patronEmail, active: true});
+      let reqSociety = new Society({nameInitials: params.nameInitials, name: params.name, email: params.email, password: params.password, presidentEmail: params.presidentEmail, patronEmail: params.patronEmail, active: true, themeColor: "#3578fa", darkMode: false});
       await reqSociety.save();
 
       res.json({
@@ -90,12 +92,13 @@ exports.createSocietyAccount = async (req, res, next) => {
  * CCA member, and throws an error if the user 
  * is not found.
  */
+// API 2.3 Controller
 exports.editCCAAccount = async (req, res, next) => {
   // Variables:
   let params = req.body;
 
   try {
-    let ccaObject = helperFuncs.duplicateObject(params, ["email", "password", "role", "firstName", "lastName", "picture", "active"], true);
+    let ccaObject = helperFuncs.duplicateObject(params, ["email", "password", "role", "firstName", "lastName", "picture", "active", "themeColor", "darkMode"], true);
     if (params.permissions) {
       let reqPermissions = helperFuncs.duplicateObject(params.permissions, [], true, "permissions.");
       ccaObject.$set = reqPermissions;
@@ -124,12 +127,13 @@ exports.editCCAAccount = async (req, res, next) => {
 * Society, and throws an error if the user
 * is not found.
 */
+// API 2.4 Controller
 exports.editSocietyAccount = async (req, res, next) => {
   // Variables:
   let params = req.body;
 
   try {
-    let societyObject = helperFuncs.duplicateObject(params, ["email", "password", "name", "nameInitials", "presidentEmail", "patronEmail", "active"], true);
+    let societyObject = helperFuncs.duplicateObject(params, ["email", "password", "name", "nameInitials", "presidentEmail", "patronEmail", "active",  "themeColor", "darkMode"], true);
 
     let reqSociety = await Society.findOneAndUpdate({societyId: params.societyId}, societyObject);
   
@@ -154,6 +158,7 @@ exports.editSocietyAccount = async (req, res, next) => {
  * accounts, throws an error if member
  * is not found.
  */
+// API 2.5 Controller
 exports.getCCAList = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -166,7 +171,7 @@ exports.getCCAList = async (req, res, next) => {
 
       for (let i = 0; i < reqCCAList.length; i++) {
         userList[i] = helperFuncs.duplicateObject(reqCCAList[i], ["ccaId", "email", "role", "firstName", "lastName", "picture", "active"]);
-        userList[i].permissions = helperFuncs.duplicateObject(reqCCAList[i].permissions, ["soceityCRUD", "ccaCRUD", "accessFormMaker", "createReqTask", "createCustomTask", "createTaskStatus", "archiveTask", "unarchiveTask", "setFormStatus", "addCCANote"]);
+        userList[i].permissions = helperFuncs.duplicateObject(reqCCAList[i].permissions, ["societyCRUD", "ccaCRUD", "accessFormMaker", "createReqTask", "createCustomTask", "createTaskStatus", "archiveTask", "unarchiveTask", "setFormStatus", "addCCANote"]);
       }
 
       // success response
@@ -190,6 +195,7 @@ exports.getCCAList = async (req, res, next) => {
  * Accounts, throws an error if a
  * society is not found.
  */
+// API 2.6 Controller
 exports.getSocietyList = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -224,6 +230,7 @@ exports.getSocietyList = async (req, res, next) => {
  * Changes the password of a CCA
  * account.
  */
+// API 2.7 Controller
 exports.changeCCAPassword = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -254,6 +261,7 @@ exports.changeCCAPassword = async (req, res, next) => {
  * Changes the password of a Society
  * account.
  */
+// API 2.8 Controller
 exports.changeSocietyPassword = async (req, res, next) => {
   //Variables:
   let params = req.body;
@@ -283,6 +291,7 @@ exports.changeSocietyPassword = async (req, res, next) => {
 * Changes the picture of a CCA
 * account.
 */
+// API 2.9 Controller
 exports.changeCCAPicture = async (req, res, next) => {
   // Variables:
   let params = req.body;
@@ -296,6 +305,27 @@ exports.changeCCAPicture = async (req, res, next) => {
         statusName: httpStatus.getName(203),
         message: "Picture changed successfully"
       });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// API 2.10 Controller
+exports.changeSocietyTheme = async (req, res, next) => {
+  //Variables:
+  let params = req.body;
+
+  try {
+    let societyObject = helperFuncs.duplicateObject(params, ["themeColor", "darkMode"], true);
+
+    await Society.findByIdAndUpdate(params.userObj._id, societyObject);
+    
+    // success response
+    res.json({
+      statusCode: 203,
+      statusName: httpStatus.getName(203),
+      message: "Theme Successfully Changed"
+    });
   } catch (err) {
     next(err);
   }

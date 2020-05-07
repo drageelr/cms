@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
 import ChangeFormStatusSelect from './ChangeFormStatusSelect'
 import { Box, Button, LinearProgress, FormControlLabel, Grid, Typography, FormControl, Select, MenuItem, 
-  Dialog, DialogActions, DialogContent, DialogTitle} from '@material-ui/core'
+  Dialog, DialogActions, DialogContent, DialogTitle, useTheme } from '@material-ui/core'
 import { fetchCCARequestList, clearError } from '../requestListSlice'
 import ErrorSnackBar from "../../../ui/ErrorSnackbar"
 import { useHistory } from "react-router-dom"
@@ -20,17 +20,15 @@ import { simplifyTimestamp } from '../../../helpers'
   @param {object} requestListData corresponding slice from redux, used to fetch the request data  
 */
 
-const columns = ["Req ID", "Form Title", "Date", "Society", "Form Status", ""]
-
 export function RequestList({requestListData, dispatch}) {
-
   useEffect(() => {
     dispatch(fetchCCARequestList()) // by default requests are fetched for the last 1 month only 
   }, [])
   
   const filters = ["1 month", "3 months", "1 year", "Specific duration"]
-
-  let history = useHistory()
+  
+  const theme = useTheme()
+  const history = useHistory()
   const [state, setState] = useState({
     completed: false
   })
@@ -43,12 +41,58 @@ export function RequestList({requestListData, dispatch}) {
   const [selectedDateTo, setSelectedDateTo] = useState(new Date('2020-05-01'))
 
   const options = {
-    viewColumns:false,
-    filter: false,
+    download: false,
     disableToolbarSelect: true,
     selectableRows:false,
+    rowsPerPage: 6,
     customToolbar: () => <CustomFilterBar/>
   }
+
+  const columns = [
+    "Request ID",
+    {
+      name:"Form Title",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return value
+        }
+      }
+    }, 
+    {
+      name:"Date",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return (
+            <Box >
+              <DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
+              {value}
+            </Box>
+          )
+        }
+      }
+    },
+    "Society",
+    {
+      name: "Form Status",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          // rowData[0] in tableMeta contains the submissionId
+          return (
+            <ChangeFormStatusSelect submissionId={tableMeta.rowData[0]} status={value} />
+          )
+        }
+      }
+    },
+    {
+      name:"",
+      options: {
+        filter: false,
+        print: false,
+        download: false,
+        sort: false
+      }
+    },
+  ]
 
   function handleDateChangeFrom(date){
     setSelectedDateFrom(date)
@@ -170,7 +214,7 @@ export function RequestList({requestListData, dispatch}) {
         aria-labelledby="status-dialog"
         aria-describedby="status-dialog-desc"
       >
-        <DialogTitle id="status-dialog">{"Choose Custom Dates"}</DialogTitle>
+        <DialogTitle id="status-dialog">Choose Custom Dates</DialogTitle>
         <DialogContent>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container direction="column" justify="center" alignItems="center">
@@ -205,12 +249,12 @@ export function RequestList({requestListData, dispatch}) {
             requestListData.formDataList.map((request, _) => [
               request.submissionId,
               request.formTitle,
-              <Box color="slategray" >{simplifyTimestamp(request.timestampModified)}</Box>, //<DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
+              simplifyTimestamp(request.timestampModified, false), //<DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
               request.societyNameInitials,
-              <ChangeFormStatusSelect submissionId={request.submissionId} status={request.status} />,
+              request.status,
               <Button 
                 value={request.submissionId}
-                color="primary" 
+                color={theme.palette.type === "light" ? "primary" : "secondary"} 
                 type = "button" 
                 onClick={() => handleClick(request.submissionId)}
                 variant="outlined"

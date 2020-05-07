@@ -61,9 +61,7 @@ export const editFormData = createAsyncThunk(
   async (_, {getState, rejectWithValue }) => {
     const { id, sectionsOrder, componentsOrder, itemsOrder, items } = getState().formTemplate
     const submissionId = getState().formData.id
-    const itemsData = getState().formData.itemsData
-
-    console.log("ITEMS DATA", itemsData)
+    let itemsData = getState().formData.itemsData
 
     const initialItemData = {
       textbox: '',
@@ -74,30 +72,31 @@ export const editFormData = createAsyncThunk(
       file: ''
     }
 
-    // must filter out item data to send section wise (do not send filled sections)
-    // get all form template data, move section wise, for all items in that section,
-    const sectionsFilled = sectionsOrder.map(sectionId => { 
-      const isSectionFilled = (sectionId in componentsOrder) // if section has components 
-      ? componentsOrder[sectionId].map(componentId => {
-        const isComponentFilled = (componentId in itemsOrder) 
-        ? itemsOrder[componentId].map(itemId => {
-          if (!(itemId in itemsData)) return false //did not receive some item's data at all, then return false (unfilled)
-    
-          // compare against serverItemsData, if all items do not have initial state data in that section,
-          const itemTemplate = items[itemId] // to get type of item to check initial state
-          const itemData = itemsData[itemId] // data for that item currently
+    // // must filter out item data to send section wise (do not send filled sections)
+    // // get all form template data, move section wise, for all items in that section,
+    // sectionsOrder.forEach(sectionId =>{  
+    //   if (sectionId in componentsOrder) { // if section has components 
+    //   componentsOrder[sectionId].forEach(componentId => {
+    //     if (componentId in itemsOrder) { 
+    //       itemsOrder[componentId].map(itemId => {
+    //         console
+    //         if (itemId in itemsData) { //did not receive some item's data at all, then return false (unfilled)
+      
+    //           // compare against serverItemsData, if all items do not have initial state data in that section,
+    //           const itemTemplate = items[itemId] // to get type of item to check initial state
+    //           const itemData = itemsData[itemId] // data for that item currently
 
-          return (itemData != initialItemData[itemTemplate.type]) // return false if item field has been filled 
-        }).every(isItemFilled => isItemFilled == true)  // array of false values for that component
-        : true  // if no items inside it's filled
-        console.log("isComponentFilled ", componentId, isComponentFilled)
-      }).every(isComponentFilled => isComponentFilled == true)
-      : true
-      console.log("isSectionFilled ", sectionId,  isSectionFilled)
-      return isSectionFilled
-    })
+    //           console.log(itemData, initialItemData[itemTemplate.type])
+    //           if (itemData != initialItemData[itemTemplate.type]) { //item is already filled, delete from data set
+    //             delete itemsData[itemId] // remove this filled item from the itemsData sent to the server
+    //           }
+    //         }
+    //       })
+    //     }
+    //   })
+    //   }
+    // })
     
-    console.log("Sections Filled", sectionsFilled)
     // remove all of those items from serverItemsData as the section is considered locked
     console.log("EDIT SEND", {formId: id, submissionId, itemsData})
 
@@ -252,6 +251,10 @@ const formData = createSlice({
     clearError: (state, action) => {
       state.error = null
     },
+
+    setError: (state, action) => {
+      state.error = action.payload.error
+    }
   },
   extraReducers: {
     [fetchFormData.pending]: (state, action) => {
@@ -332,6 +335,6 @@ const formData = createSlice({
   }
 })
 
-export const { setItemData, clearError, setCreateMode, resetState } = formData.actions
+export const { setItemData, clearError, setCreateMode, resetState, setError } = formData.actions
 
 export default formData.reducer

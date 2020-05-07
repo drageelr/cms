@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { Button, IconButton, Box } from '@material-ui/core'
+import { Button, IconButton, Box, Typography } from '@material-ui/core'
 import MUIDataTable from "mui-datatables"
 import LinearProgress from '@material-ui/core/LinearProgress'
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -28,68 +28,136 @@ const useStyles = makeStyles((theme) => ({
 
 export function SocietyFormSubmissionView({user, submissionListData, dispatch}) {
   const history = useHistory()
+  const classes = useStyles()
   useEffect(() => {
     dispatch(fetchSocietyList())
   }, [])
   
-  const statusTypes = ["Approved", "Pending", "Issue"]
-  const classes = useStyles()
+  const statusTypes = ["Pending(President)","Issue(President)", "Pending(Patron)", "Issue(Patron)", "Approved(Patron)", 
+    "Pending(CCA)", "Issue(CCA)", "Approved(CCA)",  "Write-Up",  "Completed"]
+
+  const statusColors = {
+    "Pending(President)": "#F1C231",
+    "Issue(President)": "#E24A00",
+    "Pending(Patron)": "#F1C231",
+    "Issue(Patron)": "#E24A00",
+    "Approved(Patron)": "#009D5E",
+    "Pending(CCA)": "#F1C231",
+    "Issue(CCA)": "#E24A00",
+    "Approved(CCA)": "#009D5E",
+    "Write-Up": "#E24A00",
+    "Completed": "#009D5E",
+  }
+  
+  const numStatuses = statusTypes.length
 
   function handleDelete(submissionId) {
     dispatch(deleteSubmission(submissionId))
   }
-  
+
   function selectValue(formStatus) {
-    if(formStatus == "Approved") {
-      return 100
-    } else if (formStatus == "Pending") {
-      return 50
-    } else if (formStatus == "Issue") {
-      return 20
-    } else {
-      return 0
-    }
+    return (statusTypes.indexOf(formStatus) + 1) * 100 / numStatuses
   }  
 
   const options = {
-    search:false,
     searchOpen:false,
     print:false,
     download:false,
     viewColumns:false,
-    filter: false,
     disableToolbarSelect: true,
     selectableRows:false,
+    rowsPerPage: 6
   }
+
+  const columns = [
+    {
+      name:"Submitted Form",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return (
+            <Typography variant="h5" style={{fontSize: 12, fontWeight: 600}}>
+              {value}
+            </Typography>
+          )
+        }
+      }
+    }, 
+    {
+      name:"Last edited",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return (
+            <Box color="text.secondary" >
+              <DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
+              {value}
+            </Box> 
+          )
+        }
+      }
+    }, 
+    {
+      name:"Approval Progress",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return (
+            <LinearProgress 
+            value={value}
+            thickness={15}  
+            variant="determinate"
+            /> 
+          )
+        }
+      }
+    },
+    {
+      name:"Form Status",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return (
+            <Box borderRadius={5} color="secondary.main" style={{
+              backgroundColor: statusColors[value],
+              padding: 5,
+              maxWidth: '9vw',
+              }}>
+              <Typography variant="h5" style={{fontSize: 12, fontWeight: 700}}>
+                {value}
+              </Typography>
+            </Box> 
+          )
+        }
+      }
+    }, 
+    {
+      name:"",
+      options: {
+        filter: false,
+        print: false,
+        download: false,
+        sort: false
+      }
+    },
+  ]
 
   return (
     <div className={classes.submissionListPaper} style={{position: 'absolute', marginLeft: '20%'}}>
       <MUIDataTable
-        title={"Event Form Requests"} 
+        title={"Submissions"} 
         data={
-          submissionListData.formDataList.map((submission, _) => [
-            <h4>{submission.formTitle}</h4>,
-            <Box color="slategray" ><DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>{simplifyTimestamp(submission.timestampModified)}</Box>,
-            <LinearProgress 
-            value={selectValue(submission.status)}
-            thickness={15}  
-            style={{color: "yellow"}}
-            variant="determinate"
-            />,
+          submissionListData.formDataList.map((submission, index) => [
+            submission.formTitle,
+            simplifyTimestamp(submission.timestampModified, false),
+            selectValue(submission.status),
             submission.status,
-            <Button variant="outlined" 
+            <Button key={index} variant="outlined" 
             color="primary" 
             style={{marginRight: -30}}
             onClick={()=>history.push(`/form-viewer/edit/${submission.submissionId}`)}
             >
               view submission
-            </Button>,
-            <IconButton onClick={() => handleDelete(submission.submissionId)}>
-              <DeleteIcon/>
-            </IconButton>
+            </Button>
           ])
         } 
-        columns={["Submitted Forms", "Last edited", "Progress", "Form Status", "", ""]} 
+        columns={columns} 
         options={options}
       />
       <ErrorSnackbar stateError={ submissionListData.error } clearError={clearError}/>

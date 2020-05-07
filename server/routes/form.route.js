@@ -64,5 +64,25 @@ router.post(
   formController.fetchFormList
 );
 
+// API 3.6: Change Form Status
+router.post(
+  '/change-status',
+  validate(formValidation.changeFormStatusValidation, { keyByField: true }),
+  jwt.verify,
+  validateUserAccess,
+  // validateCCAAccess,
+  formController.changeFormStatus
+);
+
+// API 3.7: Fetch Checklist
+router.post(
+  '/fetch-checklist',
+  validate(formValidation.fetchChecklistValidation, { keyByField: true }),
+  jwt.verify,
+  validateUserAccess,
+  validateCCAAccess,
+  formController.fetchChecklist
+);
+
 // Export router
 module.exports = router;

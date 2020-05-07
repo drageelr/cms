@@ -3,7 +3,7 @@ import FormViewerBar from './FormViewerBar'
 import {makeStyles, List, Paper, Container, CircularProgress, Button, Typography } from '@material-ui/core'
 import { connect } from 'react-redux'
 import ItemView from './ItemView'
-import { fetchFormData, clearError } from '../formDataSlice'
+import { fetchFormData, clearError, setError } from '../formDataSlice'
 import { fetchForm, clearError as clearErrorFormTemplate } from '../formTemplateSlice'
 import { initializeVisibilities } from '../conditionalViewSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
@@ -51,7 +51,7 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
 
   return (
     <div>
-      <FormViewerBar submissionId={viewerId} title={title} notesData={{ccaNotes, societyNotes}} 
+      <FormViewerBar title={title} notesData={{ccaNotes, societyNotes}} 
         inReview={inReview} isCCA={userType=="CCA"} createMode={createMode}/>
       <br/>
       {

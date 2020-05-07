@@ -7,6 +7,10 @@
 var CCA = require('../models/cca.model');
 var Form = require('../models/form.model');
 var Checklist = require('../models/checklist.model');
+var Submission = require('../models/submission.model');
+var RTask = require('../models/reqtask.model');
+var SubTask = require('../models/subtask.model');
+var File = require('../models/file.model');
 
 // Services:
 var httpStatus = require('../services/http-status');
@@ -33,6 +37,11 @@ const itemTypes = {
   <<<<< HELPER FUNCTIONS >>>>>
 */
 
+/**
+ * Validates item according to specified
+ * item keys.
+ * @param {any} item 
+ */
 function validateItemType (item) {
   let itemKeys = Object.keys(item);
   if (!helperFuncs.compareLists(itemKeys, itemTypes[item.type])) {
@@ -51,12 +60,16 @@ function validateItemType (item) {
         return "item with id " + item.itemId + " has non unqiue option ids";
       }
     }
-    // Conitional Items missing here!
+    // Conditional Items missing here!
   }
 
   return false;
 }
 
+/**
+ * Validates form with existing forms.
+ * @param {any} params 
+ */
 function validateForm (params) {
   // Check For Duplicate Ids:
 
@@ -138,6 +151,11 @@ function validateForm (params) {
   <<<<< EXPORT FUNCTIONS >>>>>
 */
 
+/**
+ * CCA member creates a form and
+ * specifies all functionalities associated to it.
+ */
+// API 3.1 Controller
 exports.createForm = async (req, res, next) => {
   let params = req.body;
 
@@ -187,6 +205,11 @@ exports.createForm = async (req, res, next) => {
   }
 }
 
+/**
+ * CCA member edits a form which was
+ * previously created.
+ */
+//API 3.2 Controller
 exports.editForm = async (req, res, next) => {
   let params = req.body;
 
@@ -234,7 +257,7 @@ exports.editForm = async (req, res, next) => {
             checklistIds.push(reqChecklist.checklistId);
           }
 
-          await Checklist.deleteMany({checklistId: {$in: checklistIds}});
+          await Checklist.deleteMany({checklistId: {$nin: checklistIds}, formId: reqForm._id});
         }
 
         // Delete sub docs from Form:
@@ -269,14 +292,49 @@ exports.editForm = async (req, res, next) => {
   }
 }
 
+/**
+ * CCA member deletes an existing
+ * form template. 
+ */
+// API 3.3 Controller
 exports.deleteForm = async (req, res, next) => {
-  res.json({
-    statusCode: 501,
-    statusName: httpStatus.getName(501),
-    message: "Not yet implemented!"
-  });
+  let params = req.body;
+
+  try {
+    let reqForm = await Form.findOne({formId: params.formId}, '_id');
+    if (!reqForm) throw new customError.FormNotFoundError("invalid formId");
+
+    let reqSubmissions = await Submission.find({formId: reqForm._id}, '_id');
+
+    let submissionIds = reqSubmissions.map(s => s._id);
+
+    let reqRTasks = await RTask.find({submissionId: {$in: submissionIds}}, '_id');
+
+    let taskIds = reqRTasks.map(t => t._id);
+
+    await Promise.all([
+      Form.findByIdAndDelete(reqForm._id),
+      File.updateMany({formId: reqForm._id}, {saved: false}),
+      Submission.deleteMany({_id: {$in: submissionIds}}),
+      RTask.deleteMany({_id: taskIds}),
+      SubTask.deleteMany({taskId: {$in: taskIds}})
+    ]);
+
+    res.json({
+      statusCode: 200,
+      statusName: httpStatus.getName(200),
+      message: "Form and all related Submissions, Tasks and SubTasks have been deleted!"
+    });
+  } catch (err) {
+    next(err);
+  }
 }
 
+/**
+ * Fetches an existing form template
+ * from the database.
+ */
+// API 3.4 Controller
 exports.fetchForm = async (req, res, next) => {
   let params = req.body;
 
@@ -305,7 +363,7 @@ exports.fetchForm = async (req, res, next) => {
       }
 
       for (let i = 0; i < reqForm.items.length; i++) {
-        formObj.items[i] = helperFuncs.duplicateObject(reqForm.items[i], ["itemId", "type", "label", "requried", "defaultVisibility", "placeHolder", "maxLength", "fileTypes"], true);
+        formObj.items[i] = helperFuncs.duplicateObject(reqForm.items[i], ["itemId", "type", "label", "required", "defaultVisibility", "placeHolder", "maxLength", "fileTypes"], true);
       
         if (reqForm.items[i].options.length) {
           formObj.items[i].options = [];
@@ -315,10 +373,7 @@ exports.fetchForm = async (req, res, next) => {
         }
 
         if (reqForm.items[i].conditionalItems.length) {
-          formObj.items[i].conditionalItems = [];
-          for (let c of reqForm.items[i].conditionalItems) {
-            formObj.items[i].conditionalItems.push(helperFuncs.duplicateObject(c, ["optionId", "itemId"]));
-          }
+          formObj.items[i].conditionalItems = reqForm.items[i].conditionalItems.map(c => ({"optionId": c.optionId, "itemIds": c.itemIds}));
         }
       }
 
@@ -350,6 +405,11 @@ exports.fetchForm = async (req, res, next) => {
   }
 }
 
+/**
+ * Fetches a list of all available 
+ * forms.
+ */
+// API 3.5 Controller
 exports.fetchFormList = async (req, res, next) => {
   let params = req.body;
   
@@ -387,6 +447,68 @@ exports.fetchFormList = async (req, res, next) => {
     } else {
       throw new customError.FormNotFoundError("no forms exist");
     }
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * Change the status of a form from
+ * public to private or vice versa.
+ */
+// API 3.6 Controller
+exports.changeFormStatus = async (req, res, next) => {
+  let params = req.body;
+
+  try {
+    let reqForm = await Form.findOne({formId: params.formId});
+    
+    if (reqForm) {
+      await reqForm.update({isPublic: params.isPublic});
+
+      res.json({
+        statusCode: 203,
+        statusName: httpStatus.getName(203),
+        message: "Status Change Successful!",
+      })
+    } else {
+      // raise form not found error
+      throw new customError.FormNotFoundError("invalid form id");
+    }
+    
+  } catch (err) {
+    next(err);
+  }
+}
+/**
+ * Fetches the checklist associated
+ * with a submission. 
+ */
+// API 3.7 Controller
+exports.fetchChecklist = async (req, res, next) => {
+  let params = req.body;
+
+  try {
+    let reqSubmission = await Submission.findOne({submissionId: params.submissionId}, 'formId');
+    if (!reqSubmission) throw new customError.SubmissionNotFoundError("invalid submissionId");
+
+    let reqChecklists = await Checklist.find({formId: reqSubmission.formId}, 'checklistId sectionId description');
+    let reqForm = await Form.findById(reqSubmission.formId, 'formId');
+
+    let checklistList = [];
+
+    for (let c of reqChecklists) {
+      let checklistObj = helperFuncs.duplicateObject(c, ["checklistId", "sectionId", "description"]);
+      checklistList.push(checklistObj);
+    }
+
+    res.json({
+      statusCode: 200,
+      statusName: httpStatus.getName(200),
+      message: "Checklist Successfully Fetched!",
+      formId: reqForm.formId,
+      checklists: checklistList
+    })
   } catch (err) {
     next(err);
   }
