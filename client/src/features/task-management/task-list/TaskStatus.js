@@ -41,9 +41,6 @@ export function TaskStatus({taskId, taskData, setStatusId, editMode, taskStatusD
     })
     setStatusId(statusId)
     setStatusCode(event.target.value)
-    if (editMode) {
-      dispatch(changeTaskStatus({taskId, statusId}))
-    }
   }
 
   function handleClose() {

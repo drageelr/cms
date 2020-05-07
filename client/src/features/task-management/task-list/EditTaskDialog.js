@@ -5,7 +5,7 @@ import TaskStatus from './TaskStatus'
 import CheckList from "./CheckList"
 import LogEditor from "../logs/LogEditor"
 import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
-  createCustomTask } from "../taskDataSlice"
+  createCustomTask, changeTaskStatus } from "../taskDataSlice"
 import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, Button } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CancelIcon from '@material-ui/icons/Cancel'
@@ -36,16 +36,12 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
     initialState = { description, title, ownerId, submissionId, statusId }
   }
 
-  console.log(editMode)
-  console.log(taskObj)
-
   const [selectOpen, setSelectOpen] = useState(false)  
   const [desc, setDesc] = useState(initialState.description)
   const [taskTitle, setTaskTitle] = useState(initialState.title)
   const [owner, setOwner] = useState(initialState.ownerId)
   const [statusId, setStatusId] = useState(initialState.statusId)
   const [localSubmissionId, setSubmissionId] = useState(initialState.submissionId)
-
 
   function handleCreateComplete(){
     if (isRequestTask) {      
@@ -72,23 +68,26 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
     setOpen(false)
   }
   
-  async function handleOwnerSet(event) {
+  function handleSaveEdits() {
+    if (editMode) {
+      if (initialState.title !== taskTitle) {
+        dispatch(updateTitle({taskId, newTitle: taskTitle}))
+      }
+      if (initialState.description !== desc) {
+        dispatch(updateDescription({taskId, desc}))
+      }
+      if (initialState.ownerId !== owner) {
+        dispatch(taskOwnerChange({taskId, owner}))
+      }
+      if (initialState.statusId !== statusId) {
+        dispatch(changeTaskStatus({taskId, statusId}))
+      }
+    }
+    setOpen(false)
+  }
+
+  function handleOwnerSet(event) {
     setOwner(event.target.value)
-    if (editMode) {
-      dispatch(taskOwnerChange({taskId, owner: event.target.value}))
-    }
-  }
-
-  function handleTitleChange (event) {
-    if (editMode) {
-      dispatch(updateTitle({taskId, newTitle: event.target.value}))
-    }
-  }
-
-  function handleDescChange(event) {
-    if (editMode) {
-      dispatch(updateDescription({taskId, desc: event.target.value}))
-    }
   }
 
   function handleDelete() {
@@ -163,7 +162,6 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
               variant="outlined"
               value={taskTitle}
               onChange={(e)=>{setTaskTitle(e.target.value)}}
-              inputProps={{onBlur: handleTitleChange}}
               style={{resize: "none", marginTop: -8, marginLeft: 4, size:"small", outline: "none"}}
             />
           </Grid>
@@ -196,7 +194,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
             value={desc}
             variant="outlined"
             onChange={(e)=>setDesc(e.target.value)}
-            inputProps={{onBlur: handleDescChange}}
+            // inputProps={{onBlur: handleDescChange}}
             style={{
               resize: "none",
               width: "100%",
@@ -241,14 +239,24 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
       <DialogActions>
         <div style={{marginRight: 10}}>
           {
-            (!editMode) &&
-            <Button 
-              variant="contained" 
-              color="inherit"
-              onClick={handleCreateComplete}
-            >
-              Create Task
-            </Button>
+            (!editMode) &&  
+              <Button 
+                variant="contained" 
+                color="inherit"
+                onClick={handleCreateComplete}
+              >
+                Create Task
+              </Button>
+          }
+          {
+            (editMode) && 
+              <Button 
+                  variant="contained" 
+                  color="inherit"
+                  onClick={handleSaveEdits}
+                >
+                  Save Edits
+              </Button>
           }
         </div>
       </DialogActions>
