@@ -43,7 +43,7 @@ function LoginPage({error, dispatch, match, location}) {
   
 
   React.useEffect(() => {
-    // dispatch(login({email: "ieee@lums.edu.pk", password: "ieee12345", userType: "Society"}))
+    dispatch(login({email: "ieee@lums.edu.pk", password: "Test12345", userType: "Society"}))
     // dispatch(login({email: "admin@lums.edu.pk", password: "Test12345", userType: "CCA"}))
   }, [])
 

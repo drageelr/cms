@@ -5,13 +5,11 @@ import { apiCaller } from "../../helpers"
 const initialState = {
   id: 0, //form data id
   formId: 0, //form Id
-  userId: 0, //user id of the user that submitted
-  formStatus: '',
+  status: '',
   ccaNotes: [],
   societyNotes: [],
   itemsData: [],
-  timestampCreated: '',
-  timestampModified: '',
+  itemFilledIds: [],
   createMode: true,
   isPending: true,
   error: null
@@ -32,19 +30,26 @@ export const fetchFormData = createAsyncThunk(
   'formData/fetchFormData',
   async (formDataId, { getState, rejectWithValue }) => {
     const { isPending } = getState().formData
+    const formDataList = getState().submissionListData.formDataList
+    
     if (isPending != true) {
       return
     }
     const submissionId = Number(formDataId)
 
     return await apiCaller('/api/submission/fetch', {submissionId}, 200, 
-    (data) => ({
-      id: submissionId,
-      formId: data.formId,
-      ccaNotes: data.ccaNotes,
-      societyNotes: data.societyNotes,
-      itemsData: data.itemsData
-    }), 
+    (data) => {
+      const formDataObj = formDataList.find(formData => formData.submissionId == submissionId)
+      return {
+        id: submissionId,
+        formId: data.formId,
+        ccaNotes: data.ccaNotes,
+        societyNotes: data.societyNotes,
+        itemsData: data.itemsData,
+        itemFilledIds: (formDataObj.status.slice(0, 5) == "Issue") ? [] : data.itemFilledIds,
+        // treat all items as unfilled in the case of an issue status on the submission
+      }
+    }, 
     rejectWithValue)
   }
 )
@@ -55,13 +60,13 @@ export const createFormData = createAsyncThunk(
   async (_, {getState, rejectWithValue }) => {
     const formId = getState().formTemplate.id
     const itemsData = getState().formData.itemsData
-    console.log(formId, itemsData)
     // only required to send form Id and items Data when creating a form
     return await apiCaller('/api/submission/submit', {formId, itemsData}, 200, 
     (data) => ({
       id: data.submissionId,
       timestampCreated: data.timestampCreated,
-      timestampModified: data.timestampModified
+      timestampModified: data.timestampModified,
+      itemsData
     }), 
     rejectWithValue)
   }
@@ -74,23 +79,10 @@ export const editFormData = createAsyncThunk(
     const submissionId = getState().formData.id
     let itemsData = getState().formData.itemsData
 
-    console.log("SENDING", itemsData)
     return await apiCaller('/api/submission/submit', {formId: id, submissionId, itemsData}, 200, 
-    (data) => ({submissionId}), 
+    (data) => ({submissionId, itemsData}), 
     rejectWithValue)
 
-  }
-)
-
-export const deleteFormData = createAsyncThunk(
-  'formData/deleteFormData',
-  async (formDataId, {rejectWithValue }) => {
-
-    return await apiCaller('/api/form/delete', {formId: formDataId}, 203, 
-    (data) => {
-      return ''
-    }, 
-    rejectWithValue) 
   }
 )
 
@@ -246,6 +238,7 @@ const formData = createSlice({
           ccaNotes: action.payload.ccaNotes,
           societyNotes: action.payload.societyNotes,
           itemsData: action.payload.itemsData,
+          itemFilledIds: action.payload.itemFilledIds,
           createMode: false,
           isPending: false,
           error: null,
@@ -259,22 +252,23 @@ const formData = createSlice({
       }
     },
     [editFormData.fulfilled]: (state, action) => {
-      state.error = 'Edited Form Data'
+      state.error = 'Edited Submission'
       state.id = action.payload.submissionId
+      action.payload.itemsData.forEach(itemData => {
+        state.itemFilledIds.push(itemData.itemId)
+      })
     },
     [editFormData.rejected]: (state, action) => {
       state.error = action.payload
     },
-    [deleteFormData.fulfilled]: (state, action) => {
-      state.error = 'Deleted Form Data'
-    },
-    [deleteFormData.rejected]: (state, action) => {
-      state.error = action.payload
-    },
+
     [createFormData.fulfilled]: (state, action) => {
-      state.error = 'Created Form Data'
+      state.error = 'Submitted Form'
       state.id = action.payload.id 
       state.createMode = false
+      action.payload.itemsData.forEach(itemData => {
+        state.itemFilledIds.push(itemData.itemId)
+      })
     },
     [createFormData.rejected]: (state, action) => {
       state.error = action.payload

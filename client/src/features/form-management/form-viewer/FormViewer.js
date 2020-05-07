@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 
 function FormViewer({formTemplate, formData, dispatch, userType, conditionalView, match, location}) {
   const { title, sectionTitles, sectionsOrder, componentsOrder, itemsOrder, items } = formTemplate
-  const { createMode, ccaNotes, societyNotes, id } = formData
+  const { createMode, ccaNotes, societyNotes, id, itemFilledIds } = formData
   const [ sectionIndex, setSectionIndex ] = useState(0)
   const classes = useStyles()
   const viewerId = match && match.params.id // formId when in create mode, formDataId when in edit/review mode
@@ -73,7 +73,7 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
       <br/>
       {
       (mode == "create" ?  (formTemplate.isPending) : (formTemplate.isPending || formData.isPending)) 
-      ? <LinearProgress variant="indeterminate"/>
+      ? <LinearProgress style={{marginTop: -5}}  variant="indeterminate"/>
       : <Container>
         {/* //Container to center align the View, also sections and items rendered only (components are only logical) */}
         <Paper elevation={4} className={classes.sectionPaper}>
@@ -87,7 +87,13 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
                     return componentItemIds.map( itemId => 
                       // depending on conditionalView
                       (conditionalView[itemId] ? true : items[itemId].defaultVisibility) && //defaultVisibility can be overridden 
-                      <ItemView key={itemId} componentItemIds={componentItemIds} id={itemId} inReview={inReview} templateData={items[itemId]} />
+                      <ItemView 
+                      key={itemId} 
+                      componentItemIds={componentItemIds} 
+                      id={itemId} 
+                      inReview={inReview} 
+                      templateData={items[itemId]}
+                      />
                     )
                   }
                 }

@@ -22,10 +22,12 @@ export const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function ItemView({id, templateData, itemsData, submissionId, componentItemIds, inReview, dispatch}) {
+function ItemView({id, templateData, itemsData, status, submissionId, itemFilledIds, componentItemIds, inReview, dispatch}) {
   const classes = useStyles()
   const {type, label, required, placeHolder, maxLength, fileTypes, options, conditionalItems} = templateData
   const itemData = itemsData.find(itemData => itemData.itemId == id)
+  const isDisabled = itemFilledIds.includes(id) // items will be disabled if they were filled 
+  // and not disabled if the form has an issue for the society to resolve
   const initialItemData = {
     textbox: '',
     textlabel: '',
@@ -90,6 +92,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
             label={label}
             placeholder = {placeHolder}
             required = {required}
+            disabled={isDisabled}
             multiline
             error={localData.length > maxLength}
             helperText={ localData.length > maxLength ? `Max characters exceeded (${maxLength})` : '' }
@@ -121,6 +124,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
             control={
               <Checkbox
                 id={id}
+                disabled={isDisabled}
                 checked={data}
                 color="primary" // override, default color is secondary
                 required={required}
@@ -144,7 +148,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
               onChange={handleFileChange} //single files only, at the first index in FileList
             />
             <label htmlFor={`file-${id}`}>
-              <Button variant="contained"  component="span" startIcon={<CloudUploadIcon/>}>
+              <Button variant="contained" disabled={isDisabled} component="span" startIcon={<CloudUploadIcon/>}>
                 {label}
               </Button>
               <p>{data.length != 0 && `Uploaded File [${data.substr(data.length - 7)}]`}</p>
@@ -163,7 +167,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
               {
                 optionsConv.map((option, index) => {
                   return (
-                    <FormControlLabel key={index} value={option.optionId} control={<Radio color="primary"/>}  label={option.data} />
+                    <FormControlLabel key={index} disabled={isDisabled} value={option.optionId} control={<Radio color="primary"/>}  label={option.data} />
                   )
                 })
               }
@@ -179,7 +183,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
               {
                 optionsConv.map((option, index) => {
                   return (
-                    <MenuItem key={index} value={option.optionId}>{option.data}</MenuItem>
+                    <MenuItem key={index} disabled={isDisabled} value={option.optionId}>{option.data}</MenuItem>
                   )
                 })
               }
@@ -201,7 +205,9 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
 
 const mapStateToProps = (state) => ({ //needs both the template to render the form and data to populate it in edit submission mode
   itemsData: state.formData.itemsData,
-  submissionId: state.formData.id
+  submissionId: state.formData.id,
+  itemFilledIds: state.formData.itemFilledIds,
+  status: state.formData.status
 })
 
 
