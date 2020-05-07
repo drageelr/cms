@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
-import { withStyles, makeStyles } from '@material-ui/core/styles'
+import { withStyles, makeStyles, useTheme} from '@material-ui/core/styles'
 import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog,
-  DialogActions, DialogContent, DialogTitle, LinearProgress, Fab } from '@material-ui/core'
+  DialogActions, DialogContent, DialogTitle, LinearProgress, Fab, Tooltip } from '@material-ui/core'
 import {addTaskStatus,editTaskStatus,deleteTaskStatus,fetchTaskStatus} from './taskStatusDetailsSlice'
 import {connect} from 'react-redux'
 import { Formik, Form, Field } from 'formik'
@@ -12,6 +12,7 @@ import EditIcon from '@material-ui/icons/Edit'
 import {clearError} from './taskStatusDetailsSlice'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import PanelBar from './PanelBar'
+import { Typography } from '@material-ui/core';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -20,6 +21,14 @@ const StyledTableCell = withStyles((theme) => ({
   },
   body: {
     fontSize: 14,
+  },
+  title: {
+    padding: theme.spacing(2),
+    marginTop: 10,
+    color: theme.palette.text.secondary
+  },
+  container: {
+    maxHeight: '70%',
   },
 }))(TableCell)
 
@@ -52,6 +61,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
   useEffect(() => {dispatch(fetchTaskStatus())},[])
 
   const classes = useStyles()
+  const theme = useTheme()
   const [isOpen,setIsOpen] = useState(false)
 
   const [editMode,setEditMode] = useState(false)
@@ -91,12 +101,14 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
     }
 
     if (editMode){
-      const taskDetail = taskStatusDetails.taskList.find((task,index) =>{
-        return task.statusId === editId
+      // const taskDetail = 
+      taskStatusDetails.taskList.map((task,index) =>{
+        if (task.statusId === editId){
+          if (task !== undefined){
+            initialValues = {name:task.name, color: task.color}
+          }
+        }
       })
-      if (taskDetail != undefined){
-        initialValues = {name:taskDetail.name, color: taskDetail.color}
-      }  
     }
 
     function handleClose(){
@@ -171,33 +183,37 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
     <div>
       <PanelBar handleAdd={handleAdd} title={`Task Statuses (${taskStatusDetails.taskList.length})`} buttonText="Add New Task Status"/>
       <TaskStatusDialog/>
-      <TableContainer component={Paper}>
+      
+      <TableContainer className={classes.container}>
       <Table className={classes.table} aria-label="customized table" stickyHeader aria-label="sticky table">
         <TableHead>
-          <TableRow>
-            <StyledTableCell>Task Status</StyledTableCell>
-            <StyledTableCell align="center">Color</StyledTableCell>
-            <StyledTableCell align="right">Options</StyledTableCell>
+          <TableRow style={{background: theme.palette.action.hover}}>
+            <TableCell >Task Status</TableCell>
+            <TableCell align="center">Color</TableCell>
+            <TableCell align="right">Options</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
         
           {taskStatusDetails.taskList !== undefined &&
-          taskStatusDetails.taskList.map((taskStatusDetail,index) => (
-            <StyledTableRow key={index}>
+          taskStatusDetails.taskList.map((taskStatusDetail,index) => {
+            return <StyledTableRow key={index}>
               <StyledTableCell component="th" scope="row">
                 {taskStatusDetail.name}
               </StyledTableCell>
               <StyledTableCell align="center">
+              <Tooltip title="Task Status Color" placement="right-end">
                 <Button variant="contained" style={{backgroundColor:taskStatusDetail.color}}/>
-
+              </Tooltip>
               </StyledTableCell>
 
-              <StyledTableCell align="right">
-                <EditDeleteMoreButton id={taskStatusDetail.statusId}/>
-              </StyledTableCell>
+              <TableCell align="right">
+                <div>
+                  <EditDeleteMoreButton statusId={taskStatusDetail.statusId}/>
+                </div>
+              </TableCell>
             </StyledTableRow>
-          ))}
+        })}
         </TableBody>
       </Table>
       </TableContainer>

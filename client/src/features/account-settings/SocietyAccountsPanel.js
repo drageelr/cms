@@ -1,7 +1,7 @@
 import React, {useState,useEffect} from 'react'
 import { withStyles, makeStyles, useTheme } from '@material-ui/core/styles'
 import {Table, TableContainer, TableBody, TableCell, TableHead, TableRow, Paper, Button, Dialog, DialogContent, DialogTitle, 
-  DialogContentText, DialogActions, Grid, CircularProgress, LinearProgress, Typography, } from '@material-ui/core'
+  DialogContentText, DialogActions, Grid, CircularProgress, LinearProgress, Typography, Tooltip} from '@material-ui/core'
 import {addSocietyAccount,editSocietyAccount,toggleActiveSocietyAccount,fetchSocietyAccounts} from './societyDataSlice'
 import {connect} from 'react-redux'
 import { Formik, Form, Field } from 'formik'
