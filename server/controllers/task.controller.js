@@ -460,6 +460,9 @@ exports.fetchTaskManager = async (req, res, next) => {
       let reqStatus = await Status.findById(r.statusId, 'statusId');
       taskObj.statusId = reqStatus.statusId;
 
+      let reqSubmission = await Submission.findById(r.submissionId, 'submissionId')
+      taskObj.submissionId = reqSubmission.submissionId
+
       taskObj.subtasks = [];
       for (let sId of r.subtaskIds) {
         let reqSubTask = await SubTask.findById(sId, 'subtaskId assigneeId description check');
