@@ -1,8 +1,7 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
 import 'typeface-montserrat'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core'
-import blue from '@material-ui/core/colors/blue'
 import NavBar from './ui/NavBar'
 import TaskManager from './features/task-management/TaskManager'
 import FormMaker from './features/form-management/form-maker/FormMaker'
@@ -20,10 +19,18 @@ import { connect } from 'react-redux'
 
 function App({ user }) {
   const { isLoggedIn, userType, name, picture } = user
-  const [darkMode, setDarkMode] = React.useState(true)
+
+  const [darkMode, setDarkMode] = useState(user.darkMode)
 
   document.body.style = darkMode ? 'background: #424242' : 'background: #ffffff' 
   
+  // var color = user.themeColor
+  // if (user.themeColor === undefined) {
+  //   color = '#3578fa'
+  // } else {
+  //   color = user.themeColor
+  // }
+
   const appTheme = createMuiTheme({
     palette: {
       type: darkMode ? 'dark' : 'light',
@@ -52,13 +59,15 @@ function App({ user }) {
       }
     }
   })
+
+  console.log(darkMode)
   
   return (
     <Router>
       <ThemeProvider theme={appTheme}>
         { isLoggedIn ?
         <div>
-          <NavBar name={name} userType={userType} picture={picture} darkMode={darkMode} setDarkMode={setDarkMode}/>
+          <NavBar name={name} ccaId={user.id} userType={userType} picture={picture} darkMode={darkMode} setDarkMode={setDarkMode}/>
           <Switch>
             <Route path="/" exact component={userType === "CCA" ? TaskManager : SocietyDashboard}/>
             <Route path="/form-viewer" exact component={FormViewer}/>

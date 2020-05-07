@@ -28,7 +28,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 })
 
 export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, taskId, ccaDetails, dispatch, open, setOpen}) {  
+  
   let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1, log: "" }
+  let subId = -1
 
   const taskObj = taskList.find(taskObj => taskObj.taskId === taskId)
   if (taskObj !== undefined) { // if found
@@ -42,10 +44,11 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
   const [owner, setOwner] = useState(initialState.ownerId)
   const [statusId, setStatusId] = useState(initialState.statusId)
   const [logText, setLogText] = useState("")
-  const [localSubmissionId, setSubmissionId] = useState(initialState.submissionId)
+  const [localSubmissionId, setLocalSubmissionId] = useState(initialState.submissionId)
 
   function handleCreateComplete(){
     if (isRequestTask) {      
+      console.log(localSubmissionId)
       const reqTaskObject = { 
         title: taskTitle, 
         description: desc, 
@@ -69,7 +72,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
     setDesc("")
     setTaskTitle("")
     setOwner(-1)
-    setSubmissionId(-1)
+    setLocalSubmissionId(-1)
     setStatusId(-1)
     setOpen(false)
   }
@@ -88,7 +91,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
       if (initialState.statusId !== statusId) {
         dispatch(changeTaskStatus({taskId, statusId}))
       }
-      if (initialState.log !== logText) {
+      if (logText.length > 0) {
         dispatch(createNewLog({taskId, logText}))
       }
     }
@@ -107,19 +110,23 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
     return (
       <Grid container direction="row" justify="space-between" alignItems="flex-start" style={{padding: "0px 17px 0px 17px"}}>
         <Grid item>
-          {  // Checklist Text  
-            <Typography gutterBottom variant="h5" color="inherit">
-              Checklist:
-            </Typography> 
+          { 
+            (() => {
+              if (!editMode) {
+                return <Typography gutterBottom variant="h5" color="inherit">
+                  Checklist:
+                </Typography> 
+              }
+            })()
           }
         </Grid>
         <Grid item>
-          { // Request Form
-            (localSubmissionId === -1 && !editMode)
-            ? <AttachRequestForm ownerId={ownerId} setSubmissionId={setSubmissionId}/>
-            : <Typography variant="h6">
-                Linked Request ID: {initialState.submissionId}
-              </Typography> 
+          {
+            (localSubmissionId === -1 && !editMode) ?
+            <AttachRequestForm ownerId={ownerId} setLocalSubmissionId={setLocalSubmissionId}/> :
+            <Typography variant="h6">
+              Linked Request ID: {localSubmissionId}
+            </Typography>
           }
         </Grid>
       </Grid>
@@ -237,8 +244,6 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
         </div>
       }
 
-      {/* Task Assignees */}
-      {/* <AddAssignee taskId={taskId}/> */}
       {
         editMode && //Logs
         <LogEditor setLogText={setLogText} taskId={taskId}/>

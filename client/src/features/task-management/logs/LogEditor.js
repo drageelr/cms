@@ -1,7 +1,7 @@
 import React , {useState} from 'react'
 import { Grid, TextField, Button, Typography, Card, Avatar, Container, Paper, Box, List } from '@material-ui/core'
 import { connect } from 'react-redux'
-import { createNewLog } from '../taskDataSlice'
+import { setCusLogCreatorId } from '../taskDataSlice'
 import { makeStyles } from '@material-ui/core/styles'
 import { simplifyTimestamp } from '../../../helpers'
 
@@ -31,7 +31,7 @@ export function LogEditor({taskId, taskData, setLogText, ccaDetails, user, dispa
   function handleUpdateLogs() {
     if (logDesc) {
       setLogText(logDesc)
-      // dispatch(createNewLog({taskId, creatorId: user.id, logDesc}))
+      setCusLogCreatorId({creatorId: user.id})
     }
   }
 
@@ -46,29 +46,38 @@ export function LogEditor({taskId, taskData, setLogText, ccaDetails, user, dispa
               } else {
                 return taskObj.logs.map(logData => {
                   ccaDetails.map(ccaUser => {
-                    if(ccaUser.ccaId === logData.creatorId) {
-                      ownerName = ccaUser.firstName + " " + ccaUser.lastName 
-                      picture = ccaUser.picture
+                    if (logData.creatorId !== -1) {
+                      if(ccaUser.ccaId === logData.creatorId) {
+                        ownerName = ccaUser.firstName + " " + ccaUser.lastName 
+                        picture = ccaUser.picture
+                      }
+                    } else {
+                      //TODO REGEX
                     }
+                    
                   })
 
                   return <Paper className={classes.logPaper} >
-                    <Grid container direction="row" justify="space-between" alignItems="flex-start">
-                      <Grid item container style={{padding: "5px"}}>
-                        <Avatar src={picture} style={{height: 20, width: 20, marginTop: 4}}/>
-                        <Typography variant="h6" style={{marginLeft: 3}}>
-                          {ownerName}
-                        </Typography>
-                        <Grid item style={{marginLeft: "55%"}}>
+                    <Grid container direction="column" justify="space-between" alignItems="flex-start">
+                      <Grid direction="row" justify="space-between" alignItems="flex-start">
+                        <Grid container>
+                          <Avatar src={picture} style={{height: 15, width: 15, marginTop: 3}}/>
+                          <Typography variant="subtitle2" style={{marginLeft: 3}}>
+                            {ownerName}
+                          </Typography>
+                        {/* <Grid>
                           <Typography>
                             {simplifyTimestamp(logData.createdAt, false)}
                           </Typography>
+                        </Grid> */}
                         </Grid>
                       </Grid>
+                      <Grid>
+                        <Typography style={{marginLeft: 27, fontSize: 13}}>
+                          {logData.description}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                    <Typography style={{marginLeft: 27, fontSize: 13}}>
-                      {logData.description}
-                    </Typography>
                   </Paper>          
                 })
               }

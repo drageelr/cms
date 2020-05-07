@@ -2,11 +2,12 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { apiCaller } from '../../helpers'
 
 const initialState = {
+  taskList: [], 
   archiveList: [],
   checkList: [],
-  taskList: [], 
   task: {},
   checklistAssignees: [],
+  cusLogCreatorId: -1, 
   isPending: false,
   error: null
 }
@@ -42,7 +43,7 @@ export const fetchTask = createAsyncThunk(
 
 export const fetchCheckList = createAsyncThunk(
   'taskData/fetchCheckList',
-  async (idObj, { getState, rejectWithValue }) => {
+  async (idObj, { rejectWithValue }) => {
     const { ownerId, submissionId } = idObj
     
     return await apiCaller('/api/form/fetch-checklist', { submissionId }, 200, 
@@ -52,7 +53,7 @@ export const fetchCheckList = createAsyncThunk(
 
 export const fetchArchiveManager = createAsyncThunk(
   'taskData/fetchArchiveManager',
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     
     return await apiCaller('/api/task-manager/fetch-archive', {}, 200, 
     (data) => ({data}), 
@@ -284,7 +285,6 @@ export const unArchiveTask = createAsyncThunk(
   'taskData/unArchiveTask',
   async (taskId, { rejectWithValue }) => {
     
-    console.log("here", taskId)
     return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
       task: {
         taskId: taskId,
@@ -300,21 +300,8 @@ const taskdata = createSlice({
   name: 'taskData',
   initialState: initialState,
   reducers: {
-    addTaskAssignees: (state, action) => {
-      const {taskId, value} = action.payload
-      
-      state.tasks[taskId].assigneeList.push(value)
-    },
-    
-    deleteTaskAssignee: (state, action) => {
-      const {taskId, person} = action.payload
-      
-      state.tasks[taskId].assigneeList.map(name =>{
-        if(name === person) {
-          var filteredAry = state.tasks[taskId].assigneeList.filter(function(e) { return e !== name })
-          state.tasks[taskId].assigneeList = filteredAry
-        }
-      })
+    setCusLogCreatorId: (state, action) => {
+      state.cusLogCreatorId = action.payload.creatorId
     },
 
     subTaskDisplay: (state, action) => {
@@ -496,7 +483,12 @@ const taskdata = createSlice({
         taskId: data.taskId,
         logs: data.logs,
         subtasks: subTaskList,
-        ...reqTaskObject
+        title: reqTaskObject.title, 
+        description: reqTaskObject.desc, 
+        submissionId: reqTaskObject.submissionId,
+        ownerId: reqTaskObject.ownerId, 
+        statusId: reqTaskObject.statusId,
+        archive: reqTaskObject.archive
       })
       state.error = 'Request Task Created'
     },
@@ -508,7 +500,11 @@ const taskdata = createSlice({
       state.taskList.push({
         taskId: action.payload.data.taskId,
         logs: action.payload.data.logs,
-        ...action.payload.cusTaskObject
+        title: action.payload.cusTaskObject.title, 
+        description: action.payload.cusTaskObject.desc, 
+        ownerId: action.payload.cusTaskObject.ownerId, 
+        statusId: action.payload.cusTaskObject.statusId,
+        archive: action.payload.cusTaskObject.archive
       })
       state.error = 'Custom Task Created'
     },
@@ -524,6 +520,7 @@ const taskdata = createSlice({
           taskObj.logs.push({
             logId: data.logId,
             description: logObj.logText,
+            creatorId: state.cusLogCreatorId,
             createdAt: data.createdAt,
             updatedAt: data.updatedAt
           })
@@ -567,6 +564,7 @@ const taskdata = createSlice({
 
       var filteredAry = state.taskList.filter(function(e) { return e.taskId !== taskId })
       state.taskList = filteredAry
+      state.error = 'Sb Task Deleted'
 
     },
     [deleteSubTask.rejected]: (state, action) => {
@@ -642,6 +640,8 @@ const taskdata = createSlice({
 
       var filteredAry = state.taskList.filter(function(e) { return e.taskId !== archiveObj.taskId })
       state.taskList = filteredAry
+
+      state.error = 'Task Archived'
     },
     [archiveTask.rejected]: (state, action) => {
       state.error = action.payload
@@ -649,8 +649,6 @@ const taskdata = createSlice({
 
     [unArchiveTask.fulfilled]: (state, action) => {
       const {data, taskId} = action.payload
-
-      console.log("here", taskId)
 
       state.taskList.push(state.task)
 
@@ -671,6 +669,7 @@ const taskdata = createSlice({
 })
 
 export const {
+  setCusLogCreatorId, 
   addTaskAssignees,
   deleteTaskAssignee,
   subTaskDisplay, 
