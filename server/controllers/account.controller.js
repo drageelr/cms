@@ -76,7 +76,7 @@ exports.createSocietyAccount = async (req, res, next) => {
       await reqSociety.save();
 
       res.json({
-        status: 201,
+        statusCode: 201,
         statusName: httpStatus.getName(201),
         message: "Account Creation Successful",
         societyId: reqSociety.societyId
