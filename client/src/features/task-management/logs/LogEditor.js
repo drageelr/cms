@@ -22,17 +22,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
-  const [logText, setLogText] = useState("")
+export function LogEditor({taskId, taskData, setLogText, ccaDetails, user, dispatch}) {
+  const [logDesc, setLogDesc] = useState("")
   const classes = useStyles()
   let ownerName=""
   let picture = ""
 
   function handleUpdateLogs() {
-    if (logText) {
-      let creatorId = user.id
-      console.log(logText)
-      dispatch(createNewLog({taskId, creatorId, logText}))
+    if (logDesc) {
+      setLogText(logDesc)
+      // dispatch(createNewLog({taskId, creatorId: user.id, logDesc}))
     }
   }
 
@@ -46,7 +45,6 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
                 return null
               } else {
                 return taskObj.logs.map(logData => {
-                  // console.log(logData)
                   ccaDetails.map(ccaUser => {
                     if(ccaUser.ccaId === logData.creatorId) {
                       ownerName = ccaUser.firstName + " " + ccaUser.lastName 
@@ -69,7 +67,7 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
                       </Grid>
                     </Grid>
                     <Typography style={{marginLeft: 27, fontSize: 13}}>
-                      {logData.description.split('.')[1].replace(/ *\([^)]*\) */g, "")}
+                      {logData.description}
                     </Typography>
                   </Paper>          
                 })
@@ -91,11 +89,11 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
               multiline
               rows={3}
               label="Logs"
-              value = {logText}
-              onChange={(event) => {setLogText(event.target.value)}}
+              value = {logDesc}
+              onChange={(event) => {setLogDesc(event.target.value)}}
               variant="outlined"
               autoFocus="true"
-              defaultValue = {logText}
+              defaultValue = {logDesc}
               size="small"
               style={{padding: "9px", marginLeft: 8, width: "55vw"}}
               />
@@ -118,3 +116,4 @@ const mapStateToProps = (state) => ({
 })
 
 export default connect(mapStateToProps)(LogEditor)
+// .split('.')[1].replace(/ *\([^)]*\) */g, "")

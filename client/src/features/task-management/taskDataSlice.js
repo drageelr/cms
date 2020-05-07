@@ -60,7 +60,7 @@ export const fetchArchiveManager = createAsyncThunk(
   }
 )
 
-export const createRequestTask = createAsyncThunk( // GIVES INTERNAL SERVER ERROR
+export const createRequestTask = createAsyncThunk(
   'taskData/createRequestTask',
   async (reqTaskObject, { getState, rejectWithValue }) => {
     const { title, description, submissionId, ownerId, statusId } = reqTaskObject
@@ -102,8 +102,8 @@ export const createCustomTask = createAsyncThunk(
 export const createNewLog = createAsyncThunk(
   'taskData/createNewLog',
   async (logObj, { rejectWithValue }) => {
-    const { taskId, creatorId, logText } = logObj
-  
+    const { taskId, logText } = logObj
+
     return await apiCaller('/api/task-manager/log/add', {
       taskId: taskId,
       description: logText
@@ -166,10 +166,10 @@ export const moveSubTask = createAsyncThunk(
 
 export const deleteSubTask = createAsyncThunk(
   'taskData/deleteSubTask',
-  async (subTaskObject, { getState, rejectWithValue }) => {
+  async (subTaskObject, { rejectWithValue }) => {
     const { mainTaskId, taskId, subTaskList } = subTaskObject
+    
     let tempSubList = []
-    let tempObj = {}
 
     subTaskList.map(obj => {
       if (obj.taskId === taskId) {
@@ -195,7 +195,7 @@ export const deleteSubTask = createAsyncThunk(
         subtasks: tempSubList
       }
     }, 200, 
-    (data) => ({data, mainTaskId}), 
+    (data) => ({data, taskId}), 
     rejectWithValue)
   }
 )
@@ -282,16 +282,16 @@ export const archiveTask = createAsyncThunk(
 
 export const unArchiveTask = createAsyncThunk(
   'taskData/unArchiveTask',
-  async (archiveObj, { rejectWithValue }) => {
-    const { taskId, ownerId } = archiveObj
+  async (taskId, { rejectWithValue }) => {
     
+    console.log("here", taskId)
     return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
       task: {
         taskId: taskId,
         archive: false
       }
     }, 200, 
-    (data) => ({data, archiveObj}), 
+    (data) => ({data, taskId}), 
     rejectWithValue)   
   }
 )
@@ -326,7 +326,7 @@ const taskdata = createSlice({
             if (taskObj.taskId === subtaskObj.assTaskId) { // get the task obj from task list to which the sub task is associated
               taskObj.subtasks.map(assSubTask => {
                 if (assSubTask.taskId === taskId) { // get the subtask from the task that is same as the current subtask
-                  // assSubTask.check = false
+                  assSubTask.check = true
                   subtaskObj.check = true
                 }
               })
@@ -399,17 +399,19 @@ const taskdata = createSlice({
         state.taskList.map(taskObj => {
           if (taskObj.taskId[0] === 'r' && taskObj.subtasks.length !== 0) {
             taskObj.subtasks.map((subObj, index) => {
-              let subTaskObj = {
-                taskId: `s${subObj.subtaskId}`,
-                subtaskId: subObj.subtaskId,
-                assTaskId: taskObj.taskId,
-                ownerId: subObj.assigneeId,
-                assigneeId: subObj.assigneeId,
-                description: subObj.description,
-                check: subObj.check
+              if (subObj.check === false) {
+                let subTaskObj = {
+                  taskId: `s${subObj.subtaskId}`,
+                  subtaskId: subObj.subtaskId,
+                  assTaskId: taskObj.taskId,
+                  ownerId: subObj.assigneeId,
+                  assigneeId: subObj.assigneeId,
+                  description: subObj.description,
+                  check: subObj.check
+                }
+                taskObj.subtasks[index] = subTaskObj
+                state.taskList.push(subTaskObj)
               }
-              taskObj.subtasks[index] = subTaskObj
-              state.taskList.push(subTaskObj)
             })
           }
         })
@@ -444,10 +446,7 @@ const taskdata = createSlice({
     },
 
     [fetchArchiveManager.fulfilled]: (state, action) => {
-      //if (state.isPending === true) {
-        //state.isPending = false
         state.archiveList = action.payload.data.archiveList
-      //}
     },
     [fetchArchiveManager.rejected]: (state, action) => {
       if (state.isPending === true) {
@@ -524,7 +523,6 @@ const taskdata = createSlice({
         if(taskObj.taskId === logObj.taskId) {
           taskObj.logs.push({
             logId: data.logId,
-            creatorId: logObj.creatorId,
             description: logObj.logText,
             createdAt: data.createdAt,
             updatedAt: data.updatedAt
@@ -565,13 +563,11 @@ const taskdata = createSlice({
     },
 
     [deleteSubTask.fulfilled]: (state, action) => {
-      const { data, mainTaskId } = action.payload
-      
-      // state.taskList.map(taskObj => {
-      //   if(taskObj.taskId === mainTaskId) {
-      //     taskObj.logs.push(data.newLog)
-      //   }
-      // })
+      const { data, taskId } = action.payload
+
+      var filteredAry = state.taskList.filter(function(e) { return e.taskId !== taskId })
+      state.taskList = filteredAry
+
     },
     [deleteSubTask.rejected]: (state, action) => {
       state.error = action.payload
@@ -644,32 +640,28 @@ const taskdata = createSlice({
         }
       })
 
-      // var filteredAry = state.taskList.filter(function(e) { return e.assTaskId !== archiveObj.taskId })
-      // state.taskList = filteredAry
+      var filteredAry = state.taskList.filter(function(e) { return e.taskId !== archiveObj.taskId })
+      state.taskList = filteredAry
     },
     [archiveTask.rejected]: (state, action) => {
       state.error = action.payload
     },
 
     [unArchiveTask.fulfilled]: (state, action) => {
-      const {data, archiveObj} = action.payload
+      const {data, taskId} = action.payload
+
+      console.log("here", taskId)
 
       state.taskList.push(state.task)
 
       state.taskList.map(task => {
-        if(task.taskId === archiveObj.taskId) {
+        if(task.taskId === taskId) {
           task.archive = false
         }
-        task.logs.push(data.newLog)
+        // task.logs.push(data.newLog)
       })
 
-      state.archiveList.map(arcObj => {
-        if(arcObj.taskId === archiveObj.taskId) {
-          arcObj.archive = false
-        }
-      })
-
-      var filteredAry = state.archiveList.filter(function(e) { return e.taskId !== archiveObj.taskId })
+      var filteredAry = state.archiveList.filter(function(e) { return e.taskId !== taskId })
       state.archiveList = filteredAry
     },
     [unArchiveTask.rejected]: (state, action) => {

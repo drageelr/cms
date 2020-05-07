@@ -5,7 +5,7 @@ import TaskStatus from './TaskStatus'
 import CheckList from "./CheckList"
 import LogEditor from "../logs/LogEditor"
 import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
-  createCustomTask, changeTaskStatus } from "../taskDataSlice"
+  createCustomTask, changeTaskStatus, createNewLog } from "../taskDataSlice"
 import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, Button } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CancelIcon from '@material-ui/icons/Cancel'
@@ -28,7 +28,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 })
 
 export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, taskId, ccaDetails, dispatch, open, setOpen}) {  
-  let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1 }
+  let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1, log: "" }
 
   const taskObj = taskList.find(taskObj => taskObj.taskId === taskId)
   if (taskObj !== undefined) { // if found
@@ -41,6 +41,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
   const [taskTitle, setTaskTitle] = useState(initialState.title)
   const [owner, setOwner] = useState(initialState.ownerId)
   const [statusId, setStatusId] = useState(initialState.statusId)
+  const [logText, setLogText] = useState("")
   const [localSubmissionId, setSubmissionId] = useState(initialState.submissionId)
 
   function handleCreateComplete(){
@@ -87,6 +88,9 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
       if (initialState.statusId !== statusId) {
         dispatch(changeTaskStatus({taskId, statusId}))
       }
+      if (initialState.log !== logText) {
+        dispatch(createNewLog({taskId, logText}))
+      }
     }
     setOpen(false)
   }
@@ -100,7 +104,6 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
   }
 
   function RequestVSCustom() { // conditionally render "Checklist" and Request Form Button
-    console.log(localSubmissionId)
     return (
       <Grid container direction="row" justify="space-between" alignItems="flex-start" style={{padding: "0px 17px 0px 17px"}}>
         <Grid item>
@@ -114,8 +117,8 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
           { // Request Form
             (localSubmissionId === -1 && !editMode)
             ? <AttachRequestForm ownerId={ownerId} setSubmissionId={setSubmissionId}/>
-            : <Typography variant="h5">
-                Linked Request ID: {localSubmissionId}
+            : <Typography variant="h6">
+                Linked Request ID: {initialState.submissionId}
               </Typography> 
           }
         </Grid>
@@ -216,7 +219,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
           <AssignTaskOwner/>
         </Grid>
         <Grid item style={{marginTop: 5}}> {/*Task Status Colors*/}
-          <TaskStatus setStatusId={setStatusId} taskId={taskId} editMode={editMode}/>
+          <TaskStatus setStatusId={setStatusId} taskId={taskId}/>
         </Grid>
       </Grid>
         
@@ -238,7 +241,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
       {/* <AddAssignee taskId={taskId}/> */}
       {
         editMode && //Logs
-        <LogEditor taskId={taskId}/>
+        <LogEditor setLogText={setLogText} taskId={taskId}/>
       }
       {/*Complete Task Button*/}
       <DialogActions>

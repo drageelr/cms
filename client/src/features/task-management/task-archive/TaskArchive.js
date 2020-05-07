@@ -9,7 +9,7 @@ function ArchiveList({ taskData, ccaDetails, dispatch }) {
 
   function handleUnArchiveClick({event, taskId, ownerId}) {
     dispatch(fetchTask({taskId, ownerId}))
-    dispatch(unArchiveTask({taskId}))
+    dispatch(unArchiveTask(taskId))
   }
 
   function UnArchiveButton({taskId, ownerId}) {
@@ -44,7 +44,6 @@ function ArchiveList({ taskData, ccaDetails, dispatch }) {
               return [
                 archiveObj.taskId,
                 archiveObj.title,
-                // archiveObj.ownerId,
                 <CCAName ownerId={archiveObj.ownerId}/>,
                 archiveObj.updatedAt,
                 <UnArchiveButton taskId={archiveObj.taskId} ownerId={archiveObj.ownerId}/>

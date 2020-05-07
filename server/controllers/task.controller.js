@@ -408,9 +408,9 @@ exports.addLog = async (req, res, next) => {
     let reqTask = false;
 
     if (params.taskId[0] == "r") {
-      reqTask = await RTask.findOne({taskId: parseInt(params.taskId.splice(1))});
+      reqTask = await RTask.findOne({taskId: parseInt(params.taskId.slice(1))});
     } else if (params.taskId[0] == "c") {
-      reqTask = await CTask.findOne({taskId: parseInt(params.taskId.splice(1))});
+      reqTask = await CTask.findOne({taskId: parseInt(params.taskId.slice(1))});
     }
 
     if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId"); // raise task not found error
