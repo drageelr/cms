@@ -249,12 +249,13 @@ exports.submitForm = async (req, res, next) => {
         // 2) Check item constraints based on types + form data
         submissionValidationError = await itemTypeValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
-        console.log(submissionValidationError)
         
-        // 3) Check re-entry of an item is not given
-        submissionValidationError = duplicateEntryValidation(reqSubmission, itemsData);
-        if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
-
+        if (reqSubmission.status != "Issue(President)" && reqSubmission.status != "Issue(Patron)") {
+          // 3) Check re-entry of an item is not given
+          submissionValidationError = duplicateEntryValidation(reqSubmission, itemsData);
+          if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
+        }
+        
         // 4) For "File" types, get correct data:
         for(let iS of itemsData) {
           for (let iF of reqForm.items) {
