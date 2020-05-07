@@ -468,7 +468,7 @@ exports.getSubmissionList = async (req, res, next) => {
       });
     } else {
       // raise submission not found error
-      throw new customError.SubmissionNotFoundError("no matching submission found");
+      throw new customError.SubmissionNotFoundError("no submissions exists");
     }
   } catch (err) {
     next(err);
