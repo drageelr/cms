@@ -24,13 +24,10 @@ export const fetchCCARequestList = createAsyncThunk(
 
 export const changeFormStatus = createAsyncThunk(
   'requestListData/changeFormStatus',
-  async ({submissionId, status}, {rejectWithValue}) => {
-
-    return await apiCaller('/api/submission/update-status', {
-      submissionId,
-      status,
-      // issue: "" // used for sending emails
-    }, 203, 
+  async ({submissionId, status, issue}, {rejectWithValue}) => {
+    
+    const body = issue == "" ? {submissionId, status} : {submissionId, status, issue} 
+    return await apiCaller('/api/submission/update-status', body, 203, 
     (data) => ({submissionId, status}), 
     rejectWithValue)
   }

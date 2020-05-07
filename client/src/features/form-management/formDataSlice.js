@@ -19,9 +19,9 @@ const initialState = {
 
 export const fetchFromToken = createAsyncThunk(
   'formData/fetchFromToken',
-  async (token, {rejectWithValue }) => {
+  async (_, {rejectWithValue }) => {
 
-    return await apiCaller('/api/submission/submit', {}, 200, 
+    return await apiCaller('/api/submission/fetch-review', {}, 200, 
     (data) => ({submissionId: data.submissionId, formId: data.formId}), 
     rejectWithValue)
   }

@@ -35,7 +35,7 @@ const userAccess = {
   "/api/form/create": ["cca"],
   "/api/form/edit": ["cca"],
   "/api/form/delete": ["cca"],
-  "/api/form/fetch": ["cca", "soc"],
+  "/api/form/fetch": ["cca", "soc", "pres", "pat"],
   "/api/form/fetch-list": ["cca", "soc"],
   "/api/form/fetch-checklist": ["cca"],
   

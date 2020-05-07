@@ -43,7 +43,7 @@ function LoginPage({error, dispatch, match, location}) {
   
 
   React.useEffect(() => {
-    dispatch(login({email: "ieee@lums.edu.pk", password: "ieee12345", userType: "Society"}))
+    // dispatch(login({email: "ieee@lums.edu.pk", password: "ieee12345", userType: "Society"}))
     // dispatch(login({email: "admin@lums.edu.pk", password: "Test12345", userType: "CCA"}))
   }, [])
 
@@ -55,8 +55,8 @@ function LoginPage({error, dispatch, match, location}) {
       <Formik
         validateOnChange={false} validateOnBlur={true}
         initialValues = {{
-            email: 'developer@lums.edu.pk',
-            password: 'Test12345',
+            email: '',
+            password: '',
         }}
         validationSchema={Yup.object({
             email: Yup.string()

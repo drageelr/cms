@@ -22,30 +22,16 @@ const useStyles = makeStyles((theme) => ({
 
 function FormViewer({formTemplate, formData, dispatch, userType, conditionalView, match, location}) {
   const { title, sectionTitles, sectionsOrder, componentsOrder, itemsOrder, items } = formTemplate
-  const { createMode, ccaNotes, societyNotes } = formData
+  const { createMode, ccaNotes, societyNotes, id } = formData
   const [ sectionIndex, setSectionIndex ] = useState(0)
   const classes = useStyles()
   const viewerId = match && match.params.id // formId when in create mode, formDataId when in edit/review mode
-  const mode = match && match.params.mode
-  const patOrPres = match.params.type // patron or president
+  const presOrPat = match.params.type // patron or president
   const token = location.search.split('=')[1] // token for patron / pres
-  const inReview = mode == "review"
+  const mode = (match && match.params.mode) || (presOrPat && "p_review") //president/patron review
+  const inReview = mode == "review" || mode == "p_review"
   
   async function initializeFormViewer() {
-    console.log("initializing form viewer", patOrPres)
-    if (patOrPres) {
-      console.log(patOrPres, token)
-      dispatch(setUserDetails({userType: "CCA", isLoggedIn: true ,token}))
-      
-      const fetchFromTokenResult = await dispatch(fetchFromToken(token))
-      const { formId, submissionId } = unwrapResult(fetchFromTokenResult)
-      console.log("Got ", formId, " and ", submissionId)
-      await dispatch(fetchFormData(submissionId))
-      const fetchFormResult = await dispatch(fetchForm(formId))
-      const fetchedItems = unwrapResult(fetchFormResult).items
-      dispatch(initializeVisibilities({items: fetchedItems}))
-    }
-
     if (mode == "edit" || mode == "review" ){ //if in edit mode, also fetch form data
       const fetchFormDataResult = await dispatch(fetchFormData(viewerId))
       const formId = unwrapResult(fetchFormDataResult).formId
@@ -58,6 +44,20 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
       const fetchedItems = unwrapResult(fetchFormResult).items
       dispatch(initializeVisibilities({items: fetchedItems}))
     }
+
+    if (presOrPat) { //patron, president issue/approval mode
+      console.log(presOrPat, token)
+      console.log(mode, inReview)
+
+      dispatch(setUserDetails({userType: "PresPatron", isLoggedIn: true ,token}))
+      
+      const fetchFromTokenResult = await dispatch(fetchFromToken(token))
+      const { formId, submissionId } = unwrapResult(fetchFromTokenResult)
+      const fetchFormResult = await dispatch(fetchForm(formId))
+      const fetchedItems = unwrapResult(fetchFormResult).items
+      await dispatch(fetchFormData(submissionId))
+      dispatch(initializeVisibilities({items: fetchedItems}))
+    }
   }
   
   useEffect(() => {
@@ -68,8 +68,8 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
 
   return (
     <div>
-      <FormViewerBar title={title} notesData={{ccaNotes, societyNotes}} 
-        inReview={inReview} isCCA={userType=="CCA"} createMode={createMode}/>
+      <FormViewerBar title={title} notesData={{ccaNotes, societyNotes}} submissionId={id}
+        inReview={inReview} inReviewP={mode == "p_review"} presOrPat={presOrPat} isCCA={userType=="CCA"} createMode={createMode}/>
       <br/>
       {
       (mode == "create" ?  (formTemplate.isPending) : (formTemplate.isPending || formData.isPending)) 

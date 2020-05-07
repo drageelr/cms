@@ -59,8 +59,9 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
   function renderItem() {
     const optionsConv = options !== undefined && options.map((option,index) => ({optionId: index, data: option})) 
 
-    function handleConditionalChange(e) {
-      dispatch(setItemData({itemId: id, data: e.target.value}))
+    function conditionalChange(e) {
+      const optionId = Number(e.target.value)
+      dispatch(setItemData({itemId: id, data: optionId}))
     }
     
     
@@ -158,7 +159,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
         return (
           <FormControl component="fieldset">
             <FormLabel component="legend">{label}</FormLabel>
-            <RadioGroup id={id} value={data} onChange={(e) => !inReview && handleConditionalChange(e)}>
+            <RadioGroup id={id} value={data} onChange={(e) => !inReview && conditionalChange(e)}>
               {
                 optionsConv.map((option, index) => {
                   return (
@@ -174,7 +175,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
         return (
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel>{label}</InputLabel>
-            <Select id={id} label={label} value={data} onChange={(e) => !inReview && handleConditionalChange(e)}>
+            <Select id={id} label={label} value={data} onChange={(e) => !inReview && conditionalChange(e)}>
               {
                 optionsConv.map((option, index) => {
                   return (

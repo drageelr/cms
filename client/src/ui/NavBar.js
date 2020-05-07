@@ -71,11 +71,11 @@ export default function NavBar({name, userType, picture, setDarkMode, darkMode})
           <Grid container direction='row' justify="space-between" alignItems="center">
             
             <Grid item>
-            { userType === "CCA" &&
+            { userType == "CCA" &&
               <IconButton edge="start" onClick={toggleDrawer} >
                 <MenuIcon />
               </IconButton>
-              }
+            }
             </Grid>
           
             <Grid item style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
@@ -105,27 +105,32 @@ export default function NavBar({name, userType, picture, setDarkMode, darkMode})
                   {name}
                 </Box>
               </Typography>
-              {      
-              userType==="CCA" ? 
-              <Link to='settings'>
-                <IconButton edge="end" style={{padding: 10, marginRight: 5}}>
-                  <SettingsIcon/>
-                </IconButton>
-              </Link>
-              : <Grid item style={{marginTop: 30}}>
-                  <Link to={"/change-password"} style={{ textDecoration: 'none' }}>
-                    <IconButton edge="end" style={{padding: 10, marginRight: 5, marginTop: -35}}>
-                      <SettingsIcon/>
-                    </IconButton>
-                  </Link>  
+              {  
+              userType != "PresPatron" &&  (   
+                userType=="CCA" ? 
+                <Link to='settings'>
+                  <IconButton edge="end" style={{padding: 10, marginRight: 5}}>
+                    <SettingsIcon/>
+                  </IconButton>
+                </Link>
+                : <Grid item style={{marginTop: 30}}>
+                    <Link to={"/change-password"} style={{ textDecoration: 'none' }}>
+                      <IconButton edge="end" style={{padding: 10, marginRight: 5, marginTop: -35}}>
+                        <SettingsIcon/>
+                      </IconButton>
+                    </Link>  
                 </Grid>
+              )
               }
               <br/>
+              {
+              userType != "PresPatron" &&
               <Link to='/'>
                 <IconButton  edge="end" style={{padding: 10}} onClick={()=>dispatch(logout())}>
                   <ExitToAppIcon />
                 </IconButton>
               </Link>
+              }
             </Grid>
           </Grid>
         </Toolbar>

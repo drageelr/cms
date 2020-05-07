@@ -19,7 +19,7 @@ export default function ChangeFormStatusSelect({submissionId, status, updateValu
   function handleChange(e) {
     updateValue(e.target.value)
     setLocalStatus(e.target.value)
-    dispatch(changeFormStatus({submissionId, status: e.target.value}))
+    dispatch(changeFormStatus({submissionId, status: e.target.value, issue: ""}))
   }
 
   const disabledOptions = ["Pending(President)","Issue(President)", "Pending(Patron)", "Issue(Patron)", "Approved(Patron)"]
