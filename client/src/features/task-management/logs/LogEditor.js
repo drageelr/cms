@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
   logEditorPaper: {
     overflow:'auto',
     height: '34vh',
-    width: '34vw',
+    width: '55vw',
     marginLeft: 17
   },
   logPaper:{
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     margin: 8, 
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.secondary.main,
-    width: '32vw'
+    width: '52.5vw',
   }
 }))
 
@@ -46,6 +46,7 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
                 return null
               } else {
                 return taskObj.logs.map(logData => {
+                  // console.log(logData)
                   ccaDetails.map(ccaUser => {
                     if(ccaUser.ccaId === logData.creatorId) {
                       ownerName = ccaUser.firstName + " " + ccaUser.lastName 
@@ -67,7 +68,7 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
                         </Grid>
                       </Grid>
                     </Grid>
-                    <Typography style={{marginLeft: 27, fontSize: 16}}>
+                    <Typography style={{marginLeft: 27, fontSize: 13}}>
                       {logData.description.split('.')[1].replace(/ *\([^)]*\) */g, "")}
                     </Typography>
                   </Paper>          
@@ -96,7 +97,7 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
               autoFocus="true"
               defaultValue = {logText}
               size="small"
-              style={{padding: "9px", marginLeft: 8, width: "60%"}}
+              style={{padding: "9px", marginLeft: 8, width: "55vw"}}
               />
               <Button size="large" variant="contained" style={{marginTop: 20, marginLeft: 10}} onClick={handleUpdateLogs}>
                 Post

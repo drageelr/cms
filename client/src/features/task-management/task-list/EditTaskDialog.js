@@ -49,7 +49,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
         title: taskTitle, 
         description: desc, 
         submissionId: localSubmissionId,
-        ownerId: ownerId, 
+        ownerId: owner, 
         statusId: statusId,
         archive: false
       }
@@ -59,7 +59,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
       const cusTaskObject = { 
         title: taskTitle, 
         description: desc, 
-        ownerId: ownerId, 
+        ownerId: owner, 
         statusId: statusId,
         archive: false
       }
