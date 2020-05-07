@@ -22,10 +22,12 @@ export const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function ItemView({id, templateData, itemsData, submissionId, componentItemIds, inReview, dispatch}) {
+function ItemView({id, templateData, itemsData, submissionId, itemFilledIds, componentItemIds, inReview, dispatch}) {
   const classes = useStyles()
   const {type, label, required, placeHolder, maxLength, fileTypes, options, conditionalItems} = templateData
   const itemData = itemsData.find(itemData => itemData.itemId == id)
+  const isDisabled = itemFilledIds.includes(id) // items will be disabled if they were filled 
+  // and not disabled if the form has an issue for the society to resolve
   const initialItemData = {
     textbox: '',
     textlabel: '',
@@ -37,25 +39,34 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
   const data = itemData === undefined ? initialItemData[type] : itemData.data
   const [localData, setLocalData] = useState(data)
 
+  function resetConditionalView() {
+    const conditionalItemOptionObj = conditionalItems.find(ciObj => ciObj.optionId === data)  
+    if (conditionalItemOptionObj !== undefined) {
+      const visibleItems = [id, ...conditionalItemOptionObj.itemIds]
+      const hiddenItems = componentItemIds.filter(x => !visibleItems.includes(x)) 
+      let newVisibilities = {}
+      visibleItems.forEach(vId => newVisibilities[vId] = true)
+      hiddenItems.forEach(hId => newVisibilities[hId] = false)
+      dispatch(setVisibilities({newVisibilities}))
+    }
+  }
+
+  React.useEffect(() => {
+    if (type == 'radio' || type == 'dropdown') {
+      resetConditionalView()
+    }
+  }, [data])
+    
+
   function renderItem() {
     const optionsConv = options !== undefined && options.map((option,index) => ({optionId: index, data: option})) 
 
     function conditionalChange(e) {
       const optionId = Number(e.target.value)
       dispatch(setItemData({itemId: id, data: optionId}))
-      const conditionalItemOptionObj = conditionalItems.find(ciObj => ciObj.optionId === optionId)  
-      if (conditionalItemOptionObj !== undefined) { //item has conditional options setup, object found for the given optionId
-        const visibleItems = [id, ...conditionalItemOptionObj.itemIds] // items that should be turned on
-        // must include itself as well
-        
-        // get all other items in that component, we have all componentItemIds
-        const hiddenItems = componentItemIds.filter(x => !visibleItems.includes(x)) //by array difference using filter
-        let newVisibilities = {}
-        visibleItems.forEach(vId => newVisibilities[vId] = true)
-        hiddenItems.forEach(hId => newVisibilities[hId] = false)
-        dispatch(setVisibilities({newVisibilities}))
-      }
     }
+    
+    
 
     async function handleFileChange(e){
       if (!inReview) {
@@ -64,7 +75,6 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
         formData.append("", e.target.files[0], e.target.files[0].name) // create multipart form data
         const uploadFileResult = await dispatch(uploadFile(formData))
         const fileToken = unwrapResult(uploadFileResult)
-        // console.log(fileToken)
         dispatch(setItemData({itemId: id, data: fileToken}))
       }
       else { //file downloads in review mode
@@ -72,6 +82,8 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
       }
     }
 
+    
+    
     switch (type){
       case 'textbox':
         return (
@@ -80,14 +92,22 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
             label={label}
             placeholder = {placeHolder}
             required = {required}
+            disabled={isDisabled}
             multiline
+            error={localData.length > maxLength}
+            helperText={ localData.length > maxLength ? `Max characters exceeded (${maxLength})` : '' }
             rows={3}
             variant="outlined"
             fullWidth
             maxLength={maxLength}
             value={localData} //store data locally for text field and update locally onChange
             onChange={(e)=> !inReview && setLocalData(e.target.value)} 
-            inputProps={{onBlur:()=>{dispatch(setItemData({itemId: id, data: localData}))}}} // only update redux state on blur for performance purposes
+            inputProps={{onBlur:()=>{
+                if (localData.length <= maxLength){
+                  dispatch(setItemData({itemId: id, data: localData}))
+                }
+              } 
+            }} // only update redux state on blur for performance purposes
           />
         )
 
@@ -104,6 +124,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
             control={
               <Checkbox
                 id={id}
+                disabled={isDisabled}
                 checked={data}
                 color="primary" // override, default color is secondary
                 required={required}
@@ -127,7 +148,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
               onChange={handleFileChange} //single files only, at the first index in FileList
             />
             <label htmlFor={`file-${id}`}>
-              <Button variant="contained"  component="span" startIcon={<CloudUploadIcon/>}>
+              <Button variant="contained" disabled={isDisabled} component="span" startIcon={<CloudUploadIcon/>}>
                 {label}
               </Button>
               <p>{data.length != 0 && `Uploaded File [${data.substr(data.length - 7)}]`}</p>
@@ -146,7 +167,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
               {
                 optionsConv.map((option, index) => {
                   return (
-                    <FormControlLabel key={index} value={option.optionId} control={<Radio color="primary"/>}  label={option.data} />
+                    <FormControlLabel key={index} disabled={isDisabled} value={option.optionId} control={<Radio color="primary"/>}  label={option.data} />
                   )
                 })
               }
@@ -162,7 +183,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
               {
                 optionsConv.map((option, index) => {
                   return (
-                    <MenuItem key={index} value={option.optionId}>{option.data}</MenuItem>
+                    <MenuItem key={index} disabled={isDisabled} value={option.optionId}>{option.data}</MenuItem>
                   )
                 })
               }
@@ -184,7 +205,8 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
 
 const mapStateToProps = (state) => ({ //needs both the template to render the form and data to populate it in edit submission mode
   itemsData: state.formData.itemsData,
-  submissionId: state.formData.id
+  submissionId: state.formData.id,
+  itemFilledIds: state.formData.itemFilledIds,
 })
 
 

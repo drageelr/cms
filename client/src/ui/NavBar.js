@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   appBar: {
     height: 45, 
     background: theme.palette.type === 'dark' ? 'linear-gradient(to bottom, #424242, #424242)' :'linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 82%,rgba(237,237,237,1) 100%)'
-  }
+  },
 }))
 
 export default function NavBar({name, ccaId,  userType, picture, darkMode, setDarkMode}) {
@@ -88,11 +88,11 @@ export default function NavBar({name, ccaId,  userType, picture, darkMode, setDa
           <Grid container direction='row' justify="space-between" alignItems="center">
             
             <Grid item>
-            { userType === "CCA" &&
+            { userType == "CCA" &&
               <IconButton edge="start" onClick={toggleDrawer} >
                 <MenuIcon />
               </IconButton>
-              }
+            }
             </Grid>
           
             <Grid item style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
@@ -115,34 +115,39 @@ export default function NavBar({name, ccaId,  userType, picture, darkMode, setDa
                 style={{margin: 5, width: 35, height: 35}} 
                 alt={name} 
                 src={picture}
-                className={classes.blue}
-              />
+                className={classes.drawerPaper}
+              >{name[0]}</Avatar>
               <Typography>
                 <Box color="text.primary" fontWeight={600} m={1}>
                   {name}
                 </Box>
               </Typography>
-              {      
-              userType==="CCA" ? 
-              <Link to='settings'>
-                <IconButton edge="end" style={{padding: 10, marginRight: 5}}>
-                  <SettingsIcon/>
-                </IconButton>
-              </Link>
-              : <Grid item style={{marginTop: 30}}>
-                  <Link to={"/change-password"} style={{ textDecoration: 'none' }}>
-                    <IconButton edge="end" style={{padding: 10, marginRight: 5, marginTop: -35}}>
-                      <SettingsIcon/>
-                    </IconButton>
-                  </Link>  
+              {  
+              userType != "PresPatron" &&  (   
+                userType=="CCA" ? 
+                <Link to='settings'>
+                  <IconButton edge="end" style={{padding: 10, marginRight: 5}}>
+                    <SettingsIcon/>
+                  </IconButton>
+                </Link>
+                : <Grid item style={{marginTop: 30}}>
+                    <Link to={"/change-password"} style={{ textDecoration: 'none' }}>
+                      <IconButton edge="end" style={{padding: 10, marginRight: 5, marginTop: -35}}>
+                        <SettingsIcon/>
+                      </IconButton>
+                    </Link>  
                 </Grid>
+              )
               }
               <br/>
+              {
+              userType != "PresPatron" &&
               <Link to='/'>
                 <IconButton  edge="end" style={{padding: 10}} onClick={()=>dispatch(logout())}>
                   <ExitToAppIcon />
                 </IconButton>
               </Link>
+              }
             </Grid>
           </Grid>
         </Toolbar>
@@ -151,13 +156,12 @@ export default function NavBar({name, ccaId,  userType, picture, darkMode, setDa
         <br/>
         <br/>
         <br/>
-        <Grid container direction="column" justify="space-evenly">
+        <Grid container direction="column" justify="flex-end">
           <Grid item>
             <RoundLinkButton link={'/'} icon={<PlaylistAddCheckIcon fontSize='large'/>} title={'Task Manager'}/>
             <RoundLinkButton link={'/forms'} icon={<EditIcon fontSize='large'/>} title={'Form Maker'}/>
             <RoundLinkButton link={'/request-list'} icon={<ListAltIcon fontSize='large'/>} title={'Request List'}/>
           </Grid>
-
           <Grid item>
             <FormControlLabel
               style={{marginLeft: 10, color: "white"}}
@@ -193,6 +197,15 @@ export default function NavBar({name, ccaId,  userType, picture, darkMode, setDa
               </DialogActions>
             </Dialog>
           </Grid>
+          {/* <Grid item style={{width: '10vw'}} >
+            <Typography  align="center">
+              <Box color="secondary.main" m={1} fontSize={10}>
+              CMS is a copyright product of LUMS Software Engineering (CS 360) Spring 2020 - Group 19 
+              <br/>
+              Members: Hammad Nasir, Zoraiz Qureshi, Farrukh Rasool, Hamza Farooq, Hamza Bin Aqeel
+              </Box>
+            </Typography>
+          </Grid> */}
         </Grid>
       </Drawer>
     </div>

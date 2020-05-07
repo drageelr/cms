@@ -196,7 +196,6 @@ function Properties({propertiesData, formTemplate, dispatch}) {
       <Grid container  direction="column" justify="flex-start" alignItems="center">
         <Grid item xs>
         <h3 style={{marginTop: 10}}>{(propertyAddMode ? 'Add ' : 'Edit ') + title}</h3>
-          <Divider variant="middle"/>
         </Grid>
         <List className={classes.innerDiv}>
           {renderProperties}

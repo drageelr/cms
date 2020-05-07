@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import FormViewerBar from './FormViewerBar'
-import {makeStyles, List, Paper, Container, CircularProgress, Button, Typography } from '@material-ui/core'
+import {makeStyles, List, Paper, Container, CircularProgress, Button, Typography, LinearProgress } from '@material-ui/core'
 import { connect } from 'react-redux'
 import ItemView from './ItemView'
-import { fetchFormData, clearError } from '../formDataSlice'
+import { fetchFormData, clearError, fetchFromToken } from '../formDataSlice'
+import { setUserDetails } from '../../account-settings/userSlice'
 import { fetchForm, clearError as clearErrorFormTemplate } from '../formTemplateSlice'
 import { initializeVisibilities } from '../conditionalViewSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
@@ -19,17 +20,19 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function FormViewer({formTemplate, formData, dispatch, userType, conditionalView, match}) {
+function FormViewer({formTemplate, formData, dispatch, userType, conditionalView, match, location}) {
   const { title, sectionTitles, sectionsOrder, componentsOrder, itemsOrder, items } = formTemplate
-  const { createMode, ccaNotes, societyNotes } = formData
+  const { createMode, ccaNotes, societyNotes, id, itemFilledIds } = formData
   const [ sectionIndex, setSectionIndex ] = useState(0)
   const classes = useStyles()
-  const viewerId = match.params.id // formId when in create mode, formDataId when in edit/review mode
-  const mode = match.params.mode
-  const inReview = mode == "review"
+  const viewerId = match && match.params.id // formId when in create mode, formDataId when in edit/review mode
+  const presOrPat = match.params.type // patron or president
+  const token = location.search.split('=')[1] // token for patron / pres
+  const mode = (match && match.params.mode) || (presOrPat && "p_review") //president/patron review
+  const inReview = mode == "review" || mode == "p_review"
   
   async function initializeFormViewer() {
-    if (mode == "edit" || mode == "review"){ //if in edit mode, also fetch form data
+    if (mode == "edit" || mode == "review" ){ //if in edit mode, also fetch form data
       const fetchFormDataResult = await dispatch(fetchFormData(viewerId))
       const formId = unwrapResult(fetchFormDataResult).formId
       const fetchFormResult = await dispatch(fetchForm(formId))
@@ -39,6 +42,20 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
     else if (mode == "create") {
       const fetchFormResult = await dispatch(fetchForm(viewerId))
       const fetchedItems = unwrapResult(fetchFormResult).items
+      dispatch(initializeVisibilities({items: fetchedItems}))
+    }
+
+    if (presOrPat) { //patron, president issue/approval mode
+      console.log(presOrPat, token)
+      console.log(mode, inReview)
+
+      dispatch(setUserDetails({userType: "PresPatron", isLoggedIn: true ,token}))
+      
+      const fetchFromTokenResult = await dispatch(fetchFromToken(token))
+      const { formId, submissionId } = unwrapResult(fetchFromTokenResult)
+      const fetchFormResult = await dispatch(fetchForm(formId))
+      const fetchedItems = unwrapResult(fetchFormResult).items
+      await dispatch(fetchFormData(submissionId))
       dispatch(initializeVisibilities({items: fetchedItems}))
     }
   }
@@ -51,12 +68,12 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
 
   return (
     <div>
-      <FormViewerBar submissionId={viewerId} title={title} notesData={{ccaNotes, societyNotes}} 
-        inReview={inReview} isCCA={userType=="CCA"} createMode={createMode}/>
+      <FormViewerBar title={title} notesData={{ccaNotes, societyNotes}} submissionId={id}
+        inReview={inReview} inReviewP={mode == "p_review"} presOrPat={presOrPat} isCCA={userType=="CCA"} createMode={createMode}/>
       <br/>
       {
       (mode == "create" ?  (formTemplate.isPending) : (formTemplate.isPending || formData.isPending)) 
-      ? <CircularProgress style={{marginLeft: '50vw', marginTop: '30vh'}}/>
+      ? <LinearProgress style={{marginTop: -5}}  variant="indeterminate"/>
       : <Container>
         {/* //Container to center align the View, also sections and items rendered only (components are only logical) */}
         <Paper elevation={4} className={classes.sectionPaper}>
@@ -70,7 +87,13 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
                     return componentItemIds.map( itemId => 
                       // depending on conditionalView
                       (conditionalView[itemId] ? true : items[itemId].defaultVisibility) && //defaultVisibility can be overridden 
-                      <ItemView key={itemId} componentItemIds={componentItemIds} id={itemId} inReview={inReview} templateData={items[itemId]} />
+                      <ItemView 
+                      key={itemId} 
+                      componentItemIds={componentItemIds} 
+                      id={itemId} 
+                      inReview={inReview} 
+                      templateData={items[itemId]}
+                      />
                     )
                   }
                 }

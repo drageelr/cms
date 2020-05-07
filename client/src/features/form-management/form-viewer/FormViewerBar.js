@@ -4,10 +4,14 @@ import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles'
 import NotesIcon from '@material-ui/icons/Notes'
 import SaveIcon from '@material-ui/icons/Save'
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
+import DoneOutlineIcon from '@material-ui/icons/DoneOutline'
 import NotesSideBar from './NotesSideBar'
+import IssueDialog from './IssueDialog'
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 import { createFormData, editFormData, resetState } from '../formDataSlice'
+import { changeFormStatus } from '../../request-management/requestListSlice'
 
 const useStyles = makeStyles((theme) => ({
   propertiesPaper: {
@@ -18,10 +22,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function FormListBar({submissionId, title, notesData, isCCA, createMode , inReview}) {
+export default function FormViewerBar({ title, notesData, isCCA, createMode, submissionId, inReview, inReviewP, presOrPat}) {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
+  const [issueDialogOpen, setIssueDialogOpen] = useState(false)
+  const [approvedDialogOpen, setApprovedDialogOpen] = useState(false)
   const dispatch = useDispatch()
   const history = useHistory()
 
@@ -43,12 +49,33 @@ export default function FormListBar({submissionId, title, notesData, isCCA, crea
           </Grid>
 
           <Grid item>
-            <Button
-              variant="contained"
-              startIcon={<NotesIcon/>}
-              onClick={toggleDrawer}
-            >Notes</Button>
-        
+            {
+            inReviewP ? (
+              <Button
+                color="primary"
+                variant="contained"
+                startIcon={<DoneOutlineIcon/>}
+                onClick={() => {
+                  dispatch(changeFormStatus({
+                    submissionId, 
+                    status: presOrPat == "pres" ? "Pending(Patron)" : "Approved(Patron)",
+                    issue: ""
+                  })).then((changeFormStatusResult) => {
+                    setApprovedDialogOpen(true)
+                  })
+                }}
+              >Approve</Button>
+            )
+            : (
+              !createMode &&
+              <Button
+                variant="contained"
+                startIcon={<NotesIcon/>}
+                onClick={toggleDrawer}
+              >Notes</Button>
+            )
+            }
+            
             {
             !inReview && // hide save button in review mode
             <Button
@@ -60,18 +87,31 @@ export default function FormListBar({submissionId, title, notesData, isCCA, crea
             >Save</Button>
             }
 
-            <Button
-            variant="contained"
-            style={{marginLeft:10, marginRight: 15}}
-            onClick={()=> setExitDialogOpen(true)}
-            >Exit</Button>
+            {
+              inReviewP ? (
+                <Button
+                  variant="contained"
+                  startIcon={<ErrorOutlineIcon/>}
+                  style={{marginLeft:10}}
+                  onClick={()=> setIssueDialogOpen(true)}
+                >Attach Issue</Button>
+              )
+              : (
+                <Button
+                variant="contained"
+                style={{marginLeft:10, marginRight: 15}}
+                onClick={()=> setExitDialogOpen(true)}
+                >Exit</Button>
+              )
+            }
+            
           </Grid>
 
         </Grid>
       </Paper>
-      <NotesSideBar submissionId={submissionId} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} notesData={notesData} isCCA={isCCA}/>
+      <NotesSideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} notesData={notesData} isCCA={isCCA}/>
 
-      <Dialog aria-labelledby="conditional-item-dialog" open={exitDialogOpen}>
+      <Dialog aria-labelledby="exit-dialog" open={exitDialogOpen}>
         <DialogTitle id="exit-dialog-title">Exit</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -81,7 +121,7 @@ export default function FormListBar({submissionId, title, notesData, isCCA, crea
         <DialogActions>
           <Button onClick={()=>{
               dispatch(resetState())
-              history.push('/request-list')
+              history.goBack()
           }} color="primary">
             Yes
           </Button>
@@ -90,6 +130,25 @@ export default function FormListBar({submissionId, title, notesData, isCCA, crea
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog aria-labelledby="approved-dialog" open={approvedDialogOpen}>
+        <DialogTitle id="approved-dialog-title">Submission Approved</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            The submission under review has been approved.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>{
+            setApprovedDialogOpen(false)
+          }} color="primary">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+      <IssueDialog presOrPat={presOrPat} setIssueDialogOpen={setIssueDialogOpen} issueDialogOpen={issueDialogOpen} />
     </div>
   )
 }

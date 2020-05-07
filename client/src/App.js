@@ -19,8 +19,7 @@ import { connect } from 'react-redux'
 
 function App({ user }) {
   const { isLoggedIn, userType, name, picture } = user
-
-  const [darkMode, setDarkMode] = useState(user.darkMode)
+  const [darkMode, setDarkMode] = React.useState(false)
 
   document.body.style = darkMode ? 'background: #424242' : 'background: #ffffff' 
   
@@ -62,78 +61,36 @@ function App({ user }) {
 
   console.log(darkMode)
   
+  function CCARouteComponent(component) {
+    return isLoggedIn ? ( userType == "CCA" ? component : SocietyDashboard) : LoginPage
+  }
+
   return (
     <Router>
       <ThemeProvider theme={appTheme}>
-        { isLoggedIn ?
         <div>
-          <NavBar name={name} ccaId={user.id} userType={userType} picture={picture} darkMode={darkMode} setDarkMode={setDarkMode}/>
+          { 
+            isLoggedIn &&
+            <NavBar name={name} userType={userType} picture={picture} darkMode={darkMode} setDarkMode={setDarkMode}/>
+          }
           <Switch>
-            <Route path="/" exact component={userType === "CCA" ? TaskManager : SocietyDashboard}/>
-            <Route path="/form-viewer" exact component={FormViewer}/>
-            <Route path="/form-viewer/:mode/:id" component={FormViewer}/>
-            <Route path="/change-password" exact component={ChangePassword}/>
-            {
-              userType === "CCA" ? (
-                <Route path="/settings" exact component={CCASettingsHome}/>
-                ) : (
-                  <Route path="/" exact component={SocietyDashboard}/>
-                )
-            }
-            {
-              userType === "CCA" && (
-                <Route path="/request-list" exact component={RequestList}/>
-              )
-            }
-            {
-              userType === "CCA" ? (
-                <Route path="/task-status-panel" exact component={TaskStatusPanel}/>
-                ) : (
-                  <Route path="/" component={SocietyDashboard}/>
-                )
-            }
-            {
-              userType === "CCA" ? (
-                <Route path="/cca-panel" exact component={CCAAccountsPanel}/>
-              ) : (
-                <Route path="/" component={SocietyDashboard}/>
-              )
-            }
-            {
-              userType === "CCA" ? (
-                <Route path="/society-panel" exact exact component={SocietyAccountsPanel}/>
-              ) : (
-                <Route path="/" component={SocietyDashboard}/>
-              )
-            }
-            {
-              userType === "CCA" ? (
-                <Route path="/form-maker" exact component={FormMaker}/>
-              ) : (
-                <Route path="/" component={SocietyDashboard}/>
-              )
-            }
-            {
-              userType === "CCA" ? (
-                <Route path="/form-maker/:id" exact component={FormMaker}/>
-              ) : (
-                <Route path="/" component={SocietyDashboard}/>
-              )
-            }
-            {
-              userType === "CCA" ? (
-                <Route path="/forms" exact component={FormList}/>
-              ) : (
-                <Route path="/" component={SocietyDashboard}/>
-              )
-            }
-            
-            <Route path="*" component={LoginPage}/>
+            <Route path="/" exact component={isLoggedIn ? (userType === "CCA" ? TaskManager : SocietyDashboard) : LoginPage}/>
+            <Route path="/review/:type" component={FormViewer}/>
+            <Route path="/form-viewer" exact component={isLoggedIn ? FormViewer : LoginPage}/>
+            <Route path="/form-viewer/:mode/:id" component={isLoggedIn ? FormViewer : LoginPage}/>
+            <Route path="/change-password" exact component={isLoggedIn ? ChangePassword : LoginPage}/>
+            <Route path="/settings" exact component={isLoggedIn ? CCASettingsHome : LoginPage}/>
+            <Route path="/request-list" exact component={isLoggedIn ? RequestList : LoginPage}/>
+            <Route path="/task-status-panel" exact component={isLoggedIn ? TaskStatusPanel : LoginPage}/>
+            <Route path="/cca-panel" exact component={isLoggedIn ? CCAAccountsPanel : LoginPage}/>
+            <Route path="/society-panel" exact exact component={isLoggedIn ? SocietyAccountsPanel : LoginPage}/>
+            <Route path="/form-maker" exact component={isLoggedIn ? FormMaker : LoginPage}/>
+            <Route path="/form-maker/:id" exact component={isLoggedIn ? FormMaker : LoginPage}/>
+            <Route path="/forms" exact component={isLoggedIn ? FormList : LoginPage}/>
 
           </Switch>
         </div>
-        : <LoginPage/>
-        }
+
       </ThemeProvider>
     </Router>
   )

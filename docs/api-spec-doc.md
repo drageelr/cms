@@ -86,12 +86,13 @@
 *Note: Will contain APIs for submitting / editing forms / viewing (CCA + Society), getting request list, updating request status (CCA) etc*
 |#|Name|Description|Route|Request Object|Request Type|Response Object (Success)|Access|Possible Errors|
 |-|----|-----------|-----|------------|--------------|---------------|------|---------------|
-|1|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/submission/submit`|`{formID*: Number, submissionID*: Number, itemsData*: itemsObj}`|POST|`{timestampCreated: DateTime, timestampModified: DateTime}`|Society|`7.1, 8.1`|
-|2|Add CCA Note|Attaches a Note from CCA to a request|`/api/submission/cca/add-note`|`{submissionId*: Number, note*: "String-min(1)-max(100)"}`|POST|`{}`|CCA|`9.1`|
-|3|Add Society Note|Attaches a Note from Society to a request|`/api/submission/society/add-note`|`{submissionId*: Number, note*: "String-min(1)-max(100)"}`|POST|`{}`|Society|`9.1`|
-|4|Fetch Submission List|Fetches list of all submissions made|`/api/submission/fetch-list`|`{statusList: ["String"], timeObj*: timeObj}`|POST|`{submissions: submissionsList}`|CCA+Society|`9.1`|
-|5|Update Submission Status|Status of existing submission updated|`/api/submission/update-status`|`{submissionId*: Number, status*: "String", issue: "String-min(1)-max(500)"}`|POST|`{}`|CCA|`8.1, 9.1`|
-|6|Fetch Submission|Fetches a submission with complete details|`/api/submission/fetch`|`{submissionId*: Number}`|POST|`{itemsData: itemsObj, ccaNotes: ["String"], societyNotes: ["String"], formId: Number}`|CCA+Society|`9.1`|
+|1|Submit Form|Submits a form for approval (if needed) and then to CCA|`/api/submission/submit`|`{formID*: Number, submissionID*: Number, itemsData*: itemsObj}`|`POST`|`{timestampCreated: DateTime, timestampModified: DateTime}`|Society|`7.1, 8.1`|
+|2|Add CCA Note|Attaches a Note from CCA to a request|`/api/submission/cca/add-note`|`{submissionId*: Number, note*: "String-min(1)-max(100)"}`|`POST`|`{}`|CCA|`9.1`|
+|3|Add Society Note|Attaches a Note from Society to a request|`/api/submission/society/add-note`|`{submissionId*: Number, note*: "String-min(1)-max(100)"}`|`POST`|`{}`|Society|`9.1`|
+|4|Fetch Submission List|Fetches list of all submissions made|`/api/submission/fetch-list`|`{statusList: ["String"], timeObj*: timeObj}`|`POST`|`{submissions: submissionsList}`|CCA+Society|`9.1`|
+|5|Update Submission Status|Status of existing submission updated|`/api/submission/update-status`|`{submissionId*: Number, status*: "String", issue: "String-min(1)-max(500)"}`|`POST`|`{}`|CCA|`8.1, 9.1`|
+|6|Fetch Submission|Fetches a submission with complete details|`/api/submission/fetch`|`{submissionId*: Number}`|`POST`|`{itemsData: itemsObj, ccaNotes: ["String"], societyNotes: ["String"], formId: Number, itemFilledData: [Number]}`|CCA+Society|`9.1`|
+|7|Fetch Review Data|Fetches formId and submissionId based on token provided|`/api/submission/fetch-review`|`{}`|`POST`|`{formId: Number, submissionId: Number}`|Patron + President|None|
 
 ### Object Schema
 |#|Name|Object|

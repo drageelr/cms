@@ -38,6 +38,11 @@ const submissionStatus = {
   cca: ["Pending(CCA)", "Issue(CCA)", "Approved(CCA)",  "Write-Up",  "Completed"],
 }
 
+const submissionChangeStatus = {
+  pres: "Pending(President)",
+  pat: "Pending(Patron)"
+}
+
 /*
   <<<<< HELPER FUNCTIONS >>>>>
 */
@@ -88,7 +93,8 @@ async function itemTypeValidation (formItems, itemsData) {
   let formitemTypeObj = helperFuncs.createObjFromObjArr(formItems, "itemId", ["type", "maxLength", "options", "fileTypes"]);
   for (let i of itemsData) {
     // Data Type Validation
-    let correctDataType = itemDataTypes[formitemTypeObj[i.itemId].type]
+    let itemType = formitemTypeObj[i.itemId].type
+    let correctDataType = itemDataTypes[itemType]
     if (correctDataType === undefined) {
       return "item with id " + i.itemId + " type does not exist OR type does not take any input";
     } else if (typeof i.data != correctDataType) {
@@ -96,7 +102,7 @@ async function itemTypeValidation (formItems, itemsData) {
     }
 
     // Data Value Validation
-    switch(correctDataType) {
+    switch(itemType) {
       case "textbox":
         let maxLength = formitemTypeObj[i.itemId].maxLength;
         if (i.data.length > maxLength){
@@ -111,15 +117,17 @@ async function itemTypeValidation (formItems, itemsData) {
         break
       case "file":
         const fileTypesArr = formitemTypeObj[i.itemId].fileTypes.split(',');
+        console.log(fileTypesArr)
         // const nameSplitArr = i.data.split('.') //to get extension of file in last index
         // if (!fileTypesArr.includes('.' + nameSplitArr[nameSplitArr.length - 1])){
         //   return "item with id " + i.itemId + " does not support this file type, file types allowed: " + formitemTypeObj[i.itemId].fileTypes;
         // }
         let fileObj = jwt.decodeTokenFunc(i.data);
         let itemFile = await File.findById(fileObj._id);
+        console.log(itemFile)
 
         if (!itemFile) return "item with id " + i.itemId + " has not been uploaded";
-        if (!itemFile.saved) return "item with id " + i.itemId + " was already used";
+        if (itemFile.saved) return "item with id " + i.itemId + " was already used";
         if (itemFile.formId) return "item with id " + i.itemId + " was unlinked, can't use it again";
         
         const nameSplitArr = itemFile.name.split('.') //to get extension of file in last index
@@ -140,7 +148,8 @@ async function itemTypeValidation (formItems, itemsData) {
  */
 function duplicateEntryValidation (reqSubmission, itemsData) {
   let submissionItemIds = helperFuncs.createArrFromObjArr(reqSubmission.itemsData, "itemId");
-  for (let i in itemsData) {
+  console.log(submissionItemIds, itemsData)
+  for (let i of itemsData) {
     if (i.itemId in submissionItemIds) {
       return "item with id " + i.itemId + " already has a value";
     }
@@ -246,11 +255,16 @@ exports.submitForm = async (req, res, next) => {
         // 2) Check item constraints based on types + form data
         submissionValidationError = await itemTypeValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
-
+        
+        if (reqSubmission.status == "Issue(President)" || reqSubmission.status == "Issue(Patron)") {
+          await Submission.findByIdAndUpdate(reqSubmission._id, {$pull: {itemsData: {_id: {$in: reqSubmission.itemsData.map(i => i._id)}}}})
+          reqSubmission = await Submission.findById(reqSubmission._id)
+        }
+        
         // 3) Check re-entry of an item is not given
         submissionValidationError = duplicateEntryValidation(reqSubmission, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
-
+        
         // 4) For "File" types, get correct data:
         for(let iS of itemsData) {
           for (let iF of reqForm.items) {
@@ -268,12 +282,12 @@ exports.submitForm = async (req, res, next) => {
         if(statusToUpdateObj) {
           resubmissionQuery.$set = {status: statusToUpdateObj.status};
         }
-        
-        await reqSubmission.update(resubmissionQuery);
 
+        await reqSubmission.update(resubmissionQuery);
+        console.log(statusToUpdateObj)
         if (statusToUpdateObj) {
           let reqSociety = await Society.findById(params.userObj._id, statusToUpdateObj.email);
-          sendReviewEmail(reqSociety[statusToUpdateObj.email], reqSociety[statusToUpdateObj].type, reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
+          sendReviewEmail(reqSociety[statusToUpdateObj.email], reqSociety[statusToUpdateObj.type], reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
         }
 
       
@@ -295,7 +309,8 @@ exports.submitForm = async (req, res, next) => {
         // 2) Check item constraints basonsed on types + form data
         submissionValidationError = await itemTypeValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
-
+        
+        console.log(submissionValidationError)
         // 4) For "File" types, get correct data:
         for(let iS of itemsData) {
           for (let iF of reqForm.items) {
@@ -458,7 +473,7 @@ exports.getSubmissionList = async (req, res, next) => {
       });
     } else {
       // raise submission not found error
-      throw new customError.SubmissionNotFoundError("no matching submission found");
+      throw new customError.SubmissionNotFoundError("no submissions exists");
     }
   } catch (err) {
     next(err);
@@ -472,17 +487,34 @@ exports.getSubmissionList = async (req, res, next) => {
 // API 4.5 Controller
 exports.updateSubmissionStatus = async (req, res, next) => {
   let params = req.body;
+  console.log(params)
 
   try {
     let reqSubmission = await Submission.findOne({submissionId: params.submissionId});
     
     if (reqSubmission) {
       let statusAvailable = submissionStatus[params.userObj.type];
-      if (!(statusAvailable.includes(params.status))) {
+      // if (!(statusAvailable.includes(params.status))) {
+      let statusCheck = false;
+
+      for (let f of statusAvailable) {
+        if (params.status == f) {
+          statusCheck = true;
+          break;
+        }
+      }
+
+      if (!statusCheck) {
+        console.log(params)
         throw new customError.SubmissionValidationError("invalid status or status not allowed, allowed statuses are: " + JSON.stringify(statusAvailable));
       }
+
+      if (params.userObj.type != "cca" && reqSubmission.status != submissionChangeStatus[params.userObj.type]) {
+        throw new customError.SubmissionValidationError("user cannont change status at this moment");
+      }
+
       // params.status contains the string "Issue"
-      if (params.status.includes("Issue") && params.issue && params.userObj.type != "cca"){
+      if ((params.status == "Issue(President)" || params.status == "Issue(Patron)") && params.issue && params.userObj.type != "cca") {
         let reqSociety = await Society.findById(params.userObj._id, 'patronEmail presidentEmail email');
         let emailAddr = reqSociety.presidentEmail;
         if (params.userObj.type == "pat") {
@@ -523,6 +555,7 @@ exports.fetchSubmission = async (req, res, next) => {
 
     if (reqSubmission) {
       let itemsData = helperFuncs.createArrFromObjArr(reqSubmission.itemsData, ["itemId", "data"]);
+      let itemFilledIds = itemsData.map(i => i.itemId);
       let reqForm = await Form.findById(reqSubmission.formId, 'formId');
       let societyNotes = [];
       let ccaNotes = [];
@@ -547,7 +580,9 @@ exports.fetchSubmission = async (req, res, next) => {
         itemsData: itemsData,
         ccaNotes: ccaNotes,
         societyNotes: societyNotes,
-        formId: reqForm.formId
+        formId: reqForm.formId,
+        itemFilledIds: itemFilledIds,
+        status: reqSubmission.status
       });
     } else {
       // raise submission not found error
@@ -555,5 +590,25 @@ exports.fetchSubmission = async (req, res, next) => {
     }
   } catch (err) {
     next(err);
+  }
+}
+
+// API 4.7 Controller
+exports.fetchReviewData = async (req, res, next) => {
+  let params = req.body;
+  
+  try {
+    let reqSubmission = await Submission.findById(params.userObj.sub_id, 'submissionId formId');
+    let reqForm = await Form.findById(reqSubmission.formId, 'formId');
+
+    res.json({
+      statusCode: 200,
+      statusName: httpStatus.getName(200),
+      message: "Review Data Fetched Successfully!",
+      formId: reqForm.formId,
+      submissionId: reqSubmission.submissionId
+    })
+  } catch (err) {
+    next(err)
   }
 }

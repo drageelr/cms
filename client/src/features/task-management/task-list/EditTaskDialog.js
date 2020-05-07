@@ -10,6 +10,8 @@ import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem
 import DeleteIcon from '@material-ui/icons/Delete'
 import CancelIcon from '@material-ui/icons/Cancel'
 import SubjectIcon from '@material-ui/icons/Subject'
+import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined'
+import ArchiveIcon from '@material-ui/icons/Archive'
 
 /**
   The task edit dialog is handled by this component. It navigates between sub components of the task
@@ -171,7 +173,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
       <Grid style={{padding: "15px"}} item container direction="row" justify="space-between" alignItems="flex-start">
         <Typography gutterBottom variant="h5" color="inherit">
           <Grid container direction="row"> 
-            Task Name:
+            <Typography variant="h5" style={{marginTop: 5}}>Task Name:</Typography>
             <TextField 
               id="task-title"
               variant="outlined"
@@ -187,8 +189,12 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
         <Grid>
           {
             editMode
-            ? <DeleteIcon cursor="pointer" onClick={handleDelete} />
-            : <CancelIcon cursor="pointer" onClick={()=>setOpen(false)} />
+            ? <Tooltip title="Archive Task" placement="bottom-end"> 
+                <Fab size="small" color="primary">
+                  <ArchiveIcon cursor="pointer" onClick={handleDelete} fontsize="large"/>
+                </Fab>
+              </Tooltip>
+            : <CancelOutlinedIcon cursor="pointer" onClick={()=>setOpen(false)} /> 
           }
         </Grid>
       </Grid>

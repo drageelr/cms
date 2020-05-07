@@ -5,35 +5,50 @@ import { apiCaller } from "../../helpers"
 const initialState = {
   id: 0, //form data id
   formId: 0, //form Id
-  userId: 0, //user id of the user that submitted
-  formStatus: '',
+  status: '',
   ccaNotes: [],
   societyNotes: [],
   itemsData: [],
-  timestampCreated: '',
-  timestampModified: '',
+  itemFilledIds: [],
   createMode: true,
   isPending: true,
   error: null
 }
 
+export const fetchFromToken = createAsyncThunk(
+  'formData/fetchFromToken',
+  async (_, {rejectWithValue }) => {
+
+    return await apiCaller('/api/submission/fetch-review', {}, 200, 
+    (data) => ({submissionId: data.submissionId, formId: data.formId}), 
+    rejectWithValue)
+  }
+)
+
+
 export const fetchFormData = createAsyncThunk(
   'formData/fetchFormData',
   async (formDataId, { getState, rejectWithValue }) => {
     const { isPending } = getState().formData
+    const formDataList = getState().submissionListData.formDataList
+    
     if (isPending != true) {
       return
     }
     const submissionId = Number(formDataId)
 
     return await apiCaller('/api/submission/fetch', {submissionId}, 200, 
-    (data) => ({
-      id: submissionId,
-      formId: data.formId,
-      ccaNotes: data.ccaNotes,
-      societyNotes: data.societyNotes,
-      itemsData: data.itemsData
-    }), 
+    (data) => {
+      return {
+        id: submissionId,
+        formId: data.formId,
+        ccaNotes: data.ccaNotes,
+        societyNotes: data.societyNotes,
+        itemsData: data.itemsData,
+        itemFilledIds: (data.status.slice(0, 5) == "Issue") ? [] : data.itemFilledIds,
+        // treat all items as unfilled in the case of an issue status on the submission
+      }
+    }, 
     rejectWithValue)
   }
 )
@@ -44,13 +59,13 @@ export const createFormData = createAsyncThunk(
   async (_, {getState, rejectWithValue }) => {
     const formId = getState().formTemplate.id
     const itemsData = getState().formData.itemsData
-    
     // only required to send form Id and items Data when creating a form
     return await apiCaller('/api/submission/submit', {formId, itemsData}, 200, 
     (data) => ({
       id: data.submissionId,
       timestampCreated: data.timestampCreated,
-      timestampModified: data.timestampModified
+      timestampModified: data.timestampModified,
+      itemsData
     }), 
     rejectWithValue)
   }
@@ -61,62 +76,12 @@ export const editFormData = createAsyncThunk(
   async (_, {getState, rejectWithValue }) => {
     const { id, sectionsOrder, componentsOrder, itemsOrder, items } = getState().formTemplate
     const submissionId = getState().formData.id
-    const itemsData = getState().formData.itemsData
-
-    console.log("ITEMS DATA", itemsData)
-
-    const initialItemData = {
-      textbox: '',
-      textlabel: '',
-      checkbox: false,
-      dropdown: -1,
-      radio: -1,
-      file: ''
-    }
-
-    // must filter out item data to send section wise (do not send filled sections)
-    // get all form template data, move section wise, for all items in that section,
-    const sectionsFilled = sectionsOrder.map(sectionId => { 
-      const isSectionFilled = (sectionId in componentsOrder) // if section has components 
-      ? componentsOrder[sectionId].map(componentId => {
-        const isComponentFilled = (componentId in itemsOrder) 
-        ? itemsOrder[componentId].map(itemId => {
-          if (!(itemId in itemsData)) return false //did not receive some item's data at all, then return false (unfilled)
-    
-          // compare against serverItemsData, if all items do not have initial state data in that section,
-          const itemTemplate = items[itemId] // to get type of item to check initial state
-          const itemData = itemsData[itemId] // data for that item currently
-
-          return (itemData != initialItemData[itemTemplate.type]) // return false if item field has been filled 
-        }).every(isItemFilled => isItemFilled == true)  // array of false values for that component
-        : true  // if no items inside it's filled
-        console.log("isComponentFilled ", componentId, isComponentFilled)
-      }).every(isComponentFilled => isComponentFilled == true)
-      : true
-      console.log("isSectionFilled ", sectionId,  isSectionFilled)
-      return isSectionFilled
-    })
-    
-    console.log("Sections Filled", sectionsFilled)
-    // remove all of those items from serverItemsData as the section is considered locked
-    console.log("EDIT SEND", {formId: id, submissionId, itemsData})
+    let itemsData = getState().formData.itemsData
 
     return await apiCaller('/api/submission/submit', {formId: id, submissionId, itemsData}, 200, 
-    (data) => ({submissionId}), 
+    (data) => ({submissionId, itemsData}), 
     rejectWithValue)
 
-  }
-)
-
-export const deleteFormData = createAsyncThunk(
-  'formData/deleteFormData',
-  async (formDataId, {rejectWithValue }) => {
-
-    return await apiCaller('/api/form/delete', {formId: formDataId}, 203, 
-    (data) => {
-      return ''
-    }, 
-    rejectWithValue) 
   }
 )
 
@@ -252,6 +217,10 @@ const formData = createSlice({
     clearError: (state, action) => {
       state.error = null
     },
+
+    setError: (state, action) => {
+      state.error = action.payload.error
+    }
   },
   extraReducers: {
     [fetchFormData.pending]: (state, action) => {
@@ -268,6 +237,7 @@ const formData = createSlice({
           ccaNotes: action.payload.ccaNotes,
           societyNotes: action.payload.societyNotes,
           itemsData: action.payload.itemsData,
+          itemFilledIds: action.payload.itemFilledIds,
           createMode: false,
           isPending: false,
           error: null,
@@ -281,22 +251,23 @@ const formData = createSlice({
       }
     },
     [editFormData.fulfilled]: (state, action) => {
-      state.error = 'Edited Form Data'
+      state.error = 'Edited Submission'
       state.id = action.payload.submissionId
+      action.payload.itemsData.forEach(itemData => {
+        state.itemFilledIds.push(itemData.itemId)
+      })
     },
     [editFormData.rejected]: (state, action) => {
       state.error = action.payload
     },
-    [deleteFormData.fulfilled]: (state, action) => {
-      state.error = 'Deleted Form Data'
-    },
-    [deleteFormData.rejected]: (state, action) => {
-      state.error = action.payload
-    },
+
     [createFormData.fulfilled]: (state, action) => {
-      state.error = 'Created Form Data'
+      state.error = 'Submitted Form'
       state.id = action.payload.id 
       state.createMode = false
+      action.payload.itemsData.forEach(itemData => {
+        state.itemFilledIds.push(itemData.itemId)
+      })
     },
     [createFormData.rejected]: (state, action) => {
       state.error = action.payload
@@ -329,9 +300,18 @@ const formData = createSlice({
     [downloadFile.rejected]: (state, action) => {
       state.error = action.payload
     },
+
+
+    [fetchFromToken.fulfilled]: (state, action) => {
+      state.id = action.payload.submissionId
+    },
+
+    [fetchFromToken.rejected]: (state, action) => {
+      state.error = action.payload
+    },
   }
 })
 
-export const { setItemData, clearError, setCreateMode, resetState } = formData.actions
+export const { setItemData, clearError, setCreateMode, resetState, setError } = formData.actions
 
 export default formData.reducer
