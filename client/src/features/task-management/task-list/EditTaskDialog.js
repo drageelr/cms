@@ -65,6 +65,11 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
       }
       dispatch(createCustomTask(cusTaskObject))
     }
+    setDesc("")
+    setTaskTitle("")
+    setOwner(-1)
+    setSubmissionId(-1)
+    setStatusId(-1)
     setOpen(false)
   }
   
