@@ -1,8 +1,7 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
 import 'typeface-montserrat'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core'
-import blue from '@material-ui/core/colors/blue'
 import NavBar from './ui/NavBar'
 import TaskManager from './features/task-management/TaskManager'
 import FormMaker from './features/form-management/form-maker/FormMaker'
@@ -24,6 +23,13 @@ function App({ user }) {
 
   document.body.style = darkMode ? 'background: #424242' : 'background: #ffffff' 
   
+  // var color = user.themeColor
+  // if (user.themeColor === undefined) {
+  //   color = '#3578fa'
+  // } else {
+  //   color = user.themeColor
+  // }
+
   const appTheme = createMuiTheme({
     palette: {
       type: darkMode ? 'dark' : 'light',
@@ -52,6 +58,8 @@ function App({ user }) {
       }
     }
   })
+
+  console.log(darkMode)
   
   function CCARouteComponent(component) {
     return isLoggedIn ? ( userType == "CCA" ? component : SocietyDashboard) : LoginPage

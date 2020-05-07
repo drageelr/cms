@@ -34,6 +34,28 @@ export const toggleActiveCCAAccount = createAsyncThunk(
   }
 )
 
+export const changeThemeColor = createAsyncThunk(
+  'ccaDetails/changeThemeColor',
+  async (themeObj,  { rejectWithValue }) => {
+    const {ccaId, themeColor} = themeObj
+
+    return await apiCaller('/api/account/cca/edit-account', {ccaId, themeColor}, 203,
+    (data) => (data),
+    rejectWithValue)
+  }
+)
+
+export const manageDarkMode = createAsyncThunk(
+  'ccaDetails/manageDarkMode',
+  async (modeObj,  { rejectWithValue }) => {
+    const {darkMode, ccaId} = modeObj
+    
+    return await apiCaller('/api/account/cca/edit-account', {ccaId, darkMode}, 203,
+    (data) => (data),
+    rejectWithValue)
+  }
+)
+
 export const editCCAPermissions = createAsyncThunk(
   'ccaDetails/editCCAPermissions',
   async ({ccaId, permissions}, { rejectWithValue }) => {
@@ -186,6 +208,20 @@ const ccaDetails = createSlice({
     },
     [editCCAPermissions.rejected]: (state, action) => {
         state.error = action.payload
+    },
+
+    [changeThemeColor.fulfilled]: (state, action) => {
+    
+    },
+    [changeThemeColor.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+    [manageDarkMode.fulfilled]: (state, action) => {
+    
+    },
+    [manageDarkMode.rejected]: (state, action) => {
+      state.error = action.payload
     },
   } 
 })

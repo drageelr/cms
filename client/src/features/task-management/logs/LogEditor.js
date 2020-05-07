@@ -1,7 +1,7 @@
 import React , {useState} from 'react'
 import { Grid, TextField, Button, Typography, Card, Avatar, Container, Paper, Box, List } from '@material-ui/core'
 import { connect } from 'react-redux'
-import { createNewLog } from '../taskDataSlice'
+import { setCusLogCreatorId } from '../taskDataSlice'
 import { makeStyles } from '@material-ui/core/styles'
 import { simplifyTimestamp } from '../../../helpers'
 
@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
   logEditorPaper: {
     overflow:'auto',
     height: '34vh',
-    width: '34vw',
+    width: '55vw',
     marginLeft: 17
   },
   logPaper:{
@@ -18,21 +18,20 @@ const useStyles = makeStyles((theme) => ({
     margin: 8, 
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.secondary.main,
-    width: '32vw'
+    width: '52.5vw',
   }
 }))
 
-export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
-  const [logText, setLogText] = useState("")
+export function LogEditor({taskId, taskData, setLogText, ccaDetails, user, dispatch}) {
+  const [logDesc, setLogDesc] = useState("")
   const classes = useStyles()
   let ownerName=""
   let picture = ""
 
   function handleUpdateLogs() {
-    if (logText) {
-      let creatorId = user.id
-      console.log(logText)
-      dispatch(createNewLog({taskId, creatorId, logText}))
+    if (logDesc) {
+      setLogText(logDesc)
+      setCusLogCreatorId({creatorId: user.id})
     }
   }
 
@@ -47,29 +46,38 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
               } else {
                 return taskObj.logs.map(logData => {
                   ccaDetails.map(ccaUser => {
-                    if(ccaUser.ccaId === logData.creatorId) {
-                      ownerName = ccaUser.firstName + " " + ccaUser.lastName 
-                      picture = ccaUser.picture
+                    if (logData.creatorId !== -1) {
+                      if(ccaUser.ccaId === logData.creatorId) {
+                        ownerName = ccaUser.firstName + " " + ccaUser.lastName 
+                        picture = ccaUser.picture
+                      }
+                    } else {
+                      //TODO REGEX
                     }
+                    
                   })
 
                   return <Paper className={classes.logPaper} >
-                    <Grid container direction="row" justify="space-between" alignItems="flex-start">
-                      <Grid item container style={{padding: "5px"}}>
-                        <Avatar src={picture} style={{height: 20, width: 20, marginTop: 4}}/>
-                        <Typography variant="h6" style={{marginLeft: 3}}>
-                          {ownerName}
-                        </Typography>
-                        <Grid item style={{marginLeft: "55%"}}>
+                    <Grid container direction="column" justify="space-between" alignItems="flex-start">
+                      <Grid direction="row" justify="space-between" alignItems="flex-start">
+                        <Grid container>
+                          <Avatar src={picture} style={{height: 15, width: 15, marginTop: 3}}/>
+                          <Typography variant="subtitle2" style={{marginLeft: 3}}>
+                            {ownerName}
+                          </Typography>
+                        {/* <Grid>
                           <Typography>
                             {simplifyTimestamp(logData.createdAt, false)}
                           </Typography>
+                        </Grid> */}
                         </Grid>
                       </Grid>
+                      <Grid>
+                        <Typography style={{marginLeft: 27, fontSize: 13}}>
+                          {logData.description}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                    <Typography style={{marginLeft: 27, fontSize: 16}}>
-                      {logData.description.split('.')[1].replace(/ *\([^)]*\) */g, "")}
-                    </Typography>
                   </Paper>          
                 })
               }
@@ -90,13 +98,13 @@ export function LogEditor({taskId, taskData, ccaDetails, user, dispatch}) {
               multiline
               rows={3}
               label="Logs"
-              value = {logText}
-              onChange={(event) => {setLogText(event.target.value)}}
+              value = {logDesc}
+              onChange={(event) => {setLogDesc(event.target.value)}}
               variant="outlined"
               autoFocus="true"
-              defaultValue = {logText}
+              defaultValue = {logDesc}
               size="small"
-              style={{padding: "9px", marginLeft: 8, width: "60%"}}
+              style={{padding: "9px", marginLeft: 8, width: "55vw"}}
               />
               <Button size="large" variant="contained" style={{marginTop: 20, marginLeft: 10}} onClick={handleUpdateLogs}>
                 Post
@@ -117,3 +125,4 @@ const mapStateToProps = (state) => ({
 })
 
 export default connect(mapStateToProps)(LogEditor)
+// .split('.')[1].replace(/ *\([^)]*\) */g, "")

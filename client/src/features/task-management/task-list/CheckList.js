@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, {useEffect} from 'react'
 import { connect } from 'react-redux'
 import { Checkbox, FormControlLabel } from '@material-ui/core'
+import { fetchCheckList } from '../taskDataSlice'
 
 /**
   Displays a checklistItems of items that it receives in case a Form has been linked with this Task. 
@@ -14,15 +15,16 @@ import { Checkbox, FormControlLabel } from '@material-ui/core'
 */
 
 export function CheckList({taskId, taskData, dispatch}) {
-
+  
   let submissionId = -1
+  let ownerId = -1
   taskData.taskList.map(taskObj => { // get the submissionId associated to the task
     if (taskObj.taskId === taskId) {
       submissionId = taskObj.submissionId
-      console.log(submissionId)
+      ownerId = taskObj.ownerId
     }
   })
-  
+
   return (
     <div>
       {

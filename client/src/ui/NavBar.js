@@ -7,13 +7,12 @@ import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck'
 import SettingsIcon from '@material-ui/icons/Settings'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import DonutSmallIcon from '@material-ui/icons/DonutSmall'
-import LockIcon from '@material-ui/icons/Lock'
 import { makeStyles } from '@material-ui/core/styles'
-import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Box, Grid, Button, 
-  FormControl, FormGroup, FormControlLabel, Switch} from '@material-ui/core'
+import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Box, Grid, Button, FormControlLabel, 
+  Switch, Dialog, DialogTitle, TextField, DialogActions, DialogContent} from '@material-ui/core'
 import { useDispatch } from 'react-redux'
 import { logout } from '../features/account-settings/userSlice'
-
+import { manageDarkMode, changeThemeColor } from '../features/account-settings/ccaDetailsSlice'
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
@@ -25,21 +24,39 @@ const useStyles = makeStyles((theme) => ({
   },
   appBar: {
     height: 45, 
-    // boxShadow: "none", 
     background: theme.palette.type === 'dark' ? 'linear-gradient(to bottom, #424242, #424242)' :'linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 82%,rgba(237,237,237,1) 100%)'
   },
 }))
 
-export default function NavBar({name, userType, picture, setDarkMode, darkMode}) {
+export default function NavBar({name, ccaId,  userType, picture, darkMode, setDarkMode}) {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [themeColor, setThemeColor] = useState("")
+  
+  console.log(darkMode)
+
   const dispatch = useDispatch()
+
+  function handleDialogOpen() {
+    setDialogOpen(true)
+  }
+
+  function handleDialogClose() {
+    setDialogOpen(false)
+  }
+
+  function handleThemeColor() {
+    dispatch(changeThemeColor({ccaId, themeColor}))
+    setDialogOpen(false)
+  }
 
   function toggleDrawer() {
     setDrawerOpen(!drawerOpen)
   }
 
   function handleDarkModeChange() {
+    dispatch(manageDarkMode({darkMode: !darkMode, ccaId}))
     setDarkMode(!darkMode)
   }
 
@@ -145,13 +162,40 @@ export default function NavBar({name, userType, picture, setDarkMode, darkMode})
             <RoundLinkButton link={'/forms'} icon={<EditIcon fontSize='large'/>} title={'Form Maker'}/>
             <RoundLinkButton link={'/request-list'} icon={<ListAltIcon fontSize='large'/>} title={'Request List'}/>
           </Grid>
+          <Grid item>
+            <FormControlLabel
+              style={{marginLeft: 10, color: "white"}}
+              control={<Switch color="secondary" size="small" checked={darkMode} onChange={handleDarkModeChange} name="darkMode"/>}
+              label="Dark Mode"
+            />
+          </Grid>
 
-          <Grid item >
-          <FormControlLabel
-            style={{marginLeft: 10, color: "white"}}
-            control={<Switch color="secondary" size="small" checked={darkMode} onChange={handleDarkModeChange} name="darkMode"/>}
-            label="Dark Mode"
-          />
+          <Grid item>
+            <Button onClick={handleDialogOpen} size ="small" variant="contained" style={{marginLeft: 7, marginTop: "15%"}}>
+              Set Theme Color
+            </Button> 
+            <Dialog open={dialogOpen} onClose={handleDialogClose} aria-labelledby="theme-dialog">
+              <DialogTitle id="theme-dialog">Set Theme Color</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    label="Hex Color"
+                    value = {themeColor}
+                    onChange={(e)=>{setThemeColor(e.target.value)}}
+                    helperText = "Enter Hex Value for Color (#000000)"
+                  />
+                </DialogContent>
+              <DialogActions>
+                <Button onClick={handleDialogClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleThemeColor} color="primary">
+                  Save
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Grid>
           {/* <Grid item style={{width: '10vw'}} >
             <Typography  align="center">
