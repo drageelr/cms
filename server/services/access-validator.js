@@ -45,7 +45,8 @@ const userAccess = {
   "/api/submission/society/add-note": ["soc"],
   "/api/submission/fetch-list": ["cca", "soc"],
   "/api/submission/cca/update-status": ["cca", "pres", "pat"],
-  "/api/submission/cca/fetch": ["cca", "soc", "pres", "pat"],
+  "/api/submission/fetch": ["cca", "soc", "pres", "pat"],
+  "/api/submission/fetch-review": ["pres", "pat"],
 
   // 5. Task Management API "task.route.js"
   "/api/task-manager/task/req/create": ["cca"],
@@ -83,7 +84,7 @@ const ccaAccess = {
 
   // 4. Request Management API "submission.route.js":
   "/api/submission/cca/add-note": "addCCANote",
-  "/api/submission/cca/update-status": "setFormStatus",
+  "/api/submission/update-status": "setFormStatus",
 
   // 5. Task Management API "task.route.js"
   "/api/task-manager/task/req/create": "createReqTask",

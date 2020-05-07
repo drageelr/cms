@@ -564,3 +564,23 @@ exports.fetchSubmission = async (req, res, next) => {
     next(err);
   }
 }
+
+// API 4.7 Controller
+exports.fetchReviewData = async (req, res, next) => {
+  let params = req.body;
+  
+  try {
+    let reqSubmission = await Submission.findById(params.userObj.sub_id, 'submissionId formId');
+    let reqForm = await Form.findById(reqSubmission.formId, 'formId');
+
+    res.json({
+      statusCode: 200,
+      statusName: httpStatus.getName(200),
+      message: "Review Data Fetched Successfully!",
+      formId: reqForm.formId,
+      submissionId: reqSubmission.submissionId
+    })
+  } catch (err) {
+    next(err)
+  }
+}

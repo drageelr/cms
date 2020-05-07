@@ -77,5 +77,13 @@ router.post(
   submissionController.fetchSubmission
 );
 
+// API 4.7: Fetch Review Data
+router.post(
+  '/fetch-review',
+  jwt.verify,
+  validateUserAccess,
+  submissionController.fetchReviewData
+);
+
 // Export router
 module.exports = router;
