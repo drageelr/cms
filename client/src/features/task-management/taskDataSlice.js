@@ -206,6 +206,7 @@ export const taskOwnerChange = createAsyncThunk(
     const { taskId, owner } = ownerChangeObj
     console.log(ownerChangeObj) 
 
+    console.log("task owner slice")
     return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
       task: {
         taskId: taskId,
@@ -222,6 +223,7 @@ export const updateTitle = createAsyncThunk(
   async (titleObj, { rejectWithValue }) => {
     const { taskId, newTitle } = titleObj
 
+    console.log("task title slice")
     return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
       task: {
         taskId: taskId,
@@ -238,6 +240,7 @@ export const updateDescription = createAsyncThunk(
   async (descObj, { rejectWithValue }) => {
     const { taskId, desc } = descObj
     
+    console.log("task description slice")
     return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
       task: {
         taskId: taskId,
@@ -254,6 +257,7 @@ export const changeTaskStatus = createAsyncThunk(
   async (statusObj, { rejectWithValue }) => {
     const { taskId, statusId } = statusObj
     
+    console.log("task status slice")
     return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
       task: {
         taskId: taskId,

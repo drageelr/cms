@@ -27,17 +27,17 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-
-
 export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, taskId, ccaDetails, dispatch, open, setOpen}) {  
   let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1 }
 
-  //get defaultDesc, defaultTitle, defaultOwner, submissionId from taskData
   const taskObj = taskList.find(taskObj => taskObj.taskId === taskId)
   if (taskObj !== undefined) { // if found
     const { description, title, ownerId, submissionId, statusId } = taskObj
     initialState = { description, title, ownerId, submissionId, statusId }
   }
+
+  console.log(editMode)
+  console.log(taskObj)
 
   const [selectOpen, setSelectOpen] = useState(false)  
   const [desc, setDesc] = useState(initialState.description)
@@ -213,7 +213,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
           <AssignTaskOwner/>
         </Grid>
         <Grid item style={{marginTop: 5}}> {/*Task Status Colors*/}
-          <TaskStatus setStatusId={setStatusId} taskId={taskId}/>
+          <TaskStatus setStatusId={setStatusId} taskId={taskId} editMode={editMode}/>
         </Grid>
       </Grid>
         

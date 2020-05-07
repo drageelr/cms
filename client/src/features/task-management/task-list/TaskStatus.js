@@ -13,7 +13,7 @@ import StopIcon from '@material-ui/icons/Stop'
   @param {function} dispatch dispatch the change Task Status
 */
 
-export function TaskStatus({taskId, taskData, setStatusId, taskStatusDetails, dispatch}) {
+export function TaskStatus({taskId, taskData, setStatusId, editMode, taskStatusDetails, dispatch}) {
 
   let defaultStatusId = -1
   let defaultStatusName = ""
@@ -41,7 +41,9 @@ export function TaskStatus({taskId, taskData, setStatusId, taskStatusDetails, di
     })
     setStatusId(statusId)
     setStatusCode(event.target.value)
-    dispatch(changeTaskStatus({taskId, statusId}))
+    if (editMode) {
+      dispatch(changeTaskStatus({taskId, statusId}))
+    }
   }
 
   function handleClose() {
