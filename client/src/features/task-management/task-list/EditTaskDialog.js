@@ -7,9 +7,10 @@ import LogEditor from "../logs/LogEditor"
 import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
   createCustomTask } from "../taskDataSlice"
 import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions,Fab, Tooltip} from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
 import SubjectIcon from '@material-ui/icons/Subject'
-import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
+import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined'
+import ArchiveIcon from '@material-ui/icons/Archive'
+
 /**
   The task edit dialog is handled by this component. It navigates between sub components of the task
   editor dialog. The data to the child components e.g AddAssignee, Checklist components is 
@@ -173,9 +174,13 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
         <Grid>
           {
             editMode
-            ? <DeleteIcon cursor="pointer" onClick={handleDelete} />
+            ? <Tooltip title="archive" placement="bottom-end"> 
+                <Fab size="small" color="primary">
+                  <ArchiveIcon cursor="pointer" onClick={handleDelete} fontsize="large"/>
+                </Fab>
+              </Tooltip>
             : <Tooltip title="cancel" placement="bottom-end">
-                <CancelOutlinedIcon cursor="pointer" onClick={()=>setOpen(false)} />
+                  <CancelOutlinedIcon cursor="pointer" onClick={()=>setOpen(false)} />
               </Tooltip> 
             
           }

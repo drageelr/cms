@@ -2,11 +2,23 @@ import React, {useEffect} from 'react'
 import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
 import { fetchTask, unArchiveTask } from "../taskDataSlice"
-import { CircularProgress, Button} from '@material-ui/core'
+import { CircularProgress, Fab} from '@material-ui/core'
 import { Link } from 'react-router-dom'
+import UnarchiveOutlinedIcon from '@material-ui/icons/UnarchiveOutlined';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+  margin: {
+    margin: theme.spacing(1),
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1),
+  },
+}))
+
 
 function ArchiveList({ taskData, ccaDetails, dispatch }) {
-
+  const classes = useStyles()
   function handleUnArchiveClick({event, taskId, ownerId}) {
     dispatch(fetchTask({taskId, ownerId}))
     dispatch(unArchiveTask({taskId}))
@@ -14,15 +26,14 @@ function ArchiveList({ taskData, ccaDetails, dispatch }) {
 
   function UnArchiveButton({taskId, ownerId}) {
     return <Link to={""}>
-      <Button 
-        disableElevation 
-        href="" 
-        color="primary"
-        variant = "contained"
-        onClick={(event) => handleUnArchiveClick({event, taskId, ownerId})}
-      >
-        Unarchive
-      </Button>
+        <Fab 
+          color="primary"
+          size="large"
+          variant = "contained"
+          onClick={(event) => handleUnArchiveClick({event, taskId, ownerId})}
+        > <UnarchiveOutlinedIcon className={classes.extendedIcon}/>
+          Unarchive
+      </Fab>
     </Link>
   }
 
