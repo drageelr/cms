@@ -127,7 +127,7 @@ async function itemTypeValidation (formItems, itemsData) {
         console.log(itemFile)
 
         if (!itemFile) return "item with id " + i.itemId + " has not been uploaded";
-        if (!itemFile.saved) return "item with id " + i.itemId + " was already used";
+        if (itemFile.saved) return "item with id " + i.itemId + " was already used";
         if (itemFile.formId) return "item with id " + i.itemId + " was unlinked, can't use it again";
         
         const nameSplitArr = itemFile.name.split('.') //to get extension of file in last index
@@ -581,7 +581,8 @@ exports.fetchSubmission = async (req, res, next) => {
         ccaNotes: ccaNotes,
         societyNotes: societyNotes,
         formId: reqForm.formId,
-        itemFilledIds: itemFilledIds
+        itemFilledIds: itemFilledIds,
+        status: reqSubmission.status
       });
     } else {
       // raise submission not found error

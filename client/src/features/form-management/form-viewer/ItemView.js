@@ -22,7 +22,7 @@ export const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function ItemView({id, templateData, itemsData, status, submissionId, itemFilledIds, componentItemIds, inReview, dispatch}) {
+function ItemView({id, templateData, itemsData, submissionId, itemFilledIds, componentItemIds, inReview, dispatch}) {
   const classes = useStyles()
   const {type, label, required, placeHolder, maxLength, fileTypes, options, conditionalItems} = templateData
   const itemData = itemsData.find(itemData => itemData.itemId == id)
@@ -207,7 +207,6 @@ const mapStateToProps = (state) => ({ //needs both the template to render the fo
   itemsData: state.formData.itemsData,
   submissionId: state.formData.id,
   itemFilledIds: state.formData.itemFilledIds,
-  status: state.formData.status
 })
 
 

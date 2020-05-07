@@ -39,14 +39,13 @@ export const fetchFormData = createAsyncThunk(
 
     return await apiCaller('/api/submission/fetch', {submissionId}, 200, 
     (data) => {
-      const formDataObj = formDataList.find(formData => formData.submissionId == submissionId)
       return {
         id: submissionId,
         formId: data.formId,
         ccaNotes: data.ccaNotes,
         societyNotes: data.societyNotes,
         itemsData: data.itemsData,
-        itemFilledIds: (formDataObj.status.slice(0, 5) == "Issue") ? [] : data.itemFilledIds,
+        itemFilledIds: (data.status.slice(0, 5) == "Issue") ? [] : data.itemFilledIds,
         // treat all items as unfilled in the case of an issue status on the submission
       }
     }, 
