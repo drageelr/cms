@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import { connect } from 'react-redux'
 import EditTaskDialog from './EditTaskDialog'
 import { Draggable } from "react-beautiful-dnd"
-import { Card, CardContent, Typography, Grid, Box } from '@material-ui/core'
+import { Card, CardContent, Typography, Grid, Box, Tooltip} from '@material-ui/core'
 import StopIcon from '@material-ui/icons/Stop'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
@@ -100,8 +100,10 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
               }
             </Grid>  
 
-            <Grid item> 
-              <EditIcon onClick={() => setOpen(true)} fontSize="small" color="action" cursor="pointer"/>
+            <Grid item>
+              <Tooltip title="Edit" placement="bottom-end"> 
+                <EditIcon onClick={() => setOpen(true)} fontSize="small" color="action" cursor="pointer"/>
+              </Tooltip>
               <EditTaskDialog 
                 editMode={true}
                 open={open}

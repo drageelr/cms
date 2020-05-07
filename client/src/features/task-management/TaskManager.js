@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import TaskColumn from './task-list/TaskColumn'
 import TaskArchive from './task-archive/TaskArchive'
 import { DragDropContext } from 'react-beautiful-dnd'
-import { Fab, Dialog, AppBar, Toolbar, Typography, Slide, IconButton, makeStyles, Box, LinearProgress } from '@material-ui/core'
+import { Fab, Dialog, AppBar, Toolbar, Typography, Slide, IconButton, makeStyles, Box, LinearProgress, Tooltip} from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import ArchiveIcon from '@material-ui/icons/Archive'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
@@ -131,9 +131,11 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
 
       <div>
         <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-          <Fab color="primary" aria-label="archive">
-            <ArchiveIcon onClick={handleClickOpen}/>
-          </Fab>
+          <Tooltip title="Archive List" placement="left">
+            <Fab color="primary" aria-label="archive">
+              <ArchiveIcon onClick={handleClickOpen}/>
+            </Fab>
+          </Tooltip>
         </div>
         <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
           <AppBar className={classes.appBar}>

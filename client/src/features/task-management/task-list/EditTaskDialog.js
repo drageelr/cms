@@ -6,11 +6,10 @@ import CheckList from "./CheckList"
 import LogEditor from "../logs/LogEditor"
 import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
   createCustomTask } from "../taskDataSlice"
-import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, Button } from '@material-ui/core'
+import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions,Fab, Tooltip} from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
-import CancelIcon from '@material-ui/icons/Cancel'
 import SubjectIcon from '@material-ui/icons/Subject'
-
+import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
 /**
   The task edit dialog is handled by this component. It navigates between sub components of the task
   editor dialog. The data to the child components e.g AddAssignee, Checklist components is 
@@ -157,7 +156,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
       <Grid style={{padding: "15px"}} item container direction="row" justify="space-between" alignItems="flex-start">
         <Typography gutterBottom variant="h5" color="inherit">
           <Grid container direction="row"> 
-            Task Name:
+            <Typography variant="h5" style={{marginTop: 5}}>Task Name:</Typography>
             <TextField 
               id="task-title"
               variant="outlined"
@@ -175,7 +174,10 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
           {
             editMode
             ? <DeleteIcon cursor="pointer" onClick={handleDelete} />
-            : <CancelIcon cursor="pointer" onClick={()=>setOpen(false)} />
+            : <Tooltip title="cancel" placement="bottom-end">
+                <CancelOutlinedIcon cursor="pointer" onClick={()=>setOpen(false)} />
+              </Tooltip> 
+            
           }
         </Grid>
       </Grid>
@@ -242,13 +244,14 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
         <div style={{marginRight: 10}}>
           {
             (!editMode) &&
-            <Button 
+            <Fab 
               variant="contained" 
-              color="inherit"
+              color="primary"
               onClick={handleCreateComplete}
+              size="medium"
             >
               Create Task
-            </Button>
+            </Fab>
           }
         </div>
       </DialogActions>
