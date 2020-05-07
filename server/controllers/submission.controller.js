@@ -38,6 +38,11 @@ const submissionStatus = {
   cca: ["Pending(CCA)", "Issue(CCA)", "Approved(CCA)",  "Write-Up",  "Completed"],
 }
 
+const submissionChangeStatus = {
+  pres: "Pending(President)",
+  pat: "Pending(Patron)"
+}
+
 /*
   <<<<< HELPER FUNCTIONS >>>>>
 */
@@ -498,10 +503,16 @@ exports.updateSubmissionStatus = async (req, res, next) => {
           break;
         }
       }
+
       if (!statusCheck) {
         console.log(params)
         throw new customError.SubmissionValidationError("invalid status or status not allowed, allowed statuses are: " + JSON.stringify(statusAvailable));
       }
+
+      if (params.userObj.type != "cca" && reqSubmission.status != submissionChangeStatus[params.userObj.type]) {
+        throw new customError.SubmissionValidationError("user cannont change status at this moment");
+      }
+
       // params.status contains the string "Issue"
       if ((params.status == "Issue(President)" || params.status == "Issue(Patron)") && params.issue && params.userObj.type != "cca") {
         let reqSociety = await Society.findById(params.userObj._id, 'patronEmail presidentEmail email');
