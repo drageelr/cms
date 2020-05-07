@@ -64,7 +64,6 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
         formData.append("", e.target.files[0], e.target.files[0].name) // create multipart form data
         const uploadFileResult = await dispatch(uploadFile(formData))
         const fileToken = unwrapResult(uploadFileResult)
-        // console.log(fileToken)
         dispatch(setItemData({itemId: id, data: fileToken}))
       }
       else { //file downloads in review mode
@@ -81,13 +80,20 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
             placeholder = {placeHolder}
             required = {required}
             multiline
+            error={localData.length > maxLength}
+            helperText={ localData.length > maxLength ? `Max characters exceeded (${maxLength})` : '' }
             rows={3}
             variant="outlined"
             fullWidth
             maxLength={maxLength}
             value={localData} //store data locally for text field and update locally onChange
             onChange={(e)=> !inReview && setLocalData(e.target.value)} 
-            inputProps={{onBlur:()=>{dispatch(setItemData({itemId: id, data: localData}))}}} // only update redux state on blur for performance purposes
+            inputProps={{onBlur:()=>{
+                if (localData.length <= maxLength){
+                  dispatch(setItemData({itemId: id, data: localData}))
+                }
+              } 
+            }} // only update redux state on blur for performance purposes
           />
         )
 

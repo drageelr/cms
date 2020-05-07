@@ -26,49 +26,116 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function valueToColor(value, shade) {
-  var r, g, b = 0
-  if(value < 50) {
-    r = 255
-    g = Math.round(5.1 * value)
-  }
-  else {
-    g = 255
-    r = Math.round(510 - 5.10 * value)
-  }
-  return '#' + ('000000' + (r * 0x10000 + g * 0x100 + b * 0x1).toString(16)).slice(-6)
-}
-
 export function SocietyFormSubmissionView({user, submissionListData, dispatch}) {
   const history = useHistory()
+  const classes = useStyles()
   useEffect(() => {
     dispatch(fetchSocietyList())
   }, [])
   
   const statusTypes = ["Pending(President)","Issue(President)", "Pending(Patron)", "Issue(Patron)", "Approved(Patron)", 
     "Pending(CCA)", "Issue(CCA)", "Approved(CCA)",  "Write-Up",  "Completed"]
-  const numStatuses = statusTypes.length
+
+  const statusColors = {
+    "Pending(President)": "#F1C231",
+    "Issue(President)": "#E24A00",
+    "Pending(Patron)": "#F1C231",
+    "Issue(Patron)": "#E24A00",
+    "Approved(Patron)": "#009D5E",
+    "Pending(CCA)": "#F1C231",
+    "Issue(CCA)": "#E24A00",
+    "Approved(CCA)": "#009D5E",
+    "Write-Up": "#E24A00",
+    "Completed": "#009D5E",
+  }
   
-  const classes = useStyles()
+  const numStatuses = statusTypes.length
 
   function handleDelete(submissionId) {
     dispatch(deleteSubmission(submissionId))
   }
-  
+
   function selectValue(formStatus) {
     return (statusTypes.indexOf(formStatus) + 1) * 100 / numStatuses
   }  
 
   const options = {
-    search:false,
     searchOpen:false,
     print:false,
     download:false,
     viewColumns:false,
-    filter: false,
     disableToolbarSelect: true,
     selectableRows:false,
+    rowsPerPage: 6
   }
+
+  const columns = [
+    {
+      name:"Submitted Form",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return (
+            <Typography variant="h5" style={{fontSize: 12, fontWeight: 600}}>
+              {value}
+            </Typography>
+          )
+        }
+      }
+    }, 
+    {
+      name:"Last edited",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return (
+            <Box color="text.secondary" >
+              <DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
+              {value}
+            </Box> 
+          )
+        }
+      }
+    }, 
+    {
+      name:"Approval Progress",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return (
+            <LinearProgress 
+            value={value}
+            thickness={15}  
+            variant="determinate"
+            /> 
+          )
+        }
+      }
+    },
+    {
+      name:"Form Status",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return (
+            <Box borderRadius={5} color="secondary.main" style={{
+              backgroundColor: statusColors[value],
+              padding: 5,
+              maxWidth: '9vw',
+              }}>
+              <Typography variant="h5" style={{fontSize: 12, fontWeight: 700}}>
+                {value}
+              </Typography>
+            </Box> 
+          )
+        }
+      }
+    }, 
+    {
+      name:"",
+      options: {
+        filter: false,
+        print: false,
+        download: false
+      }
+    },
+  ]
 
   return (
     <div className={classes.submissionListPaper} style={{position: 'absolute', marginLeft: '20%'}}>
@@ -76,26 +143,11 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
         title={"Submissions"} 
         data={
           submissionListData.formDataList.map((submission, index) => [
-            <Typography variant="h5" style={{fontSize: 12, fontWeight: 600}}>
-              {submission.formTitle}
-            </Typography>,
-            <Box color="text.secondary" ><DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
-              {simplifyTimestamp(submission.timestampModified, false)}
-            </Box>,
-            <LinearProgress 
-            value={selectValue(submission.status)}
-            thickness={15}  
-            variant="determinate"
-            />,
-            <Box borderRadius={5} color="secondary.main" style={{
-              backgroundColor: valueToColor(selectValue(submission.status)),
-              padding: 5
-              }}>
-              <Typography variant="h5" style={{fontSize: 12, fontWeight: 700}}>
-                {submission.status}
-              </Typography>
-            </Box>,
-            <Button variant="outlined" 
+            submission.formTitle,
+            simplifyTimestamp(submission.timestampModified, false),
+            selectValue(submission.status),
+            submission.status,
+            <Button key={index} variant="outlined" 
             color="primary" 
             style={{marginRight: -30}}
             onClick={()=>history.push(`/form-viewer/edit/${submission.submissionId}`)}
@@ -104,7 +156,7 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
             </Button>
           ])
         } 
-        columns={["Submitted Form", "Last edited", "Approval Progress", "Form Status", "",]} 
+        columns={columns} 
         options={options}
       />
       <ErrorSnackbar stateError={ submissionListData.error } clearError={clearError}/>

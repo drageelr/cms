@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function FormListBar({submissionId, title, notesData, isCCA, createMode , inReview}) {
+export default function FormListBar({ title, notesData, isCCA, createMode , inReview}) {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
@@ -43,12 +43,15 @@ export default function FormListBar({submissionId, title, notesData, isCCA, crea
           </Grid>
 
           <Grid item>
+            {
+            !createMode &&
             <Button
               variant="contained"
               startIcon={<NotesIcon/>}
               onClick={toggleDrawer}
             >Notes</Button>
-        
+            }
+            
             {
             !inReview && // hide save button in review mode
             <Button
@@ -69,7 +72,7 @@ export default function FormListBar({submissionId, title, notesData, isCCA, crea
 
         </Grid>
       </Paper>
-      <NotesSideBar submissionId={submissionId} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} notesData={notesData} isCCA={isCCA}/>
+      <NotesSideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} notesData={notesData} isCCA={isCCA}/>
 
       <Dialog aria-labelledby="conditional-item-dialog" open={exitDialogOpen}>
         <DialogTitle id="exit-dialog-title">Exit</DialogTitle>

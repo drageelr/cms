@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function NotesSideBar({submissionId, drawerOpen, toggleDrawer, notesData, isCCA}) {
+export default function NotesSideBar({drawerOpen, toggleDrawer, notesData, isCCA}) {
   const { ccaNotes, societyNotes } = notesData
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -65,7 +65,7 @@ export default function NotesSideBar({submissionId, drawerOpen, toggleDrawer, no
           return errors
         }}
         onSubmit={(values) => {
-          dispatch(addCcaNote({submissionId, note: values.newCCANote}))
+          dispatch(addCcaNote(values.newCCANote))
         }}
       >
         {({ submitForm}) => (
@@ -95,7 +95,7 @@ export default function NotesSideBar({submissionId, drawerOpen, toggleDrawer, no
           return errors
         }}
         onSubmit={(values) => {
-          dispatch(addSocietyNote({submissionId, note: values.newSocietyNote}))
+          dispatch(addSocietyNote(values.newSocietyNote))
         }}
       >
         {({ submitForm}) => (

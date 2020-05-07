@@ -88,7 +88,8 @@ async function itemTypeValidation (formItems, itemsData) {
   let formitemTypeObj = helperFuncs.createObjFromObjArr(formItems, "itemId", ["type", "maxLength", "options", "fileTypes"]);
   for (let i of itemsData) {
     // Data Type Validation
-    let correctDataType = itemDataTypes[formitemTypeObj[i.itemId].type]
+    let itemType = formitemTypeObj[i.itemId].type
+    let correctDataType = itemDataTypes[itemType]
     if (correctDataType === undefined) {
       return "item with id " + i.itemId + " type does not exist OR type does not take any input";
     } else if (typeof i.data != correctDataType) {
@@ -96,7 +97,7 @@ async function itemTypeValidation (formItems, itemsData) {
     }
 
     // Data Value Validation
-    switch(correctDataType) {
+    switch(itemType) {
       case "textbox":
         let maxLength = formitemTypeObj[i.itemId].maxLength;
         if (i.data.length > maxLength){
@@ -111,12 +112,14 @@ async function itemTypeValidation (formItems, itemsData) {
         break
       case "file":
         const fileTypesArr = formitemTypeObj[i.itemId].fileTypes.split(',');
+        console.log(fileTypesArr)
         // const nameSplitArr = i.data.split('.') //to get extension of file in last index
         // if (!fileTypesArr.includes('.' + nameSplitArr[nameSplitArr.length - 1])){
         //   return "item with id " + i.itemId + " does not support this file type, file types allowed: " + formitemTypeObj[i.itemId].fileTypes;
         // }
         let fileObj = jwt.decodeTokenFunc(i.data);
         let itemFile = await File.findById(fileObj._id);
+        console.log(itemFile)
 
         if (!itemFile) return "item with id " + i.itemId + " has not been uploaded";
         if (!itemFile.saved) return "item with id " + i.itemId + " was already used";
@@ -246,7 +249,8 @@ exports.submitForm = async (req, res, next) => {
         // 2) Check item constraints based on types + form data
         submissionValidationError = await itemTypeValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
-
+        console.log(submissionValidationError)
+        
         // 3) Check re-entry of an item is not given
         submissionValidationError = duplicateEntryValidation(reqSubmission, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
@@ -268,7 +272,7 @@ exports.submitForm = async (req, res, next) => {
         if(statusToUpdateObj) {
           resubmissionQuery.$set = {status: statusToUpdateObj.status};
         }
-        
+
         await reqSubmission.update(resubmissionQuery);
 
         if (statusToUpdateObj) {
@@ -295,7 +299,8 @@ exports.submitForm = async (req, res, next) => {
         // 2) Check item constraints basonsed on types + form data
         submissionValidationError = await itemTypeValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
-
+        
+        console.log(submissionValidationError)
         // 4) For "File" types, get correct data:
         for(let iS of itemsData) {
           for (let iF of reqForm.items) {

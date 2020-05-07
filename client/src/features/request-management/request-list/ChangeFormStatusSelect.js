@@ -11,19 +11,32 @@ import { useDispatch } from 'react-redux'
   dispatched the store   
 */
 
-export default function ChangeFormStatusSelect({submissionId, status}) {
+export default function ChangeFormStatusSelect({submissionId, status, updateValue}) {
   const dispatch = useDispatch()
   const [localStatus, setLocalStatus] = React.useState(status)
   const [open, setOpen] = React.useState(false)
 
   function handleChange(e) {
+    updateValue(e.target.value)
     setLocalStatus(e.target.value)
     dispatch(changeFormStatus({submissionId, status: e.target.value}))
   }
 
   const disabledOptions = ["Pending(President)","Issue(President)", "Pending(Patron)", "Issue(Patron)", "Approved(Patron)"]
   const options = ["Pending(CCA)", "Issue(CCA)", "Approved(CCA)",  "Write-Up",  "Completed"]
-
+  const statusColors = {
+    "Pending(President)": "#F1C231",
+    "Issue(President)": "#E24A00",
+    "Pending(Patron)": "#F1C231",
+    "Issue(Patron)": "#E24A00",
+    "Approved(Patron)": "#009D5E",
+    "Pending(CCA)": "#F1C231",
+    "Issue(CCA)": "#E24A00",
+    "Approved(CCA)": "#009D5E",
+    "Write-Up": "#E24A00",
+    "Completed": "#009D5E",
+  }
+  
   return (
     <div>
       <FormControl variant="outlined">
@@ -34,7 +47,7 @@ export default function ChangeFormStatusSelect({submissionId, status}) {
           onClose={()=>setOpen(false)}
           value={localStatus}
           onOpen={()=>setOpen(true)}
-          style={{height: 30, width: 200}}
+          style={{height: 30, width: 200, backgroundColor: statusColors[localStatus] + '60'}}
           variant = "outlined"
           onChange={handleChange}
         >

@@ -20,7 +20,7 @@ import { connect } from 'react-redux'
 
 function App({ user }) {
   const { isLoggedIn, userType, name, picture } = user
-  const [darkMode, setDarkMode] = React.useState(true)
+  const [darkMode, setDarkMode] = React.useState(false)
 
   document.body.style = darkMode ? 'background: #424242' : 'background: #ffffff' 
   
