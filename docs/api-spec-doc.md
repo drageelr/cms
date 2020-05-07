@@ -91,7 +91,7 @@
 |3|Add Society Note|Attaches a Note from Society to a request|`/api/submission/society/add-note`|`{submissionId*: Number, note*: "String-min(1)-max(100)"}`|POST|`{}`|Society|`9.1`|
 |4|Fetch Submission List|Fetches list of all submissions made|`/api/submission/fetch-list`|`{statusList: ["String"], timeObj*: timeObj}`|POST|`{submissions: submissionsList}`|CCA+Society|`9.1`|
 |5|Update Submission Status|Status of existing submission updated|`/api/submission/update-status`|`{submissionId*: Number, status*: "String", issue: "String-min(1)-max(500)"}`|POST|`{}`|CCA|`8.1, 9.1`|
-|6|Fetch Submission|Fetches a submission with complete details|`/api/submission/fetch`|`{submissionId*: Number}`|POST|`{itemsData: itemsObj, ccaNotes: ["String"], societyNotes: ["String"], formId: Number}`|CCA+Society|`9.1`|
+|6|Fetch Submission|Fetches a submission with complete details|`/api/submission/fetch`|`{submissionId*: Number}`|POST|`{itemsData: itemsObj, ccaNotes: ["String"], societyNotes: ["String"], formId: Number, itemFilledData: [Number]}`|CCA+Society|`9.1`|
 
 ### Object Schema
 |#|Name|Object|
