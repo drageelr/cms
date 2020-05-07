@@ -134,20 +134,29 @@ export default function NavBar({name, userType, picture, setDarkMode, darkMode})
         <br/>
         <br/>
         <br/>
-        <Grid container direction="column" justify="space-evenly">
+        <Grid container direction="column" justify="flex-end">
           <Grid item>
             <RoundLinkButton link={'/'} icon={<PlaylistAddCheckIcon fontSize='large'/>} title={'Task Manager'}/>
             <RoundLinkButton link={'/forms'} icon={<EditIcon fontSize='large'/>} title={'Form Maker'}/>
             <RoundLinkButton link={'/request-list'} icon={<ListAltIcon fontSize='large'/>} title={'Request List'}/>
           </Grid>
 
-          <Grid item>
+          <Grid item >
           <FormControlLabel
             style={{marginLeft: 10, color: "white"}}
             control={<Switch color="secondary" size="small" checked={darkMode} onChange={handleDarkModeChange} name="darkMode"/>}
             label="Dark Mode"
           />
           </Grid>
+          {/* <Grid item style={{width: '10vw'}} >
+            <Typography  align="center">
+              <Box color="secondary.main" m={1} fontSize={10}>
+              CMS is a copyright product of LUMS Software Engineering (CS 360) Spring 2020 - Group 19 
+              <br/>
+              Members: Hammad Nasir, Zoraiz Qureshi, Farrukh Rasool, Hamza Farooq, Hamza Bin Aqeel
+              </Box>
+            </Typography>
+          </Grid> */}
         </Grid>
       </Drawer>
     </div>

@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import FormViewerBar from './FormViewerBar'
-import {makeStyles, List, Paper, Container, CircularProgress, Button, Typography } from '@material-ui/core'
+import {makeStyles, List, Paper, Container, CircularProgress, Button, Typography, LinearProgress } from '@material-ui/core'
 import { connect } from 'react-redux'
 import ItemView from './ItemView'
-import { fetchFormData, clearError, setError } from '../formDataSlice'
+import { fetchFormData, clearError, fetchFromToken } from '../formDataSlice'
+import { setUserDetails } from '../../account-settings/userSlice'
 import { fetchForm, clearError as clearErrorFormTemplate } from '../formTemplateSlice'
 import { initializeVisibilities } from '../conditionalViewSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
@@ -19,17 +20,33 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function FormViewer({formTemplate, formData, dispatch, userType, conditionalView, match}) {
+function FormViewer({formTemplate, formData, dispatch, userType, conditionalView, match, location}) {
   const { title, sectionTitles, sectionsOrder, componentsOrder, itemsOrder, items } = formTemplate
   const { createMode, ccaNotes, societyNotes } = formData
   const [ sectionIndex, setSectionIndex ] = useState(0)
   const classes = useStyles()
-  const viewerId = match.params.id // formId when in create mode, formDataId when in edit/review mode
-  const mode = match.params.mode
+  const viewerId = match && match.params.id // formId when in create mode, formDataId when in edit/review mode
+  const mode = match && match.params.mode
+  const patOrPres = match.params.type // patron or president
+  const token = location.search.split('=')[1] // token for patron / pres
   const inReview = mode == "review"
   
   async function initializeFormViewer() {
-    if (mode == "edit" || mode == "review"){ //if in edit mode, also fetch form data
+    console.log("initializing form viewer", patOrPres)
+    if (patOrPres) {
+      console.log(patOrPres, token)
+      dispatch(setUserDetails({userType: "CCA", isLoggedIn: true ,token}))
+      
+      const fetchFromTokenResult = await dispatch(fetchFromToken(token))
+      const { formId, submissionId } = unwrapResult(fetchFromTokenResult)
+      console.log("Got ", formId, " and ", submissionId)
+      await dispatch(fetchFormData(submissionId))
+      const fetchFormResult = await dispatch(fetchForm(formId))
+      const fetchedItems = unwrapResult(fetchFormResult).items
+      dispatch(initializeVisibilities({items: fetchedItems}))
+    }
+
+    if (mode == "edit" || mode == "review" ){ //if in edit mode, also fetch form data
       const fetchFormDataResult = await dispatch(fetchFormData(viewerId))
       const formId = unwrapResult(fetchFormDataResult).formId
       const fetchFormResult = await dispatch(fetchForm(formId))
@@ -56,7 +73,7 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
       <br/>
       {
       (mode == "create" ?  (formTemplate.isPending) : (formTemplate.isPending || formData.isPending)) 
-      ? <CircularProgress style={{marginLeft: '50vw', marginTop: '30vh'}}/>
+      ? <LinearProgress variant="indeterminate"/>
       : <Container>
         {/* //Container to center align the View, also sections and items rendered only (components are only logical) */}
         <Paper elevation={4} className={classes.sectionPaper}>

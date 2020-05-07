@@ -37,25 +37,33 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
   const data = itemData === undefined ? initialItemData[type] : itemData.data
   const [localData, setLocalData] = useState(data)
 
+  function resetConditionalView() {
+    const conditionalItemOptionObj = conditionalItems.find(ciObj => ciObj.optionId === data)  
+    if (conditionalItemOptionObj !== undefined) {
+      const visibleItems = [id, ...conditionalItemOptionObj.itemIds]
+      const hiddenItems = componentItemIds.filter(x => !visibleItems.includes(x)) 
+      let newVisibilities = {}
+      visibleItems.forEach(vId => newVisibilities[vId] = true)
+      hiddenItems.forEach(hId => newVisibilities[hId] = false)
+      dispatch(setVisibilities({newVisibilities}))
+    }
+  }
+
+  React.useEffect(() => {
+    if (type == 'radio' || type == 'dropdown') {
+      resetConditionalView()
+    }
+  }, [data])
+    
+
   function renderItem() {
     const optionsConv = options !== undefined && options.map((option,index) => ({optionId: index, data: option})) 
 
-    function conditionalChange(e) {
-      const optionId = Number(e.target.value)
-      dispatch(setItemData({itemId: id, data: optionId}))
-      const conditionalItemOptionObj = conditionalItems.find(ciObj => ciObj.optionId === optionId)  
-      if (conditionalItemOptionObj !== undefined) { //item has conditional options setup, object found for the given optionId
-        const visibleItems = [id, ...conditionalItemOptionObj.itemIds] // items that should be turned on
-        // must include itself as well
-        
-        // get all other items in that component, we have all componentItemIds
-        const hiddenItems = componentItemIds.filter(x => !visibleItems.includes(x)) //by array difference using filter
-        let newVisibilities = {}
-        visibleItems.forEach(vId => newVisibilities[vId] = true)
-        hiddenItems.forEach(hId => newVisibilities[hId] = false)
-        dispatch(setVisibilities({newVisibilities}))
-      }
+    function handleConditionalChange(e) {
+      dispatch(setItemData({itemId: id, data: e.target.value}))
     }
+    
+    
 
     async function handleFileChange(e){
       if (!inReview) {
@@ -71,6 +79,8 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
       }
     }
 
+    
+    
     switch (type){
       case 'textbox':
         return (
@@ -148,7 +158,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
         return (
           <FormControl component="fieldset">
             <FormLabel component="legend">{label}</FormLabel>
-            <RadioGroup id={id} value={data} onChange={(e) => !inReview && conditionalChange(e)}>
+            <RadioGroup id={id} value={data} onChange={(e) => !inReview && handleConditionalChange(e)}>
               {
                 optionsConv.map((option, index) => {
                   return (
@@ -164,7 +174,7 @@ function ItemView({id, templateData, itemsData, submissionId, componentItemIds, 
         return (
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel>{label}</InputLabel>
-            <Select id={id} label={label} value={data} onChange={(e) => !inReview && conditionalChange(e)}>
+            <Select id={id} label={label} value={data} onChange={(e) => !inReview && handleConditionalChange(e)}>
               {
                 optionsConv.map((option, index) => {
                   return (

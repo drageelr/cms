@@ -91,8 +91,8 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
   function MainTask() {
     return (
       (taskObj !== undefined && taskObj.archive === false) &&
-      <Card elevation={3} style={{minHeight: 85, minWidth: 0, marginBottom: 10}} cursor="pointer" >
-        <CardContent>
+      <Card elevation={3} style={{minHeight: 85, minWidth: 0, marginBottom: 10}}  cursor="pointer" >
+        <CardContent >
           <Grid item xs container direction="row" spacing={0}>
             <Grid item xs>
               {
@@ -101,7 +101,7 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
             </Grid>  
 
             <Grid item>
-              <Tooltip title="Edit" placement="bottom-end"> 
+              <Tooltip title="Edit Task" placement="bottom-end"> 
                 <EditIcon onClick={() => setOpen(true)} fontSize="small" color="action" cursor="pointer"/>
               </Tooltip>
               <EditTaskDialog 

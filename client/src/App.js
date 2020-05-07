@@ -72,8 +72,10 @@ function App({ user }) {
                 )
             }
             {
-              userType === "CCA" && (
+              userType === "CCA" ? (
                 <Route path="/request-list" exact component={RequestList}/>
+              ) : (
+                <Route path="/" exact component={SocietyDashboard}/>
               )
             }
             {
@@ -119,11 +121,14 @@ function App({ user }) {
               )
             }
             
-            <Route path="*" component={LoginPage}/>
 
           </Switch>
         </div>
-        : <LoginPage/>
+        // : <LoginPage/>
+        : <Switch>
+          <Route path="/" exact component={LoginPage}/>
+          <Route path="/review/:type" component={FormViewer}/>
+          </Switch>
         }
       </ThemeProvider>
     </Router>

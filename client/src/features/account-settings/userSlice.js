@@ -40,7 +40,6 @@ export const login = createAsyncThunk(
     return await apiCaller(QUERY, {email, password}, 200,
     (data)=> {
       localStorage.setItem('token', data.token)
-      localStorage.setItem('localUser', JSON.stringify({userType, ...data.user}))
 
       if (userType==="CCA"){
         return {token: data.token, user: {email, userType, password, name: (data.user.firstName + ' ' + data.user.lastName),...data.user},}
@@ -88,6 +87,13 @@ const user = createSlice ({
 
     setUserPicture: (state, action) => {
       state.picture = action.payload.picture
+    },
+
+    setUserDetails: (state, action) => {
+      state.userType = action.payload.userType
+      state.isLoggedIn = action.payload.isLoggedIn
+      state.token = action.payload.token
+      localStorage.setItem('token', action.payload.token)
     }
   },
   extraReducers: {
@@ -134,6 +140,6 @@ const user = createSlice ({
   }
 })
 
-export const { logout, clearError, setUserPicture } = user.actions
+export const { logout, clearError, setUserPicture, setUserDetails } = user.actions
 
 export default user.reducer

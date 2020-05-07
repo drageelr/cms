@@ -130,8 +130,8 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
       </Box>
 
       <div>
-        <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-          <Tooltip title="Archive List" placement="left">
+        <div style={{display: 'flex', justifyContent: 'flex-end', marginRight: 30}}>
+          <Tooltip title="View Task Archive" placement="left">
             <Fab color="primary" aria-label="archive">
               <ArchiveIcon onClick={handleClickOpen}/>
             </Fab>

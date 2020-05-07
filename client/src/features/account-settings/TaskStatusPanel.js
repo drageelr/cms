@@ -202,9 +202,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
                 {taskStatusDetail.name}
               </StyledTableCell>
               <StyledTableCell align="center">
-              <Tooltip title="Task Status Color" placement="right-end">
                 <Button variant="contained" style={{backgroundColor:taskStatusDetail.color}}/>
-              </Tooltip>
               </StyledTableCell>
 
               <TableCell align="right">

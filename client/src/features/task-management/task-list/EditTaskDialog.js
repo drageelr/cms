@@ -174,15 +174,12 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
         <Grid>
           {
             editMode
-            ? <Tooltip title="archive" placement="bottom-end"> 
+            ? <Tooltip title="Archive Task" placement="bottom-end"> 
                 <Fab size="small" color="primary">
                   <ArchiveIcon cursor="pointer" onClick={handleDelete} fontsize="large"/>
                 </Fab>
               </Tooltip>
-            : <Tooltip title="cancel" placement="bottom-end">
-                  <CancelOutlinedIcon cursor="pointer" onClick={()=>setOpen(false)} />
-              </Tooltip> 
-            
+            : <CancelOutlinedIcon cursor="pointer" onClick={()=>setOpen(false)} /> 
           }
         </Grid>
       </Grid>

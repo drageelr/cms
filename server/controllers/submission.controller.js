@@ -143,7 +143,8 @@ async function itemTypeValidation (formItems, itemsData) {
  */
 function duplicateEntryValidation (reqSubmission, itemsData) {
   let submissionItemIds = helperFuncs.createArrFromObjArr(reqSubmission.itemsData, "itemId");
-  for (let i in itemsData) {
+  console.log(submissionItemIds, itemsData)
+  for (let i of itemsData) {
     if (i.itemId in submissionItemIds) {
       return "item with id " + i.itemId + " already has a value";
     }
@@ -250,11 +251,14 @@ exports.submitForm = async (req, res, next) => {
         submissionValidationError = await itemTypeValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
         
-        if (reqSubmission.status != "Issue(President)" && reqSubmission.status != "Issue(Patron)") {
-          // 3) Check re-entry of an item is not given
-          submissionValidationError = duplicateEntryValidation(reqSubmission, itemsData);
-          if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
+        if (reqSubmission.status == "Issue(President)" || reqSubmission.status == "Issue(Patron)") {
+          await Submission.findByIdAndUpdate(reqSubmission._id, {$pull: {itemsData: {_id: {$in: reqSubmission.itemsData.map(i => i._id)}}}})
+          reqSubmission = await Submission.findById(reqSubmission._id)
         }
+        
+        // 3) Check re-entry of an item is not given
+        submissionValidationError = duplicateEntryValidation(reqSubmission, itemsData);
+        if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
         
         // 4) For "File" types, get correct data:
         for(let iS of itemsData) {
@@ -275,10 +279,10 @@ exports.submitForm = async (req, res, next) => {
         }
 
         await reqSubmission.update(resubmissionQuery);
-
+        console.log(statusToUpdateObj)
         if (statusToUpdateObj) {
           let reqSociety = await Society.findById(params.userObj._id, statusToUpdateObj.email);
-          sendReviewEmail(reqSociety[statusToUpdateObj.email], reqSociety[statusToUpdateObj].type, reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
+          sendReviewEmail(reqSociety[statusToUpdateObj.email], reqSociety[statusToUpdateObj.type], reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
         }
 
       

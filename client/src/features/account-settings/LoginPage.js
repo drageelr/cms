@@ -10,6 +10,7 @@ import { TextField } from 'formik-material-ui'
 import { connect } from 'react-redux'
 import { login, clearError } from './userSlice'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
+import FormViewer from '../form-management/form-viewer/FormViewer'
 import landingBG from './landingBG.svg'
 
 // card styling
@@ -33,15 +34,17 @@ const useStyles = makeStyles(theme=>({
   Login and fields to enter the user email and password. 
  */
 
-function LoginPage({error, dispatch}) {
+function LoginPage({error, dispatch, match, location}) {
   const classes = useStyles()
   const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
   const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
   const [userType, setUserType] = React.useState("CCA")
 
+  
+
   React.useEffect(() => {
-    // dispatch(login({email: "ieee@lums.edu.pk", password: "ieee12345", userType: "Society"}))
-    dispatch(login({email: "admin@lums.edu.pk", password: "Test12345", userType: "CCA"}))
+    dispatch(login({email: "ieee@lums.edu.pk", password: "ieee12345", userType: "Society"}))
+    // dispatch(login({email: "admin@lums.edu.pk", password: "Test12345", userType: "CCA"}))
   }, [])
 
   return (

@@ -17,6 +17,17 @@ const initialState = {
   error: null
 }
 
+export const fetchFromToken = createAsyncThunk(
+  'formData/fetchFromToken',
+  async (token, {rejectWithValue }) => {
+
+    return await apiCaller('/api/submission/submit', {}, 200, 
+    (data) => ({submissionId: data.submissionId, formId: data.formId}), 
+    rejectWithValue)
+  }
+)
+
+
 export const fetchFormData = createAsyncThunk(
   'formData/fetchFormData',
   async (formDataId, { getState, rejectWithValue }) => {
@@ -44,7 +55,7 @@ export const createFormData = createAsyncThunk(
   async (_, {getState, rejectWithValue }) => {
     const formId = getState().formTemplate.id
     const itemsData = getState().formData.itemsData
-    
+    console.log(formId, itemsData)
     // only required to send form Id and items Data when creating a form
     return await apiCaller('/api/submission/submit', {formId, itemsData}, 200, 
     (data) => ({
@@ -63,43 +74,7 @@ export const editFormData = createAsyncThunk(
     const submissionId = getState().formData.id
     let itemsData = getState().formData.itemsData
 
-    const initialItemData = {
-      textbox: '',
-      textlabel: '',
-      checkbox: false,
-      dropdown: -1,
-      radio: -1,
-      file: ''
-    }
-
-    // // must filter out item data to send section wise (do not send filled sections)
-    // // get all form template data, move section wise, for all items in that section,
-    // sectionsOrder.forEach(sectionId =>{  
-    //   if (sectionId in componentsOrder) { // if section has components 
-    //   componentsOrder[sectionId].forEach(componentId => {
-    //     if (componentId in itemsOrder) { 
-    //       itemsOrder[componentId].map(itemId => {
-    //         console
-    //         if (itemId in itemsData) { //did not receive some item's data at all, then return false (unfilled)
-      
-    //           // compare against serverItemsData, if all items do not have initial state data in that section,
-    //           const itemTemplate = items[itemId] // to get type of item to check initial state
-    //           const itemData = itemsData[itemId] // data for that item currently
-
-    //           console.log(itemData, initialItemData[itemTemplate.type])
-    //           if (itemData != initialItemData[itemTemplate.type]) { //item is already filled, delete from data set
-    //             delete itemsData[itemId] // remove this filled item from the itemsData sent to the server
-    //           }
-    //         }
-    //       })
-    //     }
-    //   })
-    //   }
-    // })
-    
-    // remove all of those items from serverItemsData as the section is considered locked
-    console.log("EDIT SEND", {formId: id, submissionId, itemsData})
-
+    console.log("SENDING", itemsData)
     return await apiCaller('/api/submission/submit', {formId: id, submissionId, itemsData}, 200, 
     (data) => ({submissionId}), 
     rejectWithValue)
@@ -330,6 +305,15 @@ const formData = createSlice({
       
     },
     [downloadFile.rejected]: (state, action) => {
+      state.error = action.payload
+    },
+
+
+    [fetchFromToken.fulfilled]: (state, action) => {
+      state.id = action.payload.submissionId
+    },
+
+    [fetchFromToken.rejected]: (state, action) => {
       state.error = action.payload
     },
   }
