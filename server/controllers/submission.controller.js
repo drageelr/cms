@@ -528,6 +528,7 @@ exports.fetchSubmission = async (req, res, next) => {
 
     if (reqSubmission) {
       let itemsData = helperFuncs.createArrFromObjArr(reqSubmission.itemsData, ["itemId", "data"]);
+      let itemFilledIds = itemsData.map(i => i.itemId);
       let reqForm = await Form.findById(reqSubmission.formId, 'formId');
       let societyNotes = [];
       let ccaNotes = [];
@@ -552,7 +553,8 @@ exports.fetchSubmission = async (req, res, next) => {
         itemsData: itemsData,
         ccaNotes: ccaNotes,
         societyNotes: societyNotes,
-        formId: reqForm.formId
+        formId: reqForm.formId,
+        itemFilledIds: itemFilledIds
       });
     } else {
       // raise submission not found error
