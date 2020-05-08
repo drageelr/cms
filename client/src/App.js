@@ -20,14 +20,14 @@ import { connect } from 'react-redux'
 function App({ user }) {
   const { id, isLoggedIn, userType, name, picture, themeColor, darkMode } = user
   const [localDarkMode, setLocalDarkMode] = React.useState(darkMode)
-
+  
   document.body.style = darkMode ? 'background: #424242' : 'background: #ffffff' 
 
   const appTheme = createMuiTheme({
     palette: {
       type: darkMode ? 'dark' : 'light',
       primary: {
-        main: themeColor,
+        main: themeColor !== undefined ? themeColor : '#3578fa',
       },
       secondary: {
         main: '#ffffff',

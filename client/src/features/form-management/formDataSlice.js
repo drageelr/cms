@@ -88,8 +88,8 @@ export const editFormData = createAsyncThunk(
 
 export const addCcaNote = createAsyncThunk(
   'formData/addCcaNote',
-  async ({submissionId, note}, {rejectWithValue }) => {
-    
+  async (note, {getState,rejectWithValue }) => {
+    const submissionId = getState().formData.id
     return await apiCaller('/api/submission/cca/add-note', {
       submissionId, 
       note
@@ -103,7 +103,8 @@ export const addCcaNote = createAsyncThunk(
 
 export const addSocietyNote = createAsyncThunk(
   'formData/addSocietyNote',
-  async ({submissionId, note}, {rejectWithValue }) => {
+  async (note, {getState,rejectWithValue }) => {
+    const submissionId = getState().formData.id
 
     return await apiCaller('/api/submission/society/add-note', {
       submissionId, 

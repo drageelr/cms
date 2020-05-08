@@ -47,7 +47,7 @@ export const login = createAsyncThunk(
         return {token: data.token, user: {email, userType, password, name: (data.user.firstName + ' ' + data.user.lastName),...data.user},}
       }
       else {
-        return {token: data.token, user: {email, userType, password, ...data.user},}
+        return {token: data.token, themeColor: '#3578fa', darkMode: false, user: {email, userType, password, ...data.user},}
       }
     },rejectWithValue)
   }
