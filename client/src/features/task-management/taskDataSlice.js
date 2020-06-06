@@ -484,7 +484,7 @@ const taskdata = createSlice({
         logs: data.logs,
         subtasks: subTaskList,
         title: reqTaskObject.title, 
-        description: reqTaskObject.desc, 
+        description: reqTaskObject.description, 
         submissionId: reqTaskObject.submissionId,
         ownerId: reqTaskObject.ownerId, 
         statusId: reqTaskObject.statusId,
@@ -501,7 +501,7 @@ const taskdata = createSlice({
         taskId: action.payload.data.taskId,
         logs: action.payload.data.logs,
         title: action.payload.cusTaskObject.title, 
-        description: action.payload.cusTaskObject.desc, 
+        description: action.payload.cusTaskObject.description, 
         ownerId: action.payload.cusTaskObject.ownerId, 
         statusId: action.payload.cusTaskObject.statusId,
         archive: action.payload.cusTaskObject.archive
@@ -527,7 +527,6 @@ const taskdata = createSlice({
         }
       })
     },
-
     [createNewLog.rejected]: (state, action) => {
       state.error = action.payload
     },
@@ -541,7 +540,6 @@ const taskdata = createSlice({
         }
       })
     },
-
     [moveTask.rejected]: (state, action) => {
       state.error = action.payload
     },
