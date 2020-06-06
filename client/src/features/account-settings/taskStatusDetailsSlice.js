@@ -120,10 +120,8 @@ const taskStatusDetails = createSlice({
       }
     },
     [fetchTaskStatus.fulfilled]: (state, action) => {
-      // console.log("fetchTaskStatus.fulfilled")
       if(state.isPending === true){
         state.isPending = false
-        // console.log(action.payload)
         state.taskList = action.payload.taskList
       }
     },

@@ -25,7 +25,6 @@ export const fetchCCARequestList = createAsyncThunk(
 export const changeFormStatus = createAsyncThunk(
   'requestListData/changeFormStatus',
   async ({submissionId, status, issue}, {rejectWithValue}) => {
-    console.log("SENDING STATUS", status)
     const body = issue == "" ? {submissionId, status} : {submissionId, status, issue} 
     return await apiCaller('/api/submission/update-status', body, 203, 
     (data) => ({submissionId, status}), 

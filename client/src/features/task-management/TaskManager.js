@@ -104,7 +104,6 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
       dispatch(moveTaskSync({taskId: draggableId, dstColumnId: destination.droppableId, dstIndex:  destination.index}))
       taskData.taskList.map(task => {
         if (task.taskId === draggableId) {
-          console.log(task)
         }
       })
       dispatch(moveTask({  // probably call the edit API as we want to update the ownerID of the task

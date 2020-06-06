@@ -11,8 +11,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import {AppBar, Toolbar, IconButton, Drawer, Avatar, Typography, Box, Grid, Button, FormControlLabel, 
   Switch, Dialog, DialogTitle, TextField, DialogActions, DialogContent} from '@material-ui/core'
 import { useDispatch } from 'react-redux'
-import { logout } from '../features/account-settings/userSlice'
-import { manageDarkMode, changeThemeColor } from '../features/account-settings/ccaDetailsSlice'
+import { logout, changeDarkMode, changeThemeColor } from '../features/account-settings/userSlice'
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
@@ -28,17 +27,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function NavBar({name, ccaId,  userType, picture, darkMode, setDarkMode}) {
+export default function NavBar({name, ccaId,  userType, picture, darkMode, setDarkMode, userThemeColor}) {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [themeColor, setThemeColor] = useState("")
-  
-  console.log(darkMode)
+  const [themeColor, setThemeColor] = React.useState(userThemeColor)
 
   const dispatch = useDispatch()
 
   function handleDialogOpen() {
+    setThemeColor(userThemeColor)
     setDialogOpen(true)
   }
 
@@ -56,7 +54,7 @@ export default function NavBar({name, ccaId,  userType, picture, darkMode, setDa
   }
 
   function handleDarkModeChange() {
-    dispatch(manageDarkMode({darkMode: !darkMode, ccaId}))
+    dispatch(changeDarkMode({darkMode: !darkMode, ccaId}))
     setDarkMode(!darkMode)
   }
 

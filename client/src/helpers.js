@@ -18,7 +18,6 @@ export async function apiCaller(api, body, successCode, dataReturner, rejectWith
         'Authorization': `Bearer ${localStorage.token}`, 
       },
     }
-    console.log(api)
     // if body is an empty object, do not include it
     if (!(Object.keys(body).length === 0 && body.constructor === Object)){
       req_init['body'] = JSON.stringify(body)
@@ -27,7 +26,7 @@ export async function apiCaller(api, body, successCode, dataReturner, rejectWith
     const res = await fetch(api, req_init)
     if (res.ok) {
       const data = await res.json()
-      console.log("api", data)
+      console.log(data)
       if (data.statusCode != successCode) {
         throw new Error((data.error !== undefined) 
         ? `${data.statusCode}: ${data.message} - ${JSON.stringify(data.error.details).replace(/[\[\]\{\}"'\\]+/g, '').split(':').pop()}`

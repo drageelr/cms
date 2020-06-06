@@ -88,8 +88,8 @@ export const editFormData = createAsyncThunk(
 
 export const addCcaNote = createAsyncThunk(
   'formData/addCcaNote',
-  async ({submissionId, note}, {rejectWithValue }) => {
-    
+  async (note, {getState,rejectWithValue }) => {
+    const submissionId = getState().formData.id
     return await apiCaller('/api/submission/cca/add-note', {
       submissionId, 
       note
@@ -103,7 +103,8 @@ export const addCcaNote = createAsyncThunk(
 
 export const addSocietyNote = createAsyncThunk(
   'formData/addSocietyNote',
-  async ({submissionId, note}, {rejectWithValue }) => {
+  async (note, {getState,rejectWithValue }) => {
+    const submissionId = getState().formData.id
 
     return await apiCaller('/api/submission/society/add-note', {
       submissionId, 
@@ -120,7 +121,6 @@ export const addSocietyNote = createAsyncThunk(
 export const uploadFile = createAsyncThunk(
   'formData/uploadFile',
   async (formData, {rejectWithValue }) => {
-    console.log("FORM DATA", formData)
     try {
       let req_init = {
         method: 'POST',
@@ -136,7 +136,6 @@ export const uploadFile = createAsyncThunk(
       const res = await fetch('/api/file/upload', req_init)
       if (res.ok) {
         const data = await res.json()
-        console.log(data)
         if (data.statusCode != 201) {
           throw new Error((data.error !== undefined) 
           ? `${data.statusCode}: ${data.message} - ${JSON.stringify(data.error.details).replace(/[\[\]\{\}"'\\]+/g, '').split(':').pop()}`

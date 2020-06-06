@@ -6,7 +6,7 @@ import CheckList from "./CheckList"
 import LogEditor from "../logs/LogEditor"
 import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
   createCustomTask, changeTaskStatus, createNewLog } from "../taskDataSlice"
-import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, Button } from '@material-ui/core'
+import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, Button, Tooltip, Fab } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CancelIcon from '@material-ui/icons/Cancel'
 import SubjectIcon from '@material-ui/icons/Subject'
@@ -50,7 +50,6 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
 
   function handleCreateComplete(){
     if (isRequestTask) {      
-      console.log(localSubmissionId)
       const reqTaskObject = { 
         title: taskTitle, 
         description: desc, 

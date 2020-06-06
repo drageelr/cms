@@ -15,7 +15,7 @@ exports.variables = {
   db: 'cms-dev',
   mongoURI: 'mongodb://localhost:27017/',
   serverURL: 'http://167.71.224.73/',
-  fileSavePath: '/home/zoraizq/CMS_Uploads/'
+  fileSavePath: '/root/CMS_Uploads/'
 }
 
 /*

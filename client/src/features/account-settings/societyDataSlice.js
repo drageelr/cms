@@ -105,7 +105,6 @@ const societyData = createSlice({
     },
 
     [addSocietyAccount.fulfilled]: (state, action) => {
-      console.log(action.payload)
       state.societyList.push({
         societyId: action.payload.societyId, 
         ...action.payload.societyObject

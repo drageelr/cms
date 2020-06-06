@@ -212,7 +212,7 @@ pm2 status
 
 #### Step 2 - Run Commands To Deploy
 - Run the commands **(from root directory of the system)** in the text file `deployer/resources/dp-script-1` from line `2` - `8`
-- Run the commands **(from root of this repository)** in the text file `deployer/resources/dp-script-2` from line `1` - `8`
+- Run the commands **(from root of this repository)** in the text file `deployer/resources/dp-script-2` from line `1` - `10`
 - Run the command **(from server folder)** `pm2 start bin/www.js --name "cms-server"`
 
 **Note: Make sure to replace the IP address `167.71.224.73` with your IP address**
