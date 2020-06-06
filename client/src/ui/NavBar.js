@@ -27,11 +27,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function NavBar({name, ccaId,  userType, picture, darkMode, setDarkMode, userThemeColor}) {
+export default function NavBar({name, ccaId,  userType, picture, darkMode, userThemeColor}) {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [themeColor, setThemeColor] = React.useState(userThemeColor)
+
 
   const dispatch = useDispatch()
 
@@ -55,7 +56,6 @@ export default function NavBar({name, ccaId,  userType, picture, darkMode, setDa
 
   function handleDarkModeChange() {
     dispatch(changeDarkMode({darkMode: !darkMode, ccaId}))
-    setDarkMode(!darkMode)
   }
 
   function RoundLinkButton({ link, icon, title }) {
@@ -195,15 +195,6 @@ export default function NavBar({name, ccaId,  userType, picture, darkMode, setDa
               </DialogActions>
             </Dialog>
           </Grid>
-          {/* <Grid item style={{width: '10vw'}} >
-            <Typography  align="center">
-              <Box color="secondary.main" m={1} fontSize={10}>
-              CMS is a copyright product of LUMS Software Engineering (CS 360) Spring 2020 - Group 19 
-              <br/>
-              Members: Hammad Nasir, Zoraiz Qureshi, Farrukh Rasool, Hamza Farooq, Hamza Bin Aqeel
-              </Box>
-            </Typography>
-          </Grid> */}
         </Grid>
       </Drawer>
     </div>
