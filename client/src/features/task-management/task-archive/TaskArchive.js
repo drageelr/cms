@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
-import { fetchTask, unArchiveTask } from "../taskDataSlice"
+import { fetchTask, unArchiveTask, fetchTaskManager } from "../taskDataSlice"
 import { CircularProgress, Fab} from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import UnarchiveOutlinedIcon from '@material-ui/icons/UnarchiveOutlined';
@@ -19,9 +19,11 @@ const useStyles = makeStyles((theme) => ({
 
 function ArchiveList({ taskData, ccaDetails, dispatch }) {
   const classes = useStyles()
-  function handleUnArchiveClick({event, taskId, ownerId}) {
-    dispatch(fetchTask({taskId, ownerId}))
+  
+  async function handleUnArchiveClick({event, taskId, ownerId}) {
+    await dispatch(fetchTask({taskId, ownerId}))
     dispatch(unArchiveTask(taskId))
+    dispatch(fetchTaskManager())
   }
 
   function UnArchiveButton({taskId, ownerId}) {

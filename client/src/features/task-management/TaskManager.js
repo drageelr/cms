@@ -44,7 +44,7 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
 
     fetchTaskManager() --> A fetch call to the backend to FETCH the TASK MANAGER, once I get the taskList, I'll have to make a list of 
     all the columns, by going through each task and adding each unique ownerId to an array called columnOrder
-    (will do this in the backend when the fetch task is fulfilled and in the fetchtaskfulfilled extraReducer)
+    (will do this in the backend when the fetch task is fulfilled and in the fetchTask fulfilled extraReducer)
   */
 
   useEffect(() => { 

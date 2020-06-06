@@ -44,7 +44,7 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
   function handleSubTaskDisplay() {
     dispatch(subTaskDisplay({taskId}))
     
-    let mainTaskId = -1
+    let mainTaskId = -1 // the request task to which the sub task is associated
     taskData.taskList.map(taskObj => {
       if (taskObj.taskId === taskId) {
         mainTaskId = taskObj.assTaskId
@@ -67,7 +67,9 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
               <Typography key={index} gutterBottom variant="subtitle1"> {taskObj.description} </Typography>
             </Grid> 
             <Grid>
-              <DeleteOutlineIcon onClick={handleSubTaskDisplay} cursor="pointer"/>
+              <Tooltip title="Delete SubTask" placement="bottom-end"> 
+                <DeleteOutlineIcon onClick={handleSubTaskDisplay} cursor="pointer"/>
+              </Tooltip>
             </Grid>
           </Grid>
           <Grid container direction="row" justify='space-between' alignItems="flex-end">

@@ -3,9 +3,9 @@ import { connect } from 'react-redux'
 import AttachRequestForm from './AttachRequestForm'
 import TaskStatus from './TaskStatus'
 import CheckList from "./CheckList"
-import LogEditor from "../logs/LogEditor"
+import LogEditor from "../logs/CreateLog"
 import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
-  createCustomTask, changeTaskStatus, createNewLog } from "../taskDataSlice"
+  createCustomTask, changeTaskStatus, createNewLog, subTaskDisplay, deleteSubTask, fetchTaskManager } from "../taskDataSlice"
 import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, Button, Tooltip, Fab } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CancelIcon from '@material-ui/icons/Cancel'
@@ -19,11 +19,10 @@ import ArchiveIcon from '@material-ui/icons/Archive'
   passed via this component.    
 
   @param {string} taskId this id is used to navigate between sub components of the task editor dialog  
-  @param {object} taskData slice from redux corresponding to the current component
-  @param {function} redux associated function to pass action creators to the reducer
+  @param {object} taskList slice from redux corresponding to the current component
   @param {bool} open a bool state passed from the TaskCard component to open the task editor Dialog Box
   @param {function} setOpen sets the state of open to true or false depending on the user input
-*/
+**/
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
@@ -92,9 +91,9 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
       if (initialState.statusId !== statusId) {
         dispatch(changeTaskStatus({taskId, statusId}))
       }
-      if (logText.length > 0) {
-        dispatch(createNewLog({taskId, logText}))
-      }
+      // if (logText.length > 0) {
+      //   dispatch(createNewLog({taskId, logText}))
+      // }
     }
     setOpen(false)
   }
@@ -103,8 +102,9 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
     setOwner(event.target.value)
   }
 
-  function handleDelete() {
-    dispatch(archiveTask({taskId, ownerId}))
+  async function handleDelete() {
+    await dispatch(archiveTask({taskId, ownerId}))
+    dispatch(fetchTaskManager())
   }
 
   function RequestVSCustom() { // conditionally render "Checklist" and Request Form Button
@@ -251,7 +251,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
 
       {
         editMode && //Logs
-        <LogEditor setLogText={setLogText} taskId={taskId}/>
+        <LogEditor taskId={taskId}/>
       }
       {/*Complete Task Button*/}
       <DialogActions>
