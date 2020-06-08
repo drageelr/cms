@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import {changeTaskStatus} from "../taskDataSlice"
 import { Grid, Typography, FormControl, Select, MenuItem } from '@material-ui/core'
 import StopIcon from '@material-ui/icons/Stop'
-
 
 /**
   Renders a Select Menu, allowing the user to select one one of the available statuses. It stores

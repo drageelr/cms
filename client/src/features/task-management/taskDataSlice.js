@@ -170,6 +170,8 @@ export const deleteSubTask = createAsyncThunk(
   async (subTaskObject, { rejectWithValue }) => {
     const { mainTaskId, taskId, subTaskList } = subTaskObject
     
+    // IMPORTANT: taskId here is the SubTask Id
+
     let tempSubList = []
 
     subTaskList.map(obj => {
@@ -306,6 +308,8 @@ const taskdata = createSlice({
 
     subTaskDisplay: (state, action) => {
       const {taskId} = action.payload
+
+      // IMPORTANT: if check == False, then display the subtask, else check == true, do not display the subtask
 
       state.taskList.map(subtaskObj => {
         if (subtaskObj.taskId === taskId) { // get the subtask Obj from the task list
@@ -464,6 +468,7 @@ const taskdata = createSlice({
 
     [createRequestTask.fulfilled]: (state, action) => {
       const {data, reqTaskObject} = action.payload
+
       let subTaskList = []
       data.subtasks.map(subTask => {
         let subTaskObj = {
@@ -473,7 +478,7 @@ const taskdata = createSlice({
           ownerId: subTask.assigneeId,
           assigneeId: subTask.assigneeId,
           description: subTask.description,
-          check: false
+          check: false // if check is False, then display the SubTask, else do not display the subtask
         }
         subTaskList.push(subTaskObj)
         state.taskList.push(subTaskObj)
@@ -484,7 +489,7 @@ const taskdata = createSlice({
         logs: data.logs,
         subtasks: subTaskList,
         title: reqTaskObject.title, 
-        description: reqTaskObject.desc, 
+        description: reqTaskObject.description, 
         submissionId: reqTaskObject.submissionId,
         ownerId: reqTaskObject.ownerId, 
         statusId: reqTaskObject.statusId,
@@ -501,7 +506,7 @@ const taskdata = createSlice({
         taskId: action.payload.data.taskId,
         logs: action.payload.data.logs,
         title: action.payload.cusTaskObject.title, 
-        description: action.payload.cusTaskObject.desc, 
+        description: action.payload.cusTaskObject.description, 
         ownerId: action.payload.cusTaskObject.ownerId, 
         statusId: action.payload.cusTaskObject.statusId,
         archive: action.payload.cusTaskObject.archive
@@ -527,7 +532,6 @@ const taskdata = createSlice({
         }
       })
     },
-
     [createNewLog.rejected]: (state, action) => {
       state.error = action.payload
     },
@@ -541,7 +545,6 @@ const taskdata = createSlice({
         }
       })
     },
-
     [moveTask.rejected]: (state, action) => {
       state.error = action.payload
     },
@@ -564,8 +567,7 @@ const taskdata = createSlice({
 
       var filteredAry = state.taskList.filter(function(e) { return e.taskId !== taskId })
       state.taskList = filteredAry
-      state.error = 'Sb Task Deleted'
-
+      state.error = 'Sub Task Deleted'
     },
     [deleteSubTask.rejected]: (state, action) => {
       state.error = action.payload
@@ -661,6 +663,8 @@ const taskdata = createSlice({
 
       var filteredAry = state.archiveList.filter(function(e) { return e.taskId !== taskId })
       state.archiveList = filteredAry
+
+      state.error = 'Task UnArchived'
     },
     [unArchiveTask.rejected]: (state, action) => {
       state.error = action.payload
