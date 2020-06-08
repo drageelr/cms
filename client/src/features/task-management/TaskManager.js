@@ -47,13 +47,26 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
     (will do this in the backend when the fetch task is fulfilled and in the fetchTask fulfilled extraReducer)
   */
 
-  useEffect(() => { 
-    dispatch(fetchCCAAccounts())
-    dispatch(fetchCCARequestList())
-    dispatch(fetchTaskStatus())
-    dispatch(fetchArchiveManager())
-    dispatch(fetchTaskManager())
+  useEffect(() => {
+    // Create an scoped async function in the hook
+    async function enableTaskManager() {
+      dispatch(fetchCCAAccounts())
+      dispatch(fetchCCARequestList())
+      dispatch(fetchTaskStatus())
+      await dispatch(fetchArchiveManager())
+      dispatch(fetchTaskManager())
+    }
+    
+    enableTaskManager()
   }, [])
+
+  // useEffect(() => { 
+  //   dispatch(fetchCCAAccounts())
+  //   dispatch(fetchCCARequestList())
+  //   dispatch(fetchTaskStatus())
+  //   dispatch(fetchArchiveManager())
+  //   dispatch(fetchTaskManager())
+  // }, [])
 
   /* 
     The order in which the CCA Accounts List is fetched, will be the order of the columns in the Task Manager 
@@ -116,40 +129,43 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
     }
   }
 
+  function TaskArchiveList() {  
+    return <div style={{display: 'flex', justifyContent: 'flex-end', marginRight: 30}}>
+      <Tooltip title="View Archive List" placement="left">
+        <Fab size="medium" color="primary" aria-label="archive">
+          <ArchiveIcon fontSize="large" onClick={handleClickOpen}/>
+        </Fab>
+      </Tooltip>
+
+      <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
+      <AppBar className={classes.appBar}>
+        <Toolbar>
+          <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+            <CloseIcon />
+          </IconButton>
+          <Typography variant="h6" className={classes.title}>
+            Archive List
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <TaskArchive />
+      </Dialog>
+    </div>
+  }
+
   return (
     taskData.isPending ? <LinearProgress /> :
     <DragDropContext onDragEnd={onDragEnd}>
-      <br/>
-      <Box display="flex" flex-direction="row" marginLeft={2}>
+      <br />
+      <TaskArchiveList/>
+      <Box style={{marginTop: -45}} display="flex" flex-direction="row" marginLeft={2}>
         { 
           columnOrder.map(ownerId => { // each ownerId is unique here 
             return <TaskColumn key={ ownerId } ownerId={ ownerId } />
           })
         }
       </Box>
-
-      <div>
-        <div style={{display: 'flex', justifyContent: 'flex-end', marginRight: 30}}>
-          <Tooltip title="View Task Archive" placement="left">
-            <Fab color="primary" aria-label="archive">
-              <ArchiveIcon onClick={handleClickOpen}/>
-            </Fab>
-          </Tooltip>
-        </div>
-        <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
-          <AppBar className={classes.appBar}>
-            <Toolbar>
-              <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-                <CloseIcon />
-              </IconButton>
-              <Typography variant="h6" className={classes.title}>
-                Archive List
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <TaskArchive />
-        </Dialog>
-      </div>
+    
       <ErrorSnackbar stateError={taskData.error} clearError={clearError} />
     </DragDropContext>
   )

@@ -5,13 +5,14 @@ import TaskStatus from './TaskStatus'
 import CheckList from "./CheckList"
 import LogEditor from "../logs/CreateLog"
 import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
-  createCustomTask, changeTaskStatus, createNewLog, subTaskDisplay, deleteSubTask, fetchTaskManager } from "../taskDataSlice"
+  createCustomTask, changeTaskStatus, createNewLog, fetchTaskManager } from "../taskDataSlice"
 import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, Button, Tooltip, Fab } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CancelIcon from '@material-ui/icons/Cancel'
 import SubjectIcon from '@material-ui/icons/Subject'
 import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined'
 import ArchiveIcon from '@material-ui/icons/Archive'
+// import TaskArchive from './task-archive/TaskArchive'
 
 /**
   The task edit dialog is handled by this component. It navigates between sub components of the task
@@ -46,6 +47,17 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
   const [statusId, setStatusId] = useState(initialState.statusId)
   const [logText, setLogText] = useState("")
   const [localSubmissionId, setLocalSubmissionId] = useState(initialState.submissionId)
+
+  // const [openArchive, setOpenArchive] = React.useState(false)
+
+  // function handleClickOpen() {
+  //   setOpenArchive(true)
+  // }
+
+  // function handleClose() {
+  //   setOpenArchive(false)
+  // }
+
 
   function handleCreateComplete(){
     if (isRequestTask) {      
@@ -165,6 +177,31 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
       </Grid>
     )
   }
+
+  // function TaskArchiveList() {
+  //   <div>
+  //     <div style={{display: 'flex', justifyContent: 'flex-end', marginRight: 30}}>
+  //       <Tooltip title="View Task Archive" placement="left">
+  //         <Fab size="medium" color="primary" aria-label="archive">
+  //           <ArchiveIcon fontSize="large" onClick={handleClickOpen}/>
+  //         </Fab>
+  //       </Tooltip>
+  //     </div>
+  //     <Dialog fullScreen open={openArchive} onClose={handleClose} TransitionComponent={Transition}>
+  //       <AppBar className={classes.appBar}>
+  //         <Toolbar>
+  //           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+  //             <CloseIcon />
+  //           </IconButton>
+  //           <Typography variant="h6" className={classes.title}>
+  //             Archive List
+  //           </Typography>
+  //         </Toolbar>
+  //       </AppBar>
+  //       <TaskArchive />
+  //     </Dialog>
+  //   </div>
+  // }
 
   return (
     <Dialog fullWidth maxWidth="md" open={open} onClose={()=>setOpen(false)} TransitionComponent={Transition}>

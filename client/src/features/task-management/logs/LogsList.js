@@ -23,10 +23,9 @@ const useStyles = makeStyles((theme) => ({
 
 export function LogsList({taskId, taskData, ccaDetails}) {
   const classes = useStyles()
-  let ownerName=""
+  let ownerName="CMS User"
   let picture = ""
 
-  // console.log("here")
   return <Box borderRadius={8} border={1} borderColor="grey.400" className={classes.logEditorPaper}>
     <List>
       {

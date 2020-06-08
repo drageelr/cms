@@ -6,7 +6,7 @@ import { Card, CardContent, Typography, Grid, Box, Tooltip} from '@material-ui/c
 import StopIcon from '@material-ui/icons/Stop'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import { subTaskDisplay, moveSubTask, deleteSubTask } from '../taskDataSlice'
+import { subTaskDisplay, deleteSubTask } from '../taskDataSlice'
 
 /**
   This component renders the cards in each column. Each Card displays some details about a task. 
