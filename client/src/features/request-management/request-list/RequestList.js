@@ -75,12 +75,10 @@ export function RequestList({requestListData, dispatch}) {
     {
       name: "Form Status",
       options: {
-        customBodyRender: (value, tableMeta, updateValue) => {
+        customBodyRender: (value, tableMeta, updateValue) => (
           // rowData[0] in tableMeta contains the submissionId
-          return (
-            <ChangeFormStatusSelect submissionId={tableMeta.rowData[0]} status={value} />
-          )
-        }
+          <ChangeFormStatusSelect submissionId={tableMeta.rowData[0]} status={value} />
+        )
       }
     },
     {
