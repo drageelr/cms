@@ -41,7 +41,7 @@ function LoginPage({error, dispatch, match, location}) {
   const [userType, setUserType] = React.useState("CCA")
 
   React.useEffect(() => {
-    // dispatch(login({email: "ieee@lums.edu.pk", password: "Test12345", userType: "Society"}))
+    // dispatch(login({email: "lumun@lums.edu.pk", password: "Test12345", userType: "Society"}))
     dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
   }, [])
 

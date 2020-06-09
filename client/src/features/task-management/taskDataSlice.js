@@ -9,7 +9,11 @@ const initialState = {
   checklistAssignees: [],
   cusLogCreatorId: -1, 
   isPending: false,
-  error: null
+  error: null,
+  currTaskId: "",
+  taskEditMode: "", //"create" if task editor is required in create mode, otherwise "edit" for edit mode, if not open then ""
+  isRequestTask: false,
+  ownerId: ""
 }
 
 export const fetchTaskManager = createAsyncThunk(
@@ -100,7 +104,7 @@ export const createCustomTask = createAsyncThunk(
   }
 )
 
-export const createNewLog = createAsyncThunk(
+export const createNewLog = createAsyncThunk (
   'taskData/createNewLog',
   async (logObj, { rejectWithValue }) => {
     const { taskId, logText } = logObj
@@ -108,7 +112,7 @@ export const createNewLog = createAsyncThunk(
     return await apiCaller('/api/task-manager/log/add', {
       taskId: taskId,
       description: logText
-    }, 201, 
+    }, 201,
     (data) => ({data, logObj}), 
     rejectWithValue)  
   }
@@ -302,6 +306,22 @@ const taskdata = createSlice({
   name: 'taskData',
   initialState: initialState,
   reducers: {
+    setCurrTaskId: (state, action) => {
+      state.currTaskId = action.payload.taskId
+    },
+
+    setIsRequestTask: (state, action) => {
+      state.isRequestTask = action.payload.isRequestTask
+    },
+
+    setOwnerId: (state, action) => {
+      state.ownerId = action.payload.ownerId
+    },
+
+    setTaskEditMode: (state, action) => {
+      state.taskEditMode = action.payload.taskEditMode
+    },
+
     setCusLogCreatorId: (state, action) => {
       state.cusLogCreatorId = action.payload.creatorId
     },
@@ -640,8 +660,7 @@ const taskdata = createSlice({
         }
       })
 
-      var filteredAry = state.taskList.filter(function(e) { return e.taskId !== archiveObj.taskId })
-      state.taskList = filteredAry
+      state.taskList = state.taskList.filter(function(e) { return e.taskId !== archiveObj.taskId })
 
       state.error = 'Task Archived'
     },
@@ -661,8 +680,7 @@ const taskdata = createSlice({
         // task.logs.push(data.newLog)
       })
 
-      var filteredAry = state.archiveList.filter(function(e) { return e.taskId !== taskId })
-      state.archiveList = filteredAry
+      state.archiveList = state.archiveList.filter(function(e) { return e.taskId !== taskId })
 
       state.error = 'Task UnArchived'
     },
@@ -679,7 +697,11 @@ export const {
   subTaskDisplay, 
   editSubTask,
   moveTaskSync,
-  clearError
+  clearError,
+  setCurrTaskId,
+  setTaskEditMode,
+  setIsRequestTask,
+  setOwnerId
 } = taskdata.actions
 
 export default taskdata.reducer

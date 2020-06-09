@@ -11,7 +11,7 @@ import { fetchCCAAccounts } from '../account-settings/ccaDetailsSlice'
 import { fetchTaskStatus } from '../account-settings/taskStatusDetailsSlice'
 import { fetchCCARequestList } from '../request-management/requestListSlice'
 import { moveTask, fetchTaskManager, fetchArchiveManager, editSubTask, moveSubTask, moveTaskSync, clearError } from './taskDataSlice'
-
+import EditTaskDialog from './task-list/EditTaskDialog'
 /**
   The parent component that initiates the Task Manager. 
 
@@ -36,9 +36,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 })
 
 function TaskManager({ ccaDetails, taskData, dispatch }) {
-
   /* 
-    fetch the CCAAccountsList(before fetching the Task Manager) and save it in the ccaList Initial state in 
+    Fetch the CCAAccountsList (before fetching the Task Manager) and save it in the ccaList Initial state in 
     ccaDetailsSlice and then that slice will be used to extract CCA account details for Task Manager, also fetch
     the task status as they are to be used for task cards
 
@@ -60,13 +59,6 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
     enableTaskManager()
   }, [])
 
-  // useEffect(() => { 
-  //   dispatch(fetchCCAAccounts())
-  //   dispatch(fetchCCARequestList())
-  //   dispatch(fetchTaskStatus())
-  //   dispatch(fetchArchiveManager())
-  //   dispatch(fetchTaskManager())
-  // }, [])
 
   /* 
     The order in which the CCA Accounts List is fetched, will be the order of the columns in the Task Manager 
@@ -129,13 +121,17 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
     }
   }
 
-  function TaskArchiveList() {  
-    return <div style={{display: 'flex', justifyContent: 'flex-end', marginRight: 30}}>
+  return (
+    taskData.isPending ? <LinearProgress /> :
+    <div style={{backgroundImage: "url('https://s3-eu-west-1.amazonaws.com/images.danb.me/trello-backgrounds/pink.jpg')", height: "93vh", backgroundSize: "100% 100%"}}>
+      <br/>
+      <div style={{display: 'flex', justifyContent: 'flex-end', marginRight: 30}}>
       <Tooltip title="View Archive List" placement="left">
         <Fab size="medium" color="primary" aria-label="archive">
           <ArchiveIcon fontSize="large" onClick={handleClickOpen}/>
         </Fab>
       </Tooltip>
+      </div>
 
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
       <AppBar className={classes.appBar}>
@@ -150,24 +146,29 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
       </AppBar>
       <TaskArchive />
       </Dialog>
-    </div>
-  }
 
-  return (
-    taskData.isPending ? <LinearProgress /> :
-    <DragDropContext onDragEnd={onDragEnd}>
-      <br />
-      <TaskArchiveList/>
-      <Box style={{marginTop: -45}} display="flex" flex-direction="row" marginLeft={2}>
-        { 
-          columnOrder.map(ownerId => { // each ownerId is unique here 
-            return <TaskColumn key={ ownerId } ownerId={ ownerId } />
-          })
-        }
-      </Box>
-    
-      <ErrorSnackbar stateError={taskData.error} clearError={clearError} />
-    </DragDropContext>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Box style={{marginTop: -45}} display="flex" flex-direction="row" marginLeft={2}>
+          { 
+            columnOrder.map(ownerId => { // each ownerId is unique here 
+              return <TaskColumn key={ ownerId } ownerId={ ownerId } />
+            })
+          }
+        </Box>
+        
+        <ErrorSnackbar stateError={taskData.error} clearError={clearError} />
+      </DragDropContext>
+      {
+        (taskData.taskEditMode !== "") ?
+        <EditTaskDialog 
+          editMode={taskData.taskEditMode === "edit"} 
+          open={true}
+          isRequestTask={taskData.isRequestTask}
+          ownerId={taskData.ownerId}
+          taskId={taskData.currTaskId} 
+        /> : null
+      }
+    </div>
   )
 }
 

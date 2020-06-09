@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export function TaskColumn({ownerId, taskData, ccaDetails}) {
+export function TaskColumn({ownerId, taskData, ccaDetails, dispatch}) {
   const classes = useStyles()
 
   return (

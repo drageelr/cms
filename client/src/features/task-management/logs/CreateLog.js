@@ -12,7 +12,6 @@ export function LogEditor({taskId, user, dispatch}) {
     if (logDesc) {
       // setLogText(logDesc)
       setCusLogCreatorId({creatorId: user.id})
-      console.log(logDesc)
       if (logDesc.length > 0) {
         dispatch(createNewLog({taskId, logText: logDesc}))
       }

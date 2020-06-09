@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import Icon from '@material-ui/core/Icon'
 import Button from '@material-ui/core/Button'
 import EditTaskDialog from './EditTaskDialog'
+import { setTaskEditMode, setOwnerId, setIsRequestTask } from "../taskDataSlice"
+import { useDispatch } from 'react-redux'
+
 
 /**
   This component renders the "Add a Task" icon which allows the user to add custom tasks to the
@@ -11,10 +14,9 @@ import EditTaskDialog from './EditTaskDialog'
 */
 
 export default function TaskAddButton({ ownerId }) {
-  const [open, setOpen] = useState(false)
   const [buttonsOpen, setButtonsOpen] = useState(false)
-  const [isRequestTask, setIsRequestTask] = useState("")
-
+  const dispatch = useDispatch()
+  
   const commonStyle = {
     display: "flex",
     alignItems: "center",
@@ -34,8 +36,14 @@ export default function TaskAddButton({ ownerId }) {
   const buttonGroupStyle = {...commonStyle, marginTop: 8}
 
   function handleCreateTask(taskType) {
-    setIsRequestTask(taskType === "request")
-    setOpen(true)
+    dispatch(setTaskEditMode({taskEditMode: "create"}))
+    dispatch(setOwnerId({ownerId}))
+
+    if (taskType === "request") {
+      dispatch(setIsRequestTask({isRequestTask: true}))
+    } else {
+      dispatch(setIsRequestTask({isRequestTask: false}))
+    }
   }
 
   function SelectTaskType () {
@@ -76,12 +84,6 @@ export default function TaskAddButton({ ownerId }) {
         </div>
       }
       </div>
-      <EditTaskDialog
-        editMode={false}
-        ownerId={ownerId}
-        open={open}
-        setOpen={setOpen}
-        isRequestTask={isRequestTask}/>
     </div>
   )
 }
