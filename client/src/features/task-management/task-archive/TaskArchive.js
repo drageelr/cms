@@ -2,7 +2,7 @@ import React, {useEffect} from 'react'
 import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
 import { fetchTask, unArchiveTask, fetchTaskManager } from "../taskDataSlice"
-import { CircularProgress, Fab} from '@material-ui/core'
+import { CircularProgress, Fab, Button} from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import UnarchiveOutlinedIcon from '@material-ui/icons/UnarchiveOutlined';
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,20 +23,18 @@ function ArchiveList({ taskData, ccaDetails, dispatch }) {
   async function handleUnArchiveClick({event, taskId, ownerId}) {
     await dispatch(fetchTask({taskId, ownerId}))
     dispatch(unArchiveTask(taskId))
-    dispatch(fetchTaskManager())
+    // dispatch(fetchTaskManager())
   }
 
   function UnArchiveButton({taskId, ownerId}) {
-    return <Link to={""}>
-        <Fab 
-          color="primary"
-          size="large"
-          variant = "contained"
-          onClick={(event) => handleUnArchiveClick({event, taskId, ownerId})}
-        > <UnarchiveOutlinedIcon className={classes.extendedIcon}/>
-          Unarchive
-      </Fab>
-    </Link>
+    return  <Button 
+        color="primary"
+        size="large"
+        variant = "contained"
+        onClick={(event) => handleUnArchiveClick({event, taskId, ownerId})}
+      > <UnarchiveOutlinedIcon className={classes.extendedIcon}/>
+        Unarchive
+    </Button>
   }
 
   function CCAName(ownerId) {

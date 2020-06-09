@@ -5,14 +5,13 @@ import TaskStatus from './TaskStatus'
 import CheckList from "./CheckList"
 import LogEditor from "../logs/CreateLog"
 import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
-  createCustomTask, changeTaskStatus, createNewLog, fetchTaskManager } from "../taskDataSlice"
-import { Typography, Box, Card, Slide, FormControl, Select, TextField,  MenuItem, Grid, Dialog, DialogActions, Button, Tooltip, Fab } from '@material-ui/core'
+  createCustomTask, changeTaskStatus, fetchTaskManager, setTaskEditMode, setCurrTaskId } from "../taskDataSlice"
+import { Typography, Box, Card, Slide, FormControl, Select, TextField, MenuItem, Paper, Grid, Dialog, DialogActions, Button, Tooltip, Fab } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CancelIcon from '@material-ui/icons/Cancel'
 import SubjectIcon from '@material-ui/icons/Subject'
 import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined'
 import ArchiveIcon from '@material-ui/icons/Archive'
-// import TaskArchive from './task-archive/TaskArchive'
 
 /**
   The task edit dialog is handled by this component. It navigates between sub components of the task
@@ -29,8 +28,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, taskId, ccaDetails, dispatch, open, setOpen}) {  
-  
+export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, taskId, ccaDetails, dispatch, open}) {  
   let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1, log: "" }
   let subId = -1
 
@@ -47,17 +45,21 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
   const [statusId, setStatusId] = useState(initialState.statusId)
   const [logText, setLogText] = useState("")
   const [localSubmissionId, setLocalSubmissionId] = useState(initialState.submissionId)
+  
+  function handleOwnerSet(event) {
+    setOwner(event.target.value)
+  }
 
-  // const [openArchive, setOpenArchive] = React.useState(false)
+  function handleTaskEditorClose() {
+    dispatch(setCurrTaskId({taskId: ""}))
+    dispatch(setTaskEditMode({taskEditMode: ""}))
+  }
 
-  // function handleClickOpen() {
-  //   setOpenArchive(true)
-  // }
-
-  // function handleClose() {
-  //   setOpenArchive(false)
-  // }
-
+  async function handleDelete() {
+    await dispatch(archiveTask({taskId, ownerId}))
+    dispatch(fetchTaskManager())
+    handleTaskEditorClose()
+  }
 
   function handleCreateComplete(){
     if (isRequestTask) {      
@@ -86,7 +88,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
     setOwner(-1)
     setLocalSubmissionId(-1)
     setStatusId(-1)
-    setOpen(false)
+    handleTaskEditorClose()
   }
   
   function handleSaveEdits() {
@@ -107,16 +109,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
       //   dispatch(createNewLog({taskId, logText}))
       // }
     }
-    setOpen(false)
-  }
-
-  function handleOwnerSet(event) {
-    setOwner(event.target.value)
-  }
-
-  async function handleDelete() {
-    await dispatch(archiveTask({taskId, ownerId}))
-    dispatch(fetchTaskManager())
+    handleTaskEditorClose()
   }
 
   function RequestVSCustom() { // conditionally render "Checklist" and Request Form Button
@@ -178,34 +171,9 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
     )
   }
 
-  // function TaskArchiveList() {
-  //   <div>
-  //     <div style={{display: 'flex', justifyContent: 'flex-end', marginRight: 30}}>
-  //       <Tooltip title="View Task Archive" placement="left">
-  //         <Fab size="medium" color="primary" aria-label="archive">
-  //           <ArchiveIcon fontSize="large" onClick={handleClickOpen}/>
-  //         </Fab>
-  //       </Tooltip>
-  //     </div>
-  //     <Dialog fullScreen open={openArchive} onClose={handleClose} TransitionComponent={Transition}>
-  //       <AppBar className={classes.appBar}>
-  //         <Toolbar>
-  //           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-  //             <CloseIcon />
-  //           </IconButton>
-  //           <Typography variant="h6" className={classes.title}>
-  //             Archive List
-  //           </Typography>
-  //         </Toolbar>
-  //       </AppBar>
-  //       <TaskArchive />
-  //     </Dialog>
-  //   </div>
-  // }
-
   return (
-    <Dialog fullWidth maxWidth="md" open={open} onClose={()=>setOpen(false)} TransitionComponent={Transition}>
-      {/*TaskName----TaskID----TaskArchiveButton*/}
+    <Dialog fullWidth maxWidth="md" open={open} onClose={handleTaskEditorClose} TransitionComponent={Transition}>
+      {/* TaskName----TaskID----TaskArchiveButton */}
       <Grid style={{padding: "15px"}} item container direction="row" justify="space-between" alignItems="flex-start">
         <Typography gutterBottom variant="h5" color="inherit">
           <Grid container direction="row"> 
@@ -230,7 +198,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
                   <ArchiveIcon cursor="pointer" onClick={handleDelete} fontsize="large"/>
                 </Fab>
               </Tooltip>
-            : <CancelOutlinedIcon cursor="pointer" onClick={()=>setOpen(false)} /> 
+            : <CancelOutlinedIcon cursor="pointer" onClick={handleTaskEditorClose} /> 
           }
         </Grid>
       </Grid>
@@ -243,11 +211,11 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
           </Typography>
           Description
         </Typography>
-        <Card style={{minHeight: 100, minWidth: 0}}>
+        <Card>
           <TextField 
             placeholder={"Add description here..."}
             multiline
-            rows="6"
+            rows="5"
             value={desc}
             variant="outlined"
             onChange={(e)=>setDesc(e.target.value)}

@@ -57,9 +57,9 @@ export function LogsList({taskId, taskData, ccaDetails}) {
                           {ownerName}
                         </Typography>
                       <Grid>
-                        <Typography>
+                        {/* <Typography>
                           {simplifyTimestamp(logData.createdAt, false)}
-                        </Typography>
+                        </Typography> */}
                       </Grid>
                       </Grid>
                     </Grid>

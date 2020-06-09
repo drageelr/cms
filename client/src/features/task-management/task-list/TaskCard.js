@@ -6,7 +6,7 @@ import { Card, CardContent, Typography, Grid, Box, Tooltip} from '@material-ui/c
 import StopIcon from '@material-ui/icons/Stop'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import { subTaskDisplay, deleteSubTask } from '../taskDataSlice'
+import { subTaskDisplay, deleteSubTask, setCurrTaskId, setTaskEditMode, setIsRequestTask } from '../taskDataSlice'
 
 /**
   This component renders the cards in each column. Each Card displays some details about a task. 
@@ -25,11 +25,12 @@ import { subTaskDisplay, deleteSubTask } from '../taskDataSlice'
 */
 
 export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch}) {
-  const [open, setOpen] = useState(false)
+  // const [open, setOpen] = useState(false)
   let taskStatusName = ""
   let taskStatusColor = ""
   let statusId = -1
   const taskObj = taskData.taskList.find(taskObj => taskObj.taskId === taskId)
+
   if (taskObj !== undefined) { // if found
     statusId = taskObj.statusId
   }
@@ -90,6 +91,12 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
     )
   }
 
+  function handleEditTaskDialog() {
+    dispatch(setCurrTaskId({taskId}))
+    dispatch(setIsRequestTask({isRequestTask: taskId[0] === "r"}))
+    dispatch(setTaskEditMode({taskEditMode: "edit"}))
+  }
+
   function MainTask() {
     return (
       (taskObj !== undefined && taskObj.archive === false) &&
@@ -104,14 +111,8 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
 
             <Grid item>
               <Tooltip title="Edit Task" placement="bottom-end"> 
-                <EditIcon onClick={() => setOpen(true)} fontSize="small" color="action" cursor="pointer"/>
+                <EditIcon onClick={handleEditTaskDialog} fontSize="small" color="action" cursor="pointer"/>
               </Tooltip>
-              <EditTaskDialog 
-                editMode={true}
-                open={open}
-                setOpen={setOpen}
-                isRequestTask={taskId[0]==="r"}
-                taskId={taskId}/>
             </Grid>
           </Grid>
 
@@ -152,7 +153,7 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
 
 const mapStateToProps = (state) => ({
   taskData: state.taskData,
-  taskStatusDetails: state.taskStatusDetails.taskList
+  taskStatusDetails: state.taskStatusDetails.taskList,
 })
 
 export default connect(mapStateToProps) (TaskCard)
