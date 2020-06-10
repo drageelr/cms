@@ -1,9 +1,8 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
 import { fetchTask, unArchiveTask, fetchTaskManager } from "../taskDataSlice"
 import { CircularProgress, Fab, Button} from '@material-ui/core'
-import { Link } from 'react-router-dom'
 import UnarchiveOutlinedIcon from '@material-ui/icons/UnarchiveOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -16,6 +15,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+/**
+  This is the sibling component of the Task Manager. It renders all the tasks that have been archived in form of a list.
+
+  @param {object} taskData slice from redux containing data of all the currently active tasks
+  @param {list} ccaDetails slice from redux containing data of all the active members of CCA
+**/
 
 function ArchiveList({ taskData, ccaDetails, dispatch }) {
   const classes = useStyles()

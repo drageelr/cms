@@ -5,11 +5,13 @@ import { Typography, List, ListItem, ListItemText, Grid, Dialog, DialogTitle} fr
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'   
 import ClearIcon from '@material-ui/icons/Clear'
 
+// NOT USED IN THE SYSTEM FOR NOW 
+
 /**
   Allows the user to add multiple assignees to the task. Also the user can delete an assignee 
   from the task .
 
-  @param {object} taskData used to access multiple objects from the state.
+  @param {object} taskData slice from redux containing data of all the currently active tasks
   @param {string} taskId used to add assignees to this task with this id only
   @param {function} dispatch dispatch the actions of adding and deleting an assignee from the task
 */
@@ -50,15 +52,6 @@ export function AddAssignee({taskData, taskId, dispatch}) {
 
   function handleClose() {
     setOpen(false)
-  }
-
-  function handleDeleteAssignee(person) {
-    assigneeList.map(currName => {
-      if (currName === person) {
-        var filteredAry = assigneeList.filter(function(e) { return e != currName })
-        setAssigneeList(filteredAry)
-      }
-    })
   }
 
   function handleClose(value) {

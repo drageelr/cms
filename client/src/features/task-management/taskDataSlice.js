@@ -405,12 +405,12 @@ const taskdata = createSlice({
       if (state.isPending === true) {
         state.isPending = false
 
-        state.taskList = action.payload.data.taskList
+        state.taskList = action.payload.data.taskList // populate the redux state with all the active tasks fetched from the server
 
-        state.taskList.map(taskObj => {
+        state.taskList.map(taskObj => { // displaying the subtasks(associated with the current task)
           if (taskObj.taskId[0] === 'r' && taskObj.subtasks.length !== 0) {
             taskObj.subtasks.map((subObj, index) => {
-              if (subObj.check === false) {
+              if (subObj.check === false) { // if subtask has not been deleted 
                 let subTaskObj = {
                   taskId: `s${subObj.subtaskId}`,
                   subtaskId: subObj.subtaskId,
@@ -495,7 +495,8 @@ const taskdata = createSlice({
           taskId: `s${subTask.subtaskId}`,
           subtaskId: subTask.subtaskId,
           assTaskId: data.taskId,
-          ownerId: subTask.assigneeId,
+          // ownerId: subTask.assigneeId,
+          ownerId: reqTaskObject.ownerId,
           assigneeId: subTask.assigneeId,
           description: subTask.description,
           check: false // if check is False, then display the SubTask, else do not display the subtask
@@ -652,11 +653,29 @@ const taskdata = createSlice({
     [archiveTask.fulfilled]: (state, action) => {
       const {data, archiveObj} = action.payload
 
-      state.taskList.map(task => {
+      state.taskList.map(task => { // archive the task and push the task into the archive list
         if(task.taskId === archiveObj.taskId) {
           task.archive = true
-          state.archiveList.push(task)
+            
+          let newArchiveObj = { // add only relevant information in the task Archive list for each task
+            taskId: task.taskId,
+            title: task.title,
+            ownerId: task.ownerId,
+            archive: task.archive,
+            createdAt: task.createdAt,
+            updatedAt: task.updatedAt
+          }
+
+          // state.archiveList.push(task)
+          state.archiveList.push(newArchiveObj)
           task.logs.push(data.newLog)
+        }
+      })
+
+      state.taskList.forEach(task => { // remove the subtask(associated with the to be archive request task) from the taskList
+        if (task.taskId[0] === 's' && task.assTaskId === archiveObj.taskId) {
+          task.check = true
+          state.taskList = state.taskList.filter(function(e) { return e.taskId !== task.taskId })
         }
       })
 
@@ -673,13 +692,40 @@ const taskdata = createSlice({
 
       state.taskList.push(state.task)
 
-      state.taskList.map(task => {
+      state.taskList.map(task => { // set the archive tag to false so that the task is displayed in task manager
         if(task.taskId === taskId) {
           task.archive = false
         }
         // task.logs.push(data.newLog)
       })
 
+      /*
+        if the request task is being un archived then add its un-deleted subtasks to the taskList so 
+        that they are also displayed in the task manager
+      */
+      if (taskId[0] === 'r') { 
+        state.taskList.map(taskObj => { // displaying the subtasks(associated with the current task)
+          if (taskObj.taskId === taskId && taskObj.subtasks.length !== 0) { // find the current unArchived request task from the taskList
+            taskObj.subtasks.map((subObj, index) => { // traverse the subTasks list of the current request task
+              if (subObj.check === false) { // if subtask has not been deleted 
+                let subTaskObj = {
+                  taskId: `s${subObj.subtaskId}`,
+                  subtaskId: subObj.subtaskId,
+                  assTaskId: taskObj.taskId,
+                  ownerId: subObj.assigneeId,
+                  assigneeId: subObj.assigneeId,
+                  description: subObj.description,
+                  check: subObj.check
+                }
+                taskObj.subtasks[index] = subTaskObj
+                state.taskList.push(subTaskObj)
+              }
+            })
+          }
+        })
+      }
+
+      // update the archive list by removing the task that was unArchived
       state.archiveList = state.archiveList.filter(function(e) { return e.taskId !== taskId })
 
       state.error = 'Task UnArchived'

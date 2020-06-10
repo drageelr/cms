@@ -70,68 +70,68 @@ function LoginPage({error, dispatch, match, location}) {
             }) 
           }
         }
-        >
-          {({submitForm, isSubmitting})=>(
-            <Form>
-              <h1 style={{color: "white"}}>Login</h1>
+      >
+        {({submitForm, isSubmitting})=>(
+          <Form>
+            <h1 style={{color: "white"}}>Login</h1>
 
-              <ToggleButtonGroup size="medium" value={userType} exclusive>
-                <ToggleButton
-                value="CCA" 
-                onClick={()=>setUserType("CCA")} 
-                style={userType==="CCA" ? selectedBGStyle : normalBGStyle}>
-                  CCA
-                </ToggleButton>,
-                <ToggleButton 
-                value="Society" 
-                onClick={()=>setUserType("Society")}
-                style={userType==="Society" ? selectedBGStyle : normalBGStyle}>
-                  Society
-                </ToggleButton>
-              </ToggleButtonGroup>
-              <br/>            
+            <ToggleButtonGroup size="medium" value={userType} exclusive>
+              <ToggleButton
+              value="CCA" 
+              onClick={()=>setUserType("CCA")} 
+              style={userType==="CCA" ? selectedBGStyle : normalBGStyle}>
+                CCA
+              </ToggleButton>,
+              <ToggleButton 
+              value="Society" 
+              onClick={()=>setUserType("Society")}
+              style={userType==="Society" ? selectedBGStyle : normalBGStyle}>
+                Society
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <br/>            
 
-              <Field
-                style = {{backgroundColor: 'white'}}
-                component={TextField}
-                variant="filled"
-                margin="normal"
-                required
-                label="Email"
-                name="email"
-                InputProps={{
-                  className: classes.input,
-                }}
-              ></Field>
-              <br/>            
-              <Field
-                style = {{backgroundColor: 'white'}}
-                component={TextField}
-                variant="filled"
-                margin="normal"
-                required
-                label="Password"
-                name="password"
-                type="password"
-                InputProps={{
-                  className: classes.input,
-                }}
-              > 
-              </Field>
-              
-              <br/>    
-              <br/>
-              <Button size="large" onClick={submitForm} type="submit"
-              variant="contained" color="secondary" spacing= '10'
-              endIcon={<NavigateNextIcon/>}>
-                Login
-              </Button>
-            </Form>
-          )}
-        </Formik>
+            <Field
+              style = {{backgroundColor: 'white'}}
+              component={TextField}
+              variant="filled"
+              margin="normal"
+              required
+              label="Email"
+              name="email"
+              InputProps={{
+                className: classes.input,
+              }}
+            ></Field>
+            <br/>            
+            <Field
+              style = {{backgroundColor: 'white'}}
+              component={TextField}
+              variant="filled"
+              margin="normal"
+              required
+              label="Password"
+              name="password"
+              type="password"
+              InputProps={{
+                className: classes.input,
+              }}
+            > 
+            </Field>
+            
+            <br/>    
+            <br/>
+            <Button size="large" onClick={submitForm} type="submit"
+            variant="contained" color="secondary" spacing= '10'
+            endIcon={<NavigateNextIcon/>}>
+              Login
+            </Button>
+          </Form>
+        )}
+      </Formik>
         
-        </div>
-          
+      </div>
+      
       <ErrorSnackbar stateError={error} clearError={clearError}/>
     </Container>
   )

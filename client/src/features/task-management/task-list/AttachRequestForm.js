@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState} from 'react'
 import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
 import { Grid, AppBar, Toolbar, IconButton, Typography, Button, Dialog, Slide, Box } from '@material-ui/core'
@@ -7,10 +7,7 @@ import { fetchCheckList } from '../taskDataSlice'
 /**
   When in a Request Task Edit Dialog, user can link a form to the task, if not already linked.
   Opens a full page dialog with all the latest Requests submitted for the CCA.  
-
-  @param {string} taskId used to add link a selected form to a unique task
-  @param {object} requestListData slice of the requestList, used to populate the request list 
-  table for the Task Manager 
+  
   @param {function} dispatch dispatch the an acton that links the form to the task 
 */
 
