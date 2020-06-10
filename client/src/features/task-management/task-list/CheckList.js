@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { Checkbox, FormControlLabel } from '@material-ui/core'
 import { fetchCheckList } from '../taskDataSlice'

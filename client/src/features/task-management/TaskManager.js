@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import {connect} from 'react-redux'
 import TaskColumn from './task-list/TaskColumn'
 import TaskArchive from './task-archive/TaskArchive'
@@ -47,7 +47,6 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
   */
 
   useEffect(() => {
-    // Create an scoped async function in the hook
     async function enableTaskManager() {
       dispatch(fetchCCAAccounts())
       dispatch(fetchCCARequestList())
@@ -76,6 +75,7 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
 
   function handleClickOpen() {
     setOpen(true)
+    // dispatch(fetchTaskManager())
   }
 
   function handleClose() {
@@ -125,6 +125,7 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
     taskData.isPending ? <LinearProgress /> :
     <div style={{backgroundImage: "url('https://s3-eu-west-1.amazonaws.com/images.danb.me/trello-backgrounds/pink.jpg')", height: "93vh", backgroundSize: "100% 100%"}}>
       <br/>
+      {/* Task Archive List Button opens a full screen dialog box */}
       <div style={{display: 'flex', justifyContent: 'flex-end', marginRight: 30}}>
       <Tooltip title="View Archive List" placement="left">
         <Fab size="medium" color="primary" aria-label="archive">

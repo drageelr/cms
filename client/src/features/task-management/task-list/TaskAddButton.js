@@ -5,12 +5,11 @@ import EditTaskDialog from './EditTaskDialog'
 import { setTaskEditMode, setOwnerId, setIsRequestTask } from "../taskDataSlice"
 import { useDispatch } from 'react-redux'
 
-
 /**
-  This component renders the "Add a Task" icon which allows the user to add custom tasks to the
+  This component renders the "Add a Task" icon which allows the user to add tasks to the
   columns. It provides the user with options to either create a Request Task or a Custom Task.
 
-  @param {string} ownerId used to add the Add button in each column 
+  @param {string} ownerId the ID of the CCA user, so that task is created in the column of the user whose userId is passed here as the ownerId 
 */
 
 export default function TaskAddButton({ ownerId }) {

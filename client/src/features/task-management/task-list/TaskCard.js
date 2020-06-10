@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
 import { connect } from 'react-redux'
-import EditTaskDialog from './EditTaskDialog'
 import { Draggable } from "react-beautiful-dnd"
 import { Card, CardContent, Typography, Grid, Box, Tooltip} from '@material-ui/core'
 import StopIcon from '@material-ui/icons/Stop'
@@ -25,7 +24,6 @@ import { subTaskDisplay, deleteSubTask, setCurrTaskId, setTaskEditMode, setIsReq
 */
 
 export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch}) {
-  // const [open, setOpen] = useState(false)
   let taskStatusName = ""
   let taskStatusColor = ""
   let statusId = -1
