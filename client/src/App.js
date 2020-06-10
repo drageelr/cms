@@ -19,7 +19,6 @@ import { connect } from 'react-redux'
 
 function App({ user }) {
   const { id, isLoggedIn, userType, name, picture, themeColor, darkMode } = user
-  const [localDarkMode, setLocalDarkMode] = React.useState(darkMode)
   
   document.body.style = darkMode ? 'background: #424242' : 'background: #ffffff' 
 
@@ -60,8 +59,7 @@ function App({ user }) {
           { 
             isLoggedIn &&
             <NavBar name={name} userType={userType} picture={picture} 
-              darkMode={localDarkMode} setDarkMode={setLocalDarkMode} ccaId={id}
-              userThemeColor={themeColor}/>
+              darkMode={darkMode} ccaId={id} userThemeColor={themeColor}/>
           }
           <Switch>
             <Route path="/" exact component={isLoggedIn ? (userType === "CCA" ? TaskManager : SocietyDashboard) : LoginPage}/>
