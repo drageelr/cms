@@ -1,5 +1,5 @@
 import React from 'react'
-import { Grid, Typography, Avatar, Paper, Box, List } from '@material-ui/core'
+import { Avatar, Paper, Box, List, Tooltip } from '@material-ui/core'
 import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import { simplifyTimestamp } from '../../../helpers'
@@ -31,8 +31,9 @@ const useStyles = makeStyles((theme) => ({
 
 export function LogsList({taskId, taskData, ccaDetails}) {
   const classes = useStyles()
-  let ownerName="CMS User"
-  let picture = ""
+  
+  let ownerName="CMS User" // default owner name
+  let picture = "" //default picture src
 
   return <Box borderRadius={8} border={1} borderColor="grey.400" className={classes.logEditorPaper}>
     <List>
@@ -43,40 +44,45 @@ export function LogsList({taskId, taskData, ccaDetails}) {
               return null
             } 
             else {
-              const reversedLogList = taskObj.logs.map(item => item).reverse()
-              return reversedLogList.map(logData => {
-                ccaDetails.map(ccaUser => {
+              const reversedLogList = taskObj.logs.map(item => item).reverse() // reverse the log list so that it displays the most recent log first
+              return reversedLogList.map(logData => { // for each log related to the task
+                ccaDetails.map(ccaUser => { // find the userId who created that log
                   if (logData.creatorId !== -1) {
                     if(ccaUser.ccaId === logData.creatorId) {
-                      ownerName = ccaUser.firstName + " " + ccaUser.lastName
-                      // console.log(ownerName)
+                      ownerName = ccaUser.firstName + " " + ccaUser.lastName // store the log creators' name
                       picture = ccaUser.picture
                     }
+                  } else {
+                    ownerName = "CMS Bot"
+                    picture= ""
                   }
                 })
 
-                // console.log(ownerName)
                 return <Paper className={classes.logPaper} >
-                  <Grid container direction="column" justify="space-between" alignItems="flex-start">
-                    <Grid direction="row" justify="space-between" alignItems="flex-start">
-                      <Grid container>
-                        <Avatar src={picture} style={{height: 15, width: 15, marginTop: 3}}/>
-                        <Typography variant="subtitle2" style={{marginLeft: 3}}>
-                          {ownerName}
-                        </Typography>
-                      <Grid>
-                        {/* <Typography>
-                          {simplifyTimestamp(logData.createdAt, false)}
-                        </Typography> */}
-                      </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid>
-                      <Typography style={{marginLeft: 27, fontSize: 13}}>
-                        {logData.description}
-                      </Typography>
-                    </Grid>
-                  </Grid>
+                  {/* MAIN div */}
+                  <div style={{color: "#ffffff", fontFamily: "Roboto,Noto Sans, Droid Sans,", fontSize: "15px", lineHeight: "20px", fontWeight: "400"}}>
+                    <div style={{position: "relative", marginLeft: "40px", minHeight: "30px", padding: "6px 0px"}}>
+                      {/* picture div */}
+                      <div style={{height: "32px", left: "-40px", position: "absolute", top: "8px", width: "32px"}}> 
+                        <Avatar src={picture}/> {/* display the log creators' picture */}
+                      </div>
+                      {/* name and date/time and description div */}
+                      <div style={{marginLeft: 5, marginTop: 4}}>
+                        <span>
+                          <span style={{fontWeight: 630}}>{ownerName}</span> {/* display the log creators' name */}
+                        </span>
+                        <span style={{display: "inline-block", minWidth: "6px"}}></span>
+                        <span style={{fontSize: "12px", fontWeight: 400, whiteSpace: "pre"}}>
+                          {simplifyTimestamp(logData.createdAt, false)} {/* display the log creation time as well */}
+                        </span>
+                        <div style={{display: "block"}}>
+                          <div >
+                            <p style={{fontSize: "15px"}}>{logData.description}</p>  {/* display the log description */}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </Paper>          
               })
             }

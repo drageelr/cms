@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import { connect } from 'react-redux'
 import { Draggable } from "react-beautiful-dnd"
-import { Card, CardContent, Typography, Grid, Box, Tooltip} from '@material-ui/core'
+import { Card, CardContent, Typography, Grid, Box, Tooltip, Button} from '@material-ui/core'
 import StopIcon from '@material-ui/icons/Stop'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
@@ -67,14 +67,14 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
             </Grid> 
             <Grid>
               <Tooltip title="Delete SubTask" placement="bottom-end"> 
-                <DeleteOutlineIcon onClick={handleSubTaskDisplay} cursor="pointer"/>
+                <DeleteOutlineIcon onClick={handleSubTaskDisplay} cursor="pointer" fontSize="small"/>
               </Tooltip>
             </Grid>
           </Grid>
           <Grid container direction="row" justify='space-between' alignItems="flex-end">
             <Grid>
               <Typography variant='subtitle2'>
-                {"Task ID: "}
+                {"Req ID: "}
                 {taskObj.assTaskId}
               </Typography>
             </Grid>
@@ -98,37 +98,40 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
   function MainTask() {
     return (
       (taskObj !== undefined && taskObj.archive === false) &&
-      <Card elevation={3} style={{minHeight: 85, minWidth: 0, marginBottom: 10}}  cursor="pointer" >
-        <CardContent >
-          <Grid item xs container direction="row" spacing={0}>
-            <Grid item xs>
-              {
-                <Typography key={index} gutterBottom variant="h6"> {taskObj.title} </Typography>
-              }
-            </Grid>  
+      <div style={{fontFamily: "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;"}}>
+        <Card elevation={10} onClick={handleEditTaskDialog} style={{minHeight: "80px", marginBottom: "10px"}}  cursor="pointer" >
+          <CardContent>
+            <Grid item xs container direction="row" spacing={0}>
+              <Grid item xs>
+                {
+                  <span key={index} style={{fontSize: "16px", fontWeight: 550}}> {taskObj.title} </span>
+                }
+              </Grid>  
+              <Grid item>
+                <Tooltip title="Edit Task" placement="bottom-end"> 
+                  <EditIcon onClick={handleEditTaskDialog} fontSize="small" color="action" cursor="pointer"/>
+                </Tooltip>
+              </Grid>
+            </Grid>
 
-            <Grid item>
-              <Tooltip title="Edit Task" placement="bottom-end"> 
-                <EditIcon onClick={handleEditTaskDialog} fontSize="small" color="action" cursor="pointer"/>
-              </Tooltip>
+            <span style={{display: "inline-block", minHeight: "5px"}}></span>
+            
+            <Grid container direction="row" justify='space-between' alignItems="flex-end">
+              <Grid item>
+                <div>
+                  <StopIcon fontSize="default" style={{fill: taskStatusColor, marginBottom: -5, marginLeft: -3}} /> {/*if condition if no task status*/}
+                  <span style={{fontSize: "13px"}}>{taskStatusName}</span> 
+                </div>
+              </Grid>
+              <Grid>
+                <span style={{fontSize: "14px", fontWeight: 450}}>
+                  {taskId}
+                </span>
+              </Grid>
             </Grid>
-          </Grid>
-
-          <Grid container direction="row" justify='space-between' alignItems="flex-end">
-            <Grid item>
-              <Box fontSize={12}>
-                <StopIcon fontSize="small" style={{fill: taskStatusColor, marginBottom: -4}} /> {/*if condition if no task status*/}
-                {taskStatusName} 
-              </Box>
-            </Grid>
-            <Grid>
-              <Typography variant='subtitle2'>
-                {taskId}
-              </Typography>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     )  
   }
 
