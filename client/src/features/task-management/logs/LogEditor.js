@@ -3,7 +3,6 @@ import { Grid, TextField, Button, Typography, Card, Avatar, Container, Paper, Bo
 import { connect } from 'react-redux'
 import { setCusLogCreatorId } from '../taskDataSlice'
 import { makeStyles } from '@material-ui/core/styles'
-import { simplifyTimestamp } from '../../../helpers'
 
 const useStyles = makeStyles((theme) => ({
   logEditorPaper: {
@@ -65,11 +64,6 @@ export function LogEditor({taskId, taskData, setLogText, ccaDetails, user, dispa
                           <Typography variant="subtitle2" style={{marginLeft: 3}}>
                             {ownerName}
                           </Typography>
-                        {/* <Grid>
-                          <Typography>
-                            {simplifyTimestamp(logData.createdAt, false)}
-                          </Typography>
-                        </Grid> */}
                         </Grid>
                       </Grid>
                       <Grid>

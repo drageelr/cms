@@ -40,16 +40,3 @@ export async function apiCaller(api, body, successCode, dataReturner, rejectWith
     return rejectWithValue(err.toString())
   }
 }
-
-export function simplifyTimestamp(ts, dateOnly=true) {
-  if (ts === "Just now") return ts
-  
-  const monthAbbrev = {"01":"Jan", "02":"Feb", "03":"Mar", "04":"Apr", "05":"May", "06":"Jun", "07":"Jul", "08":"Aug",
-  "09":"Sep", "10":"Oct", "11":"Nov", "12":"Dec"}
-  const dateTime = ts.split('T')
-  const YYMMDD = dateTime[0].split('-')
-  const HHMMSS = dateTime[1].split(':')
-  
-  const dateOnlyString = `${YYMMDD[2]} ${monthAbbrev[YYMMDD[1]]} ${YYMMDD[0]}`
-  return dateOnly ? dateOnlyString : `${HHMMSS[0]}:${HHMMSS[1]} - ${dateOnlyString}`
-} 

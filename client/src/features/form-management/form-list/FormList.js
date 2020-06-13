@@ -11,7 +11,7 @@ import MoreButton from '../../../ui/MoreButton'
 import ErrorSnackbar from '../../../ui/ErrorSnackbar'
 import { deleteForm, changeFormStatus, fetchFormList, clearError } from '../formListSlice'
 import { fetchForm, createForm } from '../formTemplateSlice'
-import { simplifyTimestamp } from '../../../helpers'
+import Timestamp from 'react-timestamp'
 
 function FormList({formList, dispatch}) {
   const history = useHistory()
@@ -71,7 +71,7 @@ function FormList({formList, dispatch}) {
         data={formList.list.map((form, index) => [ //only fetch public forms for society
           form.title, 
           form.creatorName, 
-          form.timestampModified,//simplifyTimestamp(form.timestampModified, false),
+          <Timestamp relative date={new Date(form.timestampModified)}/>,
           form.isPublic ? 'Public' : 'Private', 
           <MoreFormOptionsButton index={index}/>
         ])}
@@ -89,10 +89,10 @@ function FormList({formList, dispatch}) {
             }
           },
           'Created by',
-          'Last edited',
-          'Status', 
-          {name: 'More', options: {filter: false, print: false, download: true, sort: false}
-        }]}
+          {name: 'Last edited', options: {filter: false}},
+          'Status',
+          {name: 'More', options: {filter: false, print: false, download: true, sort: false}}
+        ]}
         options={{
           print: false,
           searchPlaceholder: 'Search for a Form...',

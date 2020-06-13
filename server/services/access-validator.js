@@ -119,7 +119,7 @@ exports.validateUserAccess = (req, res, next) => {
       if (accessGranted) {
         next();
       } else {
-        throw new customError.ForbiddenAccessError("forbidden access to resource", "RouteError");
+        throw new customError.ForbiddenAccessError("Forbidden access to resource.", "RouteError");
       }
     } else {
       next();
@@ -142,7 +142,7 @@ exports.validateCCAAccess = async (req, res, next) => {
         if(reqCCA.permissions[access]) {
           next();
         } else {
-          throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
+          throw new customError.ForbiddenAccessError("The user does not have valid permission to access this resource.", "PermissionError");
         }
       } else {
         next();

@@ -81,9 +81,9 @@ exports.downloadFile = async (req, res, next) => {
 
   try {
     let reqSubmission = await Submission.findOne({submissionId: params.submissionId}, 'societyId formId itemsData');
-    if (!reqSubmission) throw new customError.SubmissionNotFoundError("invalid submissionId");
+    if (!reqSubmission) throw new customError.SubmissionNotFoundError("Invalid submission ID. Submission not found.");
 
-    if (params.userObj.type != "cca" && params.userObj._id != reqSubmission.societyId) throw new customError.ForbiddenAccessError("user doesnot have access to this resource")
+    if (params.userObj.type != "cca" && params.userObj._id != reqSubmission.societyId) throw new customError.ForbiddenAccessError("User does not have access to this resource.")
 
     let reqForm = await Form.findById(reqSubmission.formId, 'items');
     let itemExists = false;
@@ -93,7 +93,7 @@ exports.downloadFile = async (req, res, next) => {
         break;
       }
     }
-    if (!itemExists) throw new customError.FileNotFoundError("item is not of type 'file'");
+    if (!itemExists) throw new customError.FileNotFoundError("Item must be of type 'file'.");
 
     let fileName = false;
     for (let i of reqSubmission.itemsData) {
@@ -102,7 +102,7 @@ exports.downloadFile = async (req, res, next) => {
         break;
       }
     }
-    if (!fileName) throw new customError.FileNotFoundError("item is not submitted");
+    if (!fileName) throw new customError.FileNotFoundError("No such file found for the given field.");
 
     res.sendFile(fileSavePath + fileName);
 
