@@ -17,8 +17,7 @@ export function LogEditor({taskId, user, dispatch}) {
 
   function handleUpdateLogs() {
     if (logDesc) {
-      // setLogText(logDesc)
-      setCusLogCreatorId({creatorId: user.id})
+      dispatch(setCusLogCreatorId({creatorId: user.id}))
       if (logDesc.length > 0) {
         dispatch(createNewLog({taskId, logText: logDesc}))
       }

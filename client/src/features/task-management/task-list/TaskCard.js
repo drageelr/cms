@@ -1,11 +1,14 @@
-import React, {useState} from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { Draggable } from "react-beautiful-dnd"
-import { Card, CardContent, Typography, Grid, Box, Tooltip} from '@material-ui/core'
-import StopIcon from '@material-ui/icons/Stop'
+import { Card, CardContent, Grid, Tooltip, makeStyles} from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import { subTaskDisplay, deleteSubTask, setCurrTaskId, setTaskEditMode, setIsRequestTask } from '../taskDataSlice'
+import FormatItalicRoundedIcon from '@material-ui/icons/FormatItalicRounded';
+import AttachFileIcon from '@material-ui/icons/AttachFile'
+import LinkIcon from '@material-ui/icons/Link'
+import Icon from '@material-ui/core/Icon'
 
 /**
   This component renders the cards in each column. Each Card displays some details about a task. 
@@ -23,11 +26,44 @@ import { subTaskDisplay, deleteSubTask, setCurrTaskId, setTaskEditMode, setIsReq
   are assigned to a task, along with the hex color values
 */
 
+const useStyles = makeStyles((theme) => ({
+  taskStatusBlock: {
+    borderRadius: "4px",
+    display: "block",
+    float: "left",
+    fontSize: "10px",
+    fontWeight: 600,
+    margin: "0 4px 5px 0",
+    minWidth: "50px",
+    textShadow: "1px 1px #000000",
+    width: "auto",
+    padding: "0 5px",
+    color: "#ffffff"
+  },
+  displayIcons: {
+    display: "inline-block",
+    width: "100%",
+    float: "left",
+    padding: "5px 0 0 0"
+  },
+  mainTaskCard: {
+    font: "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Helvetica,Arial,sans-serif",
+    marginBottom: "10px",
+    maxHeight: "70px"
+  },
+  subTaskCard: {
+    fontFamily: "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Helvetica,Arial,sans-serif",
+    marginBottom: 10, 
+    maxHeight: "60px"
+  },
+}))
+
 export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch}) {
   let taskStatusName = ""
   let taskStatusColor = ""
   let statusId = -1
   const taskObj = taskData.taskList.find(taskObj => taskObj.taskId === taskId)
+  const classes = useStyles()
 
   if (taskObj !== undefined) { // if found
     statusId = taskObj.statusId
@@ -59,31 +95,32 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
   function SubTask() {
     return (
       (taskObj !== undefined && taskObj.check !== true) &&
-      <Card height="10%" key={index} style={{marginBottom: 10}} cursor="pointer" variant="outlined">
-        <CardContent>
-          <Grid item xs container direction="row" spacing={0}>
-            <Grid item xs>
-              <Typography key={index} gutterBottom variant="subtitle1"> {taskObj.description} </Typography>
-            </Grid> 
-            <Grid>
-              <Tooltip title="Delete SubTask" placement="bottom-end"> 
-                <DeleteOutlineIcon onClick={handleSubTaskDisplay} cursor="pointer"/>
+      <Card key={index} style={{marginBottom: 10, maxHeight: "50px"}} cursor="pointer" variant="outlined">
+        <CardContent style={{marginTop: "-16px"}}>
+          <div className={classes.displayIcons}>              
+            <div style={{float: "left"}}>
+              <span key={index} style={{fontSize: "13px", fontWeight: 400}}> {taskObj.description} </span>
+            </div>
+            <div style={{float: "right"}}>
+              <span>
+                <Tooltip title="Delete SubTask" placement="bottom-start">
+                  <DeleteOutlineIcon onClick={handleSubTaskDisplay} cursor="pointer" fontSize="small"/>
+                </Tooltip>
+              </span>
+            </div>
+          </div>
+          <div className={classes.displayIcons}>
+            <div style={{float: "left"}}>
+              <Tooltip title={"Linked Request ID: " + taskObj.assTaskId} placement="bottom-start">
+                <LinkIcon fontSize="small" cursor="pointer"/>
               </Tooltip>
-            </Grid>
-          </Grid>
-          <Grid container direction="row" justify='space-between' alignItems="flex-end">
-            <Grid>
-              <Typography variant='subtitle2'>
-                {"Task ID: "}
-                {taskObj.assTaskId}
-              </Typography>
-            </Grid>
-            <Grid>
-              <Typography variant='subtitle2'>
-                {taskId}
-              </Typography>
-            </Grid>
-          </Grid>
+            </div>
+            <div style={{float: "right"}}>
+              <Tooltip title={"SubTask ID: " + taskObj.taskId} placement="bottom-start">
+                <FormatItalicRoundedIcon fontSize="small" cursor="pointer"/>
+              </Tooltip>
+            </div>
+          </div>
         </CardContent>
       </Card>
     )
@@ -98,35 +135,37 @@ export function TaskCard({taskId, index, taskData, taskStatusDetails, dispatch})
   function MainTask() {
     return (
       (taskObj !== undefined && taskObj.archive === false) &&
-      <Card elevation={3} style={{minHeight: 85, minWidth: 0, marginBottom: 10}}  cursor="pointer" >
-        <CardContent >
-          <Grid item xs container direction="row" spacing={0}>
-            <Grid item xs>
-              {
-                <Typography key={index} gutterBottom variant="h6"> {taskObj.title} </Typography>
-              }
-            </Grid>  
-
-            <Grid item>
+      <Card elevation={10} onClick={handleEditTaskDialog} className={classes.mainTaskCard}>
+        <CardContent style={{marginBottom: "10px", marginTop: "-10px"}}>
+          <span className={classes.taskStatusBlock} style={{background: taskStatusColor}}>{taskStatusName}</span>
+          <Grid container>
+            {/* <Grid item xs> */}
+              <span key={index} style={{fontSize: "14px", fontWeight: 550}}> {taskObj.title} </span>
+            {/* </Grid>   */}
+            {/* <Grid item>
               <Tooltip title="Edit Task" placement="bottom-end"> 
                 <EditIcon onClick={handleEditTaskDialog} fontSize="small" color="action" cursor="pointer"/>
               </Tooltip>
-            </Grid>
+            </Grid> */}
           </Grid>
-
-          <Grid container direction="row" justify='space-between' alignItems="flex-end">
-            <Grid item>
-              <Box fontSize={12}>
-                <StopIcon fontSize="small" style={{fill: taskStatusColor, marginBottom: -4}} /> {/*if condition if no task status*/}
-                {taskStatusName} 
-              </Box>
-            </Grid>
-            <Grid>
-              <Typography variant='subtitle2'>
-                {taskId}
-              </Typography>
-            </Grid>
-          </Grid>
+          <div className={classes.displayIcons}>              
+            <div style={{float: "left"}}>
+              {
+                taskId[0] === 'r' 
+                ? <span style={{padding: "0 10px 0 0"}}>
+                    <Tooltip title="Request Attached" placement="bottom-start">
+                      <AttachFileIcon fontSize={"small"} cursor="pointer"/>
+                    </Tooltip>
+                  </span>
+                : null
+              }
+            </div>
+            <div style={{float: "right"}}>
+              <Tooltip title={"Task ID: " + taskObj.taskId} placement="bottom-start">
+                <FormatItalicRoundedIcon fontSize="small" cursor="pointer"/>
+              </Tooltip>
+            </div>
+          </div>
         </CardContent>
       </Card>
     )  
