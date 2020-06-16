@@ -376,7 +376,7 @@ exports.addCCANote = async (req, res, next) => {
       });
     } else {
       // throw submission not found error
-      throw new customError.SubmissionNotFoundError("invalid submission id");
+      throw new customError.SubmissionNotFoundError("Invalid submission ID. Submission not found.");
     }
   }
   catch (err) {
@@ -406,7 +406,7 @@ exports.addSocietyNote = async (req, res, next) => {
       });
     } else {
       // throw submission not found error
-      throw new customError.SubmissionNotFoundError("invalid submission id");
+      throw new customError.SubmissionNotFoundError("Invalid submission ID. Submission not found.");
     }
   }
   catch (err) {
@@ -473,7 +473,7 @@ exports.getSubmissionList = async (req, res, next) => {
       });
     } else {
       // raise submission not found error
-      throw new customError.SubmissionNotFoundError("no submissions exists");
+      throw new customError.SubmissionNotFoundError("There are no existing submissions.");
     }
   } catch (err) {
     next(err);
@@ -506,11 +506,11 @@ exports.updateSubmissionStatus = async (req, res, next) => {
 
       if (!statusCheck) {
         console.log(params)
-        throw new customError.SubmissionValidationError("invalid status or status not allowed, allowed statuses are: " + JSON.stringify(statusAvailable));
+        throw new customError.SubmissionValidationError("Invalid status, allowed statuses are: " + JSON.stringify(statusAvailable));
       }
 
       if (params.userObj.type != "cca" && reqSubmission.status != submissionChangeStatus[params.userObj.type]) {
-        throw new customError.SubmissionValidationError("user cannont change status at this moment");
+        throw new customError.SubmissionValidationError("This submission's status cannot be changed at this moment.");
       }
 
       // params.status contains the string "Issue"
@@ -535,7 +535,7 @@ exports.updateSubmissionStatus = async (req, res, next) => {
       });
     } else {
       // raise submission not found error
-      throw new customError.SubmissionNotFoundError("invalid submission id");
+      throw new customError.SubmissionNotFoundError("Invalid submission ID. Submission not found.");
     }
   } catch (err) {
     next(err);
@@ -586,7 +586,7 @@ exports.fetchSubmission = async (req, res, next) => {
       });
     } else {
       // raise submission not found error
-      throw new customError.SubmissionNotFoundError("invalid submission id");
+      throw new customError.SubmissionNotFoundError("Invalid submission ID. Submission not found.");
     }
   } catch (err) {
     next(err);

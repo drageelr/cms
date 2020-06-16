@@ -273,14 +273,14 @@ const formData = createSlice({
     },
 
     [addCcaNote.fulfilled]: (state, action) => {
-      state.ccaNotes.push({note: action.payload.note, timestampCreated: "Just now"})
+      state.ccaNotes.push({note: action.payload.note, timestampCreated: "just now"})
     },
     [addCcaNote.rejected]: (state, action) => {
       state.error = action.payload
     },
 
     [addSocietyNote.fulfilled]: (state, action) => {
-      state.societyNotes.push({note: action.payload.note, timestampCreated: "Just now"})
+      state.societyNotes.push({note: action.payload.note, timestampCreated: "just now"})
     },
     [addSocietyNote.rejected]: (state, action) => {
       state.error = action.payload

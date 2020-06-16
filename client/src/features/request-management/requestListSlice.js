@@ -9,14 +9,14 @@ const initialState = {
 
 export const fetchCCARequestList = createAsyncThunk(
   'requestListData/fetchCCARequestList',
-  async (_, { getState, rejectWithValue }) => {
+  async (body, { getState, rejectWithValue }) => {
     const { isPending } = getState().requestListData
 
     if (isPending != true) {
       return
     } 
 
-    return await apiCaller('/api/submission/fetch-list', {}, 200, 
+    return await apiCaller('/api/submission/fetch-list', body, 200, 
     (data) => ({isPending: false, error: '' , ccaList: data.submissions}), 
     rejectWithValue)  
   }

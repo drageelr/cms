@@ -72,13 +72,13 @@ exports.createReqTask = async (req, res, next) => {
 
   try {
     let reqSubmission = await Submission.findOne({submissionId: task.submissionId}, '_id formId');
-    if (!reqSubmission) throw new customError.SubmissionNotFoundError("invalid submissionId"); // raise submission not found error
+    if (!reqSubmission) throw new customError.SubmissionNotFoundError("Invalid submission ID. Submission not found."); // raise submission not found error
 
     let reqCCA = await CCA.findOne({ccaId: task.ownerId}, '_id firstName lastName');
-    if(!reqCCA) throw new customError.UserNotFoundError("invalid ownerId"); // raise user not found error
+    if(!reqCCA) throw new customError.UserNotFoundError("Invalid owner ID. CCA user not found."); // raise user not found error
 
     let reqStatus = await Status.findOne({statusId: task.statusId}, '_id');
-    if (!reqStatus) throw new customError.TaskStatusNotFoundError("invalid statusId"); // raise status not found error
+    if (!reqStatus) throw new customError.TaskStatusNotFoundError("Invalid status ID. Task status not found."); // raise status not found error
     
     let checklistIds = []
     let assigneeIds = []
@@ -88,7 +88,7 @@ exports.createReqTask = async (req, res, next) => {
     }
     
     let reqChecklists = await Checklist.find({checklistId: {$in: checklistIds}, formId: reqSubmission.formId});
-    if (reqChecklists.length != checklistIds.length) throw new customError.ChecklistNotFoundError("invalid checklistId"); // throw invalid checklist id(s)
+    if (reqChecklists.length != checklistIds.length) throw new customError.ChecklistNotFoundError("Invalid checklist ID. No such form checklist exists."); // throw invalid checklist id(s)
 
     let reqCCAs = [];
     for (let aId of assigneeIds) {
@@ -97,7 +97,7 @@ exports.createReqTask = async (req, res, next) => {
         let reqCCAObj = helperFuncs.duplicateObject(reqCCA, ["_id", "firstName", "lastName"]);
         reqCCAs.push(reqCCAObj);
       } else {
-        throw new customError.UserNotFoundError("invalid assigneeId"); // raise invalid assignee id(s)
+        throw new customError.UserNotFoundError("Inavlid assignee ID. CCA user not found."); // raise invalid assignee id(s)
       }
     }
 
@@ -195,10 +195,10 @@ exports.createCusTask = async (req, res, next) => {
 
   try {
     let reqCCA = await CCA.findOne({ccaId: task.ownerId}, '_id firstName lastName');
-    if(!reqCCA) throw new customError.UserNotFoundError("invalid ownerId"); // raise user not found error
+    if(!reqCCA) throw new customError.UserNotFoundError("Invalid owner ID. CCA user not found."); // raise user not found error
 
     let reqStatus = await Status.findOne({statusId: task.statusId}, '_id');
-    if (!reqStatus) throw new customError.TaskStatusNotFoundError("invalid statusId"); // raise status not found error
+    if (!reqStatus) throw new customError.TaskStatusNotFoundError("Invalid status ID. Task status not found."); // raise status not found error
 
     let reqCTask = new CTask({
       title: task.title,
@@ -252,7 +252,7 @@ exports.editReqTask = async (req, res, next) => {
   let task = params.task;
   try {
     let reqTask = await RTask.findOne({taskId: parseInt(task.taskId.slice(1))}, '_id');
-    if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId"); // raise task not found error
+    if (!reqTask) throw new customError.TaskNotFoundError("Invalid task ID. Request task not found."); // raise task not found error
 
     let reqCCA = await CCA.findById(params.userObj._id, 'ccaId firstName lastName permissions');
 
@@ -263,20 +263,20 @@ exports.editReqTask = async (req, res, next) => {
       if ((task.archive && reqCCA.permissions.archiveTask) || (!task.archive && reqCCA.permissions.unarchiveTask)) {
         updateObj.archive = task.archive;
       } else {
-        throw new customError.ForbiddenAccessError("user cant change archive field", "PermissionError"); // raise permission error;
+        throw new customError.ForbiddenAccessError("You do not have permissions to change the task archive status.", "PermissionError"); // raise permission error;
       }
     }
 
     if (task.ownerId) {
       let newOwner = await CCA.findOne({ccaId: task.ownerId}, 'firstName lastName');
-      if (!newOwner) throw new customError.UserNotFoundError("invalid ownerId"); // raise owner not found error
+      if (!newOwner) throw new customError.UserNotFoundError("Invalid owner ID. CCA user not found."); // raise owner not found error
       updateObj.ownerId = newOwner._id;
       logDesc += "\n Ownership set to " + createLogText("u", task.ownerId, newOwner.firstName + " " + newOwner.lastName) + "."; 
     }
 
     if (task.statusId) {
       let newStatus = await Status.findOne({statusId: task.statusId}, '_id name');
-      if (!newStatus) throw new customError.TaskStatusNotFoundError("invalid statusId"); // raise status not found error
+      if (!newStatus) throw new customError.TaskStatusNotFoundError("Invalid status ID. Task status not found."); // raise status not found error
       updateObj.statusId = newStatus._id;
       logDesc += "\n Status set to " + createLogText("ts", task.statusId, newStatus.name) + ".";
     }
@@ -284,14 +284,14 @@ exports.editReqTask = async (req, res, next) => {
     if (task.subtasks) {
       let subtaskIds = task.subtasks.map(s => s.subtaskId);
       let reqSubTasks = await SubTask.find({subtaskId: {$in: subtaskIds}, taskId: reqTask._id});
-      if (reqSubTasks.length != subtaskIds.length) throw new customError.SubTaskNotFoundError("invalid subtaskId"); // raise one or more id is invalid
+      if (reqSubTasks.length != subtaskIds.length) throw new customError.SubTaskNotFoundError("Invalid subtask ID. Subtask not found."); // raise one or more id is invalid
 
       let stUpdateArr = [];
       for (let i = 0; i < reqSubTasks.length; i++) {
         let stUpdateObj = helperFuncs.duplicateObject(task.subtasks[i], ['description', 'check'], true);
         if (task.subtasks[i].assigneeId) {
           let newAssignee = await CCA.findOne({ccaId: task.subtasks[i].assigneeId}, '_id firstName lastName');
-          if (!newAssignee) throw new customError.UserNotFoundError("invalid assigneeId"); // raise assingee not found error
+          if (!newAssignee) throw new customError.UserNotFoundError("Invalid assignee ID. CCA user not found."); // raise assignee not found error
           stUpdateObj.assigneeId = newAssignee._id;
         }
         logDesc += "\n" + createLogText("st", task.subtasks[i].subtaskId) + " edited.";
@@ -340,7 +340,7 @@ exports.editCusTask = async (req, res, next) => {
 
   try {
     let reqTask = await CTask.findOne({taskId: parseInt(task.taskId.slice(1))}, '_id');
-    if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId"); // raise task not found error
+    if (!reqTask) throw new customError.TaskNotFoundError("Invalid task ID. Task not found."); // raise task not found error
 
     let reqCCA = await CCA.findById(params.userObj._id, 'ccaId firstName lastName permissions');
 
@@ -351,20 +351,20 @@ exports.editCusTask = async (req, res, next) => {
       if ((task.archive && reqCCA.permissions.archiveTask) || (!task.archive && reqCCA.permissions.unarchiveTask)) {
         updateObj.archive = task.archive;
       } else {
-        throw new customError.ForbiddenAccessError("user cant change archive field", "PermissionError"); // raise permission error;
+        throw new customError.ForbiddenAccessError("You do not have permissions to change the task archive status.", "PermissionError"); // raise permission error;
       }
     }
 
     if (task.ownerId) {
       let newOwner = await CCA.findOne({ccaId: task.ownerId}, '_id firstName lastName');
-      if (!newOwner) throw new customError.UserNotFoundError("invalid ownerId"); // raise owner not found error
+      if (!newOwner) throw new customError.UserNotFoundError("Invalid owner ID. CCA user not found."); // raise owner not found error
       updateObj.ownerId = newOwner._id;
       logDesc += "\n Ownership set to " + createLogText("u", task.ownerId, newOwner.firstName + " " + newOwner.lastName) + "."; 
     }
 
     if (task.statusId) {
       let newStatus = await Status.findOne({statusId: task.statusId}, '_id name');
-      if (!newStatus) throw new customError.TaskStatusNotFoundError("invalid statusId"); // raise status not found error
+      if (!newStatus) throw new customError.TaskStatusNotFoundError("Invalid status ID. Task status not found."); // raise status not found error
       updateObj.statusId = newStatus._id;
       logDesc += "\n Status set to " + createLogText("ts", task.statusId, newStatus.name) + ".";
     }
@@ -413,7 +413,7 @@ exports.addLog = async (req, res, next) => {
       reqTask = await CTask.findOne({taskId: parseInt(params.taskId.slice(1))});
     }
 
-    if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId"); // raise task not found error
+    if (!reqTask) throw new customError.TaskNotFoundError("Invalid task ID. Task not found."); // raise task not found error
 
     let newLog = new Log({
       creatorId: params.userObj._id,
@@ -526,8 +526,8 @@ exports.fetchTaskManager = async (req, res, next) => {
       taskList.push(taskObj);
     }
 
-    if (!reqRTasks.length && !reqCTask.length) throw new customError.TaskNotFoundError("no tasks exist"); // throw task not found error
-
+    if (!reqRTasks.length && !reqCTask.length) throw new customError.TaskNotFoundError("There are no existing tasks."); // throw task not found error
+    
     res.json({
       statusCode: 200,
       statusName: httpStatus.getName(200),
@@ -572,7 +572,7 @@ exports.fetchArchiveManager = async (req, res, next) => {
       taskList.push(taskObj);
     }
 
-    if (!reqRTasks.length && !reqCTask.length) throw new customError.TaskNotFoundError("no tasks exist"); // throw task not found error
+    if (!reqRTasks.length && !reqCTask.length) throw new customError.TaskNotFoundError("There are no existing tasks."); // throw task not found error
 
     res.json({
       statusCode: 200,
@@ -602,7 +602,7 @@ exports.fetchTask = async (req, res, next) => {
       reqTask = await CTask.findOne({taskId: parseInt(params.taskId.slice(1))});
     }
 
-    if (!reqTask) throw new customError.TaskNotFoundError("invalid taskId");
+    if (!reqTask) throw new customError.TaskNotFoundError("Invalid task ID. Task not found.");
 
     let taskObj = helperFuncs.duplicateObject(reqTask, ['taskId', 'title', 'description', 'archive', "createdAt", "updatedAt"]);
     taskObj.taskId = params.taskId[0] + taskObj.taskId;
@@ -687,7 +687,7 @@ exports.editTaskStatus = async (req, res, next) => {
 
   try {
     let reqStatus = await Status.findOne({statusId: params.statusId}, '_id');
-    if (!reqStatus) throw new customError.TaskStatusNotFoundError("invalid statusId"); // raise status not found error
+    if (!reqStatus) throw new customError.TaskStatusNotFoundError("Invalid status ID. Task status not found."); // raise status not found error
 
     let updateObj = helperFuncs.duplicateObject(params, ['name', 'color'], true);
 
@@ -712,7 +712,7 @@ exports.deleteTaskStatus = async (req, res, next) => {
 
   try {
     let reqStatus = await Status.findOne({statusId: params.statusId}, '_id');
-    if (!reqStatus) throw new customError.TaskStatusNotFoundError("invalid statusId"); // raise status not found error
+    if (!reqStatus) throw new customError.TaskStatusNotFoundError("Invalid status ID. Task status not found."); // raise status not found error
 
     await Status.findByIdAndDelete(reqStatus._id);
 
@@ -733,10 +733,10 @@ exports.deleteTaskStatus = async (req, res, next) => {
 exports.fetchTaskStatuses = async (req, res, next) => {
   try {
     let reqStatuses = await Status.find({});
-    if (!reqStatuses.length) throw new customError.TaskStatusNotFoundError("no statuses exist"); // raise status not found error
+    if (!reqStatuses.length) throw new customError.TaskStatusNotFoundError("There are no existing task statuses."); // raise status not found error
 
     let statusList = [];
-    for (let s of reqStatuses) {
+    for (let s of reqStatuses) { // if no reqStatuses found, statusList remains empty
       let statusObj = helperFuncs.duplicateObject(s, ["statusId", "name", "color"]);
       statusList.push(statusObj);
     }

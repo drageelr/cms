@@ -285,7 +285,7 @@ exports.editForm = async (req, res, next) => {
       }
     } else {
       // throw invalid form id error
-      throw new customError.FormValidationError("form does not exist");
+      throw new customError.FormValidationError("The form you are trying to edit does not exist.");
     }
   } catch (err) {
     next(err);
@@ -302,7 +302,7 @@ exports.deleteForm = async (req, res, next) => {
 
   try {
     let reqForm = await Form.findOne({formId: params.formId}, '_id');
-    if (!reqForm) throw new customError.FormNotFoundError("invalid formId");
+    if (!reqForm) throw new customError.FormNotFoundError("Invalid Form ID. Form not found.");
 
     let reqSubmissions = await Submission.find({formId: reqForm._id}, '_id');
 
@@ -323,7 +323,7 @@ exports.deleteForm = async (req, res, next) => {
     res.json({
       statusCode: 200,
       statusName: httpStatus.getName(200),
-      message: "Form and all related Submissions, Tasks and SubTasks have been deleted!"
+      message: `The form '${reqForm.title}' and all its related Submissions, Tasks and Sub-Tasks have been permanently deleted.`
     });
   } catch (err) {
     next(err);
@@ -397,7 +397,7 @@ exports.fetchForm = async (req, res, next) => {
       })
     } else {
       // raise form not found error
-      throw new customError.FormNotFoundError("invalid form id");
+      throw new customError.FormNotFoundError("Invalid form ID. Form not found.");
     }
     
   } catch (err) {
@@ -445,7 +445,7 @@ exports.fetchFormList = async (req, res, next) => {
       res.json(resObj);
 
     } else {
-      throw new customError.FormNotFoundError("no forms exist");
+      throw new customError.FormNotFoundError("There are no existing forms.");
     }
   } catch (err) {
     next(err);
@@ -473,7 +473,7 @@ exports.changeFormStatus = async (req, res, next) => {
       })
     } else {
       // raise form not found error
-      throw new customError.FormNotFoundError("invalid form id");
+      throw new customError.FormNotFoundError("Invalid form ID. Form not found.");
     }
     
   } catch (err) {
@@ -490,7 +490,7 @@ exports.fetchChecklist = async (req, res, next) => {
 
   try {
     let reqSubmission = await Submission.findOne({submissionId: params.submissionId}, 'formId');
-    if (!reqSubmission) throw new customError.SubmissionNotFoundError("invalid submissionId");
+    if (!reqSubmission) throw new customError.SubmissionNotFoundError("Invalid submission ID. Submission not found.");
 
     let reqChecklists = await Checklist.find({formId: reqSubmission.formId}, 'checklistId sectionId description');
     let reqForm = await Form.findById(reqSubmission.formId, 'formId');
