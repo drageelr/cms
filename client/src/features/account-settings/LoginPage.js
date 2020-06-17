@@ -41,7 +41,7 @@ function LoginPage({error, dispatch, match, location}) {
 
   React.useEffect(() => {
     // dispatch(login({email: "lumun@lums.edu.pk", password: "Test12345", userType: "Society"}))
-    dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
+    dispatch(login({email: "admin@lums.edu.pk", password: "Test12345", userType: "CCA"}))
   }, [])
 
   return (

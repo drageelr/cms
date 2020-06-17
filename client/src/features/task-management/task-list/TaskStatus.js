@@ -33,7 +33,7 @@ export function TaskStatus({taskId, taskData, setStatusId, taskStatusDetails}) {
 
   function handleChange(event) {
     var statusId = -1
-    taskStatusDetails.map(statusObj => {
+    taskStatusDetails.forEach(statusObj => {
       if (statusObj.name === event.target.value) {
         statusId = statusObj.statusId
       }
@@ -74,8 +74,7 @@ export function TaskStatus({taskId, taskData, setStatusId, taskStatusDetails}) {
             <em>None</em>
           </MenuItem>
           {
-            taskStatusDetails.map(statusObj => {
-              return (
+            taskStatusDetails.map(statusObj => (
                 <MenuItem value={statusObj.name}>
                   <Grid container direction="row" justify= "flex-start" alignItems="center">
                     <Grid item>
@@ -87,7 +86,7 @@ export function TaskStatus({taskId, taskData, setStatusId, taskStatusDetails}) {
                   </Grid>
                 </MenuItem>
               )
-            })
+            )
           }
         </Select>
       </FormControl>

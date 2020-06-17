@@ -11,8 +11,6 @@ import { fetchCheckList } from '../taskDataSlice'
   @param {function} dispatch dispatch the an acton that links the form to the task 
 */
 
-const columns = ["Req ID", "Form Title", "Date", "Society", "Request Status"]
-
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })

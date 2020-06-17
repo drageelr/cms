@@ -50,7 +50,7 @@ function createLogText(targetType, targetId, targetName = "") {
 
   let text = typeConversion[targetType] + " (ID: " + targetId + ")";
 
-  if (targetName != "") {
+  if (targetName !=="") {
     text += " \"" + targetName + "\"";
   }
 
@@ -88,7 +88,7 @@ exports.createReqTask = async (req, res, next) => {
     }
     
     let reqChecklists = await Checklist.find({checklistId: {$in: checklistIds}, formId: reqSubmission.formId});
-    if (reqChecklists.length != checklistIds.length) throw new customError.ChecklistNotFoundError("Invalid checklist ID. No such form checklist exists."); // throw invalid checklist id(s)
+    if (reqChecklists.length !==checklistIds.length) throw new customError.ChecklistNotFoundError("Invalid checklist ID. No such form checklist exists."); // throw invalid checklist id(s)
 
     let reqCCAs = [];
     for (let aId of assigneeIds) {
@@ -284,7 +284,7 @@ exports.editReqTask = async (req, res, next) => {
     if (task.subtasks) {
       let subtaskIds = task.subtasks.map(s => s.subtaskId);
       let reqSubTasks = await SubTask.find({subtaskId: {$in: subtaskIds}, taskId: reqTask._id});
-      if (reqSubTasks.length != subtaskIds.length) throw new customError.SubTaskNotFoundError("Invalid subtask ID. Subtask not found."); // raise one or more id is invalid
+      if (reqSubTasks.length !==subtaskIds.length) throw new customError.SubTaskNotFoundError("Invalid subtask ID. Subtask not found."); // raise one or more id is invalid
 
       let stUpdateArr = [];
       for (let i = 0; i < reqSubTasks.length; i++) {
@@ -407,9 +407,9 @@ exports.addLog = async (req, res, next) => {
   try {
     let reqTask = false;
 
-    if (params.taskId[0] == "r") {
+    if (params.taskId[0]==="r") {
       reqTask = await RTask.findOne({taskId: parseInt(params.taskId.slice(1))});
-    } else if (params.taskId[0] == "c") {
+    } else if (params.taskId[0]==="c") {
       reqTask = await CTask.findOne({taskId: parseInt(params.taskId.slice(1))});
     }
 
@@ -596,9 +596,9 @@ exports.fetchTask = async (req, res, next) => {
   try {
     let reqTask = false;
 
-    if (params.taskId[0] == "r") {
+    if (params.taskId[0]==="r") {
       reqTask = await RTask.findOne({taskId: parseInt(params.taskId.slice(1))});
-    } else if (params.taskId[0] == "c") {
+    } else if (params.taskId[0]==="c") {
       reqTask = await CTask.findOne({taskId: parseInt(params.taskId.slice(1))});
     }
 
@@ -628,7 +628,7 @@ exports.fetchTask = async (req, res, next) => {
       taskObj.logs.push(logObj);
     }
 
-    if (params.taskId[0] == "r") {
+    if (params.taskId[0]==="r") {
       taskObj.subtasks = [];
       for (let sId of reqTask.subtaskIds) {
         let reqSubTask = await SubTask.findById(sId, 'subtaskId assigneeId description check');

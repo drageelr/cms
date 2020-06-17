@@ -9,7 +9,7 @@ export default function ErrorSnackbar({stateError, clearError}) {
   return (
     <Snackbar
       anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
-      open={stateError != null}
+      open={stateError !==null}
       autoHideDuration={5000}
       onClose={() => dispatch(clearError())}
       message={stateError}

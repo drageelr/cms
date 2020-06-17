@@ -12,7 +12,7 @@ export const fetchTaskStatus = createAsyncThunk(
   'taskStatusDetails/fetchTaskStatus',
   async(_, { getState, rejectWithValue}) => {
     const { isPending } = getState().taskStatusDetails
-    if (isPending != true) {
+    if (!isPending) {
       return
     }
     
@@ -76,7 +76,7 @@ const taskStatusDetails = createSlice({
   extraReducers: {
     [deleteTaskStatus.fulfilled]: (state, action) => {
       let i = 0
-      state.taskList.map((obj,index) => {
+      state.taskList.forEach((obj,index) => {
         if (obj.statusId === action.payload.statusId){
           i = index
         }  
@@ -101,7 +101,7 @@ const taskStatusDetails = createSlice({
 
     [editTaskStatus.fulfilled]: (state, action) => {
       let i = 0
-      state.taskList.find((obj,index) => {
+      state.taskList.forEach((obj,index) => {
         if (obj.statusId === action.payload.id){
           i = index
         }

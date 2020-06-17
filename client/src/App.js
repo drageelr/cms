@@ -1,5 +1,5 @@
-import React, {useState} from 'react'
-import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
+import React from 'react'
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import 'typeface-montserrat'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core'
 import NavBar from './ui/NavBar'
@@ -33,7 +33,8 @@ function App({ user }) {
       },
       text: {
         secondary: darkMode ? '#ffffff': '#6f7eaa'
-      }
+      },
+      shade: darkMode ? '#363636' : '#f4f4f4'
     },
     typography: {
       fontFamily: [
@@ -71,7 +72,7 @@ function App({ user }) {
             <Route path="/request-list" exact component={isLoggedIn ? RequestList : LoginPage}/>
             <Route path="/task-status-panel" exact component={isLoggedIn ? TaskStatusPanel : LoginPage}/>
             <Route path="/cca-panel" exact component={isLoggedIn ? CCAAccountsPanel : LoginPage}/>
-            <Route path="/society-panel" exact exact component={isLoggedIn ? SocietyAccountsPanel : LoginPage}/>
+            <Route path="/society-panel" exact component={isLoggedIn ? SocietyAccountsPanel : LoginPage}/>
             <Route path="/form-maker" exact component={isLoggedIn ? FormMaker : LoginPage}/>
             <Route path="/form-maker/:id" exact component={isLoggedIn ? FormMaker : LoginPage}/>
             <Route path="/forms" exact component={isLoggedIn ? FormList : LoginPage}/>

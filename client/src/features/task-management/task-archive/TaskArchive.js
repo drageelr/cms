@@ -1,8 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import MUIDataTable from "mui-datatables"
-import { fetchTask, unArchiveTask, fetchTaskManager } from "../taskDataSlice"
-import { CircularProgress, Fab, Button} from '@material-ui/core'
+import { fetchTask, unArchiveTask } from "../taskDataSlice"
+import { CircularProgress, Button} from '@material-ui/core'
 import UnarchiveOutlinedIcon from '@material-ui/icons/UnarchiveOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -28,7 +28,6 @@ function ArchiveList({ taskData, ccaDetails, dispatch }) {
   async function handleUnArchiveClick({event, taskId, ownerId}) {
     await dispatch(fetchTask({taskId, ownerId}))
     dispatch(unArchiveTask(taskId))
-    // dispatch(fetchTaskManager())
   }
 
   function UnArchiveButton({taskId, ownerId}) {
@@ -47,6 +46,7 @@ function ArchiveList({ taskData, ccaDetails, dispatch }) {
       if (user.ccaId === ownerId.ownerId) {
         return user.firstName
       }
+      return null
     })
   }
 
@@ -64,7 +64,9 @@ function ArchiveList({ taskData, ccaDetails, dispatch }) {
                 archiveObj.updatedAt,
                 <UnArchiveButton taskId={archiveObj.taskId} ownerId={archiveObj.ownerId}/>
               ]
-            }})
+            }
+            return null
+          })
           }
           columns={["Task ID", "Title", "Owner Name", "Last Modified", " "]}
           options={{

@@ -25,7 +25,7 @@ export const useStyles = makeStyles((theme) => ({
 function ItemView({id, templateData, itemsData, submissionId, itemFilledIds, componentItemIds, inReview, dispatch}) {
   const classes = useStyles()
   const {type, label, required, placeHolder, maxLength, fileTypes, options, conditionalItems} = templateData
-  const itemData = itemsData.find(itemData => itemData.itemId == id)
+  const itemData = itemsData.find(itemData => itemData.itemId===id)
   const isDisabled = itemFilledIds.includes(id) // items will be disabled if they were filled 
   // and not disabled if the form has an issue for the society to resolve
   const initialItemData = {
@@ -52,7 +52,7 @@ function ItemView({id, templateData, itemsData, submissionId, itemFilledIds, com
   }
 
   React.useEffect(() => {
-    if (type == 'radio' || type == 'dropdown') {
+    if (type==='radio' || type==='dropdown') {
       resetConditionalView()
     }
   }, [data])
@@ -150,11 +150,11 @@ function ItemView({id, templateData, itemsData, submissionId, itemFilledIds, com
               <Button variant="contained" disabled={isDisabled} component="span" startIcon={<CloudUploadIcon/>}>
                 {label}
               </Button>
-              <p>{data.length != 0 && `Uploaded File [${data.substr(data.length - 7)}]`}</p>
+              <p>{data.length !==0 && `Uploaded File [${data.substr(data.length - 7)}]`}</p>
             </label>
           </div> : 
           <Button variant="contained" onClick={handleFileChange} component="span" startIcon={<GetAppIcon/>}>
-            Download File for {`\"${label}\"`}
+            Download File for {`"${label}"`}
           </Button>
         )
       

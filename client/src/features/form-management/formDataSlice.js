@@ -30,9 +30,8 @@ export const fetchFormData = createAsyncThunk(
   'formData/fetchFormData',
   async (formDataId, { getState, rejectWithValue }) => {
     const { isPending } = getState().formData
-    const formDataList = getState().submissionListData.formDataList
     
-    if (isPending != true) {
+    if (!isPending) {
       return
     }
     const submissionId = Number(formDataId)
@@ -45,7 +44,7 @@ export const fetchFormData = createAsyncThunk(
         ccaNotes: data.ccaNotes,
         societyNotes: data.societyNotes,
         itemsData: data.itemsData,
-        itemFilledIds: (data.status.slice(0, 5) == "Issue") ? [] : data.itemFilledIds,
+        itemFilledIds: (data.status.slice(0, 5)==="Issue") ? [] : data.itemFilledIds,
         // treat all items as unfilled in the case of an issue status on the submission
       }
     }, 
@@ -74,7 +73,7 @@ export const createFormData = createAsyncThunk(
 export const editFormData = createAsyncThunk(
   'formData/editFormData',
   async (_, {getState, rejectWithValue }) => {
-    const { id, sectionsOrder, componentsOrder, itemsOrder, items } = getState().formTemplate
+    const { id } = getState().formTemplate
     const submissionId = getState().formData.id
     let itemsData = getState().formData.itemsData
 
@@ -136,9 +135,9 @@ export const uploadFile = createAsyncThunk(
       const res = await fetch('/api/file/upload', req_init)
       if (res.ok) {
         const data = await res.json()
-        if (data.statusCode != 201) {
+        if (data.statusCode !==201) {
           throw new Error((data.error !== undefined) 
-          ? `${data.statusCode}: ${data.message} - ${JSON.stringify(data.error.details).replace(/[\[\]\{\}"'\\]+/g, '').split(':').pop()}`
+          ? `${data.statusCode}: ${data.message} - ${JSON.stringify(data.error.details).replace(/[[]{}"'\\]+/g, '').split(':').pop()}`
           : `${data.statusCode}: ${data.message}`) 
         }
         return data.fileToken // fileToken from data
@@ -204,7 +203,7 @@ const formData = createSlice({
     },
 
     setItemData: (state, action) => {
-      const itemData = state.itemsData.find(itemData => itemData.itemId == action.payload.itemId)
+      const itemData = state.itemsData.find(itemData => itemData.itemId===action.payload.itemId)
       if (itemData === undefined){
         state.itemsData.push({itemId: action.payload.itemId, data: action.payload.data}) 
       }

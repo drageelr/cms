@@ -5,7 +5,7 @@ import TaskStatus from './TaskStatus'
 import CheckList from "./CheckList"
 import LogEditor from "../logs/CreateLog"
 import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
-  createCustomTask, changeTaskStatus, fetchTaskManager, setTaskEditMode, setCurrTaskId } from "../taskDataSlice"
+  createCustomTask, changeTaskStatus, setTaskEditMode, setCurrTaskId } from "../taskDataSlice"
 import { Typography, Box, Card, Slide, FormControl, Select, TextField, MenuItem, Grid, Dialog, DialogActions, Button, Tooltip, Fab } from '@material-ui/core'
 import SubjectIcon from '@material-ui/icons/Subject'
 import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined'
@@ -30,7 +30,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, taskId, ccaDetails, dispatch, open}) {  
   let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1, log: "" }
-  let subId = -1
 
   const taskObj = taskList.find(taskObj => taskObj.taskId === taskId)
   if (taskObj !== undefined) { // if found
@@ -43,7 +42,6 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
   const [taskTitle, setTaskTitle] = useState(initialState.title)
   const [owner, setOwner] = useState(initialState.ownerId)
   const [statusId, setStatusId] = useState(initialState.statusId)
-  const [logText, setLogText] = useState("")
   const [localSubmissionId, setLocalSubmissionId] = useState(initialState.submissionId)
   
   function handleOwnerSet(event) {

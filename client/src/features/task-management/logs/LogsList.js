@@ -1,8 +1,8 @@
 import React from 'react'
-import { Avatar, Paper, Box, List, Tooltip } from '@material-ui/core'
+import { Avatar, Paper, Box, List } from '@material-ui/core'
 import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
-import { simplifyTimestamp } from '../../../helpers'
+import Timestamp from 'react-timestamp'
 
 /**
   This component displays all the logs in form of a list.
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 export function LogsList({taskId, taskData, ccaDetails}) {
   const classes = useStyles()
   
-  let ownerName="CMS User" // default owner name
+  let ownerName="CMS Bot" // default owner name
   let picture = "" //default picture src
 
   return <Box borderRadius={8} border={1} borderColor="grey.400" className={classes.logEditorPaper}>
@@ -46,7 +46,7 @@ export function LogsList({taskId, taskData, ccaDetails}) {
             else {
               const reversedLogList = taskObj.logs.map(item => item).reverse() // reverse the log list so that it displays the most recent log first
               return reversedLogList.map(logData => { // for each log related to the task
-                ccaDetails.map(ccaUser => { // find the userId who created that log
+                ccaDetails.forEach(ccaUser => { // find the userId who created that log
                   if (logData.creatorId !== -1) {
                     if(ccaUser.ccaId === logData.creatorId) {
                       ownerName = ccaUser.firstName + " " + ccaUser.lastName // store the log creators' name
@@ -54,32 +54,26 @@ export function LogsList({taskId, taskData, ccaDetails}) {
                     }
                   } else {
                     ownerName = "CMS Bot"
-                    picture= ""
+                    picture = "https://is4-ssl.mzstatic.com/image/thumb/Purple20/v4/fe/37/96/fe3796df-60d8-b510-8952-8b007c5f8beb/source/512x512bb.jpg"
                   }
                 })
 
                 return <Paper className={classes.logPaper} >
                   {/* MAIN div */}
-                  <div style={{color: "#ffffff", fontFamily: "Roboto,Noto Sans, Droid Sans,", fontSize: "15px", lineHeight: "20px", fontWeight: "400"}}>
-                    <div style={{position: "relative", marginLeft: "40px", minHeight: "30px", padding: "6px 0px"}}>
+                  <div style={{color: "#ffffff", fontFamily: "Roboto,Noto Sans, Droid Sans,", fontSize: "14px", lineHeight: "20px", fontWeight: "400"}}>
+                    <div style={{position: "relative", marginLeft: "40px", minHeight: "20px", padding: "4px 0px"}}>
                       {/* picture div */}
-                      <div style={{height: "32px", left: "-40px", position: "absolute", top: "8px", width: "32px"}}> 
-                        <Avatar src={picture}/> {/* display the log creators' picture */}
-                      </div>
+                      <Avatar src={picture} style={{height: "32px", left: "-34px", position: "absolute", top: "8px", width: "32px"}}/> {/* display the log creators' picture */}
                       {/* name and date/time and description div */}
                       <div style={{marginLeft: 5, marginTop: 4}}>
                         <span>
-                          <span style={{fontWeight: 630}}>{ownerName}</span> {/* display the log creators' name */}
+                          <span style={{fontWeight: 600}}>{ownerName}</span> {/* display the log creators' name */}
                         </span>
                         <span style={{display: "inline-block", minWidth: "6px"}}></span>
-                        <span style={{fontSize: "12px", fontWeight: 400, whiteSpace: "pre"}}>
-                          {simplifyTimestamp(logData.createdAt, false)} {/* display the log creation time as well */}
+                        <span style={{fontSize: "10px", fontWeight: 400, whiteSpace: "pre"}}>
+                          <Timestamp date={new Date(logData.createdAt)}/> {/* display the log creation time as well */}
                         </span>
-                        <div style={{display: "block"}}>
-                          <div >
-                            <p style={{fontSize: "15px"}}>{logData.description}</p>  {/* display the log description */}
-                          </div>
-                        </div>
+                        <p style={{fontSize: "14px"}}>{logData.description}</p>  {/* display the log description */}
                       </div>
                     </div>
                   </div>
@@ -87,6 +81,7 @@ export function LogsList({taskId, taskData, ccaDetails}) {
               })
             }
           }
+          return null
         })  
       }
     </List>

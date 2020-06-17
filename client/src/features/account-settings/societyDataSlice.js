@@ -11,7 +11,7 @@ export const fetchSocietyAccounts = createAsyncThunk(
   'societyData/fetchSocietyAccounts',
   async(_, { getState, rejectWithValue}) => {
     const { isPending } = getState().societyData
-    if (isPending != true) {
+    if (!isPending) {
       return
     }
 
@@ -93,7 +93,7 @@ const societyData = createSlice({
   extraReducers: {
     [toggleActiveSocietyAccount.fulfilled]: (state, action) => {
       let i = 0
-      state.societyList.map((obj,index) => {
+      state.societyList.forEach((obj,index) => {
         if (obj.societyId === action.payload.societyId){
           i = index
         }  
@@ -117,7 +117,7 @@ const societyData = createSlice({
 
     [editSocietyAccount.fulfilled]: (state, action) => {
       let i = 0
-      state.societyList.find((obj,index) => {
+      state.societyList.forEach((obj,index) => {
         if (obj.societyId === action.payload.societyId){
           i = index
         }

@@ -377,7 +377,7 @@ exports.fetchForm = async (req, res, next) => {
         }
       }
 
-      if (params.userObj.type == "cca") {
+      if (params.userObj.type==="cca") {
         let reqChecklist = await Checklist.find({formId: reqForm._id});
 
         if (reqChecklist.length) {
@@ -417,7 +417,7 @@ exports.fetchFormList = async (req, res, next) => {
     let queryObj = {};
     let fullAccess = true;
     
-    if (params.userObj.type == "soc") {
+    if (params.userObj.type==="soc") {
       queryObj.isPublic = true;
       fullAccess = false;
     }

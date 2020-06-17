@@ -11,7 +11,7 @@ export const fetchFormList = createAsyncThunk(
   'formList/fetchFormList',
   async (_, { getState, rejectWithValue}) => {
     const { isPending } = getState().formList
-    if (isPending != true) {
+    if (!isPending) {
       return
     }
 
@@ -70,7 +70,7 @@ const formList = createSlice({
 
     [deleteForm.fulfilled]: (state, action) => {
       let i = 0
-      state.list.map((obj,index) => {
+      state.list.forEach((obj,index) => {
         if (obj.id === action.payload){
           i = index
         }  

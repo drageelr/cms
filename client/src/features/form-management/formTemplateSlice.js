@@ -29,7 +29,10 @@ let iId = 0 //item Id max
 export const fetchForm = createAsyncThunk(
   'formTemplate/fetchForm',
   async (formId, { getState, rejectWithValue }) => {
-    if (getState().formTemplate.isPending !== true) return
+    const { isPending } = getState().formTemplate
+    if (!isPending) {
+      return
+    } 
     
     return await apiCaller('/api/form/fetch', { formId: formId }, 200, 
     (data) => {
@@ -243,18 +246,18 @@ const formTemplate = createSlice({
 
           if (id in state.componentsOrder){ //has existing components
 
-            state.componentsOrder[id].map(componentId => { //for every component for section
+            state.componentsOrder[id].forEach(componentId => { //for every component for section
               delete state.componentTitles[componentId] //delete component title
 
               if (componentId in state.itemsOrder){ //has existing items
-                state.itemsOrder[componentId].map(itemId => { //for every item for component
+                state.itemsOrder[componentId].forEach(itemId => { //for every item for component
                   delete state.items[itemId] //delete item
                 })
                 delete state.itemsOrder[componentId] //delete items order for component
               }
             })
             
-            if (state.componentsOrder[id].length != 1){
+            if (state.componentsOrder[id].length !== 1){
               delete state.componentsOrder[id] //delete components order for section
             }
             else {
@@ -264,7 +267,7 @@ const formTemplate = createSlice({
 
           // must delete the corresponding checklist item as well, so just update it with a filtered list without that sectionId item
           state.checklistItems = state.checklistItems.filter(
-            checklistItem => checklistItem.sectionId != id)
+            checklistItem => checklistItem.sectionId !== id)
           break
         }
         case 'component':{
@@ -274,14 +277,14 @@ const formTemplate = createSlice({
           }
 
           if (id in state.itemsOrder){ //check if component had items
-            state.itemsOrder[id].map(itemId => { //for every item for this component
+            state.itemsOrder[id].forEach(itemId => { //for every item for this component
               delete state.items[itemId] //delete item
             })
             delete state.itemsOrder[id] //delete items order for component
           }
 
 
-          if (state.componentTitles[id].length != 1){
+          if (state.componentTitles[id].length !== 1){
             delete state.componentTitles[id] //item data removed
           }
           else {
@@ -297,6 +300,8 @@ const formTemplate = createSlice({
           }
           break
         }
+        default: 
+        break
       }
     },
   },

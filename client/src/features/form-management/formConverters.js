@@ -1,98 +1,98 @@
-const sampleClientForm = { // Sample form currently
-  isPublic: false,
-  title: "Test Form",
-  sectionsOrder: [1, 2], //ordered list of section Ids (any Ids are not unique to any other forms)
-  sectionTitles: {
-    1:"Section A", 
-    2:"Section B"
-  },
-  componentsOrder: {
-    1: [1, 2], // sectionId:  list of component Ids in order
-    2: [1] 
-  },
-  componentTitles: {
-    1:"Component A", //componentId: componentTitle
-    2:"Component B"
-  },
-  itemsOrder: { 
-    1: [1, 2], //componentId: ordered list of itemIds
-    2: [3],
-  },
-  items: { //itemId: itemData
-    1:{
-      type: "textlabel",
-      label: "Item 1",
-      required: true,
-      defaultVisibility: true
-    },
-    2:{
-      type: "textlabel",
-      label: "Item 2",
-      required: true,
-      defaultVisibility: true
-    },
-    3:{
-      type: "textlabel",
-      label: "Item 3",
-      required: true,
-      defaultVisibility: true
-    }
-  },
-  checklistItems: [{sectionId: 1, description: "Verify Email"}, {sectionId: 2, description: "Check Society"}]
-}
+// const sampleClientForm = { // Sample form currently
+//   isPublic: false,
+//   title: "Test Form",
+//   sectionsOrder: [1, 2], //ordered list of section Ids (any Ids are not unique to any other forms)
+//   sectionTitles: {
+//     1:"Section A", 
+//     2:"Section B"
+//   },
+//   componentsOrder: {
+//     1: [1, 2], // sectionId:  list of component Ids in order
+//     2: [1] 
+//   },
+//   componentTitles: {
+//     1:"Component A", //componentId: componentTitle
+//     2:"Component B"
+//   },
+//   itemsOrder: { 
+//     1: [1, 2], //componentId: ordered list of itemIds
+//     2: [3],
+//   },
+//   items: { //itemId: itemData
+//     1:{
+//       type: "textlabel",
+//       label: "Item 1",
+//       required: true,
+//       defaultVisibility: true
+//     },
+//     2:{
+//       type: "textlabel",
+//       label: "Item 2",
+//       required: true,
+//       defaultVisibility: true
+//     },
+//     3:{
+//       type: "textlabel",
+//       label: "Item 3",
+//       required: true,
+//       defaultVisibility: true
+//     }
+//   },
+//   checklistItems: [{sectionId: 1, description: "Verify Email"}, {sectionId: 2, description: "Check Society"}]
+// }
   
-const sampleServerForm = {
-  title: "Test Form",
-  isPublic: false,
-  sections: [
-    {
-      sectionId: 1,
-      title: "Section A",
-      componentsOrder: [1, 2]
-    },
-    {
-      sectionId: 2,
-      title: "Section B",
-      componentsOrder: []
-    }
-  ],
-  components: [
-    {
-      componentId: 1,
-      title: "Component A",
-      itemsOrder: [1, 2]
-    },
-    {
-      componentId: 2,
-      title: "Component B",
-      itemsOrder: [3]
-    }
-  ],
-  items: [
-    {
-      itemId: 1,
-      type: "textlabel",
-      label: "Item 1",
-      required: true,
-      defaultVisibility: true
-    },
-    {
-      itemId: 2,
-      type: "textlabel",
-      label: "Item 2",
-      required: true,
-      defaultVisibility: true
-    },
-    {
-      itemId: 3,
-      type: "textlabel",
-      label: "Item 3",
-      required: true,
-      defaultVisibility: true
-    }
-  ],
-  checklistItems: [{sectionId: 1, description: "Verify Email"}, {sectionId: 2, description: "Check Society"}]
-}
+// const sampleServerForm = {
+//   title: "Test Form",
+//   isPublic: false,
+//   sections: [
+//     {
+//       sectionId: 1,
+//       title: "Section A",
+//       componentsOrder: [1, 2]
+//     },
+//     {
+//       sectionId: 2,
+//       title: "Section B",
+//       componentsOrder: []
+//     }
+//   ],
+//   components: [
+//     {
+//       componentId: 1,
+//       title: "Component A",
+//       itemsOrder: [1, 2]
+//     },
+//     {
+//       componentId: 2,
+//       title: "Component B",
+//       itemsOrder: [3]
+//     }
+//   ],
+//   items: [
+//     {
+//       itemId: 1,
+//       type: "textlabel",
+//       label: "Item 1",
+//       required: true,
+//       defaultVisibility: true
+//     },
+//     {
+//       itemId: 2,
+//       type: "textlabel",
+//       label: "Item 2",
+//       required: true,
+//       defaultVisibility: true
+//     },
+//     {
+//       itemId: 3,
+//       type: "textlabel",
+//       label: "Item 3",
+//       required: true,
+//       defaultVisibility: true
+//     }
+//   ],
+//   checklistItems: [{sectionId: 1, description: "Verify Email"}, {sectionId: 2, description: "Check Society"}]
+// }
     
 export function convertToServerForm(clientForm) {
   // for use in Create/Edit Form before sending the template

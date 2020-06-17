@@ -31,7 +31,7 @@ export const useStyles = makeStyles((theme) => ({
 */
 
 function FormMaker({ formTemplate, dispatch, match }) {
-  const { createMode, title, isPublic, sectionTitles, sectionsOrder, componentsOrder, componentTitles, itemsOrder, items, isPending, error } = formTemplate
+  const { createMode, title, isPublic, sectionTitles, sectionsOrder, componentsOrder, componentTitles, itemsOrder, items, isPending } = formTemplate
   const classes = useStyles()
   const formId = match.params.id
   

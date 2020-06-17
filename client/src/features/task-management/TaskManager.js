@@ -65,7 +65,7 @@ function TaskManager({ ccaDetails, taskData, dispatch }) {
   */
   
   let columnOrder = []
-  ccaDetails.map(ccaObj => {
+  ccaDetails.forEach(ccaObj => {
     columnOrder.push(ccaObj.ccaId)
   })
   columnOrder = Array.from(new Set(columnOrder))

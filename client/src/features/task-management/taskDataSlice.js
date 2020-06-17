@@ -20,7 +20,7 @@ export const fetchTaskManager = createAsyncThunk(
   'taskData/fetchTaskManager',
   async (_, { getState, rejectWithValue }) => {
     const { isPending } = getState().taskData
-    if (isPending != true) {
+    if (!isPending) {
       return
     }
     return await apiCaller('/api/task-manager/fetch', {}, 200, 
@@ -32,10 +32,10 @@ export const fetchTaskManager = createAsyncThunk(
 export const fetchTask = createAsyncThunk(
   'taskData/fetchTask',
   async (archiveObj, { getState, rejectWithValue }) => {
-    const {taskId, ownerId} = archiveObj
+    const {taskId, _} = archiveObj
 
     const { isPending } = getState().taskData
-    if (isPending != true) {
+    if (!isPending) {
       return
     } 
 
@@ -48,7 +48,7 @@ export const fetchTask = createAsyncThunk(
 export const fetchCheckList = createAsyncThunk(
   'taskData/fetchCheckList',
   async (idObj, { rejectWithValue }) => {
-    const { ownerId, submissionId } = idObj
+    const { _, submissionId } = idObj
     
     return await apiCaller('/api/form/fetch-checklist', { submissionId }, 200, 
     (data) => ({data, idObj}), rejectWithValue)    
@@ -122,7 +122,7 @@ export const moveTask = createAsyncThunk(
   'taskData/moveTask',
   async (editTaskObject, { rejectWithValue }) => {
     const { taskId, srcColumnId, dstColumnId } = editTaskObject
-
+    
     return await apiCaller(taskId[0] === 'r' ? '/api/task-manager/task/req/edit' : '/api/task-manager/task/cus/edit', {
       task: {
         taskId: taskId,
@@ -141,7 +141,7 @@ export const moveSubTask = createAsyncThunk(
     
     let taskList1 = getState().taskData.taskList
     let subTaskList = []
-    taskList1.map((task, index) => {
+    taskList1.forEach((task, index) => {
       if (task.taskId === mainTaskId) {
         subTaskList = getState().taskData.taskList[index].subtasks
       }
@@ -149,7 +149,7 @@ export const moveSubTask = createAsyncThunk(
     
     let tempSubList = []
     
-    subTaskList.map(obj => {
+    subTaskList.forEach(obj => {
       tempSubList.push({
         subtaskId: obj.subtaskId,
         assigneeId: obj.assigneeId,
@@ -178,7 +178,7 @@ export const deleteSubTask = createAsyncThunk(
 
     let tempSubList = []
 
-    subTaskList.map(obj => {
+    subTaskList.forEach(obj => {
       if (obj.taskId === taskId) {
         tempSubList.push({
           subtaskId: obj.subtaskId,
@@ -329,13 +329,13 @@ const taskdata = createSlice({
     subTaskDisplay: (state, action) => {
       const {taskId} = action.payload
 
-      // IMPORTANT: if check == False, then display the subtask, else check == true, do not display the subtask
+      // IMPORTANT: if check===False, then display the subtask, else check===true, do not display the subtask
 
-      state.taskList.map(subtaskObj => {
+      state.taskList.forEach(subtaskObj => {
         if (subtaskObj.taskId === taskId) { // get the subtask Obj from the task list
-          state.taskList.map(taskObj => {
+          state.taskList.forEach(taskObj => {
             if (taskObj.taskId === subtaskObj.assTaskId) { // get the task obj from task list to which the sub task is associated
-              taskObj.subtasks.map(assSubTask => {
+              taskObj.subtasks.forEach(assSubTask => {
                 if (assSubTask.taskId === taskId) { // get the subtask from the task that is same as the current subtask
                   assSubTask.check = true
                   subtaskObj.check = true
@@ -355,7 +355,7 @@ const taskdata = createSlice({
       let subSubI = -1 // subtask index (which is in the main task's subtask list)
       let taskIndex = -1 // main task index
       
-      state.taskList.map((task, index) => {
+      state.taskList.forEach((task, index) => {
         if (task.taskId === subTaskId) { // get the subtask in the taskList
           subI = index
         }
@@ -365,7 +365,7 @@ const taskdata = createSlice({
       state.taskList[subI].ownerId = Number(dstColumnId) // change the subtasks ownerId - outside the task
       state.taskList[subI].assigneeId = Number(dstColumnId) // change the subtask assigneeId - outside the task
 
-      state.taskList.map((task, index) => {
+      state.taskList.forEach((task, index) => {
         if (task.taskId === taskId) {
           taskIndex = index
           task.subtasks.forEach((subTask, index) => {
@@ -407,9 +407,9 @@ const taskdata = createSlice({
 
         state.taskList = action.payload.data.taskList // populate the redux state with all the active tasks fetched from the server
 
-        state.taskList.map(taskObj => { // displaying the subtasks(associated with the current task)
+        state.taskList.forEach(taskObj => { // displaying the subtasks(associated with the current task)
           if (taskObj.taskId[0] === 'r' && taskObj.subtasks.length !== 0) {
-            taskObj.subtasks.map((subObj, index) => {
+            taskObj.subtasks.forEach((subObj, index) => {
               if (subObj.check === false) { // if subtask has not been deleted 
                 let subTaskObj = {
                   taskId: `s${subObj.subtaskId}`,
@@ -439,11 +439,11 @@ const taskdata = createSlice({
       const {idObj, data} = action.payload
       state.checkList = data.checklists
 
-      state.taskList.map(task => {
+      state.taskList.forEach(task => {
         task.submissionId = idObj.submissionId
       })
 
-      state.checklistAssignees = data.checklists.map(checklistItem => ({
+      state.checklistAssignees = data.checklists.forEach(checklistItem => ({
           checklistId: checklistItem.checklistId, 
           assigneeId: idObj.ownerId
         })
@@ -490,7 +490,7 @@ const taskdata = createSlice({
       const {data, reqTaskObject} = action.payload
 
       let subTaskList = []
-      data.subtasks.map(subTask => {
+      data.subtasks.forEach(subTask => {
         let subTaskObj = {
           taskId: `s${subTask.subtaskId}`,
           subtaskId: subTask.subtaskId,
@@ -541,7 +541,7 @@ const taskdata = createSlice({
     [createNewLog.fulfilled]: (state, action) => {
       const { data, logObj } = action.payload
       
-      state.taskList.map(taskObj => {
+      state.taskList.forEach(taskObj => {
         if(taskObj.taskId === logObj.taskId) {
           taskObj.logs.push({
             logId: data.logId,
@@ -573,7 +573,7 @@ const taskdata = createSlice({
     [moveSubTask.fulfilled]: (state, action) => {
       const { data, mainTaskId } = action.payload
       
-      state.taskList.map(taskObj => {
+      state.taskList.forEach(taskObj => {
         if(taskObj.taskId === mainTaskId) {
           taskObj.logs.push(data.newLog)
         }
@@ -597,7 +597,7 @@ const taskdata = createSlice({
     [taskOwnerChange.fulfilled]: (state, action) => {
       const {data, ownerChangeObj} = action.payload
       
-      state.taskList.map(taskObj => {
+      state.taskList.forEach(taskObj => {
         if (taskObj.taskId === ownerChangeObj.taskId) {
           taskObj.ownerId = ownerChangeObj.owner
           taskObj.logs.push(data.newLog)
@@ -611,7 +611,7 @@ const taskdata = createSlice({
     [updateTitle.fulfilled]: (state, action) => {
       const {data, titleObj} = action.payload
       
-      state.taskList.map(taskObj => {
+      state.taskList.forEach(taskObj => {
         if (taskObj.taskId === titleObj.taskId) {
           taskObj.title = titleObj.newTitle
           taskObj.logs.push(data.newLog)
@@ -625,7 +625,7 @@ const taskdata = createSlice({
     [updateDescription.fulfilled]: (state, action) => {
       const {data, descObj} = action.payload
 
-      state.taskList.map(taskObj => {
+      state.taskList.forEach(taskObj => {
         if (taskObj.taskId === descObj.taskId) {
           taskObj.description = descObj.desc
           taskObj.logs.push(data.newLog)
@@ -639,7 +639,7 @@ const taskdata = createSlice({
     [changeTaskStatus.fulfilled]: (state, action) => {
       const {data, statusObj} = action.payload
 
-      state.taskList.map(taskObj => {
+      state.taskList.forEach(taskObj => {
         if(taskObj.taskId === statusObj.taskId) {
           taskObj.statusId = statusObj.statusId
           taskObj.logs.push(data.newLog)
@@ -653,7 +653,7 @@ const taskdata = createSlice({
     [archiveTask.fulfilled]: (state, action) => {
       const {data, archiveObj} = action.payload
 
-      state.taskList.map(task => { // archive the task and push the task into the archive list
+      state.taskList.forEach(task => { // archive the task and push the task into the archive list
         if(task.taskId === archiveObj.taskId) {
           task.archive = true
             
@@ -692,7 +692,7 @@ const taskdata = createSlice({
 
       state.taskList.push(state.task)
 
-      state.taskList.map(task => { // set the archive tag to false so that the task is displayed in task manager
+      state.taskList.forEach(task => { // set the archive tag to false so that the task is displayed in task manager
         if(task.taskId === taskId) {
           task.archive = false
         }
@@ -704,9 +704,9 @@ const taskdata = createSlice({
         that they are also displayed in the task manager
       */
       if (taskId[0] === 'r') { 
-        state.taskList.map(taskObj => { // displaying the subtasks(associated with the current task)
+        state.taskList.forEach(taskObj => { // displaying the subtasks(associated with the current task)
           if (taskObj.taskId === taskId && taskObj.subtasks.length !== 0) { // find the current unArchived request task from the taskList
-            taskObj.subtasks.map((subObj, index) => { // traverse the subTasks list of the current request task
+            taskObj.subtasks.forEach((subObj, index) => { // traverse the subTasks list of the current request task
               if (subObj.check === false) { // if subtask has not been deleted 
                 let subTaskObj = {
                   taskId: `s${subObj.subtaskId}`,

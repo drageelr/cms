@@ -86,7 +86,7 @@ export default function NavBar({name, ccaId,  userType, picture, darkMode, userT
           <Grid container direction='row' justify="space-between" alignItems="center">
             
             <Grid item>
-            { userType == "CCA" &&
+            { userType==="CCA" &&
               <IconButton edge="start" onClick={toggleDrawer} >
                 <MenuIcon />
               </IconButton>
@@ -121,8 +121,8 @@ export default function NavBar({name, ccaId,  userType, picture, darkMode, userT
                 </Box>
               </Typography>
               {  
-              userType != "PresPatron" &&  (   
-                userType=="CCA" ? 
+              userType !== "PresPatron" &&  (   
+                userType === "CCA" ? 
                 <Link to='settings'>
                   <IconButton edge="end" style={{padding: 10, marginRight: 5}}>
                     <SettingsIcon/>
@@ -139,7 +139,7 @@ export default function NavBar({name, ccaId,  userType, picture, darkMode, userT
               }
               <br/>
               {
-              userType != "PresPatron" &&
+              userType !=="PresPatron" &&
               <Link to='/'>
                 <IconButton  edge="end" style={{padding: 10}} onClick={()=>dispatch(logout())}>
                   <ExitToAppIcon />

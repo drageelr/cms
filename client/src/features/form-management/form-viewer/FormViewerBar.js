@@ -58,7 +58,7 @@ export default function FormViewerBar({ title, notesData, isCCA, createMode, sub
                 onClick={() => {
                   dispatch(changeFormStatus({
                     submissionId, 
-                    status: presOrPat == "pres" ? "Pending(Patron)" : "Approved(Patron)",
+                    status: presOrPat==="pres" ? "Pending(Patron)" : "Approved(Patron)",
                     issue: ""
                   })).then((changeFormStatusResult) => {
                     setApprovedDialogOpen(true)

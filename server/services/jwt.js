@@ -81,8 +81,8 @@ exports.verify = async (req, res, next) => {
     }
 
     let decodedObj = decodeToken(token);
-    if (decodedObj.err == undefined) {
-      if (decodedObj.type == 'soc' || decodedObj.type == 'pat' || decodedObj.type == 'pres') {
+    if (decodedObj.err===undefined) {
+      if (decodedObj.type==='soc' || decodedObj.type==='pat' || decodedObj.type==='pres') {
         let reqSociety = await Society.findById(decodedObj._id, 'active');
         if (reqSociety) {
           if (reqSociety.active) {
@@ -99,7 +99,7 @@ exports.verify = async (req, res, next) => {
           // Raise "TokenError" - user not found
           throw new customError.TokenError(404, "Invalid token!", "user not found");
         }
-      } else if (decodedObj.type == 'cca') {
+      } else if (decodedObj.type==='cca') {
         let reqCCA = await CCA.findById(decodedObj._id, 'active');
         if (reqCCA) {
           if (reqCCA.active) {

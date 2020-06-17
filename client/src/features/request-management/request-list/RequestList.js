@@ -96,6 +96,7 @@ export function RequestList({requestListData, dispatch}) {
   
   useEffect(() => {
     const dateUntil = updateDateRange(1)
+    console.log(dateUntil)
     dispatch(fetchCCARequestList({
       statusList: ccaStatuses, 
       // timeObj: {
@@ -144,7 +145,7 @@ export function RequestList({requestListData, dispatch}) {
   // }
 
   // function handleDeleteChip(chip,index) {
-  //   var newList = statusFilter.filter(function(obj) {return obj != chip})
+  //   var newList = statusFilter.filter(function(obj) {return obj !==chip})
   //   setStatusFilter(newList)
   // }
 
@@ -182,7 +183,10 @@ export function RequestList({requestListData, dispatch}) {
         break
       case "Specific duration":
         handleDateDialogOpen()
-      break
+        break
+      default:
+        console.log("Invalid filter option.")
+        break
     }
   }
   

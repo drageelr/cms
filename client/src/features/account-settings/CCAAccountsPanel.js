@@ -1,6 +1,6 @@
 import React, { useState, useEffect }from 'react'
 import { Button, Card, CardHeader, CardContent, Grid, Typography, FormControl, InputLabel, MenuItem, Switch, FormControlLabel, FormGroup,
-  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, LinearProgress, Container, Tooltip} from '@material-ui/core'
+  Avatar, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, LinearProgress, Container} from '@material-ui/core'
 import {connect} from 'react-redux'
 import MoreButton from '../../ui/MoreButton'
 import ToggleOffIcon from '@material-ui/icons/ToggleOff'
@@ -13,24 +13,14 @@ import ErrorSnackbar from "../../ui/ErrorSnackbar"
 import PanelBar from './PanelBar'
 import AccessibilityIcon from '@material-ui/icons/Accessibility'
 import { addCCAAccount, toggleActiveCCAAccount, editCCAAccount, fetchCCAAccounts, clearError, editCCAPermissions } from './ccaDetailsSlice'
-import { makeStyles } from '@material-ui/core/styles'
 import { setUserPicture } from './userSlice'
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  },
-  paper: {
-    width: '100%',
-    height: '90%',
-    marginBottom: theme.spacing(5),
-  },
-}))
 
 function CCAAccountPanel({ccaDetails,dispatch}) {
-  const classes = useStyles()
+
   useEffect(() => {
-    dispatch(fetchCCAAccounts())}, [])
+    dispatch(fetchCCAAccounts())
+  }, [])
   
   const [isOpen, setIsOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
@@ -38,12 +28,12 @@ function CCAAccountPanel({ccaDetails,dispatch}) {
   const [picture, setPicture] = useState("https://pngimage.net/wp-content/uploads/2018/05/default-user-profile-image-png-6.png")
   const [permissionMode, setPermissionsMode] = useState(false)
   const [permissions, setPermissions] = useState({})
-  const [page, setPage] = React.useState(0);
+  // const [page, setPage] = React.useState(0);
   
   
-  function handleChangePage(event, newPage){
-    setPage(newPage);
-  }
+  // function handleChangePage(event, newPage){
+  //   setPage(newPage);
+  // }
 
   function handleImageUpload(event, ccaId) {
     var reader = new FileReader()

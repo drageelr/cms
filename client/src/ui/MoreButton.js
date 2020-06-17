@@ -1,5 +1,4 @@
 import React from 'react'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz'
 import {Menu, MenuItem, IconButton} from '@material-ui/core'
 

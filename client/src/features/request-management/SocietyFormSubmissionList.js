@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { Button, FormGroup, FormLabel, TextField, Box, Typography } from '@material-ui/core'
+import { Button, Box, Typography } from '@material-ui/core'
 import MUIDataTable from "mui-datatables"
 import LinearProgress from '@material-ui/core/LinearProgress'
-import DeleteIcon from '@material-ui/icons/Delete'
 import DateRangeIcon from '@material-ui/icons/DateRange'
 import { makeStyles } from '@material-ui/core/styles'
-import { fetchSocietyList, deleteSubmission, clearError } from './submissionListSlice'
+import { fetchSocietyList, clearError } from './submissionListSlice'
 import { useHistory } from 'react-router-dom'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import Timestamp from 'react-timestamp'
@@ -50,10 +49,6 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
   }
   
   const numStatuses = statusTypes.length
-
-  function handleDelete(submissionId) {
-    dispatch(deleteSubmission(submissionId))
-  }
 
   function selectValue(formStatus) {
     return (statusTypes.indexOf(formStatus) + 1) * 100 / numStatuses

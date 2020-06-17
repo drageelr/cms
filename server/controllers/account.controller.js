@@ -238,7 +238,7 @@ exports.changeCCAPassword = async (req, res, next) => {
   try {
     let reqCCA = await CCA.findById(params.userObj._id, 'password');
 
-    if(reqCCA.password == params.passwordCurrent) {
+    if(reqCCA.password===params.passwordCurrent) {
       await CCA.findByIdAndUpdate(params.userObj._id, {password: params.passwordNew});
 
       // success response
@@ -269,7 +269,7 @@ exports.changeSocietyPassword = async (req, res, next) => {
   try{
     let reqSociety = await Society.findById(params.userObj._id, 'password');
 
-    if(reqSociety.password == params.passwordCurrent) {
+    if(reqSociety.password===params.passwordCurrent) {
       await Society.findByIdAndUpdate(params.userObj._id, {password: params.passwordNew});
 
       // success response
