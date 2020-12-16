@@ -12,7 +12,8 @@ import { login, clearError } from './userSlice'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import FormViewer from '../form-management/form-viewer/FormViewer'
 import landingBG from './landingBG.svg'
-
+import lumslogo from './LUMSLogo.png'
+import cmsLogo from './cmswhite.png'
 // card styling
 const useStyles = makeStyles(theme=>({
   root: {
@@ -36,19 +37,43 @@ const useStyles = makeStyles(theme=>({
 
 function LoginPage({error, dispatch, match, location}) {
   const classes = useStyles()
-  const selectedBGStyle = {backgroundColor: "#2555b5", color:"white"}
-  const normalBGStyle = {backgroundColor: "cornflowerblue", color:"white"}
+  const selectedBGStyle = {backgroundColor: "cornflowerblue", color:"white", borderColor: "#F5FFFA"}
+  const normalBGStyle = {backgroundColor: "#2555b5", color:"white"}
   const [userType, setUserType] = React.useState("CCA")
 
-  React.useEffect(() => {
-    // dispatch(login({email: "lumun@lums.edu.pk", password: "Test12345", userType: "Society"}))
-    dispatch(login({email: "developer@lums.edu.pk", password: "Test12345", userType: "CCA"}))
-  }, [])
+  // React.useEffect(() => {
+  //   // dispatch(login({email: "lumun@lums.edu.pk", password: "Test12345", userType: "Society"}))
+  //   dispatch(login({email: "admin@lums.edu.pk", password: "Test12345", userType: "CCA"}))
+  // }, [])
 
   return (
     <Container component="main" className={classes.root}>
       <img style={{position: 'absolute', left: '30vw', width: '70vw', height: '100vh'}}
       src={landingBG} alt="CMS"/>
+      <img style={{
+        position: 'absolute',
+        left: '3vw',
+        width: '12vw',
+        height: '10vh',
+        paddingTop: 800,
+        paddingLeft: 20,
+        paddingRight:10,
+      }}
+      src={lumslogo} alt="lumslogo"/>
+      
+
+      <img style={{
+        position: 'absolute',
+        left: '3vw',
+        width: '25vw',
+        height: '20vh',
+        paddingTop: 50,
+        // paddingLeft: -10,
+        // paddingRight:-10,
+        borderColor: "#F5FFFA",
+      }}
+      src={cmsLogo} alt="cmsLogo"/>
+      
       <div style={{marginTop: '30vh', marginLeft: '3vw'}}>
       <Formik
         validateOnChange={false} validateOnBlur={true}

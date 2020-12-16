@@ -113,6 +113,7 @@ const ccaDetails = createSlice({
     [toggleActiveCCAAccount.fulfilled]: (state, action) => {
         state.ccaList.map((obj,index) => {
           if (obj.ccaId === action.payload.ccaId){
+            console.log("active status: ", action.payload.active)
             state.ccaList[index].active = !action.payload.active
           }  
         })  

@@ -13,6 +13,8 @@ import {clearError} from './taskStatusDetailsSlice'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import PanelBar from './PanelBar'
 import { Typography } from '@material-ui/core';
+import { CirclePicker } from 'react-color';
+
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -66,6 +68,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
 
   const [editMode,setEditMode] = useState(false)
   const [editId, setEditId] = useState(-1)
+  const [colorHex, setColorHex] = useState("#fff")
 
   function EditDeleteMoreButton({statusId}) {
     const menusList=[
@@ -89,9 +92,15 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
   }
 
   function handleEdit(statusId){
+    console.log("status id: ", statusId)
     setEditId(statusId)
     setEditMode(true)  
     setIsOpen (true)
+  }
+
+  function handleChangeComplete(color,event){
+    setColorHex(color.hex)
+    console.log("color state: ", colorHex)
   }
 
   function TaskStatusDialog(){
@@ -136,8 +145,8 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
           onSubmit={(values,{setSubmitting}) => {
             // (taskStatusDetails.isPending) ? <CircularProgress/>
             dispatch(editMode 
-              ? editTaskStatus(({id: editId, name: values.name, color: values.color}))
-              : addTaskStatus({name: values.name, color: values.color}))
+              ? editTaskStatus({statusId: editId, name: values.name, color: colorHex})
+              : addTaskStatus({name: values.name, color: colorHex}))
               .then(()=>{
                 setSubmitting(false)
               })
@@ -153,12 +162,18 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
                   </Grid>
                   
                   <Grid item style = {{width: 350}}>
-                    <Field component={TextField} name="color" required label="Color" helperText = "Enter Hex Value for Color (#000000)"/>    
+                    <br/>
+                    <Typography variant='subtitle2'>Choose color </Typography>
+                    <CirclePicker onChangeComplete={handleChangeComplete} label="Choose color"/>
                   </Grid>
                 </Grid>
               </DialogContent>
               <DialogActions>
+                
                 <Fab onClick={submitForm} color="primary" variant="extended" size = "large">
+                  {()=>{
+                    console.log("edit id: ", editId)
+                  }}
                   Save
                 </Fab>
                 
@@ -207,6 +222,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
 
               <TableCell align="right">
                 <div>
+                  {console.log("sabse neeche: ", taskStatusDetail.statusId)}
                   <EditDeleteMoreButton statusId={taskStatusDetail.statusId}/>
                 </div>
               </TableCell>

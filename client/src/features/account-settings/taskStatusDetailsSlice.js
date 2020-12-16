@@ -53,9 +53,9 @@ export const addTaskStatus = createAsyncThunk(
 export const editTaskStatus = createAsyncThunk(
   'taskStatusDetails/editTaskStatus',
   async (taskStatusObject, { rejectWithValue}) => {
-    const {id,name,color} = taskStatusObject
-    
-    return await apiCaller('api/task-manager/task-status/edit',{statusId: id, name, color: color}, 203,
+    const {statusId,name,color} = taskStatusObject
+    console.log("slice id: ", statusId, color)
+    return await apiCaller('api/task-manager/task-status/edit',{statusId: statusId, name: name, color: color}, 203,
     (data) => {
       return taskStatusObject
     },
@@ -102,7 +102,7 @@ const taskStatusDetails = createSlice({
     [editTaskStatus.fulfilled]: (state, action) => {
       let i = 0
       state.taskList.find((obj,index) => {
-        if (obj.statusId === action.payload.id){
+        if (obj.statusId === action.payload.statusId){
           i = index
         }
       })
