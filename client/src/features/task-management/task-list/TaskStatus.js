@@ -6,9 +6,10 @@ import StopIcon from '@material-ui/icons/Stop'
 /**
   Renders a Select Menu, allowing the user to select one one of the available statuses. It stores
   statusId in the task and uses the Status Hex value to display a color along side the status name.
-  @param {string} taskId used to add assign a status for the task
-  @param {object} taskData slice of the corresponding feature, used to populate the TaskStatuses Menu 
-  @param {function} dispatch dispatch the change Task Status
+
+  @param {string} taskId Id of the current task 
+  @param {object} taskData slice from redux containing data of all the currently active tasks
+  @param {list} taskStatusDetails slice from redux containing data of all the currently active task statuses
 */
 
 export function TaskStatus({taskId, taskData, setStatusId, taskStatusDetails}) {
@@ -32,7 +33,7 @@ export function TaskStatus({taskId, taskData, setStatusId, taskStatusDetails}) {
 
   function handleChange(event) {
     var statusId = -1
-    taskStatusDetails.map(statusObj => {
+    taskStatusDetails.forEach(statusObj => {
       if (statusObj.name === event.target.value) {
         statusId = statusObj.statusId
       }
@@ -73,8 +74,7 @@ export function TaskStatus({taskId, taskData, setStatusId, taskStatusDetails}) {
             <em>None</em>
           </MenuItem>
           {
-            taskStatusDetails.map(statusObj => {
-              return (
+            taskStatusDetails.map(statusObj => (
                 <MenuItem value={statusObj.name}>
                   <Grid container direction="row" justify= "flex-start" alignItems="center">
                     <Grid item>
@@ -86,7 +86,7 @@ export function TaskStatus({taskId, taskData, setStatusId, taskStatusDetails}) {
                   </Grid>
                 </MenuItem>
               )
-            })
+            )
           }
         </Select>
       </FormControl>

@@ -172,7 +172,7 @@ Or even worse:
 ```javascript=15
 var x = new String("Hello");
 var y = new String("Hello");
-(x == y); // is false because you cannot compare objects. 
+(x===y); // is false because you cannot compare objects. 
 ```
 
 ### 6. Don't Use `new Object()`
@@ -217,9 +217,9 @@ The `==` comparison operator always converts (to matching types) before comparis
 
 The `===` operator forces comparison of values and type:
 ```javascript=1
-0 == "";        // true
-1 == "1";       // true
-1 == true;      // true
+0==="";        // true
+1==="1";       // true
+1===true;      // true
 
 0 === "";       // false
 1 === "1";      // false

@@ -81,8 +81,8 @@ exports.verify = async (req, res, next) => {
     }
 
     let decodedObj = decodeToken(token);
-    if (decodedObj.err == undefined) {
-      if (decodedObj.type == 'soc' || decodedObj.type == 'pat' || decodedObj.type == 'pres') {
+    if (decodedObj.err===undefined) {
+      if (decodedObj.type==='soc' || decodedObj.type==='pat' || decodedObj.type==='pres') {
         let reqSociety = await Society.findById(decodedObj._id, 'active');
         if (reqSociety) {
           if (reqSociety.active) {
@@ -93,13 +93,13 @@ exports.verify = async (req, res, next) => {
             next();
           } else {
             // Raise user not active error
-            throw new customError.ForbiddenAccessError("user is not active", "UserNotActiveError");
+            throw new customError.ForbiddenAccessError("This account has been deactivated. Please contact a system admin to request activation.", "UserNotActiveError");
           }
         } else {
           // Raise "TokenError" - user not found
           throw new customError.TokenError(404, "Invalid token!", "user not found");
         }
-      } else if (decodedObj.type == 'cca') {
+      } else if (decodedObj.type==='cca') {
         let reqCCA = await CCA.findById(decodedObj._id, 'active');
         if (reqCCA) {
           if (reqCCA.active) {
@@ -107,15 +107,15 @@ exports.verify = async (req, res, next) => {
             next();
           } else {
             // Raise user not active error
-            throw new customError.ForbiddenAccessError("user is not active", "UserNotActiveError");
+            throw new customError.ForbiddenAccessError("This account has been deactivated. Please contact a system admin to request activation.", "UserNotActiveError");
           }
         } else {
           // Raise "TokenError" - user not found
-          throw new customError.TokenError(404, "Invalid token!", "user not found");
+          throw new customError.TokenError(404, "Invalid token!", "User not found.");
         }
       } else {
         // Raise "TokenError" - invalid type
-        throw new customError.TokenError(400, "Invalid token!", "invalid user type");
+        throw new customError.TokenError(400, "Invalid token!", "Invalid user type.");
       }
     } else {
       // Raise "TokenError" here - based on jwt error

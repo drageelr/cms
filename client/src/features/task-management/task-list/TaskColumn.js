@@ -20,7 +20,7 @@ import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
   columnStyle: {
-    backgroundColor: theme.palette.action.disabledBackground,
+    backgroundColor: theme.palette.shade,
     padding: 8,
     borderRadius: 3,
     width: 200,
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export function TaskColumn({ownerId, taskData, ccaDetails, dispatch}) {
+export function TaskColumn({ownerId, taskData, ccaDetails}) {
   const classes = useStyles()
 
   return (
@@ -40,15 +40,16 @@ export function TaskColumn({ownerId, taskData, ccaDetails, dispatch}) {
           if (ownerId === ccaUserObj.ccaId) { // if the ownerId matches a ccaUserObj Id then print the ccaUser name for TM column header
             return (
               <div>
-                <Grid container direction="row" style={{padding: 10}}>
-                  <Avatar src={ccaUserObj.picture} style={{marginTop: 5, height: 17, width: 17}}/>
-                  <Typography variant="h6" color="textPrimary" style={{marginLeft: 3}}>
+                <Grid container direction="row" style={{padding: 5, marginBottom: 5}}>
+                  <Avatar src={ccaUserObj.picture} style={{marginTop: 4, height: 17, width: 17}}/>
+                  <Typography variant="h6" color="textPrimary" style={{fontSize: 15, fontWeight: 700, marginLeft: 5}}>
                     {ccaUserObj.firstName + " " + ccaUserObj.lastName}
                   </Typography>
                 </Grid>
               </div>
             )
           }
+          return null
         })
       } 
       <Droppable droppableId={String(ownerId)}>
@@ -63,6 +64,7 @@ export function TaskColumn({ownerId, taskData, ccaDetails, dispatch}) {
                     <TaskCard taskId={taskObj.taskId} index={index} key={taskObj.taskId}/>
                   )
                 }
+                return null
               })
             }
             {provided.placeholder}

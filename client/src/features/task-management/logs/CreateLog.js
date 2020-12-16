@@ -5,13 +5,19 @@ import { setCusLogCreatorId } from '../taskDataSlice'
 import { createNewLog } from "../taskDataSlice"
 import LogsList from "./LogsList"
 
+/**
+  This component create a custom log based on the input of the user.
+
+  @param {string} taskId this is the Id of the task whom the user wants to edit
+  @param {object} user slice from redux containing data of the currently active user
+**/
+
 export function LogEditor({taskId, user, dispatch}) {
   const [logDesc, setLogDesc] = useState("")
 
   function handleUpdateLogs() {
     if (logDesc) {
-      // setLogText(logDesc)
-      setCusLogCreatorId({creatorId: user.id})
+      dispatch(setCusLogCreatorId({creatorId: user.id}))
       if (logDesc.length > 0) {
         dispatch(createNewLog({taskId, logText: logDesc}))
       }

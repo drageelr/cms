@@ -131,7 +131,7 @@ export default function Item({id, parentId, data}) {
         
         <Grid item>
         <EditDeleteBar 
-          renderTitle={()=><h5></h5>}
+          renderTitle={()=><div></div>}
           type={'item-'+type}
           id ={id}
           parentId={parentId}

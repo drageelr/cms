@@ -12,7 +12,7 @@ function IssueDialog({presOrPat, issueDialogOpen, setIssueDialogOpen, submission
 
   function saveIssue() {
     console.log(presOrPat, " has issue ", issue, " with submission ", submissionId)
-    if (presOrPat == "pres") { //president has an issue with the submission
+    if (presOrPat === "pres") { //president has an issue with the submission
       dispatch(changeFormStatus({submissionId, status: "Issue(President)", issue}))
     }
     else { //for patron

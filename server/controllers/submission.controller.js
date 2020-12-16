@@ -75,7 +75,7 @@ function itemIdValidation (formItems, itemsData, requiredCheck = false) {
   // Validate All Required Ones Are Filled
   // if (requiredCheck) {
   //   for (let iObj in formItemIds) {
-  //     if (iObj.required == true) {
+  //     if (iObj.required===true) {
   //       return "all required objects are not filled";
   //     }
   //   }
@@ -97,7 +97,7 @@ async function itemTypeValidation (formItems, itemsData) {
     let correctDataType = itemDataTypes[itemType]
     if (correctDataType === undefined) {
       return "item with id " + i.itemId + " type does not exist OR type does not take any input";
-    } else if (typeof i.data != correctDataType) {
+    } else if (typeof i.data !==correctDataType) {
       return "item with id " + i.itemId + " has invalid data type, should be: " + correctDataType;
     }
 
@@ -256,7 +256,7 @@ exports.submitForm = async (req, res, next) => {
         submissionValidationError = await itemTypeValidation(reqForm.items, itemsData);
         if (submissionValidationError) throw new customError.SubmissionValidationError(submissionValidationError);
         
-        if (reqSubmission.status == "Issue(President)" || reqSubmission.status == "Issue(Patron)") {
+        if (reqSubmission.status==="Issue(President)" || reqSubmission.status==="Issue(Patron)") {
           await Submission.findByIdAndUpdate(reqSubmission._id, {$pull: {itemsData: {_id: {$in: reqSubmission.itemsData.map(i => i._id)}}}})
           reqSubmission = await Submission.findById(reqSubmission._id)
         }
@@ -268,7 +268,7 @@ exports.submitForm = async (req, res, next) => {
         // 4) For "File" types, get correct data:
         for(let iS of itemsData) {
           for (let iF of reqForm.items) {
-            if (iS.itemId == iF.itemId && iF.type == "file") {
+            if (iS.itemId===iF.itemId && iF.type==="file") {
               let reqFile = await File.findByIdAndUpdate(jwt.decodeTokenFunc(iS.data)._id, {saved: true, formId: reqForm._id});
               iS.data = reqFile.name;
             }
@@ -314,7 +314,7 @@ exports.submitForm = async (req, res, next) => {
         // 4) For "File" types, get correct data:
         for(let iS of itemsData) {
           for (let iF of reqForm.items) {
-            if (iS.itemId == iF.itemId && iF.type == "file") {
+            if (iS.itemId===iF.itemId && iF.type==="file") {
               let reqFile = await File.findByIdAndUpdate(jwt.decodeTokenFunc(iS.data)._id, {saved: true, formId: reqForm._id});
               iS.data = reqFile.name;
             }
@@ -376,7 +376,7 @@ exports.addCCANote = async (req, res, next) => {
       });
     } else {
       // throw submission not found error
-      throw new customError.SubmissionNotFoundError("invalid submission id");
+      throw new customError.SubmissionNotFoundError("Invalid submission ID. Submission not found.");
     }
   }
   catch (err) {
@@ -406,7 +406,7 @@ exports.addSocietyNote = async (req, res, next) => {
       });
     } else {
       // throw submission not found error
-      throw new customError.SubmissionNotFoundError("invalid submission id");
+      throw new customError.SubmissionNotFoundError("Invalid submission ID. Submission not found.");
     }
   }
   catch (err) {
@@ -426,10 +426,10 @@ exports.getSubmissionList = async (req, res, next) => {
   try {
     let reqQuery = {};
     
-    if (params.userObj.type == "soc") {
+    if (params.userObj.type==="soc") {
       reqQuery.societyId = params.userObj._id;
       reqQuery.status = { $ne: "Completed" }
-    } else if (params.userObj.type == "cca") {
+    } else if (params.userObj.type==="cca") {
       
       if (params.statusList) {
         let statusValidationError = validateStatus(params.statusList);
@@ -473,7 +473,7 @@ exports.getSubmissionList = async (req, res, next) => {
       });
     } else {
       // raise submission not found error
-      throw new customError.SubmissionNotFoundError("no submissions exists");
+      throw new customError.SubmissionNotFoundError("There are no existing submissions.");
     }
   } catch (err) {
     next(err);
@@ -498,7 +498,7 @@ exports.updateSubmissionStatus = async (req, res, next) => {
       let statusCheck = false;
 
       for (let f of statusAvailable) {
-        if (params.status == f) {
+        if (params.status===f) {
           statusCheck = true;
           break;
         }
@@ -506,22 +506,22 @@ exports.updateSubmissionStatus = async (req, res, next) => {
 
       if (!statusCheck) {
         console.log(params)
-        throw new customError.SubmissionValidationError("invalid status or status not allowed, allowed statuses are: " + JSON.stringify(statusAvailable));
+        throw new customError.SubmissionValidationError("Invalid status, allowed statuses are: " + JSON.stringify(statusAvailable));
       }
 
-      if (params.userObj.type != "cca" && reqSubmission.status != submissionChangeStatus[params.userObj.type]) {
-        throw new customError.SubmissionValidationError("user cannont change status at this moment");
+      if (params.userObj.type !=="cca" && reqSubmission.status !==submissionChangeStatus[params.userObj.type]) {
+        throw new customError.SubmissionValidationError("This submission's status cannot be changed at this moment.");
       }
 
       // params.status contains the string "Issue"
-      if ((params.status == "Issue(President)" || params.status == "Issue(Patron)") && params.issue && params.userObj.type != "cca") {
+      if ((params.status==="Issue(President)" || params.status==="Issue(Patron)") && params.issue && params.userObj.type !=="cca") {
         let reqSociety = await Society.findById(params.userObj._id, 'patronEmail presidentEmail email');
         let emailAddr = reqSociety.presidentEmail;
-        if (params.userObj.type == "pat") {
+        if (params.userObj.type==="pat") {
           emailAddr = reqSociety.patronEmail;
         }
         sendIssueEmail(reqSociety.email, params.issue, reqSubmission.submissionId, params.userObj.type, emailAddr);
-      } else if (params.status == "Pending(Patron)" && params.userObj.type != "cca") {
+      } else if (params.status==="Pending(Patron)" && params.userObj.type !=="cca") {
         let reqSociety = await Society.findById(params.userObj._id, 'patronEmail _id nameInitials');
         sendReviewEmail(reqSociety.patronEmail, "pat", reqSociety.nameInitials, reqSubmission._id, reqSociety._id);
       }
@@ -535,7 +535,7 @@ exports.updateSubmissionStatus = async (req, res, next) => {
       });
     } else {
       // raise submission not found error
-      throw new customError.SubmissionNotFoundError("invalid submission id");
+      throw new customError.SubmissionNotFoundError("Invalid submission ID. Submission not found.");
     }
   } catch (err) {
     next(err);
@@ -586,7 +586,7 @@ exports.fetchSubmission = async (req, res, next) => {
       });
     } else {
       // raise submission not found error
-      throw new customError.SubmissionNotFoundError("invalid submission id");
+      throw new customError.SubmissionNotFoundError("Invalid submission ID. Submission not found.");
     }
   } catch (err) {
     next(err);

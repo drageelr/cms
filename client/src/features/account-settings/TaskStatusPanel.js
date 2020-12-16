@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { withStyles, makeStyles, useTheme} from '@material-ui/core/styles'
-import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog,
-  DialogActions, DialogContent, DialogTitle, LinearProgress, Fab, Tooltip } from '@material-ui/core'
+import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog,
+  DialogActions, DialogContent, DialogTitle, LinearProgress, Fab } from '@material-ui/core'
 import {addTaskStatus,editTaskStatus,deleteTaskStatus,fetchTaskStatus} from './taskStatusDetailsSlice'
 import {connect} from 'react-redux'
 import { Formik, Form, Field } from 'formik'
@@ -12,9 +12,12 @@ import EditIcon from '@material-ui/icons/Edit'
 import {clearError} from './taskStatusDetailsSlice'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import PanelBar from './PanelBar'
+<<<<<<< HEAD
 import { Typography } from '@material-ui/core';
 import { CirclePicker } from 'react-color';
 
+=======
+>>>>>>> 0a5f8e9e0ff03f1b0d32568bfe4b10c5d95637ee
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -111,7 +114,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
 
     if (editMode){
       // const taskDetail = 
-      taskStatusDetails.taskList.map((task,index) =>{
+      taskStatusDetails.taskList.forEach((task,index) =>{
         if (task.statusId === editId){
           if (task !== undefined){
             initialValues = {name:task.name, color: task.color}
@@ -128,8 +131,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
       <Dialog
         open={isOpen}
         onClose={handleClose}
-        // PaperComponent={PaperComponent}
-        aria-labelled by="draggable-dialog-title"
+        aria-labelledby="draggable-dialog-title"
         >
         <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
           {editMode ? "Edit Task Status" : "Add Task Status"}
@@ -200,7 +202,7 @@ function TaskStatusPanel({taskStatusDetails,dispatch}){
       <TaskStatusDialog/>
       
       <TableContainer className={classes.container}>
-      <Table className={classes.table} aria-label="customized table" stickyHeader aria-label="sticky table">
+      <Table className={classes.table} aria-label="customized table" stickyHeader>
         <TableHead>
           <TableRow style={{background: theme.palette.action.hover}}>
             <TableCell >Task Status</TableCell>

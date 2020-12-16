@@ -110,7 +110,7 @@ exports.validateUserAccess = (req, res, next) => {
       let accessGranted = false;
     
       for (let a of accessList) {
-        if (a == req.body.userObj.type) {
+        if (a===req.body.userObj.type) {
           accessGranted = true;
           break;
         }
@@ -119,7 +119,7 @@ exports.validateUserAccess = (req, res, next) => {
       if (accessGranted) {
         next();
       } else {
-        throw new customError.ForbiddenAccessError("forbidden access to resource", "RouteError");
+        throw new customError.ForbiddenAccessError("Forbidden access to resource.", "RouteError");
       }
     } else {
       next();
@@ -135,14 +135,14 @@ exports.validateUserAccess = (req, res, next) => {
  */
 exports.validateCCAAccess = async (req, res, next) => {
   try {
-    if (req.body.userObj.type == "cca") {
+    if (req.body.userObj.type==="cca") {
       let reqCCA = await CCA.findById(req.body.userObj._id, 'role permissions');
-      if (reqCCA.role != "admin") {
+      if (reqCCA.role !=="admin") {
         let access = ccaAccess[req.originalUrl];
         if(reqCCA.permissions[access]) {
           next();
         } else {
-          throw new customError.ForbiddenAccessError("cca user does not have valid permission for this resource", "PermissionError");
+          throw new customError.ForbiddenAccessError("The user does not have valid permission to access this resource.", "PermissionError");
         }
       } else {
         next();

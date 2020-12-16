@@ -56,7 +56,7 @@ exports.ccaLogin = async (req, res, next) => {
         }
       });
     } else {
-      throw new customError.AuthenticationError("invalid email or password");
+      throw new customError.AuthenticationError("Invalid email or password entered.");
     }
   } catch(err) {
     next(err);
@@ -93,7 +93,7 @@ exports.societyLogin = async (req, res, next) => {
         }
       });
     } else {
-      throw new customError.AuthenticationError("invalid email or password");
+      throw new customError.AuthenticationError("Invalid email or password entered.");
     }
   } catch(err) {
     next(err);

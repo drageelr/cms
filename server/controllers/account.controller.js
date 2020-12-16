@@ -38,7 +38,7 @@ exports.createCCAAccount = async (req, res, next) => {
 
     if (existingCCA) {
       // throw duplicate user error
-      throw new customError.DuplicateUserError("cca user already exists");
+      throw new customError.DuplicateUserError("The email address is already associated to another CCA account.");
     } else {
       let reqCCA = new CCA({firstName: params.firstName, lastName: params.lastName, email: params.email, password: params.password, picture: params.picture, permissions: params.permissions, active: true, role: params.role, themeColor: "#3578fa", darkMode: false});
       await reqCCA.save();
@@ -70,7 +70,7 @@ exports.createSocietyAccount = async (req, res, next) => {
 
     if (existingSociety){
       // throw duplicate error
-      throw new customError.DuplicateUserError("society user already exists");
+      throw new customError.DuplicateUserError("The email address is already associated to another Society account.");
     } else {
       let reqSociety = new Society({nameInitials: params.nameInitials, name: params.name, email: params.email, password: params.password, presidentEmail: params.presidentEmail, patronEmail: params.patronEmail, active: true, themeColor: "#3578fa", darkMode: false});
       await reqSociety.save();
@@ -115,7 +115,7 @@ exports.editCCAAccount = async (req, res, next) => {
       });
     } else {
       // throw user not found error
-      throw new customError.UserNotFoundError("cca user not found");
+      throw new customError.UserNotFoundError("CCA user not found.");
     }
   } catch (err) {
     next(err);
@@ -146,7 +146,7 @@ exports.editSocietyAccount = async (req, res, next) => {
       });
     } else {
       // throw user not found error
-      throw new customError.UserNotFoundError("society user not found");
+      throw new customError.UserNotFoundError("Society account not found.");
     }
   } catch (err) {
     next(err);
@@ -183,7 +183,7 @@ exports.getCCAList = async (req, res, next) => {
       });
     } else {
       // throw users not found error
-      throw new customError.UserNotFoundError("no cca users exist");
+      // throw new customError.UserNotFoundError("No CCA accounts exist.");
     }
   } catch (err) {
     next(err);
@@ -219,7 +219,7 @@ exports.getSocietyList = async (req, res, next) => {
       });
     } else {
       // throw user not found error
-      throw new customError.UserNotFoundError("no society users exist");
+      // throw new customError.UserNotFoundError("No Society accounts exist.");
     }
   } catch (err){
     next(err);
@@ -238,7 +238,7 @@ exports.changeCCAPassword = async (req, res, next) => {
   try {
     let reqCCA = await CCA.findById(params.userObj._id, 'password');
 
-    if(reqCCA.password == params.passwordCurrent) {
+    if(reqCCA.password===params.passwordCurrent) {
       await CCA.findByIdAndUpdate(params.userObj._id, {password: params.passwordNew});
 
       // success response
@@ -249,7 +249,7 @@ exports.changeCCAPassword = async (req, res, next) => {
       });
     } else {
       // throw bad request error - invalid password
-      throw new customError.AuthenticationError("invalid password");
+      throw new customError.AuthenticationError("Your previous password does not match.");
     }
 
   } catch (err) {
@@ -269,7 +269,7 @@ exports.changeSocietyPassword = async (req, res, next) => {
   try{
     let reqSociety = await Society.findById(params.userObj._id, 'password');
 
-    if(reqSociety.password == params.passwordCurrent) {
+    if(reqSociety.password===params.passwordCurrent) {
       await Society.findByIdAndUpdate(params.userObj._id, {password: params.passwordNew});
 
       // success response
@@ -280,7 +280,7 @@ exports.changeSocietyPassword = async (req, res, next) => {
       });
     } else {
       // throw bad request error - invalid password
-      throw new customError.AuthenticationError("invalid password");
+      throw new customError.AuthenticationError("Your previous password does not match.");
     }
   } catch (err) {
     next(err);

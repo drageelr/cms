@@ -4,16 +4,16 @@ import { changeFormStatus } from '../requestListSlice'
 import { useDispatch } from 'react-redux'
 
 /**
-  This is a state-ful Select Menu that provides the admin with a list of statuses that they
+  This is a stateful Select Menu that provides the admin with a list of statuses that they
   can associate to tasks. 
 
-  @param {number} requestId the id of the request whose status we are going to change, will be
-  dispatched the store   
+  @param {number} submissionId the id of the request whose status we are going to change, will be
+  recieved from the store   
 */
 
-export default function ChangeFormStatusSelect({submissionId, status, updateValue}) {
+export default function ChangeFormStatusSelect({submissionId, value, updateValue}) {
   const dispatch = useDispatch()
-  const [localStatus, setLocalStatus] = React.useState(status)
+  const [localStatus, setLocalStatus] = React.useState(value)
   const [open, setOpen] = React.useState(false)
 
   function handleChange(e) {

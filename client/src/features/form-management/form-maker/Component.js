@@ -12,7 +12,6 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 10,
     width: '98%',
     height: '98%',
-    backgroundColor: 'lightgray',
     marginBottom: 10,
     border: 1,
   }

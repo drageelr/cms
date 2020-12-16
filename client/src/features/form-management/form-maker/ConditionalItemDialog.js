@@ -26,11 +26,11 @@ function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, set
     const cId = e.target.value
     setCurrentCItemId(cId)
 
-    if (cId != -1 && items[cId] !== undefined){
-      items[cId].options.map((_, option_index) => {
+    if (cId !==-1 && items[cId] !== undefined){
+      items[cId].options.forEach((_, option_index) => {
         let optionItems = [] //store option items along the way as well
         itemsOrder[componentId].forEach(itemId => {
-          if (itemId != cId) {
+          if (itemId !==cId) {
             optionItems.push(itemId)
           }
         })
@@ -43,12 +43,12 @@ function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, set
     return (
       <FormControl component="fieldset">
         {
-          (currentCItemId != -1 && items[currentCItemId] !== undefined) &&
+          (currentCItemId !==-1 && items[currentCItemId] !== undefined) &&
           items[currentCItemId].options.map((option, option_index) => (
             <FormGroup key={option_index}>
               <FormLabel component="legend">If option {option} is selected, show</FormLabel>
               {
-                itemsOrder[componentId].map((itemId, index) => (itemId != currentCItemId) && // only show conditional items (radio / dropdowns)
+                itemsOrder[componentId].map((itemId, index) => (itemId !==currentCItemId) && // only show conditional items (radio / dropdowns)
                   <FormControlLabel
                     key={index}
                     control={
@@ -93,7 +93,7 @@ function ConditionalItemDialog({ componentId, items, itemsOrder, dialogOpen, set
           const itemData = items[itemId]
           
           // only show conditional items (radio / dropdowns)
-          return (itemData.type == 'radio' || itemData.type == 'dropdown') 
+          return (itemData.type==='radio' || itemData.type==='dropdown') 
             && <MenuItem key={index} value={itemId}>{itemData.label}</MenuItem>
         })
       }

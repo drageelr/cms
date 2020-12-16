@@ -5,7 +5,7 @@ import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-material-ui'
 import { useDispatch } from 'react-redux'
 import { addCcaNote, addSocietyNote } from '../formDataSlice'
-import { simplifyTimestamp } from '../../../helpers'
+import Timestamp from 'react-timestamp'
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
@@ -42,7 +42,12 @@ export default function NotesSideBar({drawerOpen, toggleDrawer, notesData, isCCA
                 {note.note}
               </Typography>
               <Typography style={{margin: 4, marginLeft: 5, fontSize: 10}}>
-                {simplifyTimestamp(note.timestampCreated, false)}
+                {
+                  (note.timestampCreated === "just now") 
+                  ? "just now"
+                  : <Timestamp relative date={new Date(note.timestampCreated)}/>
+                }
+                
               </Typography>
             </Paper>
             )

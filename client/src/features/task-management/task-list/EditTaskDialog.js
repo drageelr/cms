@@ -1,27 +1,27 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import { connect } from 'react-redux'
 import AttachRequestForm from './AttachRequestForm'
 import TaskStatus from './TaskStatus'
 import CheckList from "./CheckList"
 import LogEditor from "../logs/CreateLog"
 import { archiveTask, taskOwnerChange, updateTitle, updateDescription, createRequestTask,
-  createCustomTask, changeTaskStatus, fetchTaskManager, setTaskEditMode, setCurrTaskId } from "../taskDataSlice"
-import { Typography, Box, Card, Slide, FormControl, Select, TextField, MenuItem, Paper, Grid, Dialog, DialogActions, Button, Tooltip, Fab } from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
-import CancelIcon from '@material-ui/icons/Cancel'
+  createCustomTask, changeTaskStatus, setTaskEditMode, setCurrTaskId } from "../taskDataSlice"
+import { Typography, Box, Card, Slide, FormControl, Select, TextField, MenuItem, Grid, Dialog, DialogActions, Button, Tooltip, Fab } from '@material-ui/core'
 import SubjectIcon from '@material-ui/icons/Subject'
 import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined'
 import ArchiveIcon from '@material-ui/icons/Archive'
 
 /**
-  The task edit dialog is handled by this component. It navigates between sub components of the task
-  editor dialog. The data to the child components e.g AddAssignee, Checklist components is 
-  passed via this component.    
+  This component handles the Edit and Create Mode of a Task. All the fields in an Edit Task Window or a Create Task Window
+  are controlled by this sibling(component) of the Task Manager Component.     
 
-  @param {string} taskId this id is used to navigate between sub components of the task editor dialog  
-  @param {object} taskList slice from redux corresponding to the current component
-  @param {bool} open a bool state passed from the TaskCard component to open the task editor Dialog Box
-  @param {function} setOpen sets the state of open to true or false depending on the user input
+  @param {string} editMode if editMode === "create", the create task dialog is opened, if editMode === "edit", the edit task dialog is opened 
+  @param {bool} isRequestTask a bool passed, telling us whether the current task, be it in create ir edit mode, is a "request task" or a "custom task"
+  @param {string} ownerId the ID of the owner of the current task, in case of editMode === "create", the ownerId is not passed
+  @param {list} taskList slice from redux containing data of all the currently active tasks
+  @param {string} taskId this is the Id of the task whom the user wants to edit, , in case of editMode === "create", the taskId is not passed
+  @param {list} ccaDetails slice from redux containing data of all the active members of CCA
+  @param {bool} open a bool state passed to open the Edit or Create Dialog Box
 **/
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -30,7 +30,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, taskId, ccaDetails, dispatch, open}) {  
   let initialState = { description: "", title: "", ownerId: -1, submissionId: -1, statusId: -1, log: "" }
-  let subId = -1
 
   const taskObj = taskList.find(taskObj => taskObj.taskId === taskId)
   if (taskObj !== undefined) { // if found
@@ -43,7 +42,6 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
   const [taskTitle, setTaskTitle] = useState(initialState.title)
   const [owner, setOwner] = useState(initialState.ownerId)
   const [statusId, setStatusId] = useState(initialState.statusId)
-  const [logText, setLogText] = useState("")
   const [localSubmissionId, setLocalSubmissionId] = useState(initialState.submissionId)
   
   function handleOwnerSet(event) {
@@ -57,7 +55,7 @@ export function EditTaskDialog({editMode, ownerId, isRequestTask, taskList, task
 
   async function handleDelete() {
     await dispatch(archiveTask({taskId, ownerId}))
-    dispatch(fetchTaskManager())
+    // dispatch(fetchTaskManager())
     handleTaskEditorClose()
   }
 

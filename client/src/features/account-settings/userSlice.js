@@ -33,7 +33,7 @@ export const login = createAsyncThunk(
   'user/login',
   async({email, password, userType}, {getState, rejectWithValue}) => {
     const {isPending} = getState().user
-    if (isPending != true){
+    if (!isPending){
       return
     }
 
@@ -56,7 +56,7 @@ export const changePassword = createAsyncThunk(
   'user/changePassword',
   async({currentPassword, newPassword}, {getState, rejectWithValue}) => {
     const {isPending, userType} = getState().user
-    if (isPending != true){
+    if (!isPending){
       return
     }
 

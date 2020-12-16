@@ -1,16 +1,13 @@
 import React, { useState } from 'react'
-import Icon from '@material-ui/core/Icon'
-import Button from '@material-ui/core/Button'
-import EditTaskDialog from './EditTaskDialog'
+import {Icon, Button, Typography } from '@material-ui/core'
 import { setTaskEditMode, setOwnerId, setIsRequestTask } from "../taskDataSlice"
 import { useDispatch } from 'react-redux'
 
-
 /**
-  This component renders the "Add a Task" icon which allows the user to add custom tasks to the
+  This component renders the "Add a Task" icon which allows the user to add tasks to the
   columns. It provides the user with options to either create a Request Task or a Custom Task.
 
-  @param {string} ownerId used to add the Add button in each column 
+  @param {string} ownerId the ID of the CCA user, so that task is created in the column of the user whose userId is passed here as the ownerId 
 */
 
 export default function TaskAddButton({ ownerId }) {
@@ -25,16 +22,6 @@ export default function TaskAddButton({ ownerId }) {
     width: 272,
   }
 
-  const buttonStyle = {
-    ...commonStyle,
-    paddingLeft: 10,
-    opacity: 0.5,
-    color: "inherit",
-    backgroundColor: "inherit"
-  }
-
-  const buttonGroupStyle = {...commonStyle, marginTop: 8}
-
   function handleCreateTask(taskType) {
     dispatch(setTaskEditMode({taskEditMode: "create"}))
     dispatch(setOwnerId({ownerId}))
@@ -48,7 +35,7 @@ export default function TaskAddButton({ ownerId }) {
 
   function SelectTaskType () {
     return (
-      <div style={buttonGroupStyle}>
+      <div style={{...commonStyle, marginTop: 8}}>
           <Button 
             size="small" 
             onMouseDown={() => {handleCreateTask("request")}} 
@@ -78,10 +65,10 @@ export default function TaskAddButton({ ownerId }) {
       {    
         buttonsOpen ?
         <SelectTaskType/> : 
-        <div style={buttonStyle}>
-          <Icon>add</Icon>
-          <p> Add a Task </p>
-        </div>
+          <Typography style={{...commonStyle, paddingLeft: 10}} color="textPrimary">
+            <Icon>add</Icon>
+            Add a Task 
+          </Typography>
       }
       </div>
     </div>

@@ -11,7 +11,7 @@ export const fetchCCAAccounts = createAsyncThunk(
   'ccaDetails/fetchCCAAccounts',
   async (_, { getState, rejectWithValue }) => {
     const { isPending } = getState().ccaDetails
-    if (isPending != true) {
+    if (!isPending) {
       return
     } 
 
@@ -111,7 +111,7 @@ const ccaDetails = createSlice({
   },
   extraReducers: {
     [toggleActiveCCAAccount.fulfilled]: (state, action) => {
-        state.ccaList.map((obj,index) => {
+        state.ccaList.forEach((obj,index) => {
           if (obj.ccaId === action.payload.ccaId){
             console.log("active status: ", action.payload.active)
             state.ccaList[index].active = !action.payload.active
@@ -124,7 +124,7 @@ const ccaDetails = createSlice({
 
     [editCCAAccount.fulfilled]: (state, action) => {
       let i = 0
-      state.ccaList.map((obj,index) => {
+      state.ccaList.forEach((obj,index) => {
         if (obj.ccaId === action.payload.ccaId){
           i = index
         }
@@ -167,7 +167,7 @@ const ccaDetails = createSlice({
     },
 
     [changeCCAPicture.fulfilled]: (state, action) => { 
-        state.ccaList.map(ccaUser => {
+        state.ccaList.forEach(ccaUser => {
           if (ccaUser.ccaId === action.payload.ccaId) {
             ccaUser.picture = action.payload.url
           }
@@ -178,7 +178,7 @@ const ccaDetails = createSlice({
     },
 
     [editCCAPermissions.fulfilled]: (state, action) => {
-      state.ccaList.map((obj,index) => {
+      state.ccaList.forEach((obj,index) => {
         if (obj.ccaId === action.payload.ccaId){
           state.ccaList[index].permissions = action.payload.permissions
         }  

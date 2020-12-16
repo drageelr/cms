@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import FormViewerBar from './FormViewerBar'
-import {makeStyles, List, Paper, Container, CircularProgress, Button, Typography, LinearProgress } from '@material-ui/core'
+import {makeStyles, List, Paper, Container, Button, LinearProgress } from '@material-ui/core'
 import { connect } from 'react-redux'
 import ItemView from './ItemView'
 import { fetchFormData, clearError, fetchFromToken } from '../formDataSlice'
@@ -22,24 +22,24 @@ const useStyles = makeStyles((theme) => ({
 
 function FormViewer({formTemplate, formData, dispatch, userType, conditionalView, match, location}) {
   const { title, sectionTitles, sectionsOrder, componentsOrder, itemsOrder, items } = formTemplate
-  const { createMode, ccaNotes, societyNotes, id, itemFilledIds } = formData
+  const { createMode, ccaNotes, societyNotes, id } = formData
   const [ sectionIndex, setSectionIndex ] = useState(0)
   const classes = useStyles()
   const viewerId = match && match.params.id // formId when in create mode, formDataId when in edit/review mode
   const presOrPat = match.params.type // patron or president
   const token = location.search.split('=')[1] // token for patron / pres
   const mode = (match && match.params.mode) || (presOrPat && "p_review") //president/patron review
-  const inReview = mode == "review" || mode == "p_review"
+  const inReview = mode==="review" || mode==="p_review"
   
   async function initializeFormViewer() {
-    if (mode == "edit" || mode == "review" ){ //if in edit mode, also fetch form data
+    if (mode==="edit" || mode==="review" ){ //if in edit mode, also fetch form data
       const fetchFormDataResult = await dispatch(fetchFormData(viewerId))
       const formId = unwrapResult(fetchFormDataResult).formId
       const fetchFormResult = await dispatch(fetchForm(formId))
       const fetchedItems = unwrapResult(fetchFormResult).items
       dispatch(initializeVisibilities({items: fetchedItems}))
     }
-    else if (mode == "create") {
+    else if (mode==="create") {
       const fetchFormResult = await dispatch(fetchForm(viewerId))
       const fetchedItems = unwrapResult(fetchFormResult).items
       dispatch(initializeVisibilities({items: fetchedItems}))
@@ -60,17 +60,17 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
   
   useEffect(() => {
     initializeFormViewer()
-  }, [])
+  }, [initializeFormViewer])
 
   const sectionId = sectionsOrder[sectionIndex]
 
   return (
     <div>
       <FormViewerBar title={title} notesData={{ccaNotes, societyNotes}} submissionId={id}
-        inReview={inReview} inReviewP={mode == "p_review"} presOrPat={presOrPat} isCCA={userType=="CCA"} createMode={createMode}/>
+        inReview={inReview} inReviewP={mode==="p_review"} presOrPat={presOrPat} isCCA={userType==="CCA"} createMode={createMode}/>
       <br/>
       {
-      (mode == "create" ?  (formTemplate.isPending) : (formTemplate.isPending || formData.isPending)) 
+      (mode==="create" ?  (formTemplate.isPending) : (formTemplate.isPending || formData.isPending)) 
       ? <LinearProgress style={{marginTop: -5}}  variant="indeterminate"/>
       : <Container>
         {/* //Container to center align the View, also sections and items rendered only (components are only logical) */}
@@ -94,12 +94,13 @@ function FormViewer({formTemplate, formData, dispatch, userType, conditionalView
                       />
                     )
                   }
+                  return null
                 }
               ) //null for empty sections and columns
             }
           </List>
         </Paper>
-        { sectionIndex != 0 &&
+        { sectionIndex !==0 &&
           <Button onClick={()=> setSectionIndex(sectionIndex-1)} variant="contained" style={{marginLeft: 10, marginBottom: 20}}>Previous</Button>
         }
         {

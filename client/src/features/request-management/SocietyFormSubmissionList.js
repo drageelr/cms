@@ -1,15 +1,14 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { Button, IconButton, Box, Typography } from '@material-ui/core'
+import { Button, Box, Typography } from '@material-ui/core'
 import MUIDataTable from "mui-datatables"
 import LinearProgress from '@material-ui/core/LinearProgress'
-import DeleteIcon from '@material-ui/icons/Delete'
 import DateRangeIcon from '@material-ui/icons/DateRange'
 import { makeStyles } from '@material-ui/core/styles'
-import { fetchSocietyList, deleteSubmission, clearError } from './submissionListSlice'
+import { fetchSocietyList, clearError } from './submissionListSlice'
 import { useHistory } from 'react-router-dom'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
-import { simplifyTimestamp } from '../../helpers'
+import Timestamp from 'react-timestamp'
 
 /**
   The component displays a table of all the forms submitted by the society. The society can view
@@ -51,10 +50,6 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
   
   const numStatuses = statusTypes.length
 
-  function handleDelete(submissionId) {
-    dispatch(deleteSubmission(submissionId))
-  }
-
   function selectValue(formStatus) {
     return (statusTypes.indexOf(formStatus) + 1) * 100 / numStatuses
   }  
@@ -81,23 +76,27 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
           )
         }
       }
-    }, 
+    },
     {
-      name:"Last edited",
+      name: "Last edited",
       options: {
+        filter: false,
+        sort: true,
+        sortDirection: 'desc',
         customBodyRender: (value, tableMeta, updateValue) => {
           return (
             <Box color="text.secondary" >
               <DateRangeIcon style={{marginBottom: -5, marginRight: 4}}/>
-              {value}
+              <Timestamp date={new Date(value)}/>
             </Box> 
           )
-        }
-      }
-    }, 
+        },
+      },
+    },
     {
       name:"Approval Progress",
       options: {
+        filter: false,
         customBodyRender: (value, tableMeta, updateValue) => {
           return (
             <LinearProgress 
@@ -145,7 +144,7 @@ export function SocietyFormSubmissionView({user, submissionListData, dispatch}) 
         data={
           submissionListData.formDataList.map((submission, index) => [
             submission.formTitle,
-            simplifyTimestamp(submission.timestampModified, false),
+            submission.timestampModified,
             selectValue(submission.status),
             submission.status,
             <Button key={index} variant="outlined" 
