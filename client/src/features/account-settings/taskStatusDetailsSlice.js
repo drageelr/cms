@@ -101,13 +101,13 @@ const taskStatusDetails = createSlice({
 
     [editTaskStatus.fulfilled]: (state, action) => {
       let i = 0
-<<<<<<< HEAD
-      state.taskList.find((obj,index) => {
-        if (obj.statusId === action.payload.statusId){
-=======
+// <<<<<<< HEAD
+//       state.taskList.find((obj,index) => {
+//         if (obj.statusId === action.payload.statusId){
+// =======
       state.taskList.forEach((obj,index) => {
         if (obj.statusId === action.payload.id){
->>>>>>> 0a5f8e9e0ff03f1b0d32568bfe4b10c5d95637ee
+// >>>>>>> 0a5f8e9e0ff03f1b0d32568bfe4b10c5d95637ee
           i = index
         }
       })
