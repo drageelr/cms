@@ -12,12 +12,9 @@ import EditIcon from '@material-ui/icons/Edit'
 import {clearError} from './taskStatusDetailsSlice'
 import ErrorSnackbar from '../../ui/ErrorSnackbar'
 import PanelBar from './PanelBar'
-<<<<<<< HEAD
 import { Typography } from '@material-ui/core';
 import { CirclePicker } from 'react-color';
 
-=======
->>>>>>> 0a5f8e9e0ff03f1b0d32568bfe4b10c5d95637ee
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
